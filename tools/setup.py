@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--disc-dir", required=True, type=Path)
     parser.add_argument("--analyze", action="store_true", help="Generate provisional splat configs in build/analysis")
     args = parser.parse_args()
-    manifest = json.loads((ROOT / "config" / "usa.json").read_text(encoding="utf-8"))
+    manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
     destination = ROOT / "original" / "usa"
     try:
         for expected in manifest["executables"]:
@@ -26,6 +26,7 @@ def main():
             source = (args.disc_dir / expected["filename"]).resolve()
             target = destination / expected["filename"]
             if source != target.resolve() and not target.exists():
+                target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
             verify_executable(target, expected)
             print(f"Ready: {target.relative_to(ROOT)}", flush=True)

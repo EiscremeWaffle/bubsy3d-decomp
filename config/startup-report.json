@@ -1,14 +1,14 @@
 {
   "measures": {
-    "total_code": "344",
+    "total_code": "3784",
     "matched_data_percent": 100.0,
-    "total_functions": 2,
+    "total_functions": 22,
     "complete_data_percent": 100.0,
-    "total_units": 2
+    "total_units": 22
   },
   "units": [
     {
-      "name": "boot/startup",
+      "name": "l0/startup",
       "measures": {
         "total_code": "172",
         "matched_data_percent": 100.0,
@@ -33,7 +33,691 @@
       ],
       "functions": [
         {
-          "name": "boot_entrypoint",
+          "name": "l0_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l1/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l1_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l10/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l10_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l11/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l11_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l12/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l12_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l13/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l13_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l14/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l14_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l15/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l15_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l16/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l16_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l17/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l17_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l18/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l18_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l19/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l19_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l2/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l2_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l20/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l20_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l4/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l4_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l5/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l5_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l6/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l6_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l7/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l7_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l8/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l8_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "l9/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "l9_entrypoint",
           "size": "172",
           "metadata": {},
           "address": "0"
@@ -70,6 +754,42 @@
       "functions": [
         {
           "name": "menu_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "boot/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "boot_entrypoint",
           "size": "172",
           "metadata": {},
           "address": "0"

@@ -51,7 +51,7 @@ def main():
         help="Directory containing executables extracted from your own disc",
     )
     args = parser.parse_args()
-    manifest = json.loads((ROOT / "config" / "usa.json").read_text(encoding="utf-8"))
+    manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
     try:
         for expected in manifest["executables"]:
             actual = verify_executable(args.disc_dir / expected["filename"], expected)

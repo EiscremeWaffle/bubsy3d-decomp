@@ -1,13 +1,146 @@
 {
-  "scope": "USA executable startup routines only; not whole-game progress",
+  "scope": "Startup routines of every header-recognized USA executable; not whole-game code progress",
   "artifact": "SLUS_001.10_startup_report",
   "units": [
     {
-      "name": "boot/startup",
-      "filename": "SLUS_001.10",
-      "symbol": "boot_entrypoint",
-      "start": "0x80028F5C",
-      "end": "0x80029008"
+      "name": "l0/startup",
+      "filename": "L0/L0.EXE",
+      "symbol": "l0_entrypoint",
+      "start": "0x8004EB64",
+      "end": "0x8004EC10"
+    },
+    {
+      "name": "l1/startup",
+      "filename": "L1/L1.EXE",
+      "symbol": "l1_entrypoint",
+      "start": "0x8005130C",
+      "end": "0x800513B8"
+    },
+    {
+      "name": "l10/startup",
+      "filename": "L10/L10.EXE",
+      "symbol": "l10_entrypoint",
+      "start": "0x8004F8CC",
+      "end": "0x8004F978"
+    },
+    {
+      "name": "l11/startup",
+      "filename": "L11/L11.EXE",
+      "symbol": "l11_entrypoint",
+      "start": "0x800535B8",
+      "end": "0x80053664"
+    },
+    {
+      "name": "l12/startup",
+      "filename": "L12/L12.EXE",
+      "symbol": "l12_entrypoint",
+      "start": "0x80053CF8",
+      "end": "0x80053DA4"
+    },
+    {
+      "name": "l13/startup",
+      "filename": "L13/L13.EXE",
+      "symbol": "l13_entrypoint",
+      "start": "0x80053E04",
+      "end": "0x80053EB0"
+    },
+    {
+      "name": "l14/startup",
+      "filename": "L14/L14.EXE",
+      "symbol": "l14_entrypoint",
+      "start": "0x80052B4C",
+      "end": "0x80052BF8"
+    },
+    {
+      "name": "l15/startup",
+      "filename": "L15/L15.EXE",
+      "symbol": "l15_entrypoint",
+      "start": "0x80053CB4",
+      "end": "0x80053D60"
+    },
+    {
+      "name": "l16/startup",
+      "filename": "L16/L16.EXE",
+      "symbol": "l16_entrypoint",
+      "start": "0x80052F0C",
+      "end": "0x80052FB8"
+    },
+    {
+      "name": "l17/startup",
+      "filename": "L17/L17.EXE",
+      "symbol": "l17_entrypoint",
+      "start": "0x8004B874",
+      "end": "0x8004B920"
+    },
+    {
+      "name": "l18/startup",
+      "filename": "L18/L18.EXE",
+      "symbol": "l18_entrypoint",
+      "start": "0x8004DAF4",
+      "end": "0x8004DBA0"
+    },
+    {
+      "name": "l19/startup",
+      "filename": "L19/L19.EXE",
+      "symbol": "l19_entrypoint",
+      "start": "0x8004DDA8",
+      "end": "0x8004DE54"
+    },
+    {
+      "name": "l2/startup",
+      "filename": "L2/L2.EXE",
+      "symbol": "l2_entrypoint",
+      "start": "0x80051184",
+      "end": "0x80051230"
+    },
+    {
+      "name": "l20/startup",
+      "filename": "L20/L20.EXE",
+      "symbol": "l20_entrypoint",
+      "start": "0x800510E0",
+      "end": "0x8005118C"
+    },
+    {
+      "name": "l4/startup",
+      "filename": "L4/L4.EXE",
+      "symbol": "l4_entrypoint",
+      "start": "0x8004F618",
+      "end": "0x8004F6C4"
+    },
+    {
+      "name": "l5/startup",
+      "filename": "L5/L5.EXE",
+      "symbol": "l5_entrypoint",
+      "start": "0x80050670",
+      "end": "0x8005071C"
+    },
+    {
+      "name": "l6/startup",
+      "filename": "L6/L6.EXE",
+      "symbol": "l6_entrypoint",
+      "start": "0x8004EF60",
+      "end": "0x8004F00C"
+    },
+    {
+      "name": "l7/startup",
+      "filename": "L7/L7.EXE",
+      "symbol": "l7_entrypoint",
+      "start": "0x80053BA4",
+      "end": "0x80053C50"
+    },
+    {
+      "name": "l8/startup",
+      "filename": "L8/L8.EXE",
+      "symbol": "l8_entrypoint",
+      "start": "0x8004EC34",
+      "end": "0x8004ECE0"
+    },
+    {
+      "name": "l9/startup",
+      "filename": "L9/L9.EXE",
+      "symbol": "l9_entrypoint",
+      "start": "0x800535A0",
+      "end": "0x8005364C"
     },
     {
       "name": "menu/startup",
@@ -15,6 +148,13 @@
       "symbol": "menu_entrypoint",
       "start": "0x80028F48",
       "end": "0x80028FF4"
+    },
+    {
+      "name": "boot/startup",
+      "filename": "SLUS_001.10",
+      "symbol": "boot_entrypoint",
+      "start": "0x80028F5C",
+      "end": "0x80029008"
     }
   ]
 }

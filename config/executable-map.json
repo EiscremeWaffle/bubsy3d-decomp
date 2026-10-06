@@ -1,0 +1,205 @@
+{
+  "name": "Bubsy 3D: Furbitten Planet (USA)",
+  "serial": "SLUS-00110",
+  "revision_status": "Local executable fingerprint recorded; disc revision not independently verified",
+  "executables": [
+    {
+      "filename": "L0/L0.EXE",
+      "size": 716800,
+      "sha1": "644979d648ff61820c0e196a72f1bf65ed9fe053",
+      "sha256": "57d7a1323eaf8810c672e12c94a4491943d0bccf2dfe7b18297add249cd0c46e",
+      "entry_point": "0x8004EB64",
+      "load_address": "0x80010000",
+      "payload_size": "0x000AE800"
+    },
+    {
+      "filename": "L1/L1.EXE",
+      "size": 761856,
+      "sha1": "1c762586241c48d97da02a2a6bc577b21f6af166",
+      "sha256": "4408daebb1f40a5fd73d642e8f6c553394fea03eb2f89e69cd22168540457a53",
+      "entry_point": "0x8005130C",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B9800"
+    },
+    {
+      "filename": "L10/L10.EXE",
+      "size": 753664,
+      "sha1": "76da976d2fd3646264526920a1e40660d14a6012",
+      "sha256": "5a64753276fcd7c276b21b56032d27d24672d0ff907c71819fd203124cdb1bc1",
+      "entry_point": "0x8004F8CC",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B7800"
+    },
+    {
+      "filename": "L11/L11.EXE",
+      "size": 757760,
+      "sha1": "d6efa95380865c2b15dc753ab97fd396fece9c77",
+      "sha256": "aa4d595bb31eb1a894b273d6b5eafc49bf1b0ef27b04d1a301a035fbb17000af",
+      "entry_point": "0x800535B8",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B8800"
+    },
+    {
+      "filename": "L12/L12.EXE",
+      "size": 761856,
+      "sha1": "319af966ff23268cd6dfb5bc24c3ec31a895083a",
+      "sha256": "3c44d6e1a0f0d77c562d274800877d907a683b6dc8eb93d4a0f143a999bccb67",
+      "entry_point": "0x80053CF8",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B9800"
+    },
+    {
+      "filename": "L13/L13.EXE",
+      "size": 765952,
+      "sha1": "871aab61b30a47130947e0f518409086896b147e",
+      "sha256": "80b40ed3f6cd6783042269e82c7faaeb7bfe0e34c5edb36194ee22f3ff470c17",
+      "entry_point": "0x80053E04",
+      "load_address": "0x80010000",
+      "payload_size": "0x000BA800"
+    },
+    {
+      "filename": "L14/L14.EXE",
+      "size": 761856,
+      "sha1": "00e937dcfecf2c5e971395c24d099c2187be1835",
+      "sha256": "fb18e81e8cf632e1f0e0b0a8ad3554d487af6bae0583285f446c945d1e368553",
+      "entry_point": "0x80052B4C",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B9800"
+    },
+    {
+      "filename": "L15/L15.EXE",
+      "size": 757760,
+      "sha1": "99cfde5a6ffc2a101864857695303cb57379e702",
+      "sha256": "c78c281dd1f2ee6b63c6ec6fdd963a23b10c90601fc1810deb54dde78c9e8dc1",
+      "entry_point": "0x80053CB4",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B8800"
+    },
+    {
+      "filename": "L16/L16.EXE",
+      "size": 745472,
+      "sha1": "2401497217baf5dac7da0f064049ff93de62da65",
+      "sha256": "2da37809ad8089872055c5cd8627cb41b26ed5f5a1b87817b1cd4c89d2cc2bee",
+      "entry_point": "0x80052F0C",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B5800"
+    },
+    {
+      "filename": "L17/L17.EXE",
+      "size": 679936,
+      "sha1": "3383c698ce082e6cf9dec79fe5fac1fcc138d831",
+      "sha256": "fd64d55e9125e6ec3537bf4c3c78d328e890d2bde55347ea2bed41a55a3e566b",
+      "entry_point": "0x8004B874",
+      "load_address": "0x80010000",
+      "payload_size": "0x000A5800"
+    },
+    {
+      "filename": "L18/L18.EXE",
+      "size": 694272,
+      "sha1": "e6bc5c0b434eef7bb757e2739302ee14073a3f1e",
+      "sha256": "ce17d2c330ca244b4a905e43d280c918e5f52761af1c7ca478249b9fc18316b1",
+      "entry_point": "0x8004DAF4",
+      "load_address": "0x80010000",
+      "payload_size": "0x000A9000"
+    },
+    {
+      "filename": "L19/L19.EXE",
+      "size": 722944,
+      "sha1": "0d78cdbfd45db5f276e80e78f1f02c8be0d90cd2",
+      "sha256": "041aaa58867cc0567807fc1bf28e275b8ff423d975733459978bd5072552694e",
+      "entry_point": "0x8004DDA8",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B0000"
+    },
+    {
+      "filename": "L2/L2.EXE",
+      "size": 751616,
+      "sha1": "2787535810cf0fb18e98efd426d2d19119d29595",
+      "sha256": "47309aa56e83aae6ba4fb1ac0977dbb34de7ac67282f5fec968526717e00669a",
+      "entry_point": "0x80051184",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B7000"
+    },
+    {
+      "filename": "L20/L20.EXE",
+      "size": 749568,
+      "sha1": "37da8c51030f92b355e73b33d60782f5e3732725",
+      "sha256": "dd4d50698723064a9d6223936b68a9a6ea7b405a89ef2e7127b09c0bc41b7296",
+      "entry_point": "0x800510E0",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B6800"
+    },
+    {
+      "filename": "L4/L4.EXE",
+      "size": 743424,
+      "sha1": "f183a03127b22d58f92a2417d463f75590a6d86c",
+      "sha256": "f0ece2d1034138cb41fdd9ab48a8a8a424393ba3b3d599e4ca419d1ca015f36c",
+      "entry_point": "0x8004F618",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B5000"
+    },
+    {
+      "filename": "L5/L5.EXE",
+      "size": 751616,
+      "sha1": "b3196fcd5889ac4c95c43a0718f4408288a7fe40",
+      "sha256": "1ad58443a13af25bb5d97ec5d8e26f3b2e9e4df91cb960f58a239d673ac16b1b",
+      "entry_point": "0x80050670",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B7000"
+    },
+    {
+      "filename": "L6/L6.EXE",
+      "size": 733184,
+      "sha1": "80efaa6a7e2edd02905cfa5afd90edf1162cb95b",
+      "sha256": "1a0efe40c4c79536d690e5a9e488c3b280fbcce50e8db43df3cdbaf5c8797b36",
+      "entry_point": "0x8004EF60",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B2800"
+    },
+    {
+      "filename": "L7/L7.EXE",
+      "size": 770048,
+      "sha1": "c22c01eead72be7185158f396fff6198a94f151b",
+      "sha256": "87f0c68e430237ef12162ced17a0283e932b42d9e626306225d27a1a92912f2a",
+      "entry_point": "0x80053BA4",
+      "load_address": "0x80010000",
+      "payload_size": "0x000BB800"
+    },
+    {
+      "filename": "L8/L8.EXE",
+      "size": 731136,
+      "sha1": "2941fa21d0aff80ffd68e87892afd1fed0ad801c",
+      "sha256": "ace2fef99cb55be4fea985a5383760e87f27c754e1b2a8676271e446f64e9ce7",
+      "entry_point": "0x8004EC34",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B2000"
+    },
+    {
+      "filename": "L9/L9.EXE",
+      "size": 761856,
+      "sha1": "cfddd479cb23e7ecd56d85a56ebe805e4e457264",
+      "sha256": "dfc8fd7d8cbc09d9904c34bda208e53847ad977f00f4c52b26165f7037022d3c",
+      "entry_point": "0x800535A0",
+      "load_address": "0x80010000",
+      "payload_size": "0x000B9800"
+    },
+    {
+      "filename": "MENU.EXE",
+      "size": 495616,
+      "sha1": "6db217723a5b671bb04796411265e067c820da09",
+      "sha256": "e3620fd866a4eb052e115218fcce0fd7b889551ed309aa0516dea826cd3b7444",
+      "entry_point": "0x80028F48",
+      "load_address": "0x80010000",
+      "payload_size": "0x00078800"
+    },
+    {
+      "filename": "SLUS_001.10",
+      "size": 495616,
+      "sha1": "bbae8855270a9b8f8c5ab89fe775e949ab88e0e8",
+      "sha256": "604467ef7317f98b465e75e232d51ba4cd4b1b98ca9e09f27fb95c9e707a3993",
+      "entry_point": "0x80028F5C",
+      "load_address": "0x80010000",
+      "payload_size": "0x00078800"
+    }
+  ]
+}

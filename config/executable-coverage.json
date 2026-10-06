@@ -1,0 +1,779 @@
+{
+  "scope": "All header-recognized executable payloads, with unresolved code/data explicitly marked",
+  "not_covered": "Compressed or raw code without a PS-X EXE signature may exist in opaque resources",
+  "module_count": 22,
+  "payload_bytes": 15818752,
+  "known_code_bytes": 3784,
+  "modules": [
+    {
+      "path": "L0/L0.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800BE800",
+      "entry_point": "0x8004EB64",
+      "payload_bytes": 714752,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 714580,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004EB64",
+          "size": 256868,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3F364"
+        },
+        {
+          "start": "0x8004EB64",
+          "end": "0x8004EC10",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3F364",
+          "file_end": "0x3F410"
+        },
+        {
+          "start": "0x8004EC10",
+          "end": "0x800BE800",
+          "size": 457712,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3F410",
+          "file_end": "0xAF000"
+        }
+      ]
+    },
+    {
+      "path": "L1/L1.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C9800",
+      "entry_point": "0x8005130C",
+      "payload_bytes": 759808,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 759636,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8005130C",
+          "size": 267020,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x41B0C"
+        },
+        {
+          "start": "0x8005130C",
+          "end": "0x800513B8",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x41B0C",
+          "file_end": "0x41BB8"
+        },
+        {
+          "start": "0x800513B8",
+          "end": "0x800C9800",
+          "size": 492616,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x41BB8",
+          "file_end": "0xBA000"
+        }
+      ]
+    },
+    {
+      "path": "L10/L10.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C7800",
+      "entry_point": "0x8004F8CC",
+      "payload_bytes": 751616,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 751444,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004F8CC",
+          "size": 260300,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x400CC"
+        },
+        {
+          "start": "0x8004F8CC",
+          "end": "0x8004F978",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x400CC",
+          "file_end": "0x40178"
+        },
+        {
+          "start": "0x8004F978",
+          "end": "0x800C7800",
+          "size": 491144,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x40178",
+          "file_end": "0xB8000"
+        }
+      ]
+    },
+    {
+      "path": "L11/L11.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C8800",
+      "entry_point": "0x800535B8",
+      "payload_bytes": 755712,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 755540,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x800535B8",
+          "size": 275896,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x43DB8"
+        },
+        {
+          "start": "0x800535B8",
+          "end": "0x80053664",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x43DB8",
+          "file_end": "0x43E64"
+        },
+        {
+          "start": "0x80053664",
+          "end": "0x800C8800",
+          "size": 479644,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x43E64",
+          "file_end": "0xB9000"
+        }
+      ]
+    },
+    {
+      "path": "L12/L12.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C9800",
+      "entry_point": "0x80053CF8",
+      "payload_bytes": 759808,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 759636,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80053CF8",
+          "size": 277752,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x444F8"
+        },
+        {
+          "start": "0x80053CF8",
+          "end": "0x80053DA4",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x444F8",
+          "file_end": "0x445A4"
+        },
+        {
+          "start": "0x80053DA4",
+          "end": "0x800C9800",
+          "size": 481884,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x445A4",
+          "file_end": "0xBA000"
+        }
+      ]
+    },
+    {
+      "path": "L13/L13.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800CA800",
+      "entry_point": "0x80053E04",
+      "payload_bytes": 763904,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 763732,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80053E04",
+          "size": 278020,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x44604"
+        },
+        {
+          "start": "0x80053E04",
+          "end": "0x80053EB0",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x44604",
+          "file_end": "0x446B0"
+        },
+        {
+          "start": "0x80053EB0",
+          "end": "0x800CA800",
+          "size": 485712,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x446B0",
+          "file_end": "0xBB000"
+        }
+      ]
+    },
+    {
+      "path": "L14/L14.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C9800",
+      "entry_point": "0x80052B4C",
+      "payload_bytes": 759808,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 759636,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80052B4C",
+          "size": 273228,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x4334C"
+        },
+        {
+          "start": "0x80052B4C",
+          "end": "0x80052BF8",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x4334C",
+          "file_end": "0x433F8"
+        },
+        {
+          "start": "0x80052BF8",
+          "end": "0x800C9800",
+          "size": 486408,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x433F8",
+          "file_end": "0xBA000"
+        }
+      ]
+    },
+    {
+      "path": "L15/L15.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C8800",
+      "entry_point": "0x80053CB4",
+      "payload_bytes": 755712,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 755540,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80053CB4",
+          "size": 277684,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x444B4"
+        },
+        {
+          "start": "0x80053CB4",
+          "end": "0x80053D60",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x444B4",
+          "file_end": "0x44560"
+        },
+        {
+          "start": "0x80053D60",
+          "end": "0x800C8800",
+          "size": 477856,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x44560",
+          "file_end": "0xB9000"
+        }
+      ]
+    },
+    {
+      "path": "L16/L16.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C5800",
+      "entry_point": "0x80052F0C",
+      "payload_bytes": 743424,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 743252,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80052F0C",
+          "size": 274188,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x4370C"
+        },
+        {
+          "start": "0x80052F0C",
+          "end": "0x80052FB8",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x4370C",
+          "file_end": "0x437B8"
+        },
+        {
+          "start": "0x80052FB8",
+          "end": "0x800C5800",
+          "size": 469064,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x437B8",
+          "file_end": "0xB6000"
+        }
+      ]
+    },
+    {
+      "path": "L17/L17.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800B5800",
+      "entry_point": "0x8004B874",
+      "payload_bytes": 677888,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 677716,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004B874",
+          "size": 243828,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3C074"
+        },
+        {
+          "start": "0x8004B874",
+          "end": "0x8004B920",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3C074",
+          "file_end": "0x3C120"
+        },
+        {
+          "start": "0x8004B920",
+          "end": "0x800B5800",
+          "size": 433888,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3C120",
+          "file_end": "0xA6000"
+        }
+      ]
+    },
+    {
+      "path": "L18/L18.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800B9000",
+      "entry_point": "0x8004DAF4",
+      "payload_bytes": 692224,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 692052,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004DAF4",
+          "size": 252660,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3E2F4"
+        },
+        {
+          "start": "0x8004DAF4",
+          "end": "0x8004DBA0",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3E2F4",
+          "file_end": "0x3E3A0"
+        },
+        {
+          "start": "0x8004DBA0",
+          "end": "0x800B9000",
+          "size": 439392,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3E3A0",
+          "file_end": "0xA9800"
+        }
+      ]
+    },
+    {
+      "path": "L19/L19.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C0000",
+      "entry_point": "0x8004DDA8",
+      "payload_bytes": 720896,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 720724,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004DDA8",
+          "size": 253352,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3E5A8"
+        },
+        {
+          "start": "0x8004DDA8",
+          "end": "0x8004DE54",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3E5A8",
+          "file_end": "0x3E654"
+        },
+        {
+          "start": "0x8004DE54",
+          "end": "0x800C0000",
+          "size": 467372,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3E654",
+          "file_end": "0xB0800"
+        }
+      ]
+    },
+    {
+      "path": "L2/L2.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C7000",
+      "entry_point": "0x80051184",
+      "payload_bytes": 749568,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 749396,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80051184",
+          "size": 266628,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x41984"
+        },
+        {
+          "start": "0x80051184",
+          "end": "0x80051230",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x41984",
+          "file_end": "0x41A30"
+        },
+        {
+          "start": "0x80051230",
+          "end": "0x800C7000",
+          "size": 482768,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x41A30",
+          "file_end": "0xB7800"
+        }
+      ]
+    },
+    {
+      "path": "L20/L20.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C6800",
+      "entry_point": "0x800510E0",
+      "payload_bytes": 747520,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 747348,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x800510E0",
+          "size": 266464,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x418E0"
+        },
+        {
+          "start": "0x800510E0",
+          "end": "0x8005118C",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x418E0",
+          "file_end": "0x4198C"
+        },
+        {
+          "start": "0x8005118C",
+          "end": "0x800C6800",
+          "size": 480884,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x4198C",
+          "file_end": "0xB7000"
+        }
+      ]
+    },
+    {
+      "path": "L4/L4.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C5000",
+      "entry_point": "0x8004F618",
+      "payload_bytes": 741376,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 741204,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004F618",
+          "size": 259608,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3FE18"
+        },
+        {
+          "start": "0x8004F618",
+          "end": "0x8004F6C4",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3FE18",
+          "file_end": "0x3FEC4"
+        },
+        {
+          "start": "0x8004F6C4",
+          "end": "0x800C5000",
+          "size": 481596,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3FEC4",
+          "file_end": "0xB5800"
+        }
+      ]
+    },
+    {
+      "path": "L5/L5.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C7000",
+      "entry_point": "0x80050670",
+      "payload_bytes": 749568,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 749396,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80050670",
+          "size": 263792,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x40E70"
+        },
+        {
+          "start": "0x80050670",
+          "end": "0x8005071C",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x40E70",
+          "file_end": "0x40F1C"
+        },
+        {
+          "start": "0x8005071C",
+          "end": "0x800C7000",
+          "size": 485604,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x40F1C",
+          "file_end": "0xB7800"
+        }
+      ]
+    },
+    {
+      "path": "L6/L6.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C2800",
+      "entry_point": "0x8004EF60",
+      "payload_bytes": 731136,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 730964,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004EF60",
+          "size": 257888,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3F760"
+        },
+        {
+          "start": "0x8004EF60",
+          "end": "0x8004F00C",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3F760",
+          "file_end": "0x3F80C"
+        },
+        {
+          "start": "0x8004F00C",
+          "end": "0x800C2800",
+          "size": 473076,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3F80C",
+          "file_end": "0xB3000"
+        }
+      ]
+    },
+    {
+      "path": "L7/L7.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800CB800",
+      "entry_point": "0x80053BA4",
+      "payload_bytes": 768000,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 767828,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80053BA4",
+          "size": 277412,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x443A4"
+        },
+        {
+          "start": "0x80053BA4",
+          "end": "0x80053C50",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x443A4",
+          "file_end": "0x44450"
+        },
+        {
+          "start": "0x80053C50",
+          "end": "0x800CB800",
+          "size": 490416,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x44450",
+          "file_end": "0xBC000"
+        }
+      ]
+    },
+    {
+      "path": "L8/L8.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C2000",
+      "entry_point": "0x8004EC34",
+      "payload_bytes": 729088,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 728916,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x8004EC34",
+          "size": 257076,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x3F434"
+        },
+        {
+          "start": "0x8004EC34",
+          "end": "0x8004ECE0",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x3F434",
+          "file_end": "0x3F4E0"
+        },
+        {
+          "start": "0x8004ECE0",
+          "end": "0x800C2000",
+          "size": 471840,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x3F4E0",
+          "file_end": "0xB2800"
+        }
+      ]
+    },
+    {
+      "path": "L9/L9.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x800C9800",
+      "entry_point": "0x800535A0",
+      "payload_bytes": 759808,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 759636,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x800535A0",
+          "size": 275872,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x43DA0"
+        },
+        {
+          "start": "0x800535A0",
+          "end": "0x8005364C",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x43DA0",
+          "file_end": "0x43E4C"
+        },
+        {
+          "start": "0x8005364C",
+          "end": "0x800C9800",
+          "size": 483764,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x43E4C",
+          "file_end": "0xBA000"
+        }
+      ]
+    },
+    {
+      "path": "MENU.EXE",
+      "load_start": "0x80010000",
+      "load_end": "0x80088800",
+      "entry_point": "0x80028F48",
+      "payload_bytes": 493568,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 493396,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80028F48",
+          "size": 102216,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x19748"
+        },
+        {
+          "start": "0x80028F48",
+          "end": "0x80028FF4",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x19748",
+          "file_end": "0x197F4"
+        },
+        {
+          "start": "0x80028FF4",
+          "end": "0x80088800",
+          "size": 391180,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x197F4",
+          "file_end": "0x79000"
+        }
+      ]
+    },
+    {
+      "path": "SLUS_001.10",
+      "load_start": "0x80010000",
+      "load_end": "0x80088800",
+      "entry_point": "0x80028F5C",
+      "payload_bytes": 493568,
+      "known_code_bytes": 172,
+      "unmapped_payload_bytes": 493396,
+      "spans": [
+        {
+          "start": "0x80010000",
+          "end": "0x80028F5C",
+          "size": 102236,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x800",
+          "file_end": "0x1975C"
+        },
+        {
+          "start": "0x80028F5C",
+          "end": "0x80029008",
+          "size": 172,
+          "status": "verified_startup_code",
+          "file_start": "0x1975C",
+          "file_end": "0x19808"
+        },
+        {
+          "start": "0x80029008",
+          "end": "0x80088800",
+          "size": 391160,
+          "status": "unmapped_code_or_data",
+          "file_start": "0x19808",
+          "file_end": "0x79000"
+        }
+      ]
+    }
+  ]
+}

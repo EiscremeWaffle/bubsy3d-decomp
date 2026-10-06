@@ -1,0 +1,4243 @@
+{
+  "schema_version": 1,
+  "scope": "Extracted disc file inventory, not a whole-game code or function map",
+  "excluded": [
+    "Local source repository and its generated files"
+  ],
+  "file_count": 446,
+  "total_file_bytes": 637330169,
+  "directories": [
+    ".",
+    "COMMON",
+    "L0",
+    "L1",
+    "L10",
+    "L11",
+    "L12",
+    "L13",
+    "L14",
+    "L15",
+    "L16",
+    "L17",
+    "L18",
+    "L19",
+    "L2",
+    "L20",
+    "L4",
+    "L5",
+    "L6",
+    "L7",
+    "L8",
+    "L9",
+    "MENU",
+    "MOVIES",
+    "XA",
+    "XA/BOP",
+    "XA/CONT",
+    "XA/DOG",
+    "XA/DRIV",
+    "XA/GLID",
+    "XA/HIGH",
+    "XA/HIT",
+    "XA/IDLE",
+    "XA/ITEM",
+    "XA/SCRE",
+    "XA/UFO",
+    "XA/USOL",
+    "XA/WOOI",
+    "XA/WOOL",
+    "XA/WORM"
+  ],
+  "files": [
+    {
+      "path": "BUBSY.CCS",
+      "size": 109439,
+      "sha256": "2736e1d3524468340549ff74b84962b5998ff654593f1fb7b9658616f180dca3",
+      "sha1": "3c4d53421a32112a11f05a7ed5a7fd9f9aef8c8a",
+      "format": "disc_authoring_metadata",
+      "format_evidence": "CD-ROM Generator application identifier",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/ABCFONT.TIM",
+      "size": 46084,
+      "sha256": "575c02e8f69185de9c517f4cf349040bfff84e7bdcee5766ae94c221f59f7e08",
+      "sha1": "290d5c8530b1fa2194b1031376c7c8755220e22b",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/BUB.TZP",
+      "size": 218260,
+      "sha256": "bbdb92d0e290d2aad8b56c5d85f2bdc08a2b81db14c2a8e8c8ec50ce4b9f43bd",
+      "sha1": "575cd64dd82bc8a85662209d9411f09163bf86a1",
+      "format": "unresolved",
+      "format_evidence": "TZP-named resource; compression and internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/BUBSWIM.TZP",
+      "size": 239572,
+      "sha256": "f9b420968de78dc454764d9e87cd540e1870052f5d00c2f8dcd41f3aaabf3202",
+      "sha1": "d2ab9f1f4a17165e44b5bfc6bd21abc32a416a9b",
+      "format": "unresolved",
+      "format_evidence": "TZP-named resource; compression and internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/EOL.SEP",
+      "size": 4082,
+      "sha256": "636e1cdbfd9537f321a0bcdc24b4408f6784adab8872ff0a4971ea3d827dad57",
+      "sha1": "7f5f90a044f82f2030b9dc8f43ab5f75739c47cc",
+      "format": "unresolved",
+      "format_evidence": "SEP-named sequence data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/EOL.VB",
+      "size": 111664,
+      "sha256": "4d629e931bd3b9d5e00e6d295c485daf0bbb1ab8fbe814fc443dccf350da207f",
+      "sha1": "04db143f00aafa912ce010d20c55178bb782591f",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/EOL.VH",
+      "size": 21024,
+      "sha256": "075d0a56f122a6a7a959f1c5d691bf6d0aa661f8796284541ea6fe5e8c68c060",
+      "sha1": "3675e26f971abe729dd8ab0eddcb19c3ad63c68a",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/GUN.TIM",
+      "size": 576,
+      "sha256": "c2b429992e0560d2b49f5e37bb9a07af87918dafaaa7c475d11945dd3a8fe5e7",
+      "sha1": "45865526ae5e192d97efee6f25c2a2e031cf03bc",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/PLISKIN.HOG",
+      "size": 97428,
+      "sha256": "aeb25214b4115f59ffa53af00f8d480666584fc9ddb4d8601787c95d60022070",
+      "sha1": "2ceeeb7de4fc29f25286e7559f39ef14f6d8b2a5",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/PLISKIN.TZP",
+      "size": 218260,
+      "sha256": "2f822d655521bfa46ea9d2a24ae10ef802e966ef60e53554d41ac63daada06cd",
+      "sha1": "880b5e9d52fc230644ba7bc2e8437697d9519c70",
+      "format": "unresolved",
+      "format_evidence": "TZP-named resource; compression and internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "COMMON/PLISWIM.TZP",
+      "size": 239572,
+      "sha256": "fc118c5570034c92638a5986e39e50292c3431a84853e7feea313bec3efcdf26",
+      "sha1": "9e089973da8f592862bb759a3d6cbfeeb034a73f",
+      "format": "unresolved",
+      "format_evidence": "TZP-named resource; compression and internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "DUMMY1.DAT",
+      "size": 9039872,
+      "sha256": "9f58bd938b3be4799b84c369d9fe1448dc83dbbc1b9f017eb072079e2ec9fb68",
+      "sha1": "fad1a6ccc6b126cddc245d7532e92a833c98a055",
+      "format": "unresolved",
+      "format_evidence": "DAT-named data; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "DUMMY2.DAT",
+      "size": 9039872,
+      "sha256": "9f58bd938b3be4799b84c369d9fe1448dc83dbbc1b9f017eb072079e2ec9fb68",
+      "sha1": "fad1a6ccc6b126cddc245d7532e92a833c98a055",
+      "format": "unresolved",
+      "format_evidence": "DAT-named data; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/L0.EXE",
+      "size": 716800,
+      "sha256": "57d7a1323eaf8810c672e12c94a4491943d0bccf2dfe7b18297add249cd0c46e",
+      "sha1": "644979d648ff61820c0e196a72f1bf65ed9fe053",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004EB64",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000AE800"
+      }
+    },
+    {
+      "path": "L0/L0.VB",
+      "size": 441904,
+      "sha256": "94b3ee75e2085a44c11e8d59de79a510303ce884fb07870b531365f26fec7deb",
+      "sha1": "4d71e5e54f1c2d94c53a57805a753cae008ec2bb",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/L0.VH",
+      "size": 36896,
+      "sha256": "65622bf6960a87c0e9f9243972033d4e8462d08a71020f2743e29d57c5ed69bf",
+      "sha1": "7ef309f757dc19a0c9a390de2bb467c35fbda500",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/L0EOL.STR",
+      "size": 6430720,
+      "sha256": "fc58c35c39781e7a69a391ce5507738f8966c554a52c3d17160ce3c799d6ed59",
+      "sha1": "a8078f3849187c6d45833a428a004a7dc8237576",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/L0SCR.STR",
+      "size": 51200,
+      "sha256": "3e9fd541fe631c753e879a7d1d6675ab75f740bc5f1b684276c1bcfa14e2db50",
+      "sha1": "ef179f4b96ce2c01abd956a49a166b608a286c7b",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/PERM.HOG",
+      "size": 218036,
+      "sha256": "8903f28077fcb9b1d7dc5ad1158cdc0465aef855f02a44f96588fbd76788e7e8",
+      "sha1": "ac2262f3c70397be62880387afc99adb45fefd38",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "ff4dd31a8355f97cde932d0b78b74c276ec2d8ba3ad56406791bc7f6a165442e",
+      "sha1": "8649cbeac4a3ebffb1fd57fcf6599dc68330a1a3",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L0/TRANS.HOG",
+      "size": 256440,
+      "sha256": "ef7355a8d8e3fd9c1aae13b8bd556ba80d017b3596ff27db40219e75c7a26ebc",
+      "sha1": "a8f417375910294643e770360fe312a17cb15ec5",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/L1.EXE",
+      "size": 761856,
+      "sha256": "4408daebb1f40a5fd73d642e8f6c553394fea03eb2f89e69cd22168540457a53",
+      "sha1": "1c762586241c48d97da02a2a6bc577b21f6af166",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8005130C",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B9800"
+      }
+    },
+    {
+      "path": "L1/L1.VB",
+      "size": 441904,
+      "sha256": "94b3ee75e2085a44c11e8d59de79a510303ce884fb07870b531365f26fec7deb",
+      "sha1": "4d71e5e54f1c2d94c53a57805a753cae008ec2bb",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/L1.VH",
+      "size": 36896,
+      "sha256": "65622bf6960a87c0e9f9243972033d4e8462d08a71020f2743e29d57c5ed69bf",
+      "sha1": "7ef309f757dc19a0c9a390de2bb467c35fbda500",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/L1EOL.STR",
+      "size": 6559744,
+      "sha256": "f32675ca4b0ef2ba253a53393bd5eef709fbf465b4d5902d38dc57d4ac12a920",
+      "sha1": "67c9557b1479046380c50de44bae48a679a3d518",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/L1SCR.STR",
+      "size": 51200,
+      "sha256": "deb50cb2151eb8c14a12fd8f15d2fd59c7e428995d43a73a896191f45a25061f",
+      "sha1": "38f59f6220e5b126600dac694c97ef3a77c3c2e0",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/PERM.HOG",
+      "size": 290124,
+      "sha256": "596de7ebeb970f460063ab9f92800ea7e1fcc5d1bf4aacfdfbf9281e7a3f14c3",
+      "sha1": "1b6461ebd7c19b2db15d4442e7f172c1d931ce58",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "ff4dd31a8355f97cde932d0b78b74c276ec2d8ba3ad56406791bc7f6a165442e",
+      "sha1": "8649cbeac4a3ebffb1fd57fcf6599dc68330a1a3",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L1/TRANS.HOG",
+      "size": 305888,
+      "sha256": "bd7f9eb87a7a25a1e29c725520b4c28b8e2f55d5ee618999d4a1898d073e6a0a",
+      "sha1": "8f87d91c097854be5998f9cda906f6a73a479777",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/L10.EXE",
+      "size": 753664,
+      "sha256": "5a64753276fcd7c276b21b56032d27d24672d0ff907c71819fd203124cdb1bc1",
+      "sha1": "76da976d2fd3646264526920a1e40660d14a6012",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004F8CC",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B7800"
+      }
+    },
+    {
+      "path": "L10/L10.VB",
+      "size": 494208,
+      "sha256": "4102f6e526f86a874daf8c8a419041b49b906fc2319b528913bf94eec6849223",
+      "sha1": "2c22336ec064b6b7ab2fba8395fc40359c7c5210",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/L10.VH",
+      "size": 33312,
+      "sha256": "c45916209aae2da99773eae8509b34a343bac611801c78e87f37624d997efc8a",
+      "sha1": "238bb1c6b5408cb861dd2d6be38b0515e7f734bb",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/L10EOL.STR",
+      "size": 6621184,
+      "sha256": "da1799c1f8af31287553a407505c3b9f7f54b77759cafb3533770f6ee37b12fd",
+      "sha1": "bebaf4a9d7912096e2d92cd1e33929f08d7d7ab6",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/L10SCR.STR",
+      "size": 51200,
+      "sha256": "b1c68669da21c579b868fcd85bfa657801f66927334003f45b7c8e2b6d671108",
+      "sha1": "2e179a89624acc1140c65dbd32aa851e0c14feb9",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/PERM.HOG",
+      "size": 205376,
+      "sha256": "93d8c1e293944afb01a2b5268bc7f1ff6a019b37a725c7fc3aca6e1979847434",
+      "sha1": "320cfbece5ff49d37ed0ae2bca628c67909b13ca",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "74c6a32e3b507a57cabb82747d8bb1299840fa61226a459afda65dff42f0df92",
+      "sha1": "ec16c3ccd060b96d45c06708543c1658bea06cf9",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L10/TRANS.HOG",
+      "size": 269132,
+      "sha256": "b11c014872f010034e904fd3895044d839e84f28f7d0d6ce28c340bbf8654855",
+      "sha1": "d09ed090aea7828e825d3b6053457fe3d4a8c782",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/L11.EXE",
+      "size": 757760,
+      "sha256": "aa4d595bb31eb1a894b273d6b5eafc49bf1b0ef27b04d1a301a035fbb17000af",
+      "sha1": "d6efa95380865c2b15dc753ab97fd396fece9c77",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x800535B8",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B8800"
+      }
+    },
+    {
+      "path": "L11/L11.VB",
+      "size": 433408,
+      "sha256": "307a0785e883d44d90cd6f1185bc0a84cfc254dea4edf79f70cc652fb4e52918",
+      "sha1": "21f259366d25e70c47259bd546ffc53a1605b685",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/L11.VH",
+      "size": 39968,
+      "sha256": "fd1c076c466e0a31d6e2a77c1a944e0dbe13ddf425da85faaf9e5b4bfd496a2d",
+      "sha1": "3a5e73e07bc0ff7c9f594cbade2ad5f66601902f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/L11EOL.STR",
+      "size": 8075264,
+      "sha256": "ed618c6366673a522ec3472f9418928ffd4bd9ab0ec9e6dbc0b6b93d72bf3661",
+      "sha1": "744e27905bd68cad807d1dee60682d3b8859fb66",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/L11SCR.STR",
+      "size": 51200,
+      "sha256": "3fd3503b2bb619a72757943ba5c743b5a81134c0c3893e13a855f45253ead194",
+      "sha1": "43f958eaf169690866a876d3bf54197173f93232",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/PERM.HOG",
+      "size": 364128,
+      "sha256": "f74d85236e5bdb5613fc4b797cd0fa464b3df515deeab7040faab39148f1e2de",
+      "sha1": "d130c6d073a00129225c28fa38ac4b1301b5d018",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "fc92541bc9264e98fec47f1855be7eb07ebb5b515371126c6cd2808b69ca3416",
+      "sha1": "d8982a8e3a280b97287c9f7cfd82083bdff549a8",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L11/TRANS.HOG",
+      "size": 219648,
+      "sha256": "a5964dfdea7d3abc5ea7f97dd3708e97ae90aca632c2fd09d3a7ab7c21e945ef",
+      "sha1": "779f0052e1e27a16a17f796579657bfd53d2262e",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/L12.EXE",
+      "size": 761856,
+      "sha256": "3c44d6e1a0f0d77c562d274800877d907a683b6dc8eb93d4a0f143a999bccb67",
+      "sha1": "319af966ff23268cd6dfb5bc24c3ec31a895083a",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80053CF8",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B9800"
+      }
+    },
+    {
+      "path": "L12/L12.VB",
+      "size": 494208,
+      "sha256": "4102f6e526f86a874daf8c8a419041b49b906fc2319b528913bf94eec6849223",
+      "sha1": "2c22336ec064b6b7ab2fba8395fc40359c7c5210",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/L12.VH",
+      "size": 33312,
+      "sha256": "c45916209aae2da99773eae8509b34a343bac611801c78e87f37624d997efc8a",
+      "sha1": "238bb1c6b5408cb861dd2d6be38b0515e7f734bb",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/L12EOL.STR",
+      "size": 6436864,
+      "sha256": "44178b34ea6854aee06725f48c95eeb9173fc2dc0c27132351bff907c6ef98fd",
+      "sha1": "2a5f21ec3fafbe7d786a8cf3aab9716047ef7278",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/L12SCR.STR",
+      "size": 51200,
+      "sha256": "18b4f07430245fa83267c83a9d6cdfd01eebb022cee2ee4922f8643f870579ed",
+      "sha1": "7a614471fcca3e6c469d4271055ac80ecf6f41ea",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/PERM.HOG",
+      "size": 363468,
+      "sha256": "aa6f75270165371d53ba765e654b0aed2a26cdd1860d7ab1d9fff5586f05bed7",
+      "sha1": "4feb8c4e07de6bb5301d23edb11803a8eea9fd2d",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "74c6a32e3b507a57cabb82747d8bb1299840fa61226a459afda65dff42f0df92",
+      "sha1": "ec16c3ccd060b96d45c06708543c1658bea06cf9",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L12/TRANS.HOG",
+      "size": 273400,
+      "sha256": "784fba97ea6cc676331ccbcbc67648a9307dec430d0ec4e2948463df53d9006f",
+      "sha1": "e25a540cef19812371fab05180c586ed45fc4c38",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/L13.EXE",
+      "size": 765952,
+      "sha256": "80b40ed3f6cd6783042269e82c7faaeb7bfe0e34c5edb36194ee22f3ff470c17",
+      "sha1": "871aab61b30a47130947e0f518409086896b147e",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80053E04",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000BA800"
+      }
+    },
+    {
+      "path": "L13/L13.VB",
+      "size": 433408,
+      "sha256": "307a0785e883d44d90cd6f1185bc0a84cfc254dea4edf79f70cc652fb4e52918",
+      "sha1": "21f259366d25e70c47259bd546ffc53a1605b685",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/L13.VH",
+      "size": 39968,
+      "sha256": "fd1c076c466e0a31d6e2a77c1a944e0dbe13ddf425da85faaf9e5b4bfd496a2d",
+      "sha1": "3a5e73e07bc0ff7c9f594cbade2ad5f66601902f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/L13EOL.STR",
+      "size": 6066176,
+      "sha256": "1d94c798f7af8d3e17c7be33a3cc0f6c171d57a98c5d06df190fd597b0485a2e",
+      "sha1": "38fcf569fe3cd2475795aa00659e976dac853735",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/L13SCR.STR",
+      "size": 51200,
+      "sha256": "7533c9b2e2a8aa8b91683cae1531fb785cdb09e0b16a18d5a90b515eef0ef7b2",
+      "sha1": "6e4261cc41138e502a0a0ec39a4be7f7e7894dc2",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/PERM.HOG",
+      "size": 372484,
+      "sha256": "7bff9e8f7686b57c994c5165edf2c3b507fc97b2c193879ca5a43cf010c9c505",
+      "sha1": "f508c2cc5f362e06eeb843d1c77f7885b375d9bb",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "fc92541bc9264e98fec47f1855be7eb07ebb5b515371126c6cd2808b69ca3416",
+      "sha1": "d8982a8e3a280b97287c9f7cfd82083bdff549a8",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L13/TRANS.HOG",
+      "size": 275724,
+      "sha256": "c13808dd8b851ecf2ac408ed1609ec2e4ffce5f1359c26af7c87c0ecd4fdae77",
+      "sha1": "dd875b807e6be6c5517ab4f1134b0562ef1b2e89",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/L14.EXE",
+      "size": 761856,
+      "sha256": "fb18e81e8cf632e1f0e0b0a8ad3554d487af6bae0583285f446c945d1e368553",
+      "sha1": "00e937dcfecf2c5e971395c24d099c2187be1835",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80052B4C",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B9800"
+      }
+    },
+    {
+      "path": "L14/L14.VB",
+      "size": 494208,
+      "sha256": "4102f6e526f86a874daf8c8a419041b49b906fc2319b528913bf94eec6849223",
+      "sha1": "2c22336ec064b6b7ab2fba8395fc40359c7c5210",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/L14.VH",
+      "size": 33312,
+      "sha256": "c45916209aae2da99773eae8509b34a343bac611801c78e87f37624d997efc8a",
+      "sha1": "238bb1c6b5408cb861dd2d6be38b0515e7f734bb",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/L14EOL.STR",
+      "size": 6313984,
+      "sha256": "05a4facab3456fbb79a2a2dcb49264525ce4e9fd128f8ef0ffc6d24a51c386bb",
+      "sha1": "8d4cfd5449ce218b03f838ff878743057a757bdd",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/L14SCR.STR",
+      "size": 51200,
+      "sha256": "3e0c33920b7c69b930747ff4d16adadf1e085e5e00985786a697ee2ec5bfaac0",
+      "sha1": "9c46ac8110717a7840825c170f62de34e05cb11b",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/PERM.HOG",
+      "size": 345988,
+      "sha256": "e0f6deb8cb358791312fcfde60302c935c4f751406d752783c815382ca9527cc",
+      "sha1": "9ce9dcca7b050e48b8f7ef0b4a9966461410d982",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "74c6a32e3b507a57cabb82747d8bb1299840fa61226a459afda65dff42f0df92",
+      "sha1": "ec16c3ccd060b96d45c06708543c1658bea06cf9",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L14/TRANS.HOG",
+      "size": 284220,
+      "sha256": "ecf5dfcd966b59a1d0c719520877f3de51a801c2b2adf417890257a078224cf4",
+      "sha1": "5fe4c96dc724da1e8d89443af64dda7f7a469ab2",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/L15.EXE",
+      "size": 757760,
+      "sha256": "c78c281dd1f2ee6b63c6ec6fdd963a23b10c90601fc1810deb54dde78c9e8dc1",
+      "sha1": "99cfde5a6ffc2a101864857695303cb57379e702",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80053CB4",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B8800"
+      }
+    },
+    {
+      "path": "L15/L15.VB",
+      "size": 433408,
+      "sha256": "307a0785e883d44d90cd6f1185bc0a84cfc254dea4edf79f70cc652fb4e52918",
+      "sha1": "21f259366d25e70c47259bd546ffc53a1605b685",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/L15.VH",
+      "size": 39968,
+      "sha256": "fd1c076c466e0a31d6e2a77c1a944e0dbe13ddf425da85faaf9e5b4bfd496a2d",
+      "sha1": "3a5e73e07bc0ff7c9f594cbade2ad5f66601902f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/L15EOL.STR",
+      "size": 9039872,
+      "sha256": "9f58bd938b3be4799b84c369d9fe1448dc83dbbc1b9f017eb072079e2ec9fb68",
+      "sha1": "fad1a6ccc6b126cddc245d7532e92a833c98a055",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/L15SCR.STR",
+      "size": 51200,
+      "sha256": "2e174e422ed7386064a94e7e51284a61978633924b908ee4092cfcae9adb186d",
+      "sha1": "01ee0bbef1e0f3edaf77da5b13d21a60aa80a15f",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/PERM.HOG",
+      "size": 306828,
+      "sha256": "dfa941c3deccd14ae25b0122dab246a9ccb2df6d5ffe8720129007239e4ad370",
+      "sha1": "038560110d048b998a90a42ca889bd06b910cdd7",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "fc92541bc9264e98fec47f1855be7eb07ebb5b515371126c6cd2808b69ca3416",
+      "sha1": "d8982a8e3a280b97287c9f7cfd82083bdff549a8",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L15/TRANS.HOG",
+      "size": 247160,
+      "sha256": "09b4b2101dda3f78a268aab621e66041c0c7abcc2b7cd5dda2019e00ef50368e",
+      "sha1": "971a15b47db9ebcfd1c861392ded78da347f251e",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/L16.EXE",
+      "size": 745472,
+      "sha256": "2da37809ad8089872055c5cd8627cb41b26ed5f5a1b87817b1cd4c89d2cc2bee",
+      "sha1": "2401497217baf5dac7da0f064049ff93de62da65",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80052F0C",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B5800"
+      }
+    },
+    {
+      "path": "L16/L16.VB",
+      "size": 407952,
+      "sha256": "c5019098300c728be3eb486ad5f3b94bdbf6712ae02e364ec0fcd760017e6fd2",
+      "sha1": "179d5f04bfa28204294083c4111218b50d149169",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/L16.VH",
+      "size": 28704,
+      "sha256": "169985fe4b5be54c3973696e60a6bde340f3088340f2f81a23dc1d0fed667ee3",
+      "sha1": "ede318e482ca10b91c5534fa3cff43f13bfece77",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/L16EOL.STR",
+      "size": 6170624,
+      "sha256": "c5ec08450037b86435f078ee849da7aacd0da8e56e3f89b9f0396565b1fe00d6",
+      "sha1": "d1721c91616281fcdbd4352cfd5e442a62e30668",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/L16SCR.STR",
+      "size": 51200,
+      "sha256": "2f1bb4e4ca993f9621bf7c67991a0d2f9665a60e145f66160a34b145eb409751",
+      "sha1": "fd321e97213e60dcbced7358d2490592e201c7b5",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/LOG.BAK",
+      "size": 21002,
+      "sha256": "f260e38631b8bc86706fcdcc941bbecaf31f51049157f4ff3edb1bda64d22b70",
+      "sha1": "ab453ed28f3c35141a830630edb5f9e8fb4653fe",
+      "format": "unresolved",
+      "format_evidence": "BAK-named auxiliary file; contents unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/PERM.HOG",
+      "size": 453484,
+      "sha256": "5a04570dc85d82ac738d000389808df2d4bc8d59794860eb94adc371e74e6f6d",
+      "sha1": "245a6480027be607daed19c21ad3a5bb431c881e",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "7cb86fa98ea632fdbfb634c696665f6e596f2c18a0d7608ed21132353feb1792",
+      "sha1": "d0cb8bad2e889b3b32b14e0329d6180adcf4846c",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L16/TRANS.HOG",
+      "size": 336164,
+      "sha256": "8bdb2676001ca376a8d1ed7fa42de1b55975afaa86d4a7fe58a09cd3cc8ea33c",
+      "sha1": "a33033f84cc29bf89802db28a4328f39ac9577e2",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/L17.EXE",
+      "size": 679936,
+      "sha256": "fd64d55e9125e6ec3537bf4c3c78d328e890d2bde55347ea2bed41a55a3e566b",
+      "sha1": "3383c698ce082e6cf9dec79fe5fac1fcc138d831",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004B874",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000A5800"
+      }
+    },
+    {
+      "path": "L17/L17.VB",
+      "size": 438816,
+      "sha256": "dd06c714cf888d2eec076c7bfeccbdc7ef27a7e49708c4b5fd55c138c73b05dc",
+      "sha1": "d5364e833fcad6780fcec4753cc6b73032ecdee3",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/L17.VH",
+      "size": 40480,
+      "sha256": "1ef352e8d9aa4e05bc5a39acba26951854ba4902cda391d78fc235754a4353cc",
+      "sha1": "d60073a8513b11e013d2de27a02a13a2edeb42b5",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/L17EOL.STR",
+      "size": 6170624,
+      "sha256": "c5ec08450037b86435f078ee849da7aacd0da8e56e3f89b9f0396565b1fe00d6",
+      "sha1": "d1721c91616281fcdbd4352cfd5e442a62e30668",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/L17SCR.STR",
+      "size": 51200,
+      "sha256": "37125c2dbda500965a16f65a0d44eea92278ba9ef8155d51c5c070fabfc70e28",
+      "sha1": "51e1884f41eac41ace11e7142c0dcebc7fc73f5e",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/PERM.HOG",
+      "size": 199760,
+      "sha256": "7ef8135a1c0a7c88b5bcf64e31e1f31c4da918573bace81f4a568da3a990ffc9",
+      "sha1": "d0ad8f7be3032ec681e70c239fb99df748cb2105",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "d84dfc9c894335d0bda7ad6d391b79542be2c6b3f454e84c4ced4a1c0cce5fbb",
+      "sha1": "5b53e79c8cdf2f8060de9358abf552efcbba8213",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L17/TRANS.HOG",
+      "size": 175044,
+      "sha256": "c16c9c2451535bb65e376e368bebfbe55fdf7a479f56ef805adb5e1ed1018d75",
+      "sha1": "ae65322957b492be9c28c67f588a0216dc1205a3",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/L18.EXE",
+      "size": 694272,
+      "sha256": "ce17d2c330ca244b4a905e43d280c918e5f52761af1c7ca478249b9fc18316b1",
+      "sha1": "e6bc5c0b434eef7bb757e2739302ee14073a3f1e",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004DAF4",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000A9000"
+      }
+    },
+    {
+      "path": "L18/L18.VB",
+      "size": 364384,
+      "sha256": "3a9d55f683a899ccb49689ef3ff128c98dd6dabb2d5473316ae5983740557cea",
+      "sha1": "23f3710553e107cb13de0437c32048423a176345",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/L18.VH",
+      "size": 39968,
+      "sha256": "10fab2727660dc93b9459aeab0c2a2fbd1ead6d5271bbe3e04dea9ec3155ee17",
+      "sha1": "fcaa4e9a3f3e46f3f190c9b092c5f4c352748bdb",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/L18EOL.STR",
+      "size": 6170624,
+      "sha256": "c5ec08450037b86435f078ee849da7aacd0da8e56e3f89b9f0396565b1fe00d6",
+      "sha1": "d1721c91616281fcdbd4352cfd5e442a62e30668",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/L18SCR.STR",
+      "size": 40960,
+      "sha256": "03fe26e5b0ac7ffd971857bdc2b301d0decb93199aa8933a39a168caf5f5b514",
+      "sha1": "a05ac6a4878b79e1d228ad8d51bc66e737958a62",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/LOG.BAK",
+      "size": 27696,
+      "sha256": "29add9562f0a80ec929ca68db356dd6dcb4fb471219853a4fdbdbfdeeb97657e",
+      "sha1": "cdbc395618156a36501efcfa0b8c414733a8802e",
+      "format": "unresolved",
+      "format_evidence": "BAK-named auxiliary file; contents unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/PERM.HOG",
+      "size": 364224,
+      "sha256": "920ba5ceefb857ac35508ebe6a63ad15635e8af32de301c8262e29621cc69d4f",
+      "sha1": "072d211c1df643c5c5763cb1cdb495bc16698d0e",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "fe9973579cf9d3000bce9a7e336ef104b8980006d8ccda7c2b0e6cf7de29b64b",
+      "sha1": "477856942386a4560fdcadd7d9bbe76f4cccb3f6",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L18/TRANS.HOG",
+      "size": 254076,
+      "sha256": "332570c42e94eeb45797fe34a14a2088a0dc3fe703ce7b99bdb4ee861fadeee5",
+      "sha1": "8815141dcccc538bbfea1fee92b45e31fdd5e2e4",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/L19.EXE",
+      "size": 722944,
+      "sha256": "041aaa58867cc0567807fc1bf28e275b8ff423d975733459978bd5072552694e",
+      "sha1": "0d78cdbfd45db5f276e80e78f1f02c8be0d90cd2",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004DDA8",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B0000"
+      }
+    },
+    {
+      "path": "L19/L19.VB",
+      "size": 360560,
+      "sha256": "ede3421f260e7859c0f8ef87ee5685e6558dd70a81a3515b949fa2e64a435135",
+      "sha1": "2bcee15dd0d529676df99deb9ae3735c763a04ac",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/L19.VH",
+      "size": 29216,
+      "sha256": "4b3596a7ec64b9ccb0f29563148faa71f942a621a45ff9e9cdaaa318eeeb406d",
+      "sha1": "eaff1dbf5fe448c561bcbab7a23859b10ced430c",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/L19EOL.STR",
+      "size": 6170624,
+      "sha256": "c5ec08450037b86435f078ee849da7aacd0da8e56e3f89b9f0396565b1fe00d6",
+      "sha1": "d1721c91616281fcdbd4352cfd5e442a62e30668",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/L19SCR.STR",
+      "size": 51200,
+      "sha256": "538aed35d4a0bfe55e58d82de245a80ec2d2611c4fe3b3e6e36d2083dce66639",
+      "sha1": "d0aadc64997dfcb6a1f300abe5d0f4903cb59529",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/PERM.HOG",
+      "size": 191604,
+      "sha256": "81ecd615c78ca6fb83768c300ab9742c711dab68f01e168d225c60eb170c8cce",
+      "sha1": "a665d14e4b2136434889d5fc4b8f8fe879c7f815",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "1bcdb0a07a1f7dceb37094ab9fd6b83650a4b9769aa067ea116131d783724656",
+      "sha1": "53f7827e0f1298a6887c1a309dc930f270868425",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L19/TRANS.HOG",
+      "size": 196712,
+      "sha256": "d1cd7d3d1acfd305f357787466f7d6dffe51415c0ac06c5ca26f253cc976f02f",
+      "sha1": "96f65181ceb14a5934298900aa27a865da9caa7b",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/L2.EXE",
+      "size": 751616,
+      "sha256": "47309aa56e83aae6ba4fb1ac0977dbb34de7ac67282f5fec968526717e00669a",
+      "sha1": "2787535810cf0fb18e98efd426d2d19119d29595",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80051184",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B7000"
+      }
+    },
+    {
+      "path": "L2/L2.VB",
+      "size": 441904,
+      "sha256": "94b3ee75e2085a44c11e8d59de79a510303ce884fb07870b531365f26fec7deb",
+      "sha1": "4d71e5e54f1c2d94c53a57805a753cae008ec2bb",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/L2.VH",
+      "size": 36896,
+      "sha256": "65622bf6960a87c0e9f9243972033d4e8462d08a71020f2743e29d57c5ed69bf",
+      "sha1": "7ef309f757dc19a0c9a390de2bb467c35fbda500",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/L2EOL.STR",
+      "size": 8212480,
+      "sha256": "c60f848bc8188fe588e6d58f5c03ecbdba53eb6671080b1728f08a920f1964c1",
+      "sha1": "dadb2d625c85d2c167b2f81bbcd92f3e4174c8e9",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/L2SCR.STR",
+      "size": 51200,
+      "sha256": "a97b48fa4905baf72feffd8742649b1bf779bc9d6040be743c05af1b74fc8068",
+      "sha1": "bc87548101ca2af8c6dab3def1a8f35d2f8e0139",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/PERM.HOG",
+      "size": 296412,
+      "sha256": "3da2b8b4539ce07ca202e0157d3a7d19466d595de3aeacb876914ba552e92b00",
+      "sha1": "4b7a6c121fb03c3a2f53426974ab9869aa1f57df",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "ff4dd31a8355f97cde932d0b78b74c276ec2d8ba3ad56406791bc7f6a165442e",
+      "sha1": "8649cbeac4a3ebffb1fd57fcf6599dc68330a1a3",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L2/TRANS.HOG",
+      "size": 281520,
+      "sha256": "9228ef527079998eccdb2f72848c5e2afe2cac930b9799608f70d4bbb694fcbd",
+      "sha1": "0331691d9355e143219e4f8e022dfd81fb9e0f81",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/L20.EXE",
+      "size": 749568,
+      "sha256": "dd4d50698723064a9d6223936b68a9a6ea7b405a89ef2e7127b09c0bc41b7296",
+      "sha1": "37da8c51030f92b355e73b33d60782f5e3732725",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x800510E0",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B6800"
+      }
+    },
+    {
+      "path": "L20/L20.VB",
+      "size": 446304,
+      "sha256": "9965a60e1df99e05ea7796101be90b0eedaa178fef7e0bac8fc0cc15b03a5040",
+      "sha1": "d241a891cc20b3cb06d9ea1c8d9269f42a97b6cd",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/L20.VH",
+      "size": 29728,
+      "sha256": "8a1da3b5af767f72fd7de18dc6300fa2511c9980d611f491dab02ea6af306950",
+      "sha1": "8a1a873bdf50d0a7a40d6777d1030f01a5647073",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/L20EOL.STR",
+      "size": 6144000,
+      "sha256": "9d2343140548449fe9dc01da63cec08e6895a9a7a3bd7649f78f6dba65756701",
+      "sha1": "ab17a7777d3d5631621dac6fe9294752c5792b30",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/L20SCR.STR",
+      "size": 51200,
+      "sha256": "a5875a290fd0329d6a77a7c6087fcce94e648d41028373cfbcf24b27c1a67da6",
+      "sha1": "bbd423a0e1bdb29e13160d4bd5aa3c6a5a54c5ae",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/PERM.HOG",
+      "size": 326736,
+      "sha256": "8c948cfd66a383e1cc3f319519fe74837b1db0c3c34b958972e4628c564168f7",
+      "sha1": "15c2d7d24150e941ec746ccdcf4ccecfa4ffd83c",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "1bcdb0a07a1f7dceb37094ab9fd6b83650a4b9769aa067ea116131d783724656",
+      "sha1": "53f7827e0f1298a6887c1a309dc930f270868425",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L20/TRANS.HOG",
+      "size": 268444,
+      "sha256": "ab5cae6434a00098910d47af7b467a492cbe70a9ac70d10f20fa75b18467e4b3",
+      "sha1": "fd217b9d14858898e68de0d7fdb60967d8e7f084",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/L4.EXE",
+      "size": 743424,
+      "sha256": "f0ece2d1034138cb41fdd9ab48a8a8a424393ba3b3d599e4ca419d1ca015f36c",
+      "sha1": "f183a03127b22d58f92a2417d463f75590a6d86c",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004F618",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B5000"
+      }
+    },
+    {
+      "path": "L4/L4.VB",
+      "size": 460144,
+      "sha256": "3372f3e40c658d8f741f1ebd91f1239a7663aef5567d741057049405bb8336e2",
+      "sha1": "62129f7c22afcc7e2bd1342bad8a6eddc8d927aa",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/L4.VH",
+      "size": 31264,
+      "sha256": "bf5ea916e85e463dad0e657587682dcb78728601c67cf99b65e24ffecf3b6ad7",
+      "sha1": "d90a644d1e50ec7475da8ebb7c04e40c3189a589",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/L4EOL.STR",
+      "size": 6866944,
+      "sha256": "8d333609be6e29c23ce94b17736b8b53ed1c31e45d8579f1ba0ae1b0baff8e21",
+      "sha1": "fa4f2629fc1d289972a5f98f691ef6f583f2755a",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/L4SCR.STR",
+      "size": 51200,
+      "sha256": "1d2e4727c0ccf64d3dc81be149ef251f5797384b446026ce933a8b58ae026a9f",
+      "sha1": "7fe5a7cee3c603e18b35ab0ab9866e9f3d4ffb2e",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/PERM.HOG",
+      "size": 296364,
+      "sha256": "f01a37b122ef777840ac2d18a335dd46f742ba0a5965b1d9df43d314cd26f5b7",
+      "sha1": "9f1e8600b25efffd80918203f06695294ef5b239",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "08de2402fd9bb546cdfa8b7fe9c1e28c4d39ba689494dd00226a922b87b93bf2",
+      "sha1": "0dbab732eabe3461e4efba7cd0938acd6df08957",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L4/TRANS.HOG",
+      "size": 348296,
+      "sha256": "2fd050a751be95f3b17c99d421bd543ec7010f29ed615e2364e53a6107388621",
+      "sha1": "7ae96bf22d93eb91cb09008e956893590c15c315",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/L5.EXE",
+      "size": 751616,
+      "sha256": "1ad58443a13af25bb5d97ec5d8e26f3b2e9e4df91cb960f58a239d673ac16b1b",
+      "sha1": "b3196fcd5889ac4c95c43a0718f4408288a7fe40",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80050670",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B7000"
+      }
+    },
+    {
+      "path": "L5/L5.VB",
+      "size": 449952,
+      "sha256": "c13196271769259bfeff8978141d374ab23de52af38be4897d538830c48028f6",
+      "sha1": "6b0706622ee26ab120394e3309f79dafe2c64af3",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/L5.VH",
+      "size": 28192,
+      "sha256": "1a6fc45f48476b729d8434700bc83816b9a3c68c68752cd6de0c90b0d0918783",
+      "sha1": "204c37ea9428671af26d1592bfb984bedca13e4f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/L5EOL.STR",
+      "size": 8998912,
+      "sha256": "f0f78d0663550ace31fde93d12cdd3a335319541ec0c1cebd5610ca097bdd486",
+      "sha1": "f08ba31ff2ae815af363dd344048f8094d14e951",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/L5SCR.STR",
+      "size": 51200,
+      "sha256": "76d1f5952b854afa1744a4c7761925b4b6a6d47b71695624075abafbbed763c9",
+      "sha1": "bc5886bb52ed425b6c19991fa272744746a291f6",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/PERM.HOG",
+      "size": 238764,
+      "sha256": "59e247315f81997607348e8a849ca4b8abb74a953e0be4e1cca0aab7a9f6cf9e",
+      "sha1": "57e5de3f77a9f5a502af2f342b11eebcccd47913",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "6dbddbba63e4cc2a9418cd1dcfc14230412064e68aae0b3a4669eb531b6ed0f4",
+      "sha1": "e75cf3ab7ec1f4e03f91f42e62c4cf6423ea5aaf",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L5/TRANS.HOG",
+      "size": 269240,
+      "sha256": "3d90be543f1b83e7467f5a51dc6b9b6c7a01e762273bf1df4be05b40e0d1e7bb",
+      "sha1": "ed389956a960ba3215d7d7e2cf9202555a8f77df",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/L6.EXE",
+      "size": 733184,
+      "sha256": "1a0efe40c4c79536d690e5a9e488c3b280fbcce50e8db43df3cdbaf5c8797b36",
+      "sha1": "80efaa6a7e2edd02905cfa5afd90edf1162cb95b",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004EF60",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B2800"
+      }
+    },
+    {
+      "path": "L6/L6.VB",
+      "size": 460144,
+      "sha256": "3372f3e40c658d8f741f1ebd91f1239a7663aef5567d741057049405bb8336e2",
+      "sha1": "62129f7c22afcc7e2bd1342bad8a6eddc8d927aa",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/L6.VH",
+      "size": 31264,
+      "sha256": "bf5ea916e85e463dad0e657587682dcb78728601c67cf99b65e24ffecf3b6ad7",
+      "sha1": "d90a644d1e50ec7475da8ebb7c04e40c3189a589",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/L6EOL.STR",
+      "size": 7419904,
+      "sha256": "ae1ceb1f0a4fa2b08e8efb67f4f6eb03d88350cf57811db85a682e84b0037028",
+      "sha1": "5738e81f336e3770b1c2c169cfbae727a5838b40",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/L6SCR.STR",
+      "size": 51200,
+      "sha256": "94d6453f8588ce14faf7d05cc8c9a3f3815c2db835d787f9ce5b57840c6154b3",
+      "sha1": "760ca818bddfb27bf40a5a1deafb4cad2b4bec45",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/PERM.HOG",
+      "size": 293272,
+      "sha256": "1287bbacf70fb60c52ccfe30abcd72236a7bf733d400252fe360075b296d2bd3",
+      "sha1": "2b47e108b940c8470434d4249bc3416e07cd0255",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "08de2402fd9bb546cdfa8b7fe9c1e28c4d39ba689494dd00226a922b87b93bf2",
+      "sha1": "0dbab732eabe3461e4efba7cd0938acd6df08957",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L6/TRANS.HOG",
+      "size": 326412,
+      "sha256": "f1b2a2a9149aa8f8563ff982d258abdd1af1c9e66d3c8514674728a659f42c9d",
+      "sha1": "15edc2d574b95fba04755cfc66e293e4b3bbba2a",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/L7.EXE",
+      "size": 770048,
+      "sha256": "87f0c68e430237ef12162ced17a0283e932b42d9e626306225d27a1a92912f2a",
+      "sha1": "c22c01eead72be7185158f396fff6198a94f151b",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80053BA4",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000BB800"
+      }
+    },
+    {
+      "path": "L7/L7.VB",
+      "size": 449952,
+      "sha256": "c13196271769259bfeff8978141d374ab23de52af38be4897d538830c48028f6",
+      "sha1": "6b0706622ee26ab120394e3309f79dafe2c64af3",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/L7.VH",
+      "size": 28192,
+      "sha256": "1a6fc45f48476b729d8434700bc83816b9a3c68c68752cd6de0c90b0d0918783",
+      "sha1": "204c37ea9428671af26d1592bfb984bedca13e4f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/L7EOL.STR",
+      "size": 6512640,
+      "sha256": "4c52ba7095fa1315e0b2cd2754f95791beac2b511d6b2e4fbd25e63f66b39199",
+      "sha1": "680b5b6653194ae0993bd4f0394fd88a0e862ef1",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/L7SCR.STR",
+      "size": 51200,
+      "sha256": "fa8ed9726c322a5b8897e4b7c1432ac124bbedd93b885052a7babac34693ef04",
+      "sha1": "daa213db9b83246ceb18f997fe133ad7cbeb2eaf",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/PERM.HOG",
+      "size": 286088,
+      "sha256": "0770b0392fe27da22eaefedbb60c9ed5c478dd9edb37716c1bfd8a449569fe91",
+      "sha1": "d8116fa55b8b0afc6bcdd79da5019a5ede4cd94f",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "08de2402fd9bb546cdfa8b7fe9c1e28c4d39ba689494dd00226a922b87b93bf2",
+      "sha1": "0dbab732eabe3461e4efba7cd0938acd6df08957",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L7/TRANS.HOG",
+      "size": 285920,
+      "sha256": "d6625dca98b706b86b68058308aee7a979812eec0b582939750195578bc74183",
+      "sha1": "14fbaa6709d1df08489bf74e2ec9c5fad5ed0c8e",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/L8.EXE",
+      "size": 731136,
+      "sha256": "ace2fef99cb55be4fea985a5383760e87f27c754e1b2a8676271e446f64e9ce7",
+      "sha1": "2941fa21d0aff80ffd68e87892afd1fed0ad801c",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x8004EC34",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B2000"
+      }
+    },
+    {
+      "path": "L8/L8.VB",
+      "size": 460144,
+      "sha256": "3372f3e40c658d8f741f1ebd91f1239a7663aef5567d741057049405bb8336e2",
+      "sha1": "62129f7c22afcc7e2bd1342bad8a6eddc8d927aa",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/L8.VH",
+      "size": 31264,
+      "sha256": "bf5ea916e85e463dad0e657587682dcb78728601c67cf99b65e24ffecf3b6ad7",
+      "sha1": "d90a644d1e50ec7475da8ebb7c04e40c3189a589",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/L8EOL.STR",
+      "size": 8220672,
+      "sha256": "a83d0add176b2455cefa2ea4425a62b9e0e7cc08cf4206d010f04c5241603716",
+      "sha1": "c4f7c8d5e44bff18db88e79263a0145dcf3de14d",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/L8SCR.STR",
+      "size": 51200,
+      "sha256": "381fd1dff735743eaf27521f04530a5eaf97516eb41082ae3b9568aae3cfd86d",
+      "sha1": "80468787fc1ffdf5a901b537c753038204178a47",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/PERM.HOG",
+      "size": 289800,
+      "sha256": "c1a5493548cd678a733b3d9d3ebb1b9967793a9e8692835d002f1bcf87c33f15",
+      "sha1": "4f18bca94c4ead0925f865a711d94119da1a10e5",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "08de2402fd9bb546cdfa8b7fe9c1e28c4d39ba689494dd00226a922b87b93bf2",
+      "sha1": "0dbab732eabe3461e4efba7cd0938acd6df08957",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L8/TRANS.HOG",
+      "size": 326556,
+      "sha256": "237b852af0b0853985299bc90775c8eca1862658d537224b87d8b96d9c8167c8",
+      "sha1": "e8403de861dc4daa51688b604510a5c0169a5264",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/L9.EXE",
+      "size": 761856,
+      "sha256": "dfc8fd7d8cbc09d9904c34bda208e53847ad977f00f4c52b26165f7037022d3c",
+      "sha1": "cfddd479cb23e7ecd56d85a56ebe805e4e457264",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x800535A0",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x000B9800"
+      }
+    },
+    {
+      "path": "L9/L9.VB",
+      "size": 449952,
+      "sha256": "c13196271769259bfeff8978141d374ab23de52af38be4897d538830c48028f6",
+      "sha1": "6b0706622ee26ab120394e3309f79dafe2c64af3",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/L9.VH",
+      "size": 28192,
+      "sha256": "1a6fc45f48476b729d8434700bc83816b9a3c68c68752cd6de0c90b0d0918783",
+      "sha1": "204c37ea9428671af26d1592bfb984bedca13e4f",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/L9EOL.STR",
+      "size": 9175040,
+      "sha256": "9f9cccef5ccc72faa4b7b50d4f00f96bcad2a7184cbf17abd9a130a9d5150240",
+      "sha1": "5234f3b586d8a27cf0c5b8ff845c0fc0d9867fa2",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/L9SCR.STR",
+      "size": 51200,
+      "sha256": "fb7eb5514d9245382a84a60faf203ee5eeb079cae97b65cc4ecae7df8975afa4",
+      "sha1": "1c0fc731612357dd56f391def5daa17a11d5f7b1",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/PERM.HOG",
+      "size": 303660,
+      "sha256": "405906e3bb58a222ccfdb1731dd8fdf1801329928d310d0258ed1ae9ee4aa421",
+      "sha1": "5527e4341971e162632615631bbb93b99698f081",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/SCRIM.TIM",
+      "size": 66080,
+      "sha256": "08de2402fd9bb546cdfa8b7fe9c1e28c4d39ba689494dd00226a922b87b93bf2",
+      "sha1": "0dbab732eabe3461e4efba7cd0938acd6df08957",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "L9/TRANS.HOG",
+      "size": 280156,
+      "sha256": "a910640b59416a628b32d317243e4182e2a8a50516a4ab7d395f5721c0a53958",
+      "sha1": "b0487cb3180fb0a182a07dcd0848162a6214eac3",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU.EXE",
+      "size": 495616,
+      "sha256": "e3620fd866a4eb052e115218fcce0fd7b889551ed309aa0516dea826cd3b7444",
+      "sha1": "6db217723a5b671bb04796411265e067c820da09",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80028F48",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x00078800"
+      }
+    },
+    {
+      "path": "MENU/2PLAY1.DUM",
+      "size": 51200,
+      "sha256": "905fe907d8dee45b6f6998bbcc25d529a84996e88915adf04a7daa182e40e2d6",
+      "sha1": "a18d7a4e492b14643df8378f6e09b860ba905288",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/2PLAY2.DUM",
+      "size": 51200,
+      "sha256": "905fe907d8dee45b6f6998bbcc25d529a84996e88915adf04a7daa182e40e2d6",
+      "sha1": "a18d7a4e492b14643df8378f6e09b860ba905288",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/2PLAY3.DUM",
+      "size": 51200,
+      "sha256": "905fe907d8dee45b6f6998bbcc25d529a84996e88915adf04a7daa182e40e2d6",
+      "sha1": "a18d7a4e492b14643df8378f6e09b860ba905288",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/2PLAYSCR.STR",
+      "size": 51200,
+      "sha256": "905fe907d8dee45b6f6998bbcc25d529a84996e88915adf04a7daa182e40e2d6",
+      "sha1": "a18d7a4e492b14643df8378f6e09b860ba905288",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/BLU1.DUM",
+      "size": 51200,
+      "sha256": "b4bf0e3cf2a2fbd9977e08cac05998995fb3c349795767982ad5d97209bb19f4",
+      "sha1": "f874dad5c7b75ba91fcc49b67c16c50c9936f991",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/BLU2.DUM",
+      "size": 51200,
+      "sha256": "b4bf0e3cf2a2fbd9977e08cac05998995fb3c349795767982ad5d97209bb19f4",
+      "sha1": "f874dad5c7b75ba91fcc49b67c16c50c9936f991",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/BLU3.DUM",
+      "size": 51200,
+      "sha256": "b4bf0e3cf2a2fbd9977e08cac05998995fb3c349795767982ad5d97209bb19f4",
+      "sha1": "f874dad5c7b75ba91fcc49b67c16c50c9936f991",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/BLUPRINT.STR",
+      "size": 51200,
+      "sha256": "b4bf0e3cf2a2fbd9977e08cac05998995fb3c349795767982ad5d97209bb19f4",
+      "sha1": "f874dad5c7b75ba91fcc49b67c16c50c9936f991",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CONTDRIV.STR",
+      "size": 51200,
+      "sha256": "6d454f4ffd763fe05ae8ec804b5388383bd8fa510bacd9db08cfd4643a40ccbb",
+      "sha1": "648b60a8fc75b9c6e7e45dfe1d3283a8444fd9e4",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CONTDUCK.STR",
+      "size": 51200,
+      "sha256": "f5b7916a93e853e9df425ef09bc597f61bdc3b00ee1eb549950c18470d333f7e",
+      "sha1": "48ec129cc69934d3c0cb2577bafe412945848505",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CONTOLD.STR",
+      "size": 51200,
+      "sha256": "ae392768c34bcccce8e0641691ad8fb594813630a821ecce913c92de2cf8990f",
+      "sha1": "18986e245879120bd637c712d2b5a0a31f7bf53a",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CONTSTAN.STR",
+      "size": 51200,
+      "sha256": "df25d0efba866efc51c66233f0ee19cfe0f5475cb3106047ff930894e8268d3a",
+      "sha1": "4013777c6ab4bc923fed2476bf0bbbce084e2548",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CREDIT1.STR",
+      "size": 51200,
+      "sha256": "d38bd84a07c935799e0861b2f98400769b383995149cad2a7e5e8c82c25eb55a",
+      "sha1": "8f788757df9a3080088ef7950d80ecb14a7b8dc9",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CREDIT2.STR",
+      "size": 51200,
+      "sha256": "004372dbcc73e127f99548be93afabec459d596381546fa3bf3b74d87957ad20",
+      "sha1": "6d45d43d4b1b819632da2df601669e079d1f2c20",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/CREDIT3.STR",
+      "size": 51200,
+      "sha256": "f30be7291e18cfa7de3178308b743e686250afeb9c3d9ef6b329039c511341d0",
+      "sha1": "86642f88e48676fbb1cce45171be3dcaefe4a9b7",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LDSV1.DUM",
+      "size": 51200,
+      "sha256": "d559a2a13bd20516a9bd936c2454338c091e3bc32180a294aae330ac8ed5ad84",
+      "sha1": "9c1d1f0c44594e01469c9495bb7adb57f96432e9",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LDSV2.DUM",
+      "size": 51200,
+      "sha256": "d559a2a13bd20516a9bd936c2454338c091e3bc32180a294aae330ac8ed5ad84",
+      "sha1": "9c1d1f0c44594e01469c9495bb7adb57f96432e9",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LDSV3.DUM",
+      "size": 51200,
+      "sha256": "d559a2a13bd20516a9bd936c2454338c091e3bc32180a294aae330ac8ed5ad84",
+      "sha1": "9c1d1f0c44594e01469c9495bb7adb57f96432e9",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LDSVSCR.STR",
+      "size": 51200,
+      "sha256": "d559a2a13bd20516a9bd936c2454338c091e3bc32180a294aae330ac8ed5ad84",
+      "sha1": "9c1d1f0c44594e01469c9495bb7adb57f96432e9",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LEVSEL1.DUM",
+      "size": 51200,
+      "sha256": "998f41a5a7671c38c0a354d4bf40419101b1494cf5cb24e87caf510985a33a05",
+      "sha1": "763be40c0c8f5db9d823deddb234f92fe6b85219",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LEVSEL2.DUM",
+      "size": 51200,
+      "sha256": "998f41a5a7671c38c0a354d4bf40419101b1494cf5cb24e87caf510985a33a05",
+      "sha1": "763be40c0c8f5db9d823deddb234f92fe6b85219",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LEVSEL3.DUM",
+      "size": 51200,
+      "sha256": "998f41a5a7671c38c0a354d4bf40419101b1494cf5cb24e87caf510985a33a05",
+      "sha1": "763be40c0c8f5db9d823deddb234f92fe6b85219",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/LEVSELEK.STR",
+      "size": 51200,
+      "sha256": "998f41a5a7671c38c0a354d4bf40419101b1494cf5cb24e87caf510985a33a05",
+      "sha1": "763be40c0c8f5db9d823deddb234f92fe6b85219",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MENU.SEP",
+      "size": 7393,
+      "sha256": "58bf0172500fab57b848926aaa0998e1a09b31ab4e89d4d80201517e3ddcbc3d",
+      "sha1": "86c8191102e95205446c00b136f43303dde4a109",
+      "format": "unresolved",
+      "format_evidence": "SEP-named sequence data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MENU.VB",
+      "size": 154176,
+      "sha256": "01938319f80d5fcfc38ec7ee4fefb4ebd25686311d6e0d42e18ac3688576fd91",
+      "sha1": "e49a34cb23de9d78f542cb657964545992c5189c",
+      "format": "unresolved",
+      "format_evidence": "VB-named sound-bank sample data; inferred from extension",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MENU.VH",
+      "size": 15392,
+      "sha256": "7d9c5196b0652fd1c4746bd49f6f92ead1e92d1f418fe41f3e99c721ab5adc55",
+      "sha1": "9bbea8927c9ef61f0015fa9f26a1c7efbd32b684",
+      "format": "vab_header_candidate",
+      "format_evidence": "PS1 VAB header magic; sound bank not decoded",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MHOG1.HOG",
+      "size": 390228,
+      "sha256": "91b62c37310c31cb060bc9a50979a73e1a304357d614eae735e05ef5ad707a70",
+      "sha1": "0731d85885dd86eee558a2453f2c7683b53ab5c0",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MHOG2.HOG",
+      "size": 514076,
+      "sha256": "48a94d968f4a8f61ced905b99ed6605600856dbc6641ba23f24cbc68e1baa899",
+      "sha1": "97d761d0246b082b9f4f605737b1e81daba37249",
+      "format": "unresolved",
+      "format_evidence": "HOG-named container; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MICON1.TIM",
+      "size": 192,
+      "sha256": "25739bd8c1259ee33bad836c47d2c07d432631a46701f2e411704d2433c1a506",
+      "sha1": "24449ff48048c21bf81d0fd15411a1a8e7beaa97",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MICON2.TIM",
+      "size": 192,
+      "sha256": "571d47fe37b6c7b32dd18516d1b88d90d6f53a1be5736bd193c27e3915b43cc9",
+      "sha1": "12f6f464a4d76b1428f7a11d91e3cf35a53faa53",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/MICON3.TIM",
+      "size": 192,
+      "sha256": "94242eb621800f24f1d29b70c09b664a3197325e882a9ca2d3fb88b81f4b50d8",
+      "sha1": "08b9683dae1bbd060dc373e9212c3d25385e80b4",
+      "format": "tim_candidate",
+      "format_evidence": "PS1 TIM magic; image blocks not validated",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MENU/OPT1.DUM",
+      "size": 51200,
+      "sha256": "1a65f8d11ff2ddfedfa0d7d452d02436e73dad3716e341b141e560cf8a4a844e",
+      "sha1": "a5a468dae9d2556755857e1bcd2ca9479d1b7fe8",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/ACCOLADE.STR",
+      "size": 4159488,
+      "sha256": "5171e970bcca4722d3afa662e3d647b33e36e6aa6d18342ac404bc8f3f631793",
+      "sha1": "e36204d6933998c2bf12d1043c761a26d6587ea5",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/BUBQUIT.STR",
+      "size": 30720,
+      "sha256": "6ccca0cde7d53804a16b125cfa17924ecb34da2a0ecd44583c4c8801fb6713f4",
+      "sha1": "0d5964b3671530ec4ad2e7a9b98e27bd971dc578",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/BUBQUIT1.DUM",
+      "size": 30720,
+      "sha256": "6ccca0cde7d53804a16b125cfa17924ecb34da2a0ecd44583c4c8801fb6713f4",
+      "sha1": "0d5964b3671530ec4ad2e7a9b98e27bd971dc578",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/BUBQUIT2.DUM",
+      "size": 30720,
+      "sha256": "6ccca0cde7d53804a16b125cfa17924ecb34da2a0ecd44583c4c8801fb6713f4",
+      "sha1": "0d5964b3671530ec4ad2e7a9b98e27bd971dc578",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/CDLOAD.STR",
+      "size": 51200,
+      "sha256": "daa8237ee628e0e499bb2220555a290dc19a268ce0648bc24ffa9accce353608",
+      "sha1": "e894fe504584c06b7f4eec71ede622bf46aec6df",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/CDLOAD1.DUM",
+      "size": 51200,
+      "sha256": "daa8237ee628e0e499bb2220555a290dc19a268ce0648bc24ffa9accce353608",
+      "sha1": "e894fe504584c06b7f4eec71ede622bf46aec6df",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/CDLOAD2.DUM",
+      "size": 51200,
+      "sha256": "daa8237ee628e0e499bb2220555a290dc19a268ce0648bc24ffa9accce353608",
+      "sha1": "e894fe504584c06b7f4eec71ede622bf46aec6df",
+      "format": "unresolved",
+      "format_evidence": "DUM-named menu resource; internal format unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/CHAPLIN.STR",
+      "size": 1669120,
+      "sha256": "58849be98a9b12fc355f00cc2a774c76876013c516a4aef4bf5b00730e957d9e",
+      "sha1": "a212e48be70cfed73d01ca111dd963326fda55ed",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/DROWN.STR",
+      "size": 2275328,
+      "sha256": "ab246ac92d0b86e68e8088a2b0d0d1e543a4344dd18cc9516f984762e7b9bd2e",
+      "sha1": "98f4a42ae20fb06db4deedc4e01878a5d4526fd9",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/EIDETIC.STR",
+      "size": 3092480,
+      "sha256": "7f4ff1ea264e1a21239132a3b69598084d2262f6d208b72dde44f69a3c6c740c",
+      "sha1": "bc27ccc1fc3bebd6e08d374885c2a759aa115350",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/ELECTRIC.STR",
+      "size": 2226176,
+      "sha256": "62ba15db1b03111710a6244439bf1372c7e00c26318b8dc5a3b70ed793ba125e",
+      "sha1": "2a2d09a0e0b182c86b1611ccc133611fb18b35c8",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/EXPLODE.STR",
+      "size": 2193408,
+      "sha256": "7146fb2f09579ee8f8d3c4a5fb2fc772f6e626ceddb42eb1c770ab65ba599012",
+      "sha1": "4e196c5734dd492f051ce335680e7929a64799da",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/FACEFALL.STR",
+      "size": 1228800,
+      "sha256": "862308035565c643634e979315e1878fcb5753f2dc1c4e8eb23737633003b8c1",
+      "sha1": "436b4c80d825d86a2d9efc630e5d786b856a2679",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/FALLING.STR",
+      "size": 2603008,
+      "sha256": "e15b78ccf85a2c50a7e8dd40aee5c276bee9d7bf150d6d312c112ea67ce72834",
+      "sha1": "a5cbe1d2ae60f0ee4236cc9529981b0ab72ab85e",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/FISHBOWL.STR",
+      "size": 6150144,
+      "sha256": "a81c3cb25ca65225e708d32c624af6737ef729fdfc6e386aeecd6980eb2a4306",
+      "sha1": "c4223eb18d52a7aaec721dad8b805404a6f6cc66",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/INTRO.STR",
+      "size": 62447616,
+      "sha256": "c15e138f1eeb579eed09da0ba36a0f9f2982a2638815e8e0aaf7febb6eec8b39",
+      "sha1": "27c21aecc0b9ab3ca7c6deea1392542e5c6fb12d",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/JUGGLE.STR",
+      "size": 6723584,
+      "sha256": "81af2ee18466588c553c8b9756ed1f1d6465ee4ce05eb48253551ce24a4a9ef7",
+      "sha1": "cfe8685993e5ddbdccc95b9f354861e66fc3f892",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/LOG.BAK",
+      "size": 21217,
+      "sha256": "1c9c19fd6af065ce62c208ea61b9ef11f93f53ee7964de5989668c75d4e841bf",
+      "sha1": "d3382b8cb6323d36fcb6736ad5974b3a30e78175",
+      "format": "unresolved",
+      "format_evidence": "BAK-named auxiliary file; contents unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/OUTRO1.STR",
+      "size": 52508672,
+      "sha256": "fb813a3c4c7107d5f938dc30a2874cbb6c674024c6449b59c2ed87fdb31b4a00",
+      "sha1": "588e93d7784110a67715213ec07788b064bfe311",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/OUTRO2.STR",
+      "size": 46899200,
+      "sha256": "4a969b17d4e020a66ad77118770d927b771e74da6b3e92f1bf35d24dadc140da",
+      "sha1": "7a13e630a8184d9d37a189d4be21e2f23cbd5438",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/PADDLE.STR",
+      "size": 4530176,
+      "sha256": "c01da6c65b769647e9740774dc8d82a09887907f1c0b87d80f53f9a0b4f4342c",
+      "sha1": "80f162842a4c235901661caae92549b9d385379e",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/PUDDLED.STR",
+      "size": 1679360,
+      "sha256": "d858458e034e6cf70c117ac459e60e36e794e654810020674a0e7cc05641c5b5",
+      "sha1": "c7b40a72e4bb7fcaaf3ce10b949f90d1d5677c7f",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/PUNCTURE.STR",
+      "size": 2340864,
+      "sha256": "cf01f4b03781bd1a19231f0652c63ea10fb4bf493f3f6fb195e5739825b6c588",
+      "sha1": "93e15594515eabe12bee1fc545a121bb0b306702",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/RAIN.STR",
+      "size": 6150144,
+      "sha256": "354dc3e19018b5f181aa7ba184b962828ee830ae06a2aeb3eb4d7ad136eba728",
+      "sha1": "b9638f97157b893e846b5133e8dff6d6279afd64",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/REMOTE.STR",
+      "size": 6000640,
+      "sha256": "0bb12cb4df47b4875aff9c52b69e1bf3777c3efa8a172123c411eabe1a41d912",
+      "sha1": "e051b3ac3d7a84a5e977f09b6ef3876f7c08fa25",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/ROCKET.STR",
+      "size": 3522560,
+      "sha256": "2037bad3b4c0ccbf7f464dad1cae5ec540b12b7c46e8a6170f4496f4c3a71baa",
+      "sha1": "290c505e76fcd4fdf3fd2050adfa32ff39e7002c",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/SLIMED.STR",
+      "size": 2291712,
+      "sha256": "56e9958af38f5497f3755129465b4eb8807a2ffddd66b0853fbc3a0d48f60124",
+      "sha1": "530612d338db3d09cf9c5bc7a28ac487664b2fbe",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/SPIN.STR",
+      "size": 2013184,
+      "sha256": "2fd61f4b60405e27eed9b60c94276d1722a655fbafc1ff4f3fb795b2fe0ac83c",
+      "sha1": "f84108f04423adb6b82b17ce2b973a820d49bf50",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/TOPHAT.STR",
+      "size": 6498304,
+      "sha256": "d879dc4326515f93c86d0de45c6a6e6a871e19e603607aa3dc34a2c5c09e1767",
+      "sha1": "2c51c7de55461c33697eee74b63fadd39fa204fc",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/UFO.STR",
+      "size": 2254848,
+      "sha256": "f4adb2d6dfdeca44edc89a14691db7a6fa7757545434b348634774fc91086d4b",
+      "sha1": "bb62c1452c99eeef2e5537aee13e333b9019029f",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/UWDEATH1.STR",
+      "size": 2129920,
+      "sha256": "cc897d071066cc5b25b3ca9f1fa74ae571d5e2fd5cdd0f5ce8c89540db0848d5",
+      "sha1": "9e311c25cf290faaa29f6ab5d065746c31472ba2",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "MOVIES/UWDEATH2.STR",
+      "size": 1699840,
+      "sha256": "9d5e216d29c6f187478997fc1d1b8f65a2dce7b4900072a742267b1e81e0fa4e",
+      "sha1": "8e6c99c5b6f7adfd5babd605d9cb085b44c9c094",
+      "format": "unresolved",
+      "format_evidence": "STR-named screen or stream resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "SLUS_001.10",
+      "size": 495616,
+      "sha256": "604467ef7317f98b465e75e232d51ba4cd4b1b98ca9e09f27fb95c9e707a3993",
+      "sha1": "bbae8855270a9b8f8c5ab89fe775e949ab88e0e8",
+      "format": "psx_executable",
+      "format_evidence": "Validated PS-X EXE header",
+      "psx_magic_offsets": [
+        0
+      ],
+      "executable": {
+        "entry_point": "0x80028F5C",
+        "global_pointer": "0x00000000",
+        "load_address": "0x80010000",
+        "payload_size": "0x00078800"
+      }
+    },
+    {
+      "path": "SYSTEM.CNF",
+      "size": 68,
+      "sha256": "9efadebfdeaa0dc7b438f124befafe5c5144c31881a4ce2651219af0ea8a58b4",
+      "sha1": "8430b50209a82581236f1ba40de101b7b92bc5d1",
+      "format": "boot_configuration",
+      "format_evidence": "PlayStation boot configuration filename",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP0.XA",
+      "size": 458752,
+      "sha256": "ddca1b490e5346dbf981eca3b5e972feb18ccf4e9a4d36e9b15c41412bf841ae",
+      "sha1": "99194cfea6c869d0cf21e3c8dd9bf31137f08ca9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP1.XA",
+      "size": 688128,
+      "sha256": "6c34f8fb3d97d5b347f5f7d4ddaa3334fd87bdd16508b3d91bdc486b65d2d651",
+      "sha1": "0feb50fe13f470a7226716656b27293de6f98906",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP10.XA",
+      "size": 753664,
+      "sha256": "455d0cad64c87fa1ba00051e2080499659dd10f1955eaf6c0de555ef0b01c063",
+      "sha1": "c12364331221e2a1daf7ce1a7e1854a5a229c5cd",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP11.XA",
+      "size": 425984,
+      "sha256": "2f548536e9fa4916e238466a0c6c9186f13b39f16a7de0bb30d630c8f44b09aa",
+      "sha1": "535edf6550a8c41180f602c770636c85c9751b59",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP12.XA",
+      "size": 393216,
+      "sha256": "1f2a0d724071b51250d9f9975abdbddd676a97f28d6b303b0395dcffd7bf0c86",
+      "sha1": "4db0da34e362bb6f120d181a10826dec3b214cae",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP13.XA",
+      "size": 983040,
+      "sha256": "2b6e1c9628347f215ff27dcfd0c6666f2219b6192f141e4e70c0eb8cbbd8f84b",
+      "sha1": "40afd7963b7a41e54e992379c1bc9f72ca5b5574",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP14.XA",
+      "size": 851968,
+      "sha256": "8abbf55c79d9d83576d6725ec40fc97851bf943163522690aa466b220f7f50a8",
+      "sha1": "3797d857274501acca921e6aa7448926e6f0ce99",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP15.XA",
+      "size": 786432,
+      "sha256": "d4a0a51fb4df1d2e88a53b37c6522c2d3562957540df6cbceb992fc7f0c2a489",
+      "sha1": "41603560af3dbf9c07f65fa96d2c1723c04c2d48",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP16.XA",
+      "size": 425984,
+      "sha256": "2f1611183354232458c5e71d0636157e17bdf45531ebbaaf50e5c923dc83d0b1",
+      "sha1": "0ac2c693214952720aec66a6b3a4e2d022702be5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP17.XA",
+      "size": 327680,
+      "sha256": "d26788f31d3b5d8fe56497210be825c86784b84c100ad149434283de1c3bd111",
+      "sha1": "cbd986d76010f9584034ece30de33395fd45a001",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP18.XA",
+      "size": 688128,
+      "sha256": "9bf639698454952ca1defbe8ed7a0f03584453107bd7255c413569f8a8c60023",
+      "sha1": "2f9607fdf1693e55abd1aba9481c41e44b3fe3a0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP19.XA",
+      "size": 786432,
+      "sha256": "0f2954438ad19053b21f67ebe6bbe971c454508856a8c1a4783a72b8b9e7772d",
+      "sha1": "1a54cf048a396c812ba17d0cad8a1227752fcefe",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP2.XA",
+      "size": 589824,
+      "sha256": "212cebfd2ee364cc45aada2a12474e34dde17d20339c0dd811324dbedb70358e",
+      "sha1": "05c4532228cd1dfcd43b3ecf60541acb2288fa85",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP20.XA",
+      "size": 622592,
+      "sha256": "3862b9bafd7647bbc708a3ad41dfe658f43a1b6e9a28a201216a5db6579327bf",
+      "sha1": "f95d8c7ab1ae71490e6056e0a1845ca790e5983f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP21.XA",
+      "size": 1212416,
+      "sha256": "06310e00c89187d1c3bb7b05c79f07bbfd1be63e0e853e0eefa1eb66df7a7db3",
+      "sha1": "f8510fd9a5391a2a24d742d603caa8855fe704c7",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP22.XA",
+      "size": 655360,
+      "sha256": "c1d95a0ebdc098f021bfe36b65759da741a3e649348f3c12f7880de3a34bc7c6",
+      "sha1": "5d0e1f4bc8de455ed5a865103d9ec73069371cb9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP23.XA",
+      "size": 983040,
+      "sha256": "2453a0acb77b350272ed5cfde94549b52c315af7a9bffd4a3d3b79dea47506cb",
+      "sha1": "dfd724e2579953b792cda4e5ebcda4db859be510",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP24.XA",
+      "size": 655360,
+      "sha256": "48bfa15fd8bf625002ad7c5fd199170bd24fb180eabaed6eaa7f6fc61f1195b3",
+      "sha1": "e3fb4aa58c0dd21d6a7a7546fbf3e37ca7165f8e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP25.XA",
+      "size": 819200,
+      "sha256": "265d62c9d99b90266f9069efa569a004dd52260233f5d9766e1951955f58413a",
+      "sha1": "3608fabda5ccf643f2c4c67549c486f6a996ca74",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP3.XA",
+      "size": 753664,
+      "sha256": "0681dda140d186cde1f69476a6034fa0b0aa3a555c320c5caa946a2e30791698",
+      "sha1": "1707254c52167e73dc1b751894d141b1debbd07b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP4.XA",
+      "size": 753664,
+      "sha256": "a39f34b00f47bf3f02d321c9965b2216d844293418626308639d27ccbfc74040",
+      "sha1": "280a38c5e495b8f8b3a0f188bf8fea921196d120",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP5.XA",
+      "size": 557056,
+      "sha256": "ea4ff3669f8fc0773136ee40922f0272e6cb2266cdcdcb8614c245053e623589",
+      "sha1": "1f5f138f5f1125b33cf550a4f00fe02df126a618",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP6.XA",
+      "size": 753664,
+      "sha256": "aa8314014d6bb85d0ab36cb829e6f4030a246d3daa6f70c62d4c6d7b7bbe9c63",
+      "sha1": "2c718f189f244fc3427c4b06ca9124fe48627079",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP7.XA",
+      "size": 1081344,
+      "sha256": "ce7eb062531adb5a46cc03bc25d66f92ddd2f7d0e68e65db927d165ff5b109c6",
+      "sha1": "865228754b2a61295bfc29ef3f04c69296ada10b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP8.XA",
+      "size": 458752,
+      "sha256": "8c94d85ae621a28071ff531eb2f3d2d885c1b13bc62d1005d73e667a74f33031",
+      "sha1": "ed94f9972d9276bc0faf9c3465ac8517e9438fc9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/BOP/BOP9.XA",
+      "size": 425984,
+      "sha256": "f83284c800e0e19ae8c37b550f5a045559e0125c0459fd252486f14e0f7c951c",
+      "sha1": "a4ae27d10c8d65b028ed12e3e57c9367934f86f3",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT0.XA",
+      "size": 655360,
+      "sha256": "9c2259ea4987afeec0abab4a7d12bf7062f9000aa90aa3eab0bda0b59e4ad8b3",
+      "sha1": "01b362fc735f4ffaad128b06496f646d4c890180",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT1.XA",
+      "size": 688128,
+      "sha256": "5d8a6cfc86f2b2633172a82c052c51e36bb8ec1b20d16f6940f8dbbe42ffdf87",
+      "sha1": "94cd1bfd2331427938a45b58c0ca1c4ba2a458b0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT2.XA",
+      "size": 851968,
+      "sha256": "8e3dfe9b20cd73235afcecad16ec4f27af5194623c99c3f7721b01e71d1a2106",
+      "sha1": "5d23fcbda30eb8c12c73975b1927163cf16fa97b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT3.XA",
+      "size": 655360,
+      "sha256": "3838267dd8c0a2c96f4778461073599920df4e535f0b1ef9a72f5de95cfc2c51",
+      "sha1": "4a481f2bdf1a8351ab36b96be06ae6ddfc1ef4e3",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT4.XA",
+      "size": 1146880,
+      "sha256": "bd6cbad9f92d954b094a7dbabde992c6e118805c87c272a47dd7c7288302cc99",
+      "sha1": "0d5b890eff4cc795dbfa09aeae4d3c53e330ee19",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/CONT/CONT5.XA",
+      "size": 1081344,
+      "sha256": "aa3fc46d387d6e87e4041b9372c1ca35b86874c5bbdba9eb2ad2e6ef3c689c5d",
+      "sha1": "3be9b53e97ca87086a8be89fb00447b7a8b6306b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DOG/DOG0.XA",
+      "size": 851968,
+      "sha256": "abaac7670bcb0c96966ec4183706606ef5d31d63fe5290e4ca796a94eae563f9",
+      "sha1": "27a01a9b04fb8d38b97b2ec1dea40009ca3d7756",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DOG/DOG1.XA",
+      "size": 622592,
+      "sha256": "8cc6dfcb4ba7b5899dc93f4a2f6e2d7c350de8cee9f5a56782452b5642cb796c",
+      "sha1": "7154d9503d20e311df7d68e50f4d378300d4e70c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DOG/DOG2.XA",
+      "size": 688128,
+      "sha256": "cfff89d4ac15e86c19defda0ea4a53830913dc8649e2c71565ce0d4028d78d12",
+      "sha1": "8783743c58494121799c18cfc944fd6f8ed7cc6a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DOG/DOG3.XA",
+      "size": 819200,
+      "sha256": "5b205f7ba49c443cf6974ca5e5c51aa90e9403b8a97ed3655d9d96c4ed48a8ca",
+      "sha1": "c072c430ac510a2f17ef8461d2d4eac422474c31",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DOG/DOG4.XA",
+      "size": 1245184,
+      "sha256": "65179960c2c3c99ffb964f57885e316ea6487f155257db2f207e03b61f4c68f2",
+      "sha1": "5d96c9f2914cd47211d623c53977727b70e8fe7f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV0.XA",
+      "size": 753664,
+      "sha256": "4d41fb083feafc4048a771b05d763923e8f29050344708a2039e9f98c9a42cf5",
+      "sha1": "25be4a11580c30787cccc8dd5e8a825f761c2355",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV1.XA",
+      "size": 1736704,
+      "sha256": "a3d4f4c3b5e9a33f7c3589543eb96fbac4edacf6993a2dba863e82d10ab2b35c",
+      "sha1": "eee0cc6b1710a8538dbcab309d60db78a958ddd9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV2.XA",
+      "size": 753664,
+      "sha256": "b033a3f2d65c7258fb9334724b69bc26aa8d52f99796157118c67f47d5c40bc1",
+      "sha1": "b64951ce17e91a80877a38983133b9452329efbb",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV3.XA",
+      "size": 884736,
+      "sha256": "42f145cec4985eeda96a73b2073b8d840296f794a928bc94f4e6254fb9c50c61",
+      "sha1": "6b6522501d0bed909a25b862d7ed9f47108beca1",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV4.XA",
+      "size": 1048576,
+      "sha256": "2744470c7afbfa367a9484f7262e5b535cf7592e947284e4bfed9e6452a616cf",
+      "sha1": "a903168fa3a756f069e9b46eaf7168f5793b16a8",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV5.XA",
+      "size": 524288,
+      "sha256": "7028bda9d6f6650e04a4ad37cb3a21b2918e7f1d995685eedc243b25314f5b23",
+      "sha1": "b95ff090507ae1353488c5c28212434fba740aec",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV6.XA",
+      "size": 524288,
+      "sha256": "3343f6fed4a7b8be6f85e0a35eb677e0db0b4749a2c0a1ff62bbbab9c9e48b66",
+      "sha1": "ba392a0fd3a0a72ce187673f6c1334a4fd4bb5e8",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV7.XA",
+      "size": 557056,
+      "sha256": "a0f9a421805756c912a34fd39fa80ab397d97baa07a78080f9d71835a18fc681",
+      "sha1": "a283c4c57376113be688f51f10a0754e6b2a0e49",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV8.XA",
+      "size": 1867776,
+      "sha256": "46c94f4e079ab1f06de239a6d58bb878f05466bda2a27273a192ee23dcd47a8f",
+      "sha1": "491b75a8d7b1fa6c0ed96538b5d2ed5f74ccf759",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/DRIV/DRIV9.XA",
+      "size": 1474560,
+      "sha256": "4f187f8f063b59fcc8a606c6cb95b68be6c618d80355aa02f8f56c86381b66ae",
+      "sha1": "d3abe3ae94fca6256943f39c9706c8f21e612ba7",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID0.XA",
+      "size": 819200,
+      "sha256": "96462415f4d53feb18bae5a7f1c4ee95dce14982806ff22ad1aa19d6acfc39a5",
+      "sha1": "f9c866c047a2d26df48e5a3d89cbc2658daa60d2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID1.XA",
+      "size": 753664,
+      "sha256": "ee12e7e1a107fa2870b0f3a4bdf1a322340d83c4d4c90cef51974a1185b86127",
+      "sha1": "377341c8491642f5006b05455fc729095b3b8fd0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID2.XA",
+      "size": 851968,
+      "sha256": "91831674f9d18e7c6cc45c9a333dac8ac35cfbc8b9a5ebdbb6c1778d3eee0041",
+      "sha1": "c075e77b048e35b2f4077ac2940b684e1750c0d9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID3.XA",
+      "size": 720896,
+      "sha256": "d0279a622387887057dc76da5237364d64270d0b08a46ae4cb2790a60c69b6bc",
+      "sha1": "b08ef5c11600cc544a63ce1119f009779fb5a5d2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID4.XA",
+      "size": 851968,
+      "sha256": "34782915cba508f0d9420ef04fee465d8be3bddcdc69673b385b7b56a7d7cdc0",
+      "sha1": "536e87880415787a8b735b28e8bf11bf508bdd87",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID5.XA",
+      "size": 786432,
+      "sha256": "3dd46836777ab20f222ed2536fe373c73b5279f060490865e346c491ddb8b70c",
+      "sha1": "aa7efc340539182159c23c3463f24c4932d09878",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID6.XA",
+      "size": 720896,
+      "sha256": "6a0d75ed70ea90a878a6974ccd6a4d6784441450dde04c6044d32be4ebb66c8b",
+      "sha1": "162f508aae2cbbee1f3a01f000de3c73a0ee09af",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID7.XA",
+      "size": 884736,
+      "sha256": "d8430deb2eccabb6c2d4f0e8485b1495f0225643b36f4b4ef31abe2b926d6dc1",
+      "sha1": "97829feff42500f819911bcc6f35d48f8d968843",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID8.XA",
+      "size": 655360,
+      "sha256": "b9bd23f97ff0faa3aae03a2bea654dad239ddf897a8700b161d55a24fa0eca4e",
+      "sha1": "caff5345463faa3115d6bb92ef505abb302987b5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/GLID/GLID9.XA",
+      "size": 819200,
+      "sha256": "84ed40b066f24cdb22c48f90ea97206d9daaf3f375188616c1b7472eaa955288",
+      "sha1": "afe7542c350e9e7845e2dec17a6024b14afa21ed",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH0.XA",
+      "size": 720896,
+      "sha256": "de8ae06895c47fb8dab463ad63cc0912512e89a70a0ee60a03e25cddc16f20e6",
+      "sha1": "0b1a63e48803c95846c24470df1e4824a053731b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH1.XA",
+      "size": 884736,
+      "sha256": "7bfe869daa2373a5abe239a33666e0a04c08de92d9a76072ced99cbdedfba25f",
+      "sha1": "8204fa99e535b2a1eadd2b270aa68359f0832262",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH10.XA",
+      "size": 983040,
+      "sha256": "11832ecd692e6f74fde3d8a25d8e6ed34d9af9b66f2c2fce3bfbd389d1bff437",
+      "sha1": "493e7e0949d27970a5aea5235b8e4db338552469",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH11.XA",
+      "size": 720896,
+      "sha256": "fcbdc547f8ad36ac2166082a3b4b08e0c5e3f694c76fe05e0c0b2dbf9eb34981",
+      "sha1": "1afbf60b1dafd9e274fa91866edbde1630897e31",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH12.XA",
+      "size": 1081344,
+      "sha256": "49cd41340f4fa75e78cb2c216e897d6f47c1ebc3ef2d858e64541915b6afc64f",
+      "sha1": "205953fa5feaed62815f10f695757a465bbb21c0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH13.XA",
+      "size": 917504,
+      "sha256": "b9d32a4b859f3de6444f816b669f0f25ea84d9c8f452aa971fef7c1697c9c10d",
+      "sha1": "20712d036d653076067a041702bd1204a3338af6",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH2.XA",
+      "size": 720896,
+      "sha256": "45a5bebb53a192b5dc1f01622d7f5df3878f480e0e45b4277c28a0f0d1a90bc3",
+      "sha1": "dd50a06ee1635ae8316de3f2c3c94746fb4783c2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH3.XA",
+      "size": 753664,
+      "sha256": "3fe77f848f6273190e650bc521cea2c798a1b67bfc10790b52ea123c256c1ba1",
+      "sha1": "0cfd04bf1ee6f663faa7fa4daa098b2a592cec5a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH4.XA",
+      "size": 819200,
+      "sha256": "ffd32fd79060bbd4476e7e77480658ddb90ae74dd23976a13a542a385dc91b08",
+      "sha1": "b8579a8ec48d219db0942b7b02f484224de1c4f0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH5.XA",
+      "size": 720896,
+      "sha256": "2d2884de8588207380c735df6f4d0ac90c078319df7f8e73be9cd46ed4ad4183",
+      "sha1": "2af775982d8c27f5317aad34aa7b94824764f78c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH6.XA",
+      "size": 1015808,
+      "sha256": "4ec595b4ed6453cc4aa603181cb780807a55c307432d2ca696b6a18714de6248",
+      "sha1": "e9ddda153f0979747979cc18736ae460d8d36885",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH7.XA",
+      "size": 983040,
+      "sha256": "63bd2454458055fda802f132adccd9907517bb43f47478811f2178a783a809fb",
+      "sha1": "4de6658b7d10912cdc5be86159db27a02177e53b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH8.XA",
+      "size": 983040,
+      "sha256": "8b0f06f4c054c618e514f671f7c187082462f5042a0dea2d53fbf514b14287fc",
+      "sha1": "7669d571f54dbd979a6cfcbcb4c077c5faedad0a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIGH/HIGH9.XA",
+      "size": 983040,
+      "sha256": "ad80257ae1cc35023010222c1bc845f0d44c2a77a0194806b4499fd99dcf6587",
+      "sha1": "bdfa0e760f5d034d31c8b7fcdc1d5cdbb29c04c6",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT0.XA",
+      "size": 884736,
+      "sha256": "0530f3501e196101ec0a65fa54bc6f1564779d44c6820c1f5d925565761e8372",
+      "sha1": "fd5decbd163fec74ba652d1dc3635f7c4daa09ce",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT1.XA",
+      "size": 557056,
+      "sha256": "fe0d1728a5d78a58066c8c8789d1a9624537f50f2c1334bdab6a289bab7ffb86",
+      "sha1": "10b646512594dc79998edeb41967f39385fac6e1",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT10.XA",
+      "size": 851968,
+      "sha256": "67fa607fe98e429383b74069703cda3c19d7706ec88bbc6d6b32d00d474cbc44",
+      "sha1": "806628b1a5617eb3f7433aae8e49f3e10d8b0e36",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT11.XA",
+      "size": 622592,
+      "sha256": "73697ecb9820a20246888f467c94308a0556ada78c403359439284f3829cb3df",
+      "sha1": "1b9d096ab1a5f92c4f91fbeeb1877eece5e49277",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT12.XA",
+      "size": 753664,
+      "sha256": "6b2d3a3dd23cf3a81ea0e8357bbd9e12ddf17c9a083291f1b8271640469e41ea",
+      "sha1": "1af972b92263d8717e929c59dda57f5eee21614f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT13.XA",
+      "size": 884736,
+      "sha256": "f538d12d4aa45898d91827890526bc03bb49e5893cfc6a402efa9d162b0b6398",
+      "sha1": "f49c5d84c242ec109e3bd92e3e65715d78d641ba",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT14.XA",
+      "size": 851968,
+      "sha256": "fd22d7bd33bba079741f03b04836b80a20d05cee06503f7b3a41befd484d52bc",
+      "sha1": "62f40c2132bbf23baa95d11bf03f376d4bd015aa",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT15.XA",
+      "size": 524288,
+      "sha256": "76303851ab6b77262050ebe8471d0efd2a6c84b4465fe5471a33b2c4b1d5f642",
+      "sha1": "3e17a5b9c28ace57294814b29d13ad00aecb2289",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT16.XA",
+      "size": 884736,
+      "sha256": "06d92e30a0c7ad6ee14a5257f7b4e838bc8fbc92344fc3357a043c01a2c7b1f3",
+      "sha1": "6174f3eb7657b7c1060680cb997e20f06afc27ab",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT17.XA",
+      "size": 851968,
+      "sha256": "d23d7064d5d2e3f287f040b07605892f5d95e8bda0a734711926507389d30763",
+      "sha1": "ef4d1e7c8dc0b16f0757bf8b394f7afe09ff9dba",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT18.XA",
+      "size": 720896,
+      "sha256": "b6bdc4092ac884dee0be6a52acb4b7cb081b4449120e62b5b62a1a8027fc450c",
+      "sha1": "e60c6451d680684286553c2ff8eb7600981e6ed0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT19.XA",
+      "size": 983040,
+      "sha256": "25d8a0c0a8d5fb1c0ef92a0cac576ba70eaff23417b706a7768114cccce77750",
+      "sha1": "596959857c04840b7ae3b145da33f8bbc7cb0be8",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT2.XA",
+      "size": 983040,
+      "sha256": "3015780a0492dc70db8a89a4031fe474e4f37af063f1a4e7d7dafbd8844dc588",
+      "sha1": "f6b0c33983abc7123a815a207c779c2f7b3c6293",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT20.XA",
+      "size": 950272,
+      "sha256": "e34d1aa7347a96172818dd6fafde22787093137e46d124dcfbff34fa10ac567a",
+      "sha1": "9bc23a2daf174c0907d5b056348147c7a8ab46e4",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT21.XA",
+      "size": 753664,
+      "sha256": "d2b0a1cca174329de01fe1ba9498c73cf307c95390cc63c25a984d47b6b130af",
+      "sha1": "1620747f36958343beb6559db27c7362f922bcf1",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT22.XA",
+      "size": 819200,
+      "sha256": "49debbfd77228074ae6e2530615ebc7999963d77b3c31dc21c01b4b8cfc55761",
+      "sha1": "9c705e6ca74a9e8d8e95ec615255b19e28d2319e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT23.XA",
+      "size": 688128,
+      "sha256": "ebd1877f2a304b624d6359f79188e815ccb842df7f8fd7a07108bd8933c3ce12",
+      "sha1": "3af5c2dcdf43cf4c0bb5b0c58b301e4ffce495be",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT24.XA",
+      "size": 917504,
+      "sha256": "a17fcaa2ab81117813c9c1a9b0e36ef96742fe82847f18254e64ad2f8b786c3a",
+      "sha1": "241b431d7b3cf8b34f78a51467e24fc4dac48f6c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT25.XA",
+      "size": 884736,
+      "sha256": "baa31667e4795918bb5fd1367cda3d636016904ff8d6f8297c6b1eaf57e2de80",
+      "sha1": "fe0f5c0dcff4c5540e94ff1c29b804ebdae7694d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT26.XA",
+      "size": 851968,
+      "sha256": "658329592168c4a43e3727115632733f467b5e401917f4726a5eaabb15fe3f6e",
+      "sha1": "37800e613fc46d699dd28fa199bb96fe52e04553",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT27.XA",
+      "size": 819200,
+      "sha256": "a0973aee0514402d7287d81aa35372c89ed2af9d545aaafe1d6bc6db13ce6429",
+      "sha1": "8daa223ce6f67a96cd37219343076cfd4e1d7603",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT28.XA",
+      "size": 819200,
+      "sha256": "b38aa42d233f5d83d8dadad8fd81376387c9b17c42fea69adf6ae93321d8ae39",
+      "sha1": "d4abc9ca0d20331fde818db49c055b0ddefce87a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT29.XA",
+      "size": 688128,
+      "sha256": "4d2f29b2502fe661026239ff0dab74639eec2c420b2de083c8ca3b029b270eda",
+      "sha1": "bf835d39c320e1ae25ae7e63c7dc3a3b8afd333c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT3.XA",
+      "size": 917504,
+      "sha256": "7f68f5c6e05d2ec76c30358075f68e2a1629b801318411eeefba6b20a7802a72",
+      "sha1": "5723e6eb0d1524a72bc18ad7ba0e2d39b4c1c8c2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT30.XA",
+      "size": 1015808,
+      "sha256": "6fa07e61c5c582408913ce2921cb5f14b6ce3fcfc27ced41bb147e60f9d003ad",
+      "sha1": "29d2a51a398a1fd205e7cc069946fa809140f48b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT31.XA",
+      "size": 1179648,
+      "sha256": "9a6c8ecd5a0aca6d96f42e996066365145724b60c233f690bad4131d17d5aee1",
+      "sha1": "d53d1ae1d870024ad5ca44dff971978d776fb146",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT32.XA",
+      "size": 786432,
+      "sha256": "db3bd7c35a5c07be441885662755cb07322134d0a938020bf47ec6ceb6a3c5e5",
+      "sha1": "a7db00040ab608b3a44e3e75075eeeb90de1db3e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT33.XA",
+      "size": 950272,
+      "sha256": "22bd7e5ca147e65de33e68a70d5060176e0347ae8c3222a16c83ae750b8d5d8d",
+      "sha1": "94fd7b82b89e01fa1bd2828729aff97675c2df0f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT34.XA",
+      "size": 917504,
+      "sha256": "4474231dabb8c89298b36a6928e6031aed8ece6fd31dc260c39fd3559eb081c7",
+      "sha1": "638016d9e2718b9104ba7e100b37b580af308c2a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT35.XA",
+      "size": 491520,
+      "sha256": "0538607ffd35fe923b1a7c48e90c131b9ae5761b305dc72f81332754cfa24540",
+      "sha1": "bdb15829b99ad36192f174ab639e4964d746a044",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT4.XA",
+      "size": 851968,
+      "sha256": "14b8379a164653574dcf589b5674d6f3abcb618d9c10f18b002d7dd15440dc79",
+      "sha1": "4337ac1a72377cfbd67d6a68c9594331cf5b5398",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT5.XA",
+      "size": 425984,
+      "sha256": "37bd4cff7c4ce0b0ed5c2365bf3a3d94f3c19fa0f2529aef05315e09e46e8fa5",
+      "sha1": "b1e4473cf23caf6da0a0084d4cff3ccb1f56d962",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/HIT/HIT6.XA",
+      "size": 950272,
+      "sha256": "87baad8bd41fcdb7012d1a729b24b1e5319d11994b8c2a8c0be9a7990dc47bc7",
+      "sha1": "a39c84830d775ed5c58483379457eac4d28b2acb",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE0.XA",
+      "size": 1277952,
+      "sha256": "a9ef129a6dcc87369c0750b59c6e9dd358545d2c414d6f687f85a1e609aa25e4",
+      "sha1": "7c57e0bdf695c18c5b553e98e2243872d7294df1",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE1.XA",
+      "size": 1048576,
+      "sha256": "54a58c3c0dcd6df846d30ceecb596d9a35e8cb67b248fac873016b11ebb4649f",
+      "sha1": "0fd4b87ba19703cbb5ea83a9c1474c09e2f2ff7c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE10.XA",
+      "size": 688128,
+      "sha256": "a64140b87d43a2ad54f59881a5f36e3e39e762dc1f9bf965ff8e34b423c11c84",
+      "sha1": "ce88068dc834d60cc0748ad1af3f75e66512f624",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE11.XA",
+      "size": 786432,
+      "sha256": "5fcf937abdb44585bc87aadcf5df4ea03d72e5f79d9c603885feb1b6ace6da0e",
+      "sha1": "e4ce08441bdb507d63ad4866762a90e859ab20a5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE12.XA",
+      "size": 1245184,
+      "sha256": "aee5936ff0f2f537351aaffe1b81658d95cf16067d6e5386cec7b35c3a038c72",
+      "sha1": "c3246df3bebb1d276d41530bdf82f7800273c3f9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE13.XA",
+      "size": 622592,
+      "sha256": "a083911a6d115eb8d6a70034230285a7443d6274acb56cc34d0bfa0307b61ad3",
+      "sha1": "3fbac790e79fdce04834f102265b9178b4b63653",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE14.XA",
+      "size": 1015808,
+      "sha256": "700d6b3bd4963db81bfb4f29a724001a45eba72cd55d2ae477696cb4db6d0d6c",
+      "sha1": "7a9901146264797684bd1f100607489677de0f62",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE15.XA",
+      "size": 1015808,
+      "sha256": "e89aff411be4cbc0325c24ad2e65f5ce486f3daa58bc9f7e1990cf52709aa9ea",
+      "sha1": "07b0e3e5e31c2399a720b5c4715af8bff687cc07",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE16.XA",
+      "size": 1048576,
+      "sha256": "94d490e73248b5ae9d2c79691a362110b31c87c4bc815e1d5bd9dd4eee2a2354",
+      "sha1": "8f8da39f5bb97da63d07c8ecc2d7facb1a8b41a6",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE17.XA",
+      "size": 950272,
+      "sha256": "96b787b7a8e28b12bf24f32fe605b92ad2b50cbf596986d33e4ba2fff4f936bd",
+      "sha1": "24f41917a1e31d81be786a4e206ec72031001c93",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE18.XA",
+      "size": 983040,
+      "sha256": "83954eb96558640432fc9119e7804014a7064c87c25d033f67ac7607e5881bf3",
+      "sha1": "2579a0a46cdbcd4d43687f2ac2cb3475aaa06787",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE19.XA",
+      "size": 950272,
+      "sha256": "fa3c54d8a448ed771392cb99180c6e2ec803d96ce4164161586bf78dcd353dc4",
+      "sha1": "ae5b5161bbcf4371e17a4802cfc7d8aa1c0c522b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE2.XA",
+      "size": 917504,
+      "sha256": "17c22d74e63010288c83b3929bade93a03b0ea3310ab3f0a81deb0b6d0487faf",
+      "sha1": "b071017216c2a9a6fd5b726321919c4e1656f253",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE20.XA",
+      "size": 950272,
+      "sha256": "8ad23132104a505327fa0e77893ef53a09a7ee32d680ec33312c0cfea0cc618f",
+      "sha1": "6f819a36d126c5c9ec084394d4882d750532076d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE21.XA",
+      "size": 1310720,
+      "sha256": "ded63df38e1b8d4e8d9a95d9ed0182c83201f867400a3d9c579c47ec3b80d1a2",
+      "sha1": "3ba907c8871e07a2dcf62977ff68d708e8ec0063",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE22.XA",
+      "size": 819200,
+      "sha256": "5711f9bb065695793cb63aa882c153c00d6e06b40f48fa5af4fcc0791a9c402b",
+      "sha1": "0539db444771702ffc6da8f53d2ac0dd688b1086",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE23.XA",
+      "size": 851968,
+      "sha256": "bdc2c24802c8ab9bc8f8e6357489d9b754fc30745b5fd1a07b2e4a4e1cdde8bb",
+      "sha1": "d8edf7f2b17a002086247da4d4e5bd1e8242bd9a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE24.XA",
+      "size": 720896,
+      "sha256": "b9eb662358c1045bc3e132c783d3b2a42764da93ec5721681027140508445943",
+      "sha1": "bfd350a47cb6eb7a9f3f886f07649a014c543c5b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE25.XA",
+      "size": 1835008,
+      "sha256": "a3e86c9d9b4e16f051086f3fb4510bd43fe49edadc89e0391ee5de9b9f6724e8",
+      "sha1": "da34a0b0a5130c7d397054cfc70a1c4ce7793109",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE26.XA",
+      "size": 884736,
+      "sha256": "c22bebf77374ec931419b7c21576443ad64a7f14053444dfb640fbd980bde691",
+      "sha1": "23d554b3a82dbfc1c47458bdb9dfd8651e59468d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE27.XA",
+      "size": 720896,
+      "sha256": "b9eeabf33f36e477010f8aabd3366e47a0819bef927e7a2d32921e4b2322c2d7",
+      "sha1": "ca637d9984fee75e92fc967d66db4375d9cfa384",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE28.XA",
+      "size": 786432,
+      "sha256": "f8f551b4680c4d85823e71af2fb3765bb10f6314bcab08cd896d9a1a82d45ace",
+      "sha1": "f0b7f5fc41977d6c4fcbde37f1bcf104db813513",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE29.XA",
+      "size": 720896,
+      "sha256": "8252aecd0b72a975b8615cdbe093bb16507136066bed64dfb86c95f5c9509795",
+      "sha1": "27d627a046799005c637e59fa4b9a1d8595c3e72",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE3.XA",
+      "size": 983040,
+      "sha256": "40e329a39cbc2fc06331f9c09a3145193ed4c519c3715a8f25c90dbf69cca5df",
+      "sha1": "d865801cb7442fbd25aebff27471f5f39441118e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE30.XA",
+      "size": 688128,
+      "sha256": "ca03940ad241ae6b1ddd1e12bcbc597f85799ca09cf0f7b771f23afc40a69149",
+      "sha1": "e8c6b9571ea145c7455369c76cb7039268a42dd5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE31.XA",
+      "size": 753664,
+      "sha256": "e77ec2b4c16a16e388c649a5ce2230009b6a68bb664784f3567e6a02a00148cf",
+      "sha1": "3f637d55754b1dfdbf69ee25af5b76e2443fc9e8",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE32.XA",
+      "size": 851968,
+      "sha256": "91c783f19226195a2bb11e305f7baa7708519b86fea3f87e65454cdb91f008fc",
+      "sha1": "2c4abb4dbaa9c30c81f0207bd8cd8dffee85f6e3",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE33.XA",
+      "size": 524288,
+      "sha256": "7c9bb2591d743215f0fa82d40d116202ce90fa8b417d3f705e7c4b58e4f18734",
+      "sha1": "310a6079b59a828253e3640a5d175cdf0626a2cc",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE34.XA",
+      "size": 1835008,
+      "sha256": "fb69379203c46d453b194b5395c2cfc27f308bc31810065666306f7fa532420f",
+      "sha1": "3267d2ceeccda0820192337375ea70b1fcc992a4",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE35.XA",
+      "size": 917504,
+      "sha256": "e2371d74b46a06405dda929d44e28ade6b7b6427057b72b0230fa5cb533acff3",
+      "sha1": "d59749585080d291a6ce64fccdcf0d3cb8bf9188",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE36.XA",
+      "size": 3768320,
+      "sha256": "149f9f3bdaf0dfcb9aee6b50174b033a0c5eab7e3935f5df83c3186bc6a724d6",
+      "sha1": "2cb959aa9e0680a2cb4cbd3784d5defe76fdbcae",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE37.XA",
+      "size": 2195456,
+      "sha256": "a7af15b4f9f2ffc92254822cc62142e8b32e7da2a377b3e77ef8484ddcd2a6a9",
+      "sha1": "ba316a0bbe11cb6e79c04f063f38a979e5fe64e6",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/IDLE/IDLE4.XA",
+      "size": 1015808,
+      "sha256": "a56b9cc15350faf26b68247710a5c3ed2787cd29bd0c50120049163db036a647",
+      "sha1": "2ccc3d238dd48d384c3c987c2869a9486daf5892",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM0.XA",
+      "size": 688128,
+      "sha256": "90934d802a699baabaade667168e1b3bb79dc83614e387d485190e6ee771f491",
+      "sha1": "0d5ac5a38468448d38d828a0b60956a2b248856f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM1.XA",
+      "size": 786432,
+      "sha256": "b55f8114566a2ade4c6ebc791f9ad7a7eb15d40b4d8ba63ba5ecb5b2bcbf387d",
+      "sha1": "bdd6aacfbb0579d7b7c2d21b5a3608e22c4c0732",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM10.XA",
+      "size": 524288,
+      "sha256": "a6b5f8ce2f46a29150583defc8cf333a303cf0e537ac54e507362fbb5df04051",
+      "sha1": "5f7b862e452ffdeeb7a2ad92d562dc1d873336e5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM11.XA",
+      "size": 622592,
+      "sha256": "e4f9f10824b49edd389874f5b08e6aec3f7057ae258db29509eb5d4927b149a0",
+      "sha1": "0528b2fcca18e5afd64e2ede3e94caa3a768e0bd",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM12.XA",
+      "size": 425984,
+      "sha256": "49bc88b0fcc19e424a691780d9b9e2e328484285cd2d0fd37aea528238e802e6",
+      "sha1": "edac7125923ec22580379c96aa10855e25aaf93d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM13.XA",
+      "size": 753664,
+      "sha256": "00e37705ba0b0390610b611fd19753c12625343d7615b660a5bdca0eb618cd83",
+      "sha1": "104cbccf9c72854888947f05d5da95768917d533",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM14.XA",
+      "size": 753664,
+      "sha256": "e4e6b3ab721381ac0926e3ef8e87b7abd5475dcae6f6dfec13ebf2239c3b0db2",
+      "sha1": "64867f36b56fd05528b4c0368a2e77dbfa8c92ae",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM15.XA",
+      "size": 786432,
+      "sha256": "78869ba0cc07ff2dc5dd6bfdc860140c6b00004df1c4592be6318a93cd03922b",
+      "sha1": "8eee40c15a5fefe34efb035294b22b7ae9474eb0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM16.XA",
+      "size": 983040,
+      "sha256": "21a68de997da9db3a48c353416e65e676111e17933d563b229195b68efaf46e4",
+      "sha1": "c73a41a8661800445f9ef0a225adab681274113a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM17.XA",
+      "size": 524288,
+      "sha256": "9d0a3e6e18e737e4c04af2bdb5778b96507e66fb3af0bbbddda63ca7bea43f7f",
+      "sha1": "a33fc02fe65c34385fe02fa21dd1353f613fe424",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM2.XA",
+      "size": 655360,
+      "sha256": "ad1b8e2780817760bb3ebd1bd7b977585d7ea8e966856872ae603de3701b7040",
+      "sha1": "52cb15a1f61f41e961dd040187e8f0d2a82f8112",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM3.XA",
+      "size": 622592,
+      "sha256": "e6ea8f961cd0bb8b03578cfa2fd1308473889697187c5b4b75aa73c3eeb1c35f",
+      "sha1": "72e264ba9b4f2e45dfea64a5736714f62ea5c3c1",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM4.XA",
+      "size": 753664,
+      "sha256": "e2c1f696484095b643af1803982a0fb26378479cb0dfcc2e31d8ffed88942ed9",
+      "sha1": "681a5512e0474857a51adc05bbed4ad61e025637",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM5.XA",
+      "size": 622592,
+      "sha256": "cd21d7aeeaad1e7f8a61bd9357fa31617940795c6e10f9040c7f0bab19c14c2e",
+      "sha1": "61d88cf61ccf4f94ea1eaa5aac47e3220892767e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM6.XA",
+      "size": 753664,
+      "sha256": "f0852bb74ec5ef9d18e6e3e0a3d2ae5bfb989db31773c55412394ac6458a8156",
+      "sha1": "21be57ffde69a441209a7e56fd6adcdf8839bd27",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM7.XA",
+      "size": 524288,
+      "sha256": "150236c050f994157ffa4f2c3dcf53504e2814f9bac01524d1d9033ff939e117",
+      "sha1": "c7137b8852972096667eb6ff9defb3756320c7a7",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM8.XA",
+      "size": 720896,
+      "sha256": "317cbc8b3c3fea5bf52048d69694da3b004b33c81869b56c52f040d0207de26d",
+      "sha1": "3040e5f6e4cc19b7b04d5e410a823e9a3cd66f31",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/ITEM/ITEM9.XA",
+      "size": 1114112,
+      "sha256": "b630183267b565ebbdf1f3fe6bf8370111047659a33afc8f149bb96946bf73e2",
+      "sha1": "2675221115c5c3d322a92a613d8e3133b6aebd73",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q1.XA",
+      "size": 4161536,
+      "sha256": "d5eff807dc279741649fa824d1c93b2673fb9cff207de2c4343e222bb7e340b3",
+      "sha1": "f32d944efbce6a238428ddede7106a94004dd332",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q10.XA",
+      "size": 2981888,
+      "sha256": "39972a675804550d867d113cedb5be6348b7a7ce45d1e60ab624537f4c415f62",
+      "sha1": "5b753e3d3a41358f28bce1aac3679c05730a740e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q11.XA",
+      "size": 1802240,
+      "sha256": "4991c0c02211ff00fffdfb4c834a72bbc0ed2172a486eb995c6b8a5d51e9ec9b",
+      "sha1": "77867a39c6b742fd1c7b32730c869fdd02669a20",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q12.XA",
+      "size": 1769472,
+      "sha256": "acd08cf239179c3c8449105ad1b885c36d2b42c91b23abd687c95784dafabf57",
+      "sha1": "0c63389a37716a37f82d432a0693c80eb734c357",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q13.XA",
+      "size": 819200,
+      "sha256": "36f27064d9d0552c965dbb4cfa254925357cfa7b165b69129e52d0b713da439c",
+      "sha1": "3a94337d56316d440da47b297cd79becd9ad3d7c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q14.XA",
+      "size": 3407872,
+      "sha256": "9e9221b60e3f83cf654b73bd433966c6ca0781018616e9e6f0d5ea4419d09380",
+      "sha1": "9cfacdf3c319736a2d3a1a047a88420b1a07af21",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q15.XA",
+      "size": 2588672,
+      "sha256": "15c96b4f1ba8ac22acefaf9b48521ef70dfe74570835b1b986ca2d3f1350db36",
+      "sha1": "c7fdee3f1b5d0449c07b73bc7ec3b61d39e2510a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q16.XA",
+      "size": 589824,
+      "sha256": "331a34cd38a42573281348be270540e680206a449a4de0aac2fe0889a428b85f",
+      "sha1": "20f6244aac4530bbb0b279e8008bd9a7def46869",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q17.XA",
+      "size": 1114112,
+      "sha256": "441bb4af666584f68309f1fc2ce9c2bf8236fa8738ff64ebca83999d3b359f53",
+      "sha1": "4b8b17abf48aeb1a9f914b8398ad857f0b380b1a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q2.XA",
+      "size": 2392064,
+      "sha256": "6d213743c258e0595ca2c6b700698a8859d3ef943e9b6fc9f28d358753a6b1a5",
+      "sha1": "5ae3b6988da9a6fc37e38486534b895e2dc98973",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q3.XA",
+      "size": 3178496,
+      "sha256": "22cda4854bb68b06981b35d688f6ec02b67824e91c3d2f53750d0e9702867e97",
+      "sha1": "4c99653af10fcd63ee4547e0c7679eb0a5b2557b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q4.XA",
+      "size": 2916352,
+      "sha256": "9956fd655d5e2921ce434742bbbebc8c45a7931d0b9d60784a67782755b441b7",
+      "sha1": "d43e90a8d263292fb8f93db8ccca2b332409ff1d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q5.XA",
+      "size": 2031616,
+      "sha256": "37c1e2407c24e8300c490e64c91aa4fcf04ae3fb8fb11630fcc8ef37dd83801f",
+      "sha1": "88aab36b05806f9b676b9622abd7609145a6806f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q6.XA",
+      "size": 2195456,
+      "sha256": "8e1a06ea24b53bd88ad64521637f9485df336523dfa89242e98a5ed07aa462fb",
+      "sha1": "458fde123e9665ac605ff453fb5883d7af3d520c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q7.XA",
+      "size": 2916352,
+      "sha256": "783cf9db7ea75a2e0cad9ad419733cfee1e10385bc686f5aca62424f46e0beb5",
+      "sha1": "a8f4cbc528713f092ebc65eea1de05970d4a1e96",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q8.XA",
+      "size": 2949120,
+      "sha256": "5263c6a57b382c63d2bccdae2a66b20768f3e86e12157e18c4c2115945999ef0",
+      "sha1": "9910b128d5a27bffb83bcf552be59cacba89dd9b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/Q9.XA",
+      "size": 3244032,
+      "sha256": "481d19d775e8724990a0a3edf61c475fadd2127a2e3c6b2aaaa227db1da65c25",
+      "sha1": "1497a4131d8ddce587ba2bd78ed1c1ea1557558d",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/SCRE/SCRE0.XA",
+      "size": 655360,
+      "sha256": "64af64b5bb90bbc777fa148fab59d0d834d3204d8c94f4c8f8f1dc12a831be8a",
+      "sha1": "4be59aea1811e096a895b9f6298eff309be8c5c2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/SCRE/SCRE1.XA",
+      "size": 557056,
+      "sha256": "acc0dac975fd6255f80d4902ee187db5845ef87e2ae8d5885552ccfee0ea11b4",
+      "sha1": "edcd517513d8302180c661de858e2033d91e02b0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/SCRE/SCRE2.XA",
+      "size": 851968,
+      "sha256": "5260ad03cdcd07acb7556823699c2af9b28acf8d865b98379e48d6f8782efe0c",
+      "sha1": "2fa3e27293726537aa9f65d495cbc90f90d6bd1f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/SCRE/SCRE3.XA",
+      "size": 753664,
+      "sha256": "249b4e6ffbb48d98cec09d7e7888fd49538ebaf284145c0a99da9783dc52bdcc",
+      "sha1": "1473f826d57b19078d430708226734c0651af633",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/SCRE/SCRE4.XA",
+      "size": 655360,
+      "sha256": "cf592f23e26d190da3cc7b58052300a6ffaf565cc83277378b7f9edc3f543c3c",
+      "sha1": "c9e9fb10355941efefbbf42dba938c9e96ffe793",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/UFO/UFO0.XA",
+      "size": 688128,
+      "sha256": "ddc235e2f603644956d43ae97dd8039e1f4d95c6114a74e31dad4aa98f44b875",
+      "sha1": "e6287e240a5794281d0624b7d07baa6bd235f70f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/UFO/UFO1.XA",
+      "size": 1572864,
+      "sha256": "dd727873529a74982f84e832b6b8bfb1c01c59d0aa6ea612ec4b56d5aed28e6f",
+      "sha1": "c611fcaba22c3dde0ae2229bf63e5d839e66151e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/UFO/UFO2.XA",
+      "size": 1146880,
+      "sha256": "877b37b2cb06d3e1d00c3bf8b798e225b7f84ceb0446e66eede5f575ca761896",
+      "sha1": "798073a730d31578ca14827bbae1ee92191a937a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/UFO/UFO3.XA",
+      "size": 720896,
+      "sha256": "1f9b5b32672c2e067e0dc06b3310ce2149a34ee2f1d17d7eb16683497ec88756",
+      "sha1": "7738fec925267a3f9d90588882c6a27ac42b688f",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/USOL/USOL0.XA",
+      "size": 819200,
+      "sha256": "32248e01aad72328d90c0d4d74534afa9d75cccb1f0de122d09f2a5c8194f755",
+      "sha1": "c1350243d45ff7622e51b1c27552f845674c2a4c",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/USOL/USOL1.XA",
+      "size": 655360,
+      "sha256": "417992e0b5e0e6d3a23d7f2f0ffc216d53c5f3055ef9cc1dc306c5eb31c356ae",
+      "sha1": "7c20bdf721bee57524fef6fc759dae2af97e0ba3",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/USOL/USOL2.XA",
+      "size": 688128,
+      "sha256": "6993722e43d7dac87a97875bf602406259eb6c1110dc839b2977866249175080",
+      "sha1": "a5e4385359657a0fcf5d11c229696748e8e538b0",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/USOL/USOL3.XA",
+      "size": 753664,
+      "sha256": "eebc45ca766b9c17800156ae9644cad222e559c2c09a0a2c1559a89e4ada0b01",
+      "sha1": "6b273183180410f435cfe221a37d97cc3a2b77d7",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/USOL/USOL4.XA",
+      "size": 884736,
+      "sha256": "326c446f2e92f008f24c9559738c03ff8e6b6c07efd9921dd8fdc6f30cad379b",
+      "sha1": "a159600cb0d11cbdba0544fb849c733aba603e12",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOI/WOOI0.XA",
+      "size": 655360,
+      "sha256": "670126ec122c6e12b92a7caaaaaf6e04f3a05bc6856428bff2466bf3cee18354",
+      "sha1": "b31578901726af888c7d5a5ec7a31546a4f6326a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOI/WOOI1.XA",
+      "size": 786432,
+      "sha256": "9998b52ee48436327664e3e42d3859eb2fa53c531dbfdbfc8fa12084ea3580ff",
+      "sha1": "378ac97e26543cd1dd524e42670af073ae9786a9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOI/WOOI2.XA",
+      "size": 688128,
+      "sha256": "a3b8aeee5e7c0c40375c8f87aa330aa696abce8273e93bc5546badb72864cf21",
+      "sha1": "bdb4da79620eec770bd375cf110039343e09e856",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOI/WOOI3.XA",
+      "size": 851968,
+      "sha256": "ac45119a5bc23d74eacf596cd2339b7a7b2e6c9847cbd2fe8882e9643afd91be",
+      "sha1": "8fd66e1ba8836b695bb2ddd5896741bb4c8ea630",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOI/WOOI4.XA",
+      "size": 753664,
+      "sha256": "1ea621d793096ccf084d86f2aee151df3222840c4ce21f0dfb17d446b1ec4900",
+      "sha1": "fa7966b412a5adea28dc4777d2b46774e57a3ff5",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL0.XA",
+      "size": 819200,
+      "sha256": "e5668fdc64216075f2b6b4a58d4bfa586994a0e0d416a11d38912d19bed8a88c",
+      "sha1": "16771fd45af552d45ea60e20939c564472c8c957",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL1.XA",
+      "size": 589824,
+      "sha256": "6cded365cc6ef39c6204285bf6af4235cd53ce5523f2d34e7abe1056b408b0e6",
+      "sha1": "571e99ec97da3e67bf521769e409a29edcec69fa",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL2.XA",
+      "size": 1015808,
+      "sha256": "051cdc3ae5b9ecf2cd01ea6a8ff5adcfe0263bbb2dbde6e2c090658cab2562b3",
+      "sha1": "6a0e9b2f77709d068384c634b3bfaf06b19debe9",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL3.XA",
+      "size": 917504,
+      "sha256": "1fd7b15d6cb271e85534337f928e70a97c29f54fe836daa7a0ed23ec9d2df6b2",
+      "sha1": "5db0634add3404262b19531fde6bc51b2da0b1a2",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL4.XA",
+      "size": 819200,
+      "sha256": "c294ff61fbcb3472c549b2c13c257874b9ea56ba61b04c5d00dbf58c25415fb9",
+      "sha1": "369334a44380ef2a4597f9e641889d4af29d1d9b",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL5.XA",
+      "size": 393216,
+      "sha256": "bbdaf3ecf5feb3e54a40e66d0749ecf5d91d1fc3ce57aca3f290f3f42f20462a",
+      "sha1": "5b02aa6a0818a3a54ce6f4adccd4b8f29d1d0802",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL6.XA",
+      "size": 786432,
+      "sha256": "ec67eb3082c7602f6b34bc50387a336658b11b2819a444df97aa44770a4ba25c",
+      "sha1": "70b96cfdc4bd72e4c091a6d35ea46ea20688c7b4",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL7.XA",
+      "size": 753664,
+      "sha256": "42e7e74d3a6b33dadf4475baa4ba17e0fe1619e1e37bd9eec6dcf1073657a90e",
+      "sha1": "a40d1fee80b003fea49b04b63a779cc22a617c90",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL8.XA",
+      "size": 983040,
+      "sha256": "56f37e2e07bf6374b710b749c099675daa7db8280b7caaca476eff6065df288c",
+      "sha1": "6d4b8762d4b43dd1226477cda8ba4c364507843a",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WOOL/WOOL9.XA",
+      "size": 589824,
+      "sha256": "2c31b092d1e72e443292091b2d2b0ec8c0d0d4e96c13e108f2e1e2e111b86df2",
+      "sha1": "c4b1da97a64d53ece66cd0c62ef84f982bdd965e",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WORM/WORM0.XA",
+      "size": 655360,
+      "sha256": "29ca3619060af99952b3462e8e98801abac9665abe99433ab9bc68320f512b3c",
+      "sha1": "26c2388edb759887126c9f46b98577b4cbc3c574",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WORM/WORM1.XA",
+      "size": 589824,
+      "sha256": "94fc908dce7e3013ddb95079c916f40a7cab67827b15f780475eb7a6ff3b7bec",
+      "sha1": "860b203ea6c01216dda1ad4f2248c8522d873001",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    },
+    {
+      "path": "XA/WORM/WORM2.XA",
+      "size": 1114112,
+      "sha256": "3342be9483f0818bdab1935073f526200ff49da850a7dec0653e25ba83de1f41",
+      "sha1": "0133a47981500b596a76d2da2eb2508a6c8beebb",
+      "format": "unresolved",
+      "format_evidence": "XA-named audio resource; encoding unresolved",
+      "psx_magic_offsets": []
+    }
+  ]
+}

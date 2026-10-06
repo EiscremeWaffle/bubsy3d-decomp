@@ -13,7 +13,7 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.count <= 512:
         parser.error("--count must be between 1 and 512")
-    manifest = json.loads((ROOT / "config" / "usa.json").read_text(encoding="utf-8"))
+    manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
     for expected in manifest["executables"]:
         path = ROOT / "original" / "usa" / expected["filename"]
         verify_executable(path, expected)

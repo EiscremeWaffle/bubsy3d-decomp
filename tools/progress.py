@@ -72,7 +72,7 @@ def build_report():
     from elftools.elf.elffile import ELFFile
 
     scope = load_json(SCOPE_PATH)
-    manifest = load_json(ROOT / "config" / "usa.json")
+    manifest = load_json(ROOT / "config" / "executable-map.json")
     executables = {entry["filename"]: entry for entry in manifest["executables"]}
     units = []
     for unit in scope["units"]:

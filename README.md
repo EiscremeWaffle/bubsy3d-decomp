@@ -7,11 +7,14 @@ This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having
 This is a research scaffold, not a working source rebuild or a port. No matching
 compiler, linker, SDK version, or complete section layout has been established.
 There are no decompiled functions. A target-derived objdiff report covers only
-the two executable startup routines: 344 code bytes, 0% decompiled. This is not
-a whole-game denominator. Site registration and report publication are pending.
+the startup routines of all 22 recognized executable modules: 3,784 code bytes,
+0% decompiled. This is not a whole-game denominator. Site registration remains
+separate from publishing the report workflow.
 
-The boot executable and the separate MENU.EXE have recorded fingerprints in
-[config/usa.json](config/usa.json). The USA serial is known, but the precise disc
+The boot and menu reference fingerprints are in [config/usa.json](config/usa.json).
+All 22 executable fingerprints, including 20 level modules, are in
+[config/executable-map.json](config/executable-map.json).
+The USA serial is known, but the precise disc
 revision still needs independent verification against a trusted disc inventory.
 Do not label this a confirmed original-release revision based on the serial alone.
 
@@ -31,7 +34,8 @@ python -m venv .venv
 are in the parent folder. On another machine, supply that machine's disc directory.
 On Linux, use `.venv/bin/python` in place of `.\.venv\Scripts\python.exe`.
 
-Setup verifies both executables before copying them to `original/usa/`.
+Setup verifies all 22 executable fingerprints before copying them to `original/usa/`,
+preserving their relative level-folder paths.
 Existing local copies must match and are not overwritten. The original disc
 extraction remains unchanged. No game data is downloaded by these tools.
 
@@ -72,9 +76,36 @@ The snapshot must be regenerated and reviewed locally whenever its scope changes
 The current validator intentionally rejects nonzero matching claims until the
 project establishes source-built objects and replaces this target-only baseline.
 
+## Complete Disc Inventory
+
+The [directory map](docs/disc-map.md) lists all 446 files and 40 directories in
+this extraction, totaling 637,330,169 file bytes. Every file has a SHA256 and SHA1
+fingerprint plus cautious format evidence in [config/disc-map.json](config/disc-map.json).
+
+[config/executable-coverage.json](config/executable-coverage.json) accounts for
+all 15,818,752 loaded executable payload bytes. Only 3,784 are currently verified
+as startup code; the remaining 15,814,968 are explicitly unresolved code/data.
+An inventory or a load region is not a complete internal function map.
+
+To reproduce the maps and update the report using your extracted disc:
+
+```powershell
+python -m tools.map_disc --disc-dir ".." --write-module-maps --write-documentation
+.\.venv\Scripts\python.exe tools/setup.py --disc-dir ".."
+.\.venv\Scripts\python.exe -m tools.progress build
+python -m tools.progress stage
+python -m unittest discover -s tests -v
+```
+
+GitHub Actions publishes a separate `SLUS_001.10_disc_map` metadata artifact.
+decomp.dev consumes the startup report, not the asset-directory inventory; it
+does not display an arbitrary directory tree or count asset bytes as code progress.
+Opaque resource internals, compressed/raw overlays, full code/data boundaries,
+function boundaries, original relocations, and unique shared code remain research tasks.
+
 ## Repository Layout
 
-- `config/`: verified target fingerprints; future reviewed section layouts.
+- `config/`: disc inventory, executable fingerprints, coverage map, and startup report.
 - `tools/`: verification and local analysis setup.
 - `tests/`: binary-free regression tests.
 - `original/`: ignored local executables.
@@ -90,7 +121,7 @@ See [docs/decomp-dev.md](docs/decomp-dev.md) for GitHub and progress-site setup.
 ## Next Research Milestones
 
 1. Independently confirm the USA disc revision and inspect additional loaded code.
-2. Establish code/data/BSS boundaries for both executables and any overlays.
+2. Establish code/data/BSS and function boundaries for all 22 executables and any overlays.
 3. Identify the original compiler, options, assembler, linker, and SDK from evidence.
 4. Produce a byte-identical assembly rebuild of each executable as a baseline.
 5. Replace functions with matching C and generate real objdiff progress reports.

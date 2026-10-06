@@ -14,16 +14,17 @@ class ProgressTests(unittest.TestCase):
     def setUp(self):
         self.scope = load_json(SCOPE_PATH)
         self.report = load_json(SNAPSHOT_PATH)
+        self.expected_code_bytes = sum(int(unit["end"], 16) - int(unit["start"], 16) for unit in self.scope["units"])
 
-    def test_real_snapshot_has_two_zero_match_startup_units(self):
-        self.assertEqual(validate_report(self.report, self.scope), 344)
+    def test_real_snapshot_has_all_declared_zero_match_startup_units(self):
+        self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "publish" / "report.json"
             self.assertEqual(stage_report(output), output)
             self.assertEqual(output.read_bytes(), SNAPSHOT_PATH.read_bytes())
-            self.assertEqual(validate_report(load_json(output), self.scope), 344)
+            self.assertEqual(validate_report(load_json(output), self.scope), self.expected_code_bytes)
 
     def test_rejects_undiscoverable_staged_filename(self):
         with tempfile.TemporaryDirectory() as directory:

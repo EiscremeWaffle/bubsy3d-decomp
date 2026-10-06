@@ -21,9 +21,12 @@ performed automatically by the setup tools.
 
 ## Current Startup-Only Integration
 
-The first real objdiff report is generated locally from two verified target
-objects. Its scope is deliberately limited to the startup routines in SLUS_001.10
-and MENU.EXE, not all of either executable and not the whole game.
+The objdiff report is generated locally from 22 verified startup target objects:
+the boot executable, MENU.EXE, and the 20 level executables. Its scope is limited
+to startup routines, not complete executable code or the whole game.
+The [complete disc/module map](disc-map.md) lists every module's load region and
+all 446 files. [Startup unit metadata](../config/startup-units.json) contains all
+22 startup address ranges; the boot and menu examples are below.
 
 | Unit | Start address | End address (exclusive) | Code bytes |
 | --- | --- | --- | --- |
@@ -31,7 +34,7 @@ and MENU.EXE, not all of either executable and not the whole game.
 | menu/startup | 0x80028F48 | 0x80028FF4 | 172 |
 
 Each range starts at the executable's verified entry point and ends immediately
-after the observed terminal `break` instruction. Both contain initialization,
+after the observed terminal `break` instruction. All contain initialization,
 a BSS-clearing loop, stack/GP setup, and calls to subsequent routines. The words
 immediately following each range are data. Generated splat boundaries were not
 used because they incorrectly classified these entry points as data.
@@ -43,7 +46,7 @@ records, prove a full executable rebuild, or identify the original compiler.
 Reconstructed relocations and a matching compiler remain future work.
 
 There are no source-built base objects, so the report is genuinely 0% decompiled
-within this 344-byte scope. Whole-game progress remains unknown. Objdiff emits
+within this 3,784-byte scope. Whole-game progress remains unknown. Objdiff emits
 100% for empty data denominators; that does not represent any reconstructed data.
 
 Generate and validate the snapshot on Windows x86_64 from the repository root:
@@ -72,6 +75,12 @@ snapshot rather than accessing copyrighted inputs on a public runner. It does
 not automatically measure new C code. Regenerate the snapshot when units change;
 replace the target-only validator when real source matching is introduced.
 
+The workflow also publishes `SLUS_001.10_disc_map` containing the complete file
+inventory, executable fingerprints, address coverage, and human-readable map.
+This is a separate metadata artifact, not a code-progress report. decomp.dev does
+not render arbitrary asset-directory trees. The report lists all recognized
+executables' startup units, while their remaining code/data is explicitly unmapped.
+
 ## Whole-Game Progress Integration
 
 decomp.dev requires actual reports from your default branch before registration.
@@ -86,7 +95,7 @@ described below. Expand coverage before using a whole-game progress label.
    Exclude assembly fallback functions from decompiled-function counts. Unwritten
    units may have no base object, but must still contribute to the total.
 3. Generate `objdiff.json` with every unit, its target path and optional base path.
-   Include both executables and relevant overlays or state a narrower scope clearly.
+   Include all 22 recognized executables and relevant overlays or state a narrower scope clearly.
 4. Run `objdiff-cli report generate -o build/report.json` using a pinned CLI version.
 5. Add these steps after the real build/report steps in GitHub Actions:
 

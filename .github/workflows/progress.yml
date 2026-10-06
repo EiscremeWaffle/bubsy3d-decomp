@@ -27,3 +27,14 @@ jobs:
           path: build/progress/report.json
           if-no-files-found: error
           retention-days: 90
+      - name: Publish complete disc and module map metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: SLUS_001.10_disc_map
+          path: |
+            config/disc-map.json
+            config/executable-map.json
+            config/executable-coverage.json
+            docs/disc-map.md
+          if-no-files-found: error
+          retention-days: 90
