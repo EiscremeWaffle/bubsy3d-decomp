@@ -1,0 +1,25 @@
+{
+  "name": "Bubsy 3D: Furbitten Planet (USA)",
+  "serial": "SLUS-00110",
+  "revision_status": "Local executable fingerprint recorded; disc revision not independently verified",
+  "executables": [
+    {
+      "filename": "SLUS_001.10",
+      "size": 495616,
+      "sha1": "bbae8855270a9b8f8c5ab89fe775e949ab88e0e8",
+      "sha256": "604467ef7317f98b465e75e232d51ba4cd4b1b98ca9e09f27fb95c9e707a3993",
+      "entry_point": "0x80028F5C",
+      "load_address": "0x80010000",
+      "payload_size": "0x00078800"
+    },
+    {
+      "filename": "MENU.EXE",
+      "size": 495616,
+      "sha1": "6db217723a5b671bb04796411265e067c820da09",
+      "sha256": "e3620fd866a4eb052e115218fcce0fd7b889551ed309aa0516dea826cd3b7444",
+      "entry_point": "0x80028F48",
+      "load_address": "0x80010000",
+      "payload_size": "0x00078800"
+    }
+  ]
+}
