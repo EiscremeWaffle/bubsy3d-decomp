@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 from tools.fetch_tools import download_checked
-from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, validate_report
+from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, stage_report, validate_report
 from tools.verify_original import HEADER_SIZE
 
 
@@ -17,6 +17,20 @@ class ProgressTests(unittest.TestCase):
 
     def test_real_snapshot_has_two_zero_match_startup_units(self):
         self.assertEqual(validate_report(self.report, self.scope), 344)
+
+    def test_stages_exact_snapshot_with_discoverable_filename(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "publish" / "report.json"
+            self.assertEqual(stage_report(output), output)
+            self.assertEqual(output.read_bytes(), SNAPSHOT_PATH.read_bytes())
+            self.assertEqual(validate_report(load_json(output), self.scope), 344)
+
+    def test_rejects_undiscoverable_staged_filename(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "startup-report.json"
+            with self.assertRaisesRegex(ValueError, "filename report.json"):
+                stage_report(output)
+            self.assertFalse(output.exists())
 
     def test_rejects_missing_or_duplicate_units(self):
         for units in (self.report["units"][:1], [self.report["units"][0]] * 2):

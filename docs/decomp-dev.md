@@ -61,8 +61,13 @@ invented counts. Only metadata is committed. Original code, generated assembly,
 object files, and downloaded tools remain ignored.
 
 After committing and pushing these integration files to `main`, the
-`Startup progress (scoped snapshot)` workflow validates the snapshot and publishes
-the artifact `SLUS_001.10_startup_report`. It deliberately uses a reviewed local
+`Startup progress (scoped snapshot)` workflow validates the snapshot, stages it as
+`build/progress/report.json`, and publishes it inside the artifact
+`SLUS_001.10_startup_report`. The internal filename must be `report.json`;
+uploading `startup-report.json` directly is not discovered by decomp.dev.
+Only completed default-branch push runs are used for registration, so push the
+workflow fix rather than relying on a manual workflow-dispatch run.
+It deliberately uses a reviewed local
 snapshot rather than accessing copyrighted inputs on a public runner. It does
 not automatically measure new C code. Regenerate the snapshot when units change;
 replace the target-only validator when real source matching is introduced.
@@ -104,16 +109,18 @@ report an assembly-only rebuild as decompiled C.
 After a real report artifact exists on the default branch:
 
 1. Log in with GitHub at https://decomp.dev and visit https://decomp.dev/manage/new.
-2. As a repository admin, select `EiscremeWaffle/bubsy3d-decomp` and configure
-   the PlayStation platform and `Startup progress (scoped snapshot)` workflow.
-   Use `SLUS_001.10_startup_report` for the artifact and `SLUS_001.10_startup`
-   for its version if requested. Title the initial page
-   `Bubsy 3D (USA) - Startup Research Baseline`, with a description stating that
-   only two startup routines are measured. Do not present it as whole-game progress.
+2. As a repository admin, select `EiscremeWaffle/bubsy3d-decomp`, choose the
+   PlayStation platform, and name the initial page
+   `Bubsy 3D: Furbitten Planet (USA) - Startup Research Baseline`.
+   The site discovers the workflow and version automatically from the artifact.
+   After registration, the management page allows changing the workflow and
+   default version (`SLUS_001.10_startup`). Do not present it as whole-game progress.
 3. Optionally install https://github.com/apps/decomp-dev on this repository for
    faster report updates and configurable pull-request progress comments.
 
 Registration and GitHub app authorization require your account and are not done
 by local setup. Avoid adding a badge claiming progress before the project exists.
+Projects below 0.5% matched code are hidden from the public listing, even after
+successful registration. Do not inflate the startup-only baseline to bypass this.
 
 Official guide: https://decomp.wiki/tools/decomp-dev

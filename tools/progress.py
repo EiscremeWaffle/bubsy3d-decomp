@@ -2,6 +2,7 @@ import argparse
 import io
 import json
 from pathlib import Path
+import shutil
 import struct
 import subprocess
 
@@ -126,12 +127,23 @@ def build_report():
     print(f"Saved startup-only report: {total_size} bytes, 0% decompiled. Not whole-game progress.")
 
 
+def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
+    if output_path.name != "report.json":
+        raise ValueError("decomp.dev publication requires the staged filename report.json")
+    validate_report(load_json(SNAPSHOT_PATH), load_json(SCOPE_PATH))
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(SNAPSHOT_PATH, output_path)
+    return output_path
+
+
 def main():
     parser = argparse.ArgumentParser(description="Build or validate the explicitly scoped startup-only progress baseline")
-    parser.add_argument("command", choices=("build", "validate"))
+    parser.add_argument("command", choices=("build", "validate", "stage"))
     args = parser.parse_args()
     if args.command == "build":
         build_report()
+    elif args.command == "stage":
+        print(f"Staged validated report: {stage_report().relative_to(ROOT)}")
     else:
         total_size = validate_report(load_json(SNAPSHOT_PATH), load_json(SCOPE_PATH))
         print(f"Valid target-only snapshot: {total_size} startup bytes; not whole-game progress")
