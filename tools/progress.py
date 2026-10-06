@@ -9,8 +9,8 @@ import subprocess
 from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
 
 
-SCOPE_PATH = ROOT / "config" / "startup-units.json"
-SNAPSHOT_PATH = ROOT / "config" / "startup-report.json"
+SCOPE_PATH = ROOT / "config" / "code-units.json"
+SNAPSHOT_PATH = ROOT / "config" / "code-report.json"
 ZIG = ROOT / "tools" / "bin" / "zig-x86_64-windows-0.14.1" / "zig.exe"
 OBJDIFF = ROOT / "tools" / "bin" / "objdiff-cli.exe"
 
@@ -34,25 +34,30 @@ def extract_startup(data, expected, unit):
     return code
 
 
+def unit_symbols(unit):
+    return unit["symbols"] if "symbols" in unit else [unit]
+
+
 def validate_report(report, scope):
-    expected = {unit["name"]: int(unit["end"], 16) - int(unit["start"], 16) for unit in scope["units"]}
-    symbols = {unit["name"]: unit["symbol"] for unit in scope["units"]}
+    symbols = {unit["name"]: {symbol["symbol"]: int(symbol["end"], 16) - int(symbol["start"], 16) for symbol in unit_symbols(unit)} for unit in scope["units"]}
+    expected = {name: sum(sizes.values()) for name, sizes in symbols.items()}
     units = report.get("units", [])
     if len(units) != len(expected) or {unit["name"] for unit in units} != set(expected):
-        raise ValueError("Report units do not match the documented startup-only scope")
+        raise ValueError("Report units do not match the documented code-map scope")
     total_size = sum(expected.values())
     for unit in units:
         measures = unit["measures"]
         if int(measures.get("total_code", 0)) != expected[unit["name"]]:
             raise ValueError("Report unit code size does not match the verified range")
         functions = unit.get("functions", [])
-        if len(functions) != 1 or int(functions[0]["size"]) != expected[unit["name"]] or functions[0]["name"] != symbols[unit["name"]]:
-            raise ValueError("Each startup unit must contain exactly its one bounded function")
-        if int(measures.get("total_functions", 0)) != 1 or int(measures.get("total_units", 0)) != 1:
-            raise ValueError("Each startup unit must report one function and one unit")
+        actual_symbols = {function["name"]: int(function["size"]) for function in functions}
+        if actual_symbols != symbols[unit["name"]] or len(functions) != len(actual_symbols):
+            raise ValueError("Report symbols do not match the mapped functions and fragments")
+        if int(measures.get("total_functions", 0)) != len(actual_symbols) or int(measures.get("total_units", 0)) != 1:
+            raise ValueError("Report unit function/symbol and unit counts are inconsistent")
     measures = report["measures"]
-    if int(measures.get("total_code", 0)) != total_size or int(measures.get("total_functions", 0)) != len(expected) or int(measures.get("total_units", 0)) != len(expected):
-        raise ValueError("Report totals do not match the startup-only scope")
+    if int(measures.get("total_code", 0)) != total_size or int(measures.get("total_functions", 0)) != sum(len(group) for group in symbols.values()) or int(measures.get("total_units", 0)) != len(expected):
+        raise ValueError("Report totals do not match the code-map scope")
     for measures in [report["measures"], *(unit["measures"] for unit in units)]:
         for field in ("matched_code", "matched_functions", "complete_code", "complete_units", "total_data", "matched_data", "complete_data", "fuzzy_match_percent", "matched_code_percent", "matched_functions_percent", "complete_code_percent"):
             if float(measures.get(field, 0)) != 0:
@@ -79,20 +84,31 @@ def build_report():
         expected = executables[unit["filename"]]
         original = ROOT / "original" / "usa" / unit["filename"]
         verify_executable(original, expected)
-        code = extract_startup(original.read_bytes(), expected, unit)
-        directory = ROOT / "build" / "startup" / unit["name"]
+        data = original.read_bytes()
+        load = int(expected["load_address"], 16)
+        end = load + int(expected["payload_size"], 16)
+        symbols = unit_symbols(unit)
+        pieces = []
+        directives = []
+        for symbol in symbols:
+            start, stop = int(symbol["start"], 16), int(symbol["end"], 16)
+            if start % 4 or stop % 4 or not load <= start < stop <= end:
+                raise ValueError("Code symbol is not aligned inside the loaded executable")
+            offset = HEADER_SIZE + start - load
+            pieces.append(data[offset:offset + stop - start])
+            directives.extend([
+                f'.global {symbol["symbol"]}', f'.type {symbol["symbol"]},@function',
+                f'{symbol["symbol"]}:', f'.incbin "{original.as_posix()}", {offset}, {stop - start}',
+                f'.size {symbol["symbol"]}, . - {symbol["symbol"]}',
+            ])
+        code = b"".join(pieces)
+        directory = ROOT / "build" / "code" / unit["name"]
         directory.mkdir(parents=True, exist_ok=True)
-        payload = directory / "code.bin"
-        payload.write_bytes(code)
         assembly = directory / "target.s"
         assembly.write_text(
             '.section .text,"ax",@progbits\n'
             '.balign 4\n'
-            f'.global {unit["symbol"]}\n'
-            f'.type {unit["symbol"]},@function\n'
-            f'{unit["symbol"]}:\n'
-            f'.incbin "{payload.as_posix()}"\n'
-            f'.size {unit["symbol"]}, . - {unit["symbol"]}\n',
+            + "\n".join(directives) + "\n",
             encoding="utf-8",
         )
         target = directory / "target.o"
@@ -105,9 +121,10 @@ def build_report():
             raise ValueError("Expected a little-endian MIPS-I ELF32 relocatable target")
         if elf.get_section_by_name(".text").data() != code:
             raise ValueError(f"Target object changed the original bytes for {unit['name']}")
-        symbols = elf.get_section_by_name(".symtab").get_symbol_by_name(unit["symbol"])
-        if not symbols or symbols[0]["st_size"] != len(code) or symbols[0]["st_info"]["type"] != "STT_FUNC":
-            raise ValueError("Target function symbol has an incorrect size")
+        for symbol in unit_symbols(unit):
+            matches = elf.get_section_by_name(".symtab").get_symbol_by_name(symbol["symbol"])
+            if not matches or matches[0]["st_size"] != int(symbol["end"], 16) - int(symbol["start"], 16) or matches[0]["st_info"]["type"] != "STT_FUNC":
+                raise ValueError("Target code symbol has an incorrect size or type")
         units.append({
             "name": unit["name"],
             "target_path": target.relative_to(ROOT).as_posix(),
@@ -119,12 +136,12 @@ def build_report():
         "min_version": "3.8.2", "build_target": False, "build_base": False, "units": units,
     }
     (ROOT / "objdiff.json").write_text(json.dumps(configuration, indent=2) + "\n", encoding="utf-8")
-    output = ROOT / "build" / "startup" / "report.json"
+    output = ROOT / "build" / "code" / "report.json"
     subprocess.run([str(OBJDIFF), "report", "generate", "-o", str(output)], cwd=ROOT, check=True)
     report = load_json(output)
     total_size = validate_report(report, scope)
     SNAPSHOT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"Saved startup-only report: {total_size} bytes, 0% decompiled. Not whole-game progress.")
+    print(f"Saved code-map report: {total_size} mapped bytes, 0% decompiled. Whole-game completeness not established.")
 
 
 def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
@@ -137,7 +154,7 @@ def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Build or validate the explicitly scoped startup-only progress baseline")
+    parser = argparse.ArgumentParser(description="Build or validate the explicitly scoped discovered-code progress baseline")
     parser.add_argument("command", choices=("build", "validate", "stage"))
     args = parser.parse_args()
     if args.command == "build":
@@ -146,7 +163,7 @@ def main():
         print(f"Staged validated report: {stage_report().relative_to(ROOT)}")
     else:
         total_size = validate_report(load_json(SNAPSHOT_PATH), load_json(SCOPE_PATH))
-        print(f"Valid target-only snapshot: {total_size} startup bytes; not whole-game progress")
+        print(f"Valid target-only snapshot: {total_size} mapped code bytes; whole-game completeness not established")
 
 
 if __name__ == "__main__":

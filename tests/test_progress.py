@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 from tools.fetch_tools import download_checked
-from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, stage_report, validate_report
+from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE
 
 
@@ -14,9 +14,9 @@ class ProgressTests(unittest.TestCase):
     def setUp(self):
         self.scope = load_json(SCOPE_PATH)
         self.report = load_json(SNAPSHOT_PATH)
-        self.expected_code_bytes = sum(int(unit["end"], 16) - int(unit["start"], 16) for unit in self.scope["units"])
+        self.expected_code_bytes = sum(int(symbol["end"], 16) - int(symbol["start"], 16) for unit in self.scope["units"] for symbol in unit_symbols(unit))
 
-    def test_real_snapshot_has_all_declared_zero_match_startup_units(self):
+    def test_real_snapshot_has_all_declared_zero_match_code_units(self):
         self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):

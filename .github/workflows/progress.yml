@@ -1,4 +1,4 @@
-name: Startup progress (scoped snapshot)
+name: Executable code progress (scoped snapshot)
 
 on:
   push:
@@ -16,14 +16,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test the startup-only baseline validator
+      - name: Test the code-map and report validators
         run: python -m unittest discover -s tests -v
       - name: Validate and stage report with decomp.dev filename
         run: python -m tools.progress stage
-      - name: Publish startup-only report metadata
+      - name: Publish discovered-code report metadata
         uses: actions/upload-artifact@v4
         with:
-          name: SLUS_001.10_startup_report
+          name: SLUS_001.10_code_report
           path: build/progress/report.json
           if-no-files-found: error
           retention-days: 90
@@ -35,6 +35,9 @@ jobs:
             config/disc-map.json
             config/executable-map.json
             config/executable-coverage.json
+            config/code-map.json
+            config/code-units.json
+            docs/code-map.md
             docs/disc-map.md
           if-no-files-found: error
           retention-days: 90

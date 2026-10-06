@@ -5,7 +5,7 @@ import tempfile
 import unittest
 
 from tools.map_disc import inspect_file, matches_startup, render_map, scan_disc
-from tools.progress import ROOT, SCOPE_PATH, load_json
+from tools.progress import ROOT, load_json
 
 
 class DiscMapTests(unittest.TestCase):
@@ -60,7 +60,7 @@ class DiscMapTests(unittest.TestCase):
         inventory = load_json(ROOT / "config" / "disc-map.json")
         manifest = load_json(ROOT / "config" / "executable-map.json")
         coverage = load_json(ROOT / "config" / "executable-coverage.json")
-        scope = load_json(SCOPE_PATH)
+        scope = load_json(ROOT / "config" / "startup-units.json")
         paths = [entry["path"] for entry in inventory["files"]]
         self.assertEqual(paths, sorted(set(paths)))
         self.assertEqual(len(paths), inventory["file_count"])

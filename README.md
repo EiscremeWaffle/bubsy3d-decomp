@@ -6,10 +6,11 @@ This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having
 
 This is a research scaffold, not a working source rebuild or a port. No matching
 compiler, linker, SDK version, or complete section layout has been established.
-There are no decompiled functions. A target-derived objdiff report covers only
-the startup routines of all 22 recognized executable modules: 3,784 code bytes,
-0% decompiled. This is not a whole-game denominator. Site registration remains
-separate from publishing the report workflow.
+There are no decompiled functions. The current target-derived objdiff report maps
+2,876,036 instruction bytes across all 22 recognized executables, grouped into
+10,036 bounded function candidates and 1,154 explicitly labeled reachable fragments.
+It is still 0% decompiled and is not a complete whole-game denominator.
+See the [current executable code map](docs/code-map.md) for evidence and limitations.
 
 The boot and menu reference fingerprints are in [config/usa.json](config/usa.json).
 All 22 executable fingerprints, including 20 level modules, are in
@@ -51,26 +52,33 @@ python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs these tests using synthetic inputs only. It does not need
-the game executables. A separate startup-progress workflow validates and uploads
+the game executables. A separate executable-code workflow validates and uploads
 the checked-in report metadata on pushes to `main`; it does not rebuild the game.
 
-## Startup Progress Baseline
+## Executable Code Baseline
 
 From the repository root on Windows x86_64:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m tools.fetch_tools
+.\.venv\Scripts\python.exe -m tools.code_analysis --functions --write-map
 .\.venv\Scripts\python.exe -m tools.progress build
 .\.venv\Scripts\python.exe -m tools.progress validate
 ```
 
 The downloader fetches checksum-pinned Zig 0.14.1 and objdiff-cli 3.8.2 into
 ignored local storage. These are research tools, not the original game compiler.
-The builder verifies the original executable hashes, extracts reviewed startup
-ranges, and checks MIPS-I ELF32 target bytes against those originals. It generates
-`objdiff.json` locally and saves report metadata to `config/startup-report.json`.
+The analyzer follows control flow and corroborated pointer references with
+rabbitizer and spimdisasm. The builder verifies executable hashes and checks
+selected MIPS-I ELF32 target bytes against those originals. It generates
+`objdiff.json` locally and saves report metadata to `config/code-report.json`.
 No game instructions are included in the tracked report.
+
+The treemap has `functions` and `fragments` groups for each module. Fragments are
+partial code blocks, not proven complete routines; counts include duplicated code
+across modules. The previous 3,784-byte startup-only snapshot remains historical
+metadata. Select version `SLUS_001.10_code` on decomp.dev to see the expanded map.
 
 The snapshot must be regenerated and reviewed locally whenever its scope changes.
 The current validator intentionally rejects nonzero matching claims until the
@@ -83,8 +91,9 @@ this extraction, totaling 637,330,169 file bytes. Every file has a SHA256 and SH
 fingerprint plus cautious format evidence in [config/disc-map.json](config/disc-map.json).
 
 [config/executable-coverage.json](config/executable-coverage.json) accounts for
-all 15,818,752 loaded executable payload bytes. Only 3,784 are currently verified
-as startup code; the remaining 15,814,968 are explicitly unresolved code/data.
+all 15,818,752 loaded executable payload bytes using the original startup baseline.
+The newer [config/code-map.json](config/code-map.json) maps 2,876,036 instruction
+bytes and explicitly lists the other 12,942,716 bytes as unclassified code/data.
 An inventory or a load region is not a complete internal function map.
 
 To reproduce the maps and update the report using your extracted disc:
@@ -92,20 +101,21 @@ To reproduce the maps and update the report using your extracted disc:
 ```powershell
 python -m tools.map_disc --disc-dir ".." --write-module-maps --write-documentation
 .\.venv\Scripts\python.exe tools/setup.py --disc-dir ".."
+.\.venv\Scripts\python.exe -m tools.code_analysis --functions --write-map
 .\.venv\Scripts\python.exe -m tools.progress build
 python -m tools.progress stage
 python -m unittest discover -s tests -v
 ```
 
 GitHub Actions publishes a separate `SLUS_001.10_disc_map` metadata artifact.
-decomp.dev consumes the startup report, not the asset-directory inventory; it
+decomp.dev consumes the executable code report, not the asset-directory inventory; it
 does not display an arbitrary directory tree or count asset bytes as code progress.
 Opaque resource internals, compressed/raw overlays, full code/data boundaries,
 function boundaries, original relocations, and unique shared code remain research tasks.
 
 ## Repository Layout
 
-- `config/`: disc inventory, executable fingerprints, coverage map, and startup report.
+- `config/`: disc inventory, executable fingerprints, discovery maps, and progress reports.
 - `tools/`: verification and local analysis setup.
 - `tests/`: binary-free regression tests.
 - `original/`: ignored local executables.

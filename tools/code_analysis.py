@@ -1,0 +1,387 @@
+import argparse
+from collections import deque
+import json
+import struct
+
+from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
+
+
+def contiguous_ranges(addresses):
+    ranges = []
+    for address in sorted(addresses):
+        if ranges and ranges[-1][1] == address:
+            ranges[-1][1] += 4
+        else:
+            ranges.append([address, address + 4])
+    return ranges
+
+
+def trace_reachable(data, expected, extra_entries=(), extra_functions=(), instruction_factory=None):
+    if instruction_factory is None:
+        import rabbitizer
+
+        instruction_factory = lambda word, address: rabbitizer.Instruction(word, address, rabbitizer.InstrCategory.R3000GTE)
+
+    load = int(expected["load_address"], 16)
+    end = load + int(expected["payload_size"], 16)
+    entry = int(expected["entry_point"], 16)
+    pending = deque([entry, *extra_entries])
+    visited = set()
+    roots = {entry, *extra_functions}
+    unresolved = set()
+
+    def decode(address):
+        if address % 4 or not load <= address < end:
+            return None
+        word = struct.unpack_from("<I", data, HEADER_SIZE + address - load)[0]
+        return instruction_factory(word, address)
+
+    while pending:
+        address = pending.popleft()
+        if address in visited:
+            continue
+        instruction = decode(address)
+        if instruction is None:
+            unresolved.add((address, "control_flow_outside_payload"))
+            continue
+        if not instruction.isValid():
+            unresolved.add((address, "invalid_instruction_on_reachable_path"))
+            continue
+        visited.add(address)
+        if instruction.hasDelaySlot():
+            delay = decode(address + 4)
+            if delay is None or not delay.isValid() or delay.hasDelaySlot():
+                unresolved.add((address, "invalid_delay_slot"))
+                continue
+            visited.add(address + 4)
+        word = struct.unpack_from("<I", data, HEADER_SIZE + address - load)[0]
+        if word & 0xFC00003F == 0x0000000D:
+            continue
+        if instruction.isReturn():
+            continue
+        if instruction.isJumpWithAddress():
+            target = instruction.getInstrIndexAsVram()
+            pending.append(target)
+            if instruction.doesLink():
+                roots.add(target)
+                pending.append(address + 8)
+            continue
+        if instruction.isBranch():
+            target = instruction.getBranchVramGeneric()
+            pending.append(target)
+            if instruction.doesLink():
+                roots.add(target)
+            if not instruction.isUnconditionalBranch() or instruction.doesLink():
+                pending.append(address + 8)
+            continue
+        if instruction.isJump():
+            unresolved.add((address, "indirect_call" if instruction.doesLink() else "indirect_jump"))
+            if instruction.doesLink():
+                pending.append(address + 8)
+            continue
+        pending.append(address + 4)
+    return {
+        "path": expected["filename"],
+        "sha256": expected["sha256"],
+        "load_start": f"0x{load:08X}", "load_end": f"0x{end:08X}",
+        "entry_point": f"0x{entry:08X}",
+        "reachable_code_bytes": len(visited) * 4,
+        "function_entry_candidates": [f"0x{address:08X}" for address in sorted(roots) if address in visited],
+        "ranges": [{"start": f"0x{start:08X}", "end": f"0x{stop:08X}"} for start, stop in contiguous_ranges(visited)],
+        "unresolved": [{"address": f"0x{address:08X}", "reason": reason} for address, reason in sorted(unresolved)],
+    }
+
+
+def analyze_functions(data, expected, discovery):
+    import rabbitizer
+    from spimdisasm import common
+    from spimdisasm.mips.sections import SectionText
+
+    common.GlobalConfig.ENDIAN = common.InputEndian.LITTLE
+    common.GlobalConfig.COMPILER = common.Compiler.PSYQ
+    common.GlobalConfig.ARCHLEVEL = common.ArchLevel.MIPS1
+    common.GlobalConfig.QUIET = True
+    load = int(expected["load_address"], 16)
+    end = load + int(expected["payload_size"], 16)
+    entry_offset = HEADER_SIZE + int(expected["entry_point"], 16) - load
+    startup = struct.unpack_from("<43I", data, entry_offset)
+    common.GlobalConfig.GP_VALUE = None
+    for upper, lower in zip(startup, startup[1:]):
+        if upper & 0xFFFF0000 == 0x3C1C0000 and lower & 0xFFFF0000 == 0x279C0000:
+            immediate = lower & 0xFFFF
+            common.GlobalConfig.GP_VALUE = ((upper & 0xFFFF) << 16) + (immediate if immediate < 0x8000 else immediate - 0x10000)
+            break
+    roots = {int(address, 16) for address in discovery["function_entry_candidates"]}
+    addresses = {address for span in discovery["ranges"] for address in range(int(span["start"], 16), int(span["end"], 16), 4)}
+    context = common.Context()
+    context.changeGlobalSegmentRanges(HEADER_SIZE, HEADER_SIZE + end - load, load, end)
+    for address in roots:
+        symbol = context.globalSegment.addFunction(address, isAutogenerated=False)
+        if address == int(expected["entry_point"], 16):
+            symbol.userDeclaredSize = 172
+    functions = []
+    claimed = set()
+    references = set()
+    address_taken = set()
+    for span in discovery["ranges"]:
+        start, stop = int(span["start"], 16), int(span["end"], 16)
+        section = SectionText(context, HEADER_SIZE + start - load, HEADER_SIZE + stop - load, start, "executable", data, HEADER_SIZE, None)
+        section.instrCat = rabbitizer.InstrCategory.R3000GTE
+        section.analyze()
+        for function in section.symbolList:
+            analyzer = function.instrAnalyzer
+            for offset, target in {**analyzer.constantLoInstrOffset, **analyzer.symbolLoInstrOffset}.items():
+                site = function.vram + offset
+                if site in addresses and (struct.unpack_from("<I", data, HEADER_SIZE + site - load)[0] >> 26) in (9, 13):
+                    address_taken.add((site, target))
+            for kind, mapping in (("indirect_call_reference", analyzer.indirectFunctionCallIntrOffset), ("indirect_jump_reference", analyzer.jumpRegisterIntrOffset)):
+                for offset, target in mapping.items():
+                    site = function.vram + offset
+                    if site in addresses:
+                        references.add((site, target, kind))
+            if function.vram not in roots or function.hasUnimplementedIntrs:
+                continue
+            instructions = function.instructions
+            function_end = function.vram + len(instructions) * 4
+            exits = len(instructions) >= 2 and (instructions[-2].isReturn() or (instructions[-2].isJumpWithAddress() and not instructions[-2].doesLink() and instructions[-2].getInstrIndexAsVram() in roots))
+            if function.vram == int(expected["entry_point"], 16) and function_end == function.vram + 172:
+                exits = True
+            unsafe_branch = any(instruction.isBranch() and not instruction.doesLink() and not function.vram <= instruction.getBranchVramGeneric() < function_end for instruction in instructions)
+            indirect_exit = any(instruction.isJump() and not instruction.isJumpWithAddress() and not instruction.doesLink() and not instruction.isReturn() for instruction in instructions)
+            covered = set(range(function.vram, function_end, 4))
+            if not exits or unsafe_branch or indirect_exit or not covered.issubset(addresses) or covered & claimed:
+                continue
+            claimed.update(covered)
+            functions.append({
+                "start": f"0x{function.vram:08X}", "end": f"0x{function_end:08X}",
+                "size": len(instructions) * 4, "kind": "anchored_function",
+            })
+    fragments = [{"start": f"0x{start:08X}", "end": f"0x{stop:08X}", "size": stop - start, "kind": "reachable_fragment"} for start, stop in contiguous_ranges(addresses - claimed)]
+    discovery["symbols"] = sorted(functions + fragments, key=lambda symbol: int(symbol["start"], 16))
+    discovery["anchored_functions"] = len(functions)
+    discovery["reachable_fragments"] = len(fragments)
+    discovery["indirect_references"] = [{"site": f"0x{site:08X}", "reference": f"0x{target:08X}", "kind": kind} for site, target, kind in sorted(references)]
+    discovery["address_taken_references"] = [{"site": f"0x{site:08X}", "target": f"0x{target:08X}"} for site, target in sorted(address_taken)]
+    return discovery
+
+
+def static_pointer_targets(data, expected, references):
+    import rabbitizer
+
+    load = int(expected["load_address"], 16)
+    end = load + int(expected["payload_size"], 16)
+    entries = set()
+    functions = set()
+    evidence = []
+    for reference in references:
+        slot = int(reference["reference"], 16)
+        count = 1 if reference["kind"] == "indirect_call_reference" else 4096
+        for index in range(count):
+            address = slot + index * 4
+            if address % 4 or not load <= address <= end - 4:
+                break
+            target = struct.unpack_from("<I", data, HEADER_SIZE + address - load)[0]
+            if target % 4 or not load <= target <= end - 4:
+                break
+            word = struct.unpack_from("<I", data, HEADER_SIZE + target - load)[0]
+            instruction = rabbitizer.Instruction(word, target, rabbitizer.InstrCategory.R3000GTE)
+            if word == 0 or not instruction.isValid():
+                break
+            entries.add(target)
+            if reference["kind"] == "indirect_call_reference":
+                functions.add(target)
+            evidence.append({"site": reference["site"], "slot": f"0x{address:08X}", "target": f"0x{target:08X}", "kind": reference["kind"]})
+    return entries, functions, evidence
+
+
+def discover_module(data, expected):
+    entries = set()
+    functions = set()
+    for iteration in range(32):
+        result = analyze_functions(data, expected, trace_reachable(data, expected, entries, functions))
+        discovered, callback_functions, evidence = static_pointer_targets(data, expected, result["indirect_references"])
+        load, end = int(result["load_start"], 16), int(result["load_end"], 16)
+        for reference in result["address_taken_references"]:
+            target = int(reference["target"], 16)
+            if target % 4 or not load <= target <= end - 64:
+                continue
+            words = struct.unpack_from("<16I", data, HEADER_SIZE + target - load)
+            frame = words[0] & 0xFFFF
+            if words[0] & 0xFFFF0000 != 0x27BD0000 or not 0xC000 <= frame <= 0xFFFC or frame % 4:
+                continue
+            if not any(word & 0xFFFF0000 == 0xAFBF0000 for word in words[1:]):
+                continue
+            discovered.add(target)
+            callback_functions.add(target)
+            evidence.append({"site": reference["site"], "target": reference["target"], "kind": "constructed_address_with_stack_frame"})
+        result["static_pointer_evidence"] = evidence
+        result["discovery_passes"] = iteration + 1
+        if discovered.issubset(entries) and callback_functions.issubset(functions):
+            return result
+        entries.update(discovered)
+        functions.update(callback_functions)
+    raise ValueError(f"Indirect-reference discovery did not converge for {expected['filename']}")
+
+
+def validate_discovery(document, manifest):
+    expected = {entry["filename"]: entry for entry in manifest["executables"]}
+    modules = document["modules"]
+    if {module["path"] for module in modules} != set(expected) or len(modules) != len(expected):
+        raise ValueError("Publishing a code map requires discovery results for every executable")
+    for module in modules:
+        original = expected[module["path"]]
+        load = int(original["load_address"], 16)
+        end = load + int(original["payload_size"], 16)
+        if module["sha256"] != original["sha256"] or int(module["load_start"], 16) != load or int(module["load_end"], 16) != end or module["entry_point"] != original["entry_point"]:
+            raise ValueError("Discovery metadata does not match its original executable fingerprint/header")
+        bad_sites = [site for site in module["unresolved"] if site["reason"] not in ("indirect_call", "indirect_jump")]
+        if bad_sites:
+            raise ValueError(f"Invalid or out-of-image control flow needs review in {module['path']}")
+        addresses = set()
+        previous_end = load
+        for span in module["ranges"]:
+            start, stop = int(span["start"], 16), int(span["end"], 16)
+            if start % 4 or stop % 4 or not load <= start < stop <= end or start < previous_end:
+                raise ValueError("Discovery code range is unaligned or outside the executable")
+            previous_end = stop
+            covered = set(range(start, stop, 4))
+            if covered & addresses:
+                raise ValueError("Discovery code ranges overlap")
+            addresses.update(covered)
+        symbols = set()
+        for symbol in module["symbols"]:
+            start, stop = int(symbol["start"], 16), int(symbol["end"], 16)
+            if start % 4 or stop % 4 or stop <= start or symbol["size"] != stop - start or symbol["kind"] not in ("anchored_function", "reachable_fragment"):
+                raise ValueError("Invalid code symbol range, size, or evidence kind")
+            covered = set(range(start, stop, 4))
+            if not covered.issubset(addresses) or covered & symbols:
+                raise ValueError("Code symbols overlap or include untraced bytes")
+            symbols.update(covered)
+        if symbols != addresses or len(addresses) * 4 != module["reachable_code_bytes"]:
+            raise ValueError("Mapped symbols must account for every traced instruction exactly once")
+        entry = int(original["entry_point"], 16)
+        if not set(range(entry, entry + 172, 4)).issubset(addresses):
+            raise ValueError("Discovery lost the already verified startup routine")
+    return sum(module["reachable_code_bytes"] for module in modules)
+
+
+def render_code_map(document):
+    modules = document["modules"]
+    payload = sum(int(module["load_end"], 16) - int(module["load_start"], 16) for module in modules)
+    unresolved = sum(len(module["unresolved"]) for module in modules)
+    lines = [
+        "# Executable Code Discovery Map", "",
+        "This is the current decomp.dev report scope, not a certified whole-game function map.", "",
+        f"- Executable modules: {len(modules)}",
+        f"- Mapped instruction bytes: {document['code_bytes']:,}",
+        f"- Bounded function candidates: {document['bounded_function_count']:,}",
+        f"- Explicitly labeled reachable fragments: {document['fragment_count']:,}",
+        f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
+        f"- Indirect sites requiring further review: {unresolved:,}",
+        "- Decompiled source: 0%", "",
+        "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
+        "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",
+        "[All ranges, symbols, original fingerprints, pointer evidence, and unresolved sites](../config/code-map.json)",
+        "[Report object groups and symbols](../config/code-units.json)", "",
+        "## Discovery Evidence", "",
+        "The pass starts at validated PS-X EXE entry points and follows valid MIPS-I/GTE control flow,",
+        "including delay slots, direct calls, branches, and returns. It iterates statically referenced",
+        "callback slots and candidate jump-table entries in the original image, and constructed code",
+        "addresses corroborated by a stack-frame/return-address-save prologue.", "",
+        "spimdisasm bounds function candidates only within traced contiguous ranges. Supported exits",
+        "and closed branch ranges are required. Other reached instructions remain explicitly named fragments.",
+        "The original bytes of every emitted symbol are checked in relocatable MIPS-I ELF32 objects.", "",
+        "This remains a static-analysis baseline: pointer-table bounds and inferred function identities",
+        "require review. Dynamic callbacks, function pointers assigned at runtime, switch tables not",
+        "resolved statically, dead/unreferenced code, and opaque resource formats can hide further code.",
+        "BIOS/SDK dispatch wrappers also appear among the indirect sites; not every unresolved site",
+        "necessarily represents additional game code. Unclassified bytes are not declared code or data.", "",
+        "The research target objects pack selected original ranges. They do not preserve the full executable",
+        "layout or reconstruct original relocations/translation units. A compiler-matching build is future work.", "",
+        "## Module Coverage", "",
+        "| Module | Code bytes | Bounded candidates | Fragments | Unclassified payload | Indirect sites |",
+        "| --- | ---: | ---: | ---: | ---: | ---: |",
+    ]
+    for module in modules:
+        lines.append(f"| `{module['path']}` | {module['reachable_code_bytes']} | {module['anchored_functions']} | {module['reachable_fragments']} | {module['unclassified_payload_bytes']} | {len(module['unresolved'])} |")
+    lines.extend([
+        "", "## Reproduce and Publish", "", "```powershell",
+        ".\\.venv\\Scripts\\python.exe -m tools.code_analysis --functions --write-map",
+        ".\\.venv\\Scripts\\python.exe -m tools.progress build",
+        "python -m tools.progress stage",
+        "python -m unittest discover -s tests -v", "```", "",
+        "Commit and push the metadata and project code, never original binaries or generated assembly/objects.",
+        "After the push workflow succeeds, select default version `SLUS_001.10_code` in decomp.dev management.",
+        "The report artifact is `SLUS_001.10_code_report`; its inner file is `report.json`.",
+        "See [integration instructions](decomp-dev.md) for publication and site setup.",
+    ])
+    return "\n".join(lines) + "\n"
+
+
+def write_code_maps(document):
+    manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
+    validate_discovery(document, manifest)
+    modules = document["modules"]
+    units = []
+    for module in modules:
+        load, end = int(module["load_start"], 16), int(module["load_end"], 16)
+        cursor = load
+        missing = []
+        for span in module["ranges"]:
+            start, stop = int(span["start"], 16), int(span["end"], 16)
+            if cursor < start:
+                missing.append({"start": f"0x{cursor:08X}", "end": f"0x{start:08X}"})
+            cursor = stop
+        if cursor < end:
+            missing.append({"start": f"0x{cursor:08X}", "end": f"0x{end:08X}"})
+        module["unclassified_ranges"] = missing
+        module["unclassified_payload_bytes"] = end - load - module["reachable_code_bytes"]
+        module_name = "boot" if module["path"] == "SLUS_001.10" else "menu" if module["path"] == "MENU.EXE" else module["path"].split("/")[0].lower()
+        for kind, group, prefix in (("anchored_function", "functions", "func"), ("reachable_fragment", "fragments", "fragment")):
+            symbols = [
+                {"start": symbol["start"], "end": symbol["end"], "symbol": f"{prefix}_{int(symbol['start'], 16):08X}", "kind": kind}
+                for symbol in module["symbols"] if symbol["kind"] == kind
+            ]
+            if symbols:
+                units.append({"name": f"{module_name}/{group}", "filename": module["path"], "symbols": symbols, "kind": kind})
+    document["status"] = "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness"
+    document["code_bytes"] = sum(module["reachable_code_bytes"] for module in modules)
+    document["bounded_function_count"] = sum(module["anchored_functions"] for module in modules)
+    document["fragment_count"] = sum(module["reachable_fragments"] for module in modules)
+    (ROOT / "config" / "code-map.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8")
+    scope = {"scope": document["status"], "artifact": "SLUS_001.10_code_report", "units": units}
+    (ROOT / "config" / "code-units.json").write_text(json.dumps(scope, indent=2) + "\n", encoding="utf-8")
+    (ROOT / "docs" / "code-map.md").write_text(render_code_map(document), encoding="utf-8")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Trace original MIPS code from verified executable entry points")
+    parser.add_argument("--module", help="Limit the probe to one executable's disc path")
+    parser.add_argument("--functions", action="store_true", help="Bound anchored functions with spimdisasm and retain unresolved fragments separately")
+    parser.add_argument("--write-map", action="store_true", help="Publish metadata-only code map and unit definitions after all-module analysis")
+    args = parser.parse_args()
+    manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
+    modules = []
+    for expected in manifest["executables"]:
+        if args.module and expected["filename"] != args.module:
+            continue
+        path = ROOT / "original" / "usa" / expected["filename"]
+        verify_executable(path, expected)
+        result = discover_module(path.read_bytes(), expected) if args.functions else trace_reachable(path.read_bytes(), expected)
+        modules.append(result)
+        print(f"{result['path']}: {result['reachable_code_bytes']} reachable bytes, {len(result['function_entry_candidates'])} entry candidates, {len(result['unresolved'])} unresolved sites", flush=True)
+        if args.functions:
+            print(f"  {result['anchored_functions']} bounded functions; {result['reachable_fragments']} explicitly named fragments", flush=True)
+    if not modules:
+        parser.error("No executable matched --module")
+    output = ROOT / "build" / "code-analysis" / "reachable.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(json.dumps({"status": "Control-flow discovery probe; not a verified complete function map", "modules": modules}, indent=2) + "\n", encoding="utf-8")
+    if args.write_map:
+        if not args.functions or args.module:
+            parser.error("--write-map requires --functions and all executable modules")
+        write_code_maps({"modules": modules})
+
+
+if __name__ == "__main__":
+    main()
