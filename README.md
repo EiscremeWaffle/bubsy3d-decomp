@@ -1,8 +1,6 @@
 # Bubsy 3D: Furbitten Planet (USA)
 
-Early-stage PlayStation matching-decompilation project targeting SLUS-00110.
-
-Repository: https://github.com/EiscremeWaffle/bubsy3d-decomp
+This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having gotten a free subscribtion from work and i wanted to use it for something that so all this wated money doesnt go to true waste so none of this is really my code
 
 ## Status
 
