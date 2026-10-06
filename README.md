@@ -6,7 +6,9 @@ This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having
 
 This is a research scaffold, not a working source rebuild or a port. No matching
 compiler, linker, SDK version, or complete section layout has been established.
-There are no decompiled functions or published progress reports yet.
+There are no decompiled functions. A target-derived objdiff report covers only
+the two executable startup routines: 344 code bytes, 0% decompiled. This is not
+a whole-game denominator. Site registration and report publication are pending.
 
 The boot executable and the separate MENU.EXE have recorded fingerprints in
 [config/usa.json](config/usa.json). The USA serial is known, but the precise disc
@@ -45,7 +47,30 @@ python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs these tests using synthetic inputs only. It does not need
-the game executables and does not publish a decompilation progress report.
+the game executables. A separate startup-progress workflow validates and uploads
+the checked-in report metadata on pushes to `main`; it does not rebuild the game.
+
+## Startup Progress Baseline
+
+From the repository root on Windows x86_64:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m tools.fetch_tools
+.\.venv\Scripts\python.exe -m tools.progress build
+.\.venv\Scripts\python.exe -m tools.progress validate
+```
+
+The downloader fetches checksum-pinned Zig 0.14.1 and objdiff-cli 3.8.2 into
+ignored local storage. These are research tools, not the original game compiler.
+The builder verifies the original executable hashes, extracts reviewed startup
+ranges, and checks MIPS-I ELF32 target bytes against those originals. It generates
+`objdiff.json` locally and saves report metadata to `config/startup-report.json`.
+No game instructions are included in the tracked report.
+
+The snapshot must be regenerated and reviewed locally whenever its scope changes.
+The current validator intentionally rejects nonzero matching claims until the
+project establishes source-built objects and replaces this target-only baseline.
 
 ## Repository Layout
 

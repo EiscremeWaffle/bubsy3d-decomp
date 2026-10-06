@@ -1,0 +1,20 @@
+{
+  "scope": "USA executable startup routines only; not whole-game progress",
+  "artifact": "SLUS_001.10_startup_report",
+  "units": [
+    {
+      "name": "boot/startup",
+      "filename": "SLUS_001.10",
+      "symbol": "boot_entrypoint",
+      "start": "0x80028F5C",
+      "end": "0x80029008"
+    },
+    {
+      "name": "menu/startup",
+      "filename": "MENU.EXE",
+      "symbol": "menu_entrypoint",
+      "start": "0x80028F48",
+      "end": "0x80028FF4"
+    }
+  ]
+}

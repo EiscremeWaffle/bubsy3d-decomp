@@ -1,0 +1,29 @@
+name: Startup progress (scoped snapshot)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test the startup-only baseline validator
+        run: python -m unittest discover -s tests -v
+      - name: Validate locally generated target-only report
+        run: python -m tools.progress validate
+      - name: Publish startup-only report metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: SLUS_001.10_startup_report
+          path: config/startup-report.json
+          if-no-files-found: error
+          retention-days: 90

@@ -1,0 +1,84 @@
+{
+  "measures": {
+    "total_code": "344",
+    "matched_data_percent": 100.0,
+    "total_functions": 2,
+    "complete_data_percent": 100.0,
+    "total_units": 2
+  },
+  "units": [
+    {
+      "name": "boot/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "boot_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    },
+    {
+      "name": "menu/startup",
+      "measures": {
+        "total_code": "172",
+        "matched_data_percent": 100.0,
+        "total_functions": 1,
+        "complete_data_percent": 100.0,
+        "total_units": 1
+      },
+      "sections": [
+        {
+          "name": ".bss",
+          "metadata": {}
+        },
+        {
+          "name": ".data",
+          "metadata": {}
+        },
+        {
+          "name": ".text",
+          "size": "172",
+          "metadata": {}
+        }
+      ],
+      "functions": [
+        {
+          "name": "menu_entrypoint",
+          "size": "172",
+          "metadata": {},
+          "address": "0"
+        }
+      ],
+      "metadata": {
+        "complete": false
+      }
+    }
+  ],
+  "version": 2
+}

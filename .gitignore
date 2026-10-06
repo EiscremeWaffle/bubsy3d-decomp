@@ -3,6 +3,7 @@
 /asm/
 /assets/
 /tools/bin/
+/objdiff.json
 /.venv/
 __pycache__/
 *.pyc
