@@ -42,7 +42,8 @@ slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
 Objdiff credits 32 bytes across these two functions. The four-way model selector
-above remains unmatched, as do the Bubsy actor-update and death-state routines.
+above remains unmatched, as do the Bubsy actor-update and death-state routines;
+the death handler has a clearly marked partial fuzzy candidate, not an exact match.
 The whole-game source percentage therefore still rounds to `0.00%` on decomp.dev.
 
 ## Bubsy Actor Routine
@@ -287,6 +288,9 @@ level IDs `5` and `8` select state `11`. State `11` advances to `12` on even
 parity or `13` on odd parity when the level ID is `4`, `6`, or `8`. These are observed scalar transitions,
 not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
+The report-only `bubsy_handle_death_state` candidate models this scalar
+progression using the death-type global, level ID, and BIOS counter result.
+Objdiff scores it at 8.910417% fuzzy similarity; this is not exact match credit.
 
 `func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
 and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value

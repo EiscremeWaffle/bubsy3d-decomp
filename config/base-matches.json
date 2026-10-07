@@ -31,6 +31,10 @@
         {
           "source": "src/player_model/bubsy_actor_events.c",
           "symbols": ["bubsy_process_actor_event"]
+        },
+        {
+          "source": "src/player_model/bubsy_death_state.c",
+          "symbols": ["bubsy_handle_death_state"]
         }
       ],
       "data_sources": [

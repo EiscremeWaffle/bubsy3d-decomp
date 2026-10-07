@@ -93,3 +93,16 @@ int32_t bubsy_death_state_should_dispatch_counter_entry_event(
         entry_count > 0 &&
         entry_flag_20 == 0;
 }
+
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+extern int32_t func_80082ECC(void);
+
+void bubsy_handle_death_state(void *actor, void *context) {
+    volatile int32_t *death_type = (volatile int32_t *)0x80186458u;
+    volatile const int16_t *level_id = (volatile const int16_t *)0x801D36F0u;
+
+    (void)actor;
+    (void)context;
+    *death_type = bubsy_advance_death_state(*death_type, *level_id, func_80082ECC());
+}
+#endif
