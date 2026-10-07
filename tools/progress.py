@@ -49,6 +49,11 @@ def validate_report(report, scope):
     base_matches = load_json(BASE_MATCHES_PATH)["units"]
     expected_matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
     expected_matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
+    expected_data_by_unit = {
+        name: sum(symbol["size"] for source in spec.get("data_sources", []) for symbol in source["symbols"])
+        for name, spec in base_matches.items()
+    }
+    expected_total_data = sum(expected_data_by_unit.values())
     fuzzy_symbols = {
         name: {symbol for source in spec.get("fuzzy_sources", []) for symbol in source["symbols"]}
         for name, spec in base_matches.items()
@@ -78,6 +83,11 @@ def validate_report(report, scope):
         unit_measures = unit["measures"]
         if int(unit_measures.get("matched_code", 0)) > int(unit_measures.get("total_code", 0)) or int(unit_measures.get("matched_functions", 0)) > int(unit_measures.get("total_functions", 0)):
             raise ValueError("Matched unit measures exceed their target denominator")
+        expected_data = expected_data_by_unit.get(unit["name"], 0)
+        if int(unit_measures.get("total_data", 0)) != expected_data or int(unit_measures.get("matched_data", 0)) != expected_data:
+            raise ValueError("Unit data measures differ from the byte-verified data-symbol allowlist")
+        if int(unit_measures.get("matched_data", 0)) > int(unit_measures.get("total_data", 0)):
+            raise ValueError("Matched data exceeds the unit data denominator")
         exact_bytes = sum(symbol["size"] for symbol in (expected_base["symbols"] if expected_base else []))
         exact_function_count = len(expected_base["symbols"]) if expected_base else 0
         if expected_base:
@@ -93,9 +103,11 @@ def validate_report(report, scope):
     total_measures = report["measures"]
     if int(total_measures.get("matched_code", 0)) != expected_matched_code or int(total_measures.get("matched_functions", 0)) != expected_matched_functions:
         raise ValueError("Aggregate matched measures differ from the byte-verified exact-match allowlist")
+    if int(total_measures.get("total_data", 0)) != expected_total_data or int(total_measures.get("matched_data", 0)) != expected_total_data:
+        raise ValueError("Aggregate data measures differ from the byte-verified data-symbol allowlist")
     if int(total_measures.get("matched_code", 0)) > total_size or int(total_measures.get("matched_functions", 0)) > int(total_measures.get("total_functions", 0)):
         raise ValueError("Aggregate matches exceed the target denominator")
-    if any(float(total_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units", "complete_data", "total_data", "matched_data")):
+    if any(float(total_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units", "complete_data")):
         raise ValueError("Aggregate report claims unsupported complete code or data matches")
     if any(not 0 <= float(measures.get("fuzzy_match_percent", 0)) <= 100 for measures in [total_measures, *(unit["measures"] for unit in units)]):
         raise ValueError("Fuzzy-match percentages must be within 0..100")
@@ -124,6 +136,7 @@ def build_report():
 
     scope = load_json(SCOPE_PATH)
     manifest = load_json(ROOT / "config" / "executable-map.json")
+    base_specs = load_json(BASE_MATCHES_PATH)["units"]
     executables = {entry["filename"]: entry for entry in manifest["executables"]}
     units = []
     for unit in scope["units"]:
@@ -136,6 +149,9 @@ def build_report():
         symbols = unit_symbols(unit)
         pieces = []
         directives = []
+        data_pieces = {}
+        data_directives = []
+        base_spec = base_specs.get(unit["name"], {})
         for symbol in symbols:
             start, stop = int(symbol["start"], 16), int(symbol["end"], 16)
             if start % 4 or stop % 4 or not load <= start < stop <= end:
@@ -147,6 +163,20 @@ def build_report():
                 f'{symbol["symbol"]}:', f'.incbin "{original.as_posix()}", {offset}, {stop - start}',
                 f'.size {symbol["symbol"]}, . - {symbol["symbol"]}',
             ])
+        for source in base_spec.get("data_sources", []):
+            for symbol in source["symbols"]:
+                start, stop = int(symbol["start"], 16), int(symbol["end"], 16)
+                size = int(symbol["size"])
+                if start % 4 or stop % 4 or stop - start != size or not load <= start < stop <= end:
+                    raise ValueError("Data symbol is unaligned or outside the loaded executable")
+                offset = HEADER_SIZE + start - load
+                data_pieces[symbol["name"]] = data[offset:offset + size]
+                data_directives.extend([
+                    f'.section .rodata.{symbol["name"]},"a",@progbits', '.balign 4',
+                    f'.global {symbol["name"]}', f'.type {symbol["name"]},@object',
+                    f'{symbol["name"]}:', f'.incbin "{original.as_posix()}", {offset}, {size}',
+                    f'.size {symbol["name"]}, . - {symbol["name"]}',
+                ])
         code = b"".join(pieces)
         directory = ROOT / "build" / "code" / unit["name"]
         directory.mkdir(parents=True, exist_ok=True)
@@ -154,7 +184,8 @@ def build_report():
         assembly.write_text(
             '.section .text,"ax",@progbits\n'
             '.balign 4\n'
-            + "\n".join(directives) + "\n",
+            + "\n".join(directives) + "\n"
+            + "\n".join(data_directives) + ("\n" if data_directives else ""),
             encoding="utf-8",
         )
         target = directory / "target.o"
@@ -171,20 +202,27 @@ def build_report():
             matches = elf.get_section_by_name(".symtab").get_symbol_by_name(symbol["symbol"])
             if not matches or matches[0]["st_size"] != int(symbol["end"], 16) - int(symbol["start"], 16) or matches[0]["st_info"]["type"] != "STT_FUNC":
                 raise ValueError("Target code symbol has an incorrect size or type")
+        for source in base_spec.get("data_sources", []):
+            for symbol in source["symbols"]:
+                section = elf.get_section_by_name(f'.rodata.{symbol["name"]}')
+                matches = elf.get_section_by_name(".symtab").get_symbol_by_name(symbol["name"])
+                if section is None or section.data() != data_pieces[symbol["name"]] or not matches or matches[0]["st_size"] != symbol["size"] or matches[0]["st_info"]["type"] != "STT_OBJECT":
+                    raise ValueError(f"Target object does not preserve original data symbol {symbol['name']}")
         units.append({
             "name": unit["name"],
             "target_path": target.relative_to(ROOT).as_posix(),
             "metadata": {"complete": False},
         })
-        if unit["name"] in load_json(BASE_MATCHES_PATH)["units"]:
-            base_spec = load_json(BASE_MATCHES_PATH)["units"][unit["name"]]
+        if unit["name"] in base_specs:
             base_object = ROOT / "build" / "base" / unit["name"] / "player_model.o"
             base_object.parent.mkdir(parents=True, exist_ok=True)
             fuzzy_sources = base_spec.get("fuzzy_sources", [])
+            data_sources = base_spec.get("data_sources", [])
             source_to_compile = ROOT / base_spec["source"]
-            if fuzzy_sources:
+            additional_sources = [*fuzzy_sources, *data_sources]
+            if additional_sources:
                 source_to_compile = base_object.parent / "fuzzy_sources.c"
-                includes = [base_spec["source"], *(source["source"] for source in fuzzy_sources)]
+                includes = [base_spec["source"], *(source["source"] for source in additional_sources)]
                 source_to_compile.write_text(
                     "\n".join(f'#include "{source}"' for source in includes) + "\n",
                     encoding="utf-8",
@@ -205,6 +243,13 @@ def build_report():
                 expected_bytes = data[HEADER_SIZE + int(expected_symbol["start"], 16) - load:HEADER_SIZE + int(expected_symbol["end"], 16) - load]
                 if matched_symbol is None or matched_symbol.data() != expected_bytes or len(expected_bytes) != matched["size"]:
                     raise ValueError(f"Player base source does not byte-match original symbol {matched['name']}")
+            for source in data_sources:
+                for matched in source["symbols"]:
+                    matched_symbol = base_elf.get_section_by_name(f'.rodata.{matched["name"]}')
+                    matches = base_elf.get_section_by_name(".symtab").get_symbol_by_name(matched["name"])
+                    expected_bytes = data_pieces[matched["name"]]
+                    if matched_symbol is None or matched_symbol.data() != expected_bytes or not matches or matches[0]["st_size"] != matched["size"] or matches[0]["st_info"]["type"] != "STT_OBJECT":
+                        raise ValueError(f"Player base source does not byte-match original data symbol {matched['name']}")
             units[-1]["base_path"] = base_object.relative_to(ROOT).as_posix()
             units[-1]["metadata"]["source_path"] = base_spec["source"]
         print(f"Verified {unit['name']}: {len(code)} original code bytes", flush=True)
@@ -222,6 +267,7 @@ def build_report():
     print(
         f"Saved code-map report: {total_size} mapped bytes; "
         f"{measures.get('matched_code', 0)} exact matched bytes; "
+        f"{measures.get('matched_data', 0)} exact matched data bytes; "
         f"{measures.get('fuzzy_match_percent', 0):.6f}% fuzzy similarity. "
         "Whole-game completeness not established."
     )
@@ -252,6 +298,7 @@ def main():
             f"Valid code report: {total_size} mapped bytes, "
             f"{int(measures.get('matched_code', 0))} matched bytes, "
             f"{int(measures.get('matched_functions', 0))} exact matched functions, "
+            f"{int(measures.get('matched_data', 0))} exact matched data bytes, "
             f"{float(measures.get('fuzzy_match_percent', 0)):.6f}% fuzzy similarity; "
             "whole-game completeness not established"
         )

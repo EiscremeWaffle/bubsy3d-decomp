@@ -51,7 +51,10 @@ model pointer) match the original L0 bytes exactly. The selector itself remains
 unmatched. These getters contribute 32 matched bytes across two functions to
 objdiff's exact counters (0.001071% of the mapped code). The report also records
 0.010057% fuzzy similarity from explicitly listed partial C candidates; that
-estimate is not byte-exact progress. Whole-game completeness remains unknown.
+estimate is not byte-exact progress. The L0 state-target table contributes 196
+exact matched data bytes separately from code. This metric covers executable
+constants only; disc textures, models, audio, and movies are tracked by the disc
+inventory, not this objdiff C-data count. Whole-game completeness remains unknown.
 Counts include
 duplicate routines across module images, and report function counts include
 fragment placeholders. Objdiff emits 100% for empty data denominators, which
@@ -73,6 +76,9 @@ invented counts. In `config/base-matches.json`, `symbols` is the byte-verified
 exact-match allowlist and alone contributes to `matched_code` and
 `matched_functions`. The separately listed `fuzzy_sources` contribute only to
 objdiff's heuristic `fuzzy_match_percent`; they do not increase exact counters.
+The `data_sources` entries are checked against the original executable and
+contribute only to `total_data`/`matched_data`, not to code bytes or matched
+functions.
 The validator rejects an unlisted fuzzy match and rejects a fuzzy candidate at
 100% until its bytes are independently checked and it is promoted to `symbols`.
 Only metadata is committed. Original code, generated assembly, object files,

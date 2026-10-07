@@ -101,7 +101,9 @@ byte-matched.
 The separate state-ID switch appears in the mapped `func_80036270` range. Its
 dispatch instruction is at `0x800363E4`; it subtracts `2` from the state
 halfword and bounds-checks the resulting index against `49` before loading a
-target from the table at `0x80012B00`. Most entries share a default handler.
+target from the table at `0x80012B00`. The C data symbol
+`player_actor_state_targets` reproduces that 49-pointer, 196-byte table exactly
+and is independently byte-checked in the progress build. Most entries share a default handler.
 The code range has no direct JAL callers and its containing function ownership
 is still under review, so I’m not attributing the switch to the preceding
 `shared_actor_state_dispatch` helper. State `22` calls

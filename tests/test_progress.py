@@ -27,6 +27,11 @@ class ProgressTests(unittest.TestCase):
                 self.assertEqual(int(function["size"]), expected["size"])
                 self.assertEqual(function["fuzzy_match_percent"], 100)
         self.assertEqual(int(self.report["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_symbols))
+        data_symbols = [symbol for source in spec["data_sources"] for symbol in source["symbols"]]
+        expected_data = sum(symbol["size"] for symbol in data_symbols)
+        self.assertEqual(int(self.report["measures"]["total_data"]), expected_data)
+        self.assertEqual(int(self.report["measures"]["matched_data"]), expected_data)
+        self.assertEqual(float(self.report["measures"]["matched_data_percent"]), 100.0)
         exact_names = {symbol["name"] for symbol in expected_symbols}
         fuzzy_names = {symbol for source in spec["fuzzy_sources"] for symbol in source["symbols"]}
         for name in fuzzy_names:
@@ -65,6 +70,13 @@ class ProgressTests(unittest.TestCase):
             measures = report["measures"] if location == "total" else report["units"][0]["measures"]
             measures["total_code"] = "495616"
             with self.subTest(location=location), self.assertRaises(ValueError):
+                validate_report(report, self.scope)
+
+    def test_rejects_wrong_or_missing_exact_data_match(self):
+        for field, value in (("total_data", "195"), ("matched_data", "195")):
+            report = copy.deepcopy(self.report)
+            report["measures"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "data measures differ"):
                 validate_report(report, self.scope)
 
     def test_rejects_invented_progress_in_target_only_unit(self):

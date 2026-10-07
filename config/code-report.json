@@ -4,11 +4,12 @@
     "total_code": "2988972",
     "matched_code": "32",
     "matched_code_percent": 0.0010706022,
+    "total_data": "196",
+    "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11556,
     "matched_functions": 2,
     "matched_functions_percent": 0.017307026,
-    "complete_data_percent": 100.0,
     "total_units": 44
   },
   "units": [
@@ -19,11 +20,12 @@
         "total_code": "225940",
         "matched_code": "32",
         "matched_code_percent": 0.014163052,
+        "total_data": "196",
+        "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 815,
         "matched_functions": 2,
         "matched_functions_percent": 0.24539877,
-        "complete_data_percent": 100.0,
         "total_units": 1
       },
       "sections": [
@@ -34,6 +36,12 @@
         },
         {
           "name": ".data",
+          "fuzzy_match_percent": 100.0,
+          "metadata": {}
+        },
+        {
+          "name": ".rodata.player_actor_state_targets",
+          "size": "196",
           "fuzzy_match_percent": 100.0,
           "metadata": {}
         },

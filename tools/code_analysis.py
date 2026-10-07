@@ -284,6 +284,8 @@ def render_code_map(document):
     matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
     matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
     matched_percent = matched_code / document["code_bytes"] * 100 if document["code_bytes"] else 0
+    data_symbols = [symbol for unit in base_matches.values() for source in unit.get("data_sources", []) for symbol in source["symbols"]]
+    matched_data = sum(symbol["size"] for symbol in data_symbols)
     lines = [
         "# Executable Code Discovery Map", "",
         "This is the current decomp.dev report scope, not a certified whole-game function map.", "",
@@ -294,6 +296,7 @@ def render_code_map(document):
         f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
         f"- Indirect sites requiring further review: {unresolved:,}",
         f"- Exact C matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
+        f"- Exact C data matches configured: {matched_data} bytes across {len(data_symbols)} data symbol(s)",
         "Objdiff reports fuzzy similarity separately in `config/code-report.json`; partial scores do not add exact matched bytes or functions.", "",
         "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
         "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",

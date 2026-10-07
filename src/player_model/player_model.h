@@ -60,6 +60,8 @@ typedef struct PlayerActorSequenceView {
     const PlayerActorSequenceData *sequence_18;
 } PlayerActorSequenceView;
 
+extern const uint32_t player_actor_state_targets[49];
+
 enum {
     PLAYER_SEQUENCE_STATE_SELECTED = 0,
     PLAYER_SEQUENCE_INDEX_PAST_TABLE = 0x11,

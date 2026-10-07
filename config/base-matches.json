@@ -33,6 +33,19 @@
           "symbols": ["bubsy_process_actor_event"]
         }
       ],
+      "data_sources": [
+        {
+          "source": "src/player_model/player_actor_state_table.c",
+          "symbols": [
+            {
+              "name": "player_actor_state_targets",
+              "start": "0x80012B00",
+              "end": "0x80012BC4",
+              "size": 196
+            }
+          ]
+        }
+      ],
       "symbols": [
         {
           "name": "level_get_player_model_mode",

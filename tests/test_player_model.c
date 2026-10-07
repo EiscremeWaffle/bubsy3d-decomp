@@ -181,6 +181,16 @@ static void test_actor_sequence_state_selection(void) {
     assert(actor.state_05 == 9 && actor.cursor_08 == 4);
 }
 
+static void test_actor_state_target_data(void) {
+    assert(sizeof(player_actor_state_targets) == 49 * sizeof(uint32_t));
+    assert(player_actor_state_targets[0] == 0x8003653C);
+    assert(player_actor_state_targets[1] == 0x80036874);
+    assert(player_actor_state_targets[20] == 0x8003677C);
+    assert(player_actor_state_targets[21] == 0x800367E0);
+    assert(player_actor_state_targets[25] == 0x80036768);
+    assert(player_actor_state_targets[48] == 0x800364A0);
+}
+
 static unsigned int move_assertion_count;
 
 static void record_move_limit_assertion(int32_t failed, const char *condition, const char *source_path, uint32_t source_line) {
@@ -334,6 +344,7 @@ int main(void) {
     test_actor_sequence_boundary();
     test_actor_sequence_helpers();
     test_actor_sequence_state_selection();
+    test_actor_state_target_data();
     test_move_request_queue();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
