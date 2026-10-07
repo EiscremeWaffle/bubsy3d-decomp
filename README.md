@@ -18,4 +18,4 @@ Bubsy 3D is in such an odd space being developed before without Mario 64 existin
 Which is find really interesting as one of the very early 3D platformers im curious how it works under the hood.
 
 # Documentation
- Documentation is found in /docs and [doc/readme2.md]
+ Documentation is found in /docs and doc/readme2.md
