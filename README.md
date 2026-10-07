@@ -5,7 +5,9 @@
 [Code Progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?mode=shield&measure=code&label=Code
 [progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp
 
-A early work-in-progress decompilation of Bubsy 3d
+A early work-in-progress decompilation of Bubsy 3d Furbitten Planet.
+
+Spefically USA rev0: `SLUS_001.10`
 
 ## Status
 
