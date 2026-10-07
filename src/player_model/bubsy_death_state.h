@@ -3,7 +3,18 @@
 
 #include <stdint.h>
 
+typedef void (*BubsyDeathStateAssertFailure)(
+    int32_t failed,
+    const char *condition,
+    const char *source_path,
+    uint32_t source_line
+);
+
 int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t counter_value);
+int32_t bubsy_death_state_normalize_initial(
+    int32_t death_state,
+    BubsyDeathStateAssertFailure assert_failure
+);
 int32_t bubsy_death_state_should_dispatch_entry_event(
     int32_t global_gate_3A4,
     uint8_t helper_result_low_byte

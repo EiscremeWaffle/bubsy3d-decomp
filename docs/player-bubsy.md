@@ -275,7 +275,9 @@ source behavior still needs instruction-by-instruction reconstruction.
 
 The scalar state progression observed inside this routine is now translated in
 `bubsy_death_state.c`, without claiming the whole handler. A negative value
-asserts at `../f/bubsy.c:0x912` and is then set to `1`. For state `1`, the result
+calls the assertion callback with condition `gBubsyInfo.deathType >= 0`, source
+`../f/bubsy.c`, line `0x912`, then is set to `1` by
+`bubsy_death_state_normalize_initial`. For state `1`, the result
 of `func_80082ECC() % 3` keeps state `1` at remainder `0`, sets `7` at remainder
 `1`, sets `9` at remainder `2`, and otherwise remains `1`. State `2` stays `2`
 unless the counter remainder is `1`, when it becomes `10`. State `4` maps to

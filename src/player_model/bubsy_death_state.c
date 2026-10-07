@@ -1,9 +1,26 @@
 #include "bubsy_death_state.h"
 
-int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t counter_value) {
-    if (death_state < 0) {
-        death_state = 1;
+int32_t bubsy_death_state_normalize_initial(
+    int32_t death_state,
+    BubsyDeathStateAssertFailure assert_failure
+) {
+    if (death_state >= 0) {
+        return death_state;
     }
+
+    if (assert_failure != 0) {
+        assert_failure(
+            0,
+            "gBubsyInfo.deathType >= 0",
+            "../f/bubsy.c",
+            0x912
+        );
+    }
+    return 1;
+}
+
+int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t counter_value) {
+    death_state = bubsy_death_state_normalize_initial(death_state, 0);
 
     if (death_state == 1) {
         const int32_t remainder = counter_value % 3;

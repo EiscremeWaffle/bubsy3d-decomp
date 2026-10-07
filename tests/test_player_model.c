@@ -504,6 +504,24 @@ static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(7, 8, 0) == 12);
 }
 
+static unsigned int death_assertion_count;
+
+static void record_death_assertion(int32_t failed, const char *condition, const char *source_path, uint32_t source_line) {
+    assert(failed == 0);
+    assert(strcmp(condition, "gBubsyInfo.deathType >= 0") == 0);
+    assert(strcmp(source_path, "../f/bubsy.c") == 0);
+    assert(source_line == 0x912);
+    death_assertion_count++;
+}
+
+static void test_bubsy_death_state_initial_normalization(void) {
+    death_assertion_count = 0;
+    assert(bubsy_death_state_normalize_initial(3, record_death_assertion) == 3);
+    assert(death_assertion_count == 0);
+    assert(bubsy_death_state_normalize_initial(-1, record_death_assertion) == 1);
+    assert(death_assertion_count == 1);
+}
+
 static void test_bubsy_death_state_entry_event_gate(void) {
     assert(bubsy_death_state_should_dispatch_entry_event(-2, 0) == 1);
     assert(bubsy_death_state_should_dispatch_entry_event(-2, 1) == 0);
@@ -556,6 +574,7 @@ int main(void) {
     test_bubsy_actor_update_sequence_index_for_local_state();
     test_bubsy_actor_update_sequence_mode_override();
     test_bubsy_death_state_progression();
+    test_bubsy_death_state_initial_normalization();
     test_bubsy_death_state_entry_event_gate();
 
     failed_state.config = &failed_config;
