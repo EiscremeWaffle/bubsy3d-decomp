@@ -59,12 +59,17 @@ but they do not yet prove the meaning of those IDs or fields. The precise C
 function name, field types, and full gameplay semantics remain unknown. The
 `bubsy_update_actor_state` name is a searchable provisional label, not a
 recovered original symbol. It calls helpers at `0x80052E18` and `0x80052E30` that
-set and clear bit `0x04` in actor byte offset `0x04`. Their straightforward C
-translations live in `player_actor_flags.c` and pass native state tests, but are
-not byte-matched: the available compiler chooses different registers and
-delay-slot instructions. They are now included as explicitly listed fuzzy
-candidates in `config/base-matches.json`; their fuzzy percentages are separate
-from the two byte-verified getters and do not add exact match credit.
+set and clear bit `0x04` in actor byte offset `0x04`. The C translations live in
+`player_actor_flags.c` and pass native state tests. A local GCC 2.7.2-PSX probe
+compiled from this actual source with `-O2 -G8 -msoft-float`, maspsx ASPSX 2.30
+processing, and MIPS-I assembly matches four helpers exactly: flag set at
+`0x80052E18` (24 bytes), flag clear at `0x80052E30` (24), cursor delta at
+`0x80052A84` (28), and previous-cursor-minus-two at `0x80052ABC` (24). The
+sequence-boundary, sequence-remainder, and sequence-state helpers do not match
+in that probe. This isolated result does not identify the game's complete build
+toolchain. The standard progress build still uses Zig/Clang, so all seven remain
+explicitly listed as fuzzy candidates in `config/base-matches.json`; those
+scores do not add exact match credit.
 
 The update entry first reads signed halfword `0x80186454`. If nonzero, it
 forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,

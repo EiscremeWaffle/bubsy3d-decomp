@@ -110,12 +110,26 @@ identifiers. `spimdisasm`'s PSY-Q compiler setting is an analysis configuration,
 not proof that PSY-Q built the game. PSY-Q/SN Systems remains a possible
 historical hypothesis, not a finding.
 
-The only local compiler is Zig 0.14.1's bundled Clang 19; no `ccpsx`, SN Systems,
-or MIPS GCC compiler is installed. Standard ABI/ISA signatures and our limited
-Clang profile sweeps have not uniquely identified the original compiler. The
-exact getter profile is the closest verified build condition so far, not a
-general-purpose matching profile. A legally obtained original SDK/toolchain,
-build scripts, map files, or symbols would materially improve identification.
+The standard report builder uses Zig 0.14.1's bundled Clang 19. A separate,
+ignored local probe bundle provides GCC 2.7.2 built for the PSX; no `ccpsx` or
+SN Systems compiler is available. Compiling the actual `player_actor_flags.c`
+source with `-O2 -G8 -msoft-float`, processing its assembly with maspsx's ASPSX
+2.30 profile, and assembling for MIPS-I reproduces four L0 helpers byte for
+byte: flag set (24 bytes), flag clear (24), cursor delta (28), and previous
+cursor minus two (24). This validates an isolated code-generation candidate,
+not the game's complete build or original compiler. The sequence-boundary,
+sequence-remainder, and sequence-state helpers do not match with this setup.
+Plain C89 probes that embed the full addresses for the two known getters emit
+20-byte functions rather than their 16-byte targets, showing that source and
+addressing form materially affect these comparisons.
+The probe bundle is not tracked or used by the report builder, so report
+progress remains based on its existing Zig/Clang build.
+
+Standard ABI/ISA signatures and limited compiler-profile sweeps have not
+uniquely identified the original compiler. The exact getter profile and this
+GCC helper probe are local matching results, not general-purpose matching
+profiles. A legally obtained original SDK/toolchain, build scripts, map files,
+or symbols would materially improve identification.
 
 After committing and pushing these integration files to `main`, the
 `Executable code progress (scoped snapshot)` workflow validates the snapshot, stages it as
