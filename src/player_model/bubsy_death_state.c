@@ -112,15 +112,59 @@ int32_t bubsy_death_state_should_dispatch_counter_entry_event(
 
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
 extern void *func_80026648(void *actor, void *context);
+extern int32_t func_800222E0(void);
 extern int32_t func_80082ECC(void);
+extern void func_8001B558(
+    int32_t event_id,
+    int32_t property_id,
+    int32_t actor_value,
+    int32_t actor_value_copy,
+    int32_t argument_10,
+    int32_t argument_14,
+    int32_t argument_18,
+    int32_t argument_1C
+);
+extern void func_8004733C(int32_t value);
+extern void func_800556D0(
+    int32_t failed,
+    const char *condition,
+    const char *source_path,
+    uint32_t source_line
+);
 
 void bubsy_handle_death_state(void *actor, void *context) {
     volatile int32_t *death_type = (volatile int32_t *)0x80186458u;
     volatile const int16_t *level_id = (volatile const int16_t *)0x801D36F0u;
+    volatile const int32_t *global_counter = (volatile const int32_t *)0x800BE100u;
+    volatile const uint8_t *state_6462 = (volatile const uint8_t *)0x80186462u;
     volatile uint8_t *actor_bytes = (volatile uint8_t *)actor;
     void *death_info = func_80026648(actor, context);
     BubsyDeathStateRuntimeView runtime;
+    int32_t actor_value;
 
+    if (bubsy_death_state_should_dispatch_entry_event(
+            *global_counter,
+            (uint8_t)func_800222E0()
+        )) {
+        actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
+        func_8001B558(0x1B, 4, actor_value, actor_value, 0, 0, 0, 0);
+        return;
+    }
+    if (bubsy_death_state_should_run_level13_cleanup(*level_id)) {
+        func_8004733C(0);
+        return;
+    }
+    if (!bubsy_death_state_should_run_main_loop(*state_6462)) {
+        return;
+    }
+    if (*death_type < 0) {
+        func_800556D0(
+            0,
+            (const char *)0x80012A20u,
+            (const char *)0x8001298Cu,
+            0x912
+        );
+    }
     *death_type = bubsy_advance_death_state(*death_type, *level_id, func_80082ECC());
 
     runtime.actor_flags_04 = *(volatile uint32_t *)(actor_bytes + 0x04);

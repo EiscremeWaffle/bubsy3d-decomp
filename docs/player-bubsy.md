@@ -289,9 +289,11 @@ level IDs `5` and `8` select state `11`. State `11` advances to `12` on even
 parity or `13` on odd parity when the level ID is `4`, `6`, or `8`. These are observed scalar transitions,
 not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
-The report-only `bubsy_handle_death_state` candidate models this scalar
-progression using the death-type global, level ID, and BIOS counter result.
-Objdiff scores it at 11.34375% fuzzy similarity; this is not exact match credit.
+The report-only `bubsy_handle_death_state` candidate models the verified entry
+gates, death-type scalar progression, and runtime reset, while leaving most
+animation/resource calls unfinished. Objdiff scores it at 15.347917% fuzzy
+similarity; L0/functions fuzzy similarity is 0.26346818% and global fuzzy
+similarity is 0.019916%. None of these fuzzy scores are exact-match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
