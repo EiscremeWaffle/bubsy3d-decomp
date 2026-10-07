@@ -110,20 +110,25 @@ identifiers. `spimdisasm`'s PSY-Q compiler setting is an analysis configuration,
 not proof that PSY-Q built the game. PSY-Q/SN Systems remains a possible
 historical hypothesis, not a finding.
 
-The standard report builder uses Zig 0.14.1's bundled Clang 19. A separate,
-ignored local probe bundle provides GCC 2.7.2 built for the PSX; no `ccpsx` or
-SN Systems compiler is available. Compiling the actual `player_actor_flags.c`
-source with `-O2 -G8 -msoft-float`, processing its assembly with maspsx's ASPSX
-2.30 profile, and assembling for MIPS-I reproduces four L0 helpers byte for
-byte: flag set (24 bytes), flag clear (24), cursor delta (28), and previous
-cursor minus two (24). This validates an isolated code-generation candidate,
-not the game's complete build or original compiler. The sequence-boundary,
-sequence-remainder, and sequence-state helpers do not match with this setup.
+The standard report builder uses Zig 0.14.1's bundled Clang 19. Hash-verified
+PSX GCC bundles from [old-gcc release 0.17](https://github.com/decompals/old-gcc/releases/tag/0.17)
+are staged only under ignored `build/toolchains`; no `ccpsx` or SN Systems
+compiler is available. Compiling the actual `player_actor_flags.c` source with
+`-O2 -G8 -msoft-float`, maspsx ASPSX 2.30 processing, and MIPS-I assembly gives
+the same four exact L0 helper matches with GCC 2.6.3, 2.7.2, and 2.8.1: flag
+set (24 bytes), flag clear (24), cursor delta (28), and previous cursor minus
+two (24). These functions therefore do not distinguish those GCC versions.
+GCC 2.91.66 matches none of the four, including when tested with its PSX
+backend's `-mgpopt -msplit-addresses` options. The sequence-boundary,
+sequence-remainder, and sequence-state helpers do not match under any tested
+version. This validates isolated code-generation candidates, not the game's
+complete build or original compiler.
+
 Plain C89 probes that embed the full addresses for the two known getters emit
 20-byte functions rather than their 16-byte targets, showing that source and
-addressing form materially affect these comparisons.
-The probe bundle is not tracked or used by the report builder, so report
-progress remains based on its existing Zig/Clang build.
+addressing form materially affect these comparisons. The probe bundles are not
+tracked or used by the report builder, so report progress remains based on its
+existing Zig/Clang build.
 
 Standard ABI/ISA signatures and limited compiler-profile sweeps have not
 uniquely identified the original compiler. The exact getter profile and this

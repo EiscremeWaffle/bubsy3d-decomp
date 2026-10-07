@@ -165,13 +165,16 @@ Two additional called helpers make the sequence data handling clearer: the
 140-byte helper at `0x800529F8` returns `entries[cursor] % 100` unless sequence
 data flag `+0x2C` bit `0x04` disables it, and the 28-byte helper at `0x80052A84`
 returns `cursor_08 - previous_cursor_0C`. C versions are covered by signed,
-disabled-flag, and cursor-delta tests. They remain unmatched and their higher-level
-animation meaning is still uncertain.
+disabled-flag, and cursor-delta tests. The GCC sweep matches cursor-delta but not
+the sequence-boundary or remainder helpers. All three remain outside the exact
+allowlist used by the standard Zig/Clang report; their higher-level animation
+meaning is still uncertain.
 
 The 24-byte helper at `0x80052ABC` has 31 direct callers, including the Bubsy
 actor update. It writes the sign-extended halfword at actor offset `0x0C` minus
-2 through its output pointer. The C translation has signed-boundary tests; it is
-not byte-matched and does not add progress credit.
+2 through its output pointer. The C translation has signed-boundary tests and
+matches under the GCC sweep, but the standard Zig/Clang report does not credit
+that local probe as an exact match.
 
 The 136-byte helper at `0x80052AEC` is called by the actor update with sequence
 index `0x309`. It compares the signed index against the signed table length at
