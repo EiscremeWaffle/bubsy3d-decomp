@@ -5,7 +5,7 @@
 [Code Progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?mode=shield&measure=code&label=Code
 [progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp
 
-This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having gotten a free subscribtion from work and i wanted to use it for something that so all this wated money doesnt go to true waste so none of this is really my code
+A early work-in-progress decompilation of Bubsy 3d
 
 ## Status
 
