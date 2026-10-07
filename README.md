@@ -16,3 +16,6 @@ Most of this is done by LLM due to me having gotten a free subscribtion which im
 # Goal & Motivation 
 Bubsy 3D is in such an odd space being developed before without Mario 64 existing yet leading to a incredible different final product
 Which is find really interesting as one of the very early 3D platformers im curious how it works under the hood.
+
+# Documentation
+ Documentation is found in /docs and [doc/readme2.md]
