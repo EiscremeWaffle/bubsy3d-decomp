@@ -373,6 +373,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80024EBC",
+          "end": "0x80024F2C",
+          "symbol": "game_enqueue_move_request",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80024F2C",
           "end": "0x800250CC",
           "symbol": "func_80024F2C",
@@ -1797,7 +1803,13 @@
         {
           "start": "0x800529F8",
           "end": "0x80052A84",
-          "symbol": "func_800529F8",
+          "symbol": "player_actor_read_sequence_remainder",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80052A84",
+          "end": "0x80052AA0",
+          "symbol": "player_actor_read_cursor_delta",
           "kind": "anchored_function"
         },
         {

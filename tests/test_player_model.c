@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "bubsy_actor_events.h"
+#include "move_requests.h"
 #include "player_model.h"
 
 static const char *loaded_path;
@@ -71,7 +72,7 @@ static void test_actor_flag_helpers(void) {
 
 static void test_actor_sequence_boundary(void) {
     const int32_t entries[] = {250, -1, 350, 50};
-    const PlayerActorSequenceData sequence = {{0, 0, 0, 0}, entries};
+    PlayerActorSequenceData sequence = {.entries = entries};
     PlayerActorSequenceView actor = {0};
     uint8_t result = 0xFF;
 
@@ -110,6 +111,56 @@ static void test_actor_sequence_boundary(void) {
     result = 0xFF;
     assert(player_actor_sequence_boundary_reached(&actor, &result) == 0);
     assert(result == 0);
+}
+
+static void test_actor_sequence_helpers(void) {
+    const int32_t entries[] = {250, -101, 350};
+    PlayerActorSequenceData sequence = {.entries = entries};
+    PlayerActorSequenceView actor = {0};
+    int32_t result = 0;
+
+    actor.sequence_18 = &sequence;
+    actor.cursor_08 = 0;
+    assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
+    assert(result == 50);
+    actor.cursor_08 = 1;
+    assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
+    assert(result == -1);
+
+    sequence.flags_2C = 0x04;
+    result = -1;
+    assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
+    assert(result == 0);
+
+    actor.cursor_08 = 12;
+    actor.previous_cursor_0C = 9;
+    assert(player_actor_read_cursor_delta(&actor, &result) == 0);
+    assert(result == 3);
+}
+
+static unsigned int move_assertion_count;
+
+static void record_move_limit_assertion(int32_t failed, const char *condition, const char *source_path, uint32_t source_line) {
+    assert(failed == 1);
+    assert(strcmp(condition, "gMoveRequestCount < MAX_MOVE_REQUEST_COUNT") == 0);
+    assert(strcmp(source_path, "../f/game.c") == 0);
+    assert(source_line == 0xB01);
+    move_assertion_count++;
+}
+
+static void test_move_request_queue(void) {
+    int requests[31] = {0};
+    void *entries[31] = {0};
+    GameMoveRequestQueue queue = {29, entries};
+    move_assertion_count = 0;
+
+    assert(game_enqueue_move_request(&queue, &requests[0], record_move_limit_assertion) == 29 * 4);
+    assert(queue.count == 30 && entries[29] == &requests[0]);
+    assert(move_assertion_count == 0);
+
+    assert(game_enqueue_move_request(&queue, &requests[1], record_move_limit_assertion) == 30 * 4);
+    assert(queue.count == 31 && entries[30] == &requests[1]);
+    assert(move_assertion_count == 1);
 }
 
 typedef struct EventCallLog {
@@ -189,6 +240,8 @@ int main(void) {
     test_model_selection(1, 1, "PLISWIM.TZP");
     test_actor_flag_helpers();
     test_actor_sequence_boundary();
+    test_actor_sequence_helpers();
+    test_move_request_queue();
     test_actor_event_dispatch();
 
     failed_state.config = &failed_config;

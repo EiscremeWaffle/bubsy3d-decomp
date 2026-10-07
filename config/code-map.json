@@ -6,7 +6,7 @@
       "load_start": "0x80010000",
       "load_end": "0x800BE800",
       "entry_point": "0x8004EB64",
-      "reachable_code_bytes": 235840,
+      "reachable_code_bytes": 235980,
       "function_entry_candidates": [
         "0x80010000",
         "0x80010038",
@@ -76,6 +76,7 @@
         "0x8002269C",
         "0x8002278C",
         "0x80022B5C",
+        "0x80024EBC",
         "0x80024F2C",
         "0x800250CC",
         "0x80026398",
@@ -318,6 +319,7 @@
         "0x8005290C",
         "0x800529D0",
         "0x800529F8",
+        "0x80052A84",
         "0x80052ABC",
         "0x80052AEC",
         "0x80052B74",
@@ -948,7 +950,7 @@
           "end": "0x80022BE0"
         },
         {
-          "start": "0x80024F2C",
+          "start": "0x80024EBC",
           "end": "0x8002516C"
         },
         {
@@ -1277,7 +1279,7 @@
         },
         {
           "start": "0x800529F8",
-          "end": "0x80052A84"
+          "end": "0x80052AA0"
         },
         {
           "start": "0x80052ABC",
@@ -3006,6 +3008,14 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80024EBC",
+          "end": "0x80024F2C",
+          "size": 112,
+          "kind": "anchored_function",
+          "symbol": "game_enqueue_move_request",
+          "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
+        },
+        {
           "start": "0x80024F2C",
           "end": "0x800250CC",
           "size": 416,
@@ -4473,7 +4483,17 @@
           "start": "0x800529F8",
           "end": "0x80052A84",
           "size": 140,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "player_actor_read_sequence_remainder",
+          "evidence": "140-byte helper has 11 direct callers; when sequence-data flag +0x2C bit 0x04 is clear, returns the signed remainder of entries[actor+0x08] modulo 100 through an output pointer."
+        },
+        {
+          "start": "0x80052A84",
+          "end": "0x80052AA0",
+          "size": 28,
+          "kind": "anchored_function",
+          "symbol": "player_actor_read_cursor_delta",
+          "evidence": "28-byte helper has 3 direct callers and writes actor signed halfword +0x08 minus signed halfword +0x0C to the output pointer."
         },
         {
           "start": "0x80052ABC",
@@ -7786,7 +7806,7 @@
           "kind": "anchored_function"
         }
       ],
-      "anchored_functions": 796,
+      "anchored_functions": 798,
       "reachable_fragments": 64,
       "indirect_references": [
         {
@@ -8647,6 +8667,14 @@
         {
           "site": "0x80022790",
           "target": "0x8009EC8C"
+        },
+        {
+          "site": "0x80024EE0",
+          "target": "0x80012168"
+        },
+        {
+          "site": "0x80024EE8",
+          "target": "0x800120AC"
         },
         {
           "site": "0x80024F64",
@@ -13671,6 +13699,16 @@
       ],
       "manual_roots": [
         {
+          "address": "0x80024EBC",
+          "symbol": "game_enqueue_move_request",
+          "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < MAX_MOVE_REQUEST_COUNT, stores request pointers in the 0x80185A6C array, increments the count, and returns the slot byte offset"
+        },
+        {
+          "address": "0x80024EBC",
+          "symbol": "game_enqueue_move_request",
+          "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
+        },
+        {
           "address": "0x8003539C",
           "symbol": "bubsy_update_actor_state",
           "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."
@@ -13719,6 +13757,16 @@
           "address": "0x8005290C",
           "symbol": "player_actor_sequence_boundary_reached",
           "evidence": "196-byte routine reads actor fields +0x04, +0x05, +0x07, +0x08, +0x0E and a sequence pointer at +0x18; branches on table sentinels -4..-1 and a signed divide-by-100 threshold. Semantic name is provisional."
+        },
+        {
+          "address": "0x800529F8",
+          "symbol": "player_actor_read_sequence_remainder",
+          "evidence": "140-byte helper has 11 direct callers; when sequence-data flag +0x2C bit 0x04 is clear, returns the signed remainder of entries[actor+0x08] modulo 100 through an output pointer."
+        },
+        {
+          "address": "0x80052A84",
+          "symbol": "player_actor_read_cursor_delta",
+          "evidence": "28-byte helper has 3 direct callers and writes actor signed halfword +0x08 minus signed halfword +0x0C to the output pointer."
         },
         {
           "address": "0x8002B138",
@@ -15301,7 +15349,7 @@
         },
         {
           "start": "0x80022BE0",
-          "end": "0x80024F2C"
+          "end": "0x80024EBC"
         },
         {
           "start": "0x8002516C",
@@ -15632,7 +15680,7 @@
           "end": "0x800529F8"
         },
         {
-          "start": "0x80052A84",
+          "start": "0x80052AA0",
           "end": "0x80052ABC"
         },
         {
@@ -16456,7 +16504,7 @@
           "end": "0x800BE800"
         }
       ],
-      "unclassified_payload_bytes": 478912
+      "unclassified_payload_bytes": 478772
     },
     {
       "path": "L1/L1.EXE",
@@ -218561,7 +218609,7 @@
     }
   ],
   "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
-  "code_bytes": 2981616,
-  "bounded_function_count": 10370,
+  "code_bytes": 2981756,
+  "bounded_function_count": 10372,
   "fragment_count": 1167
 }

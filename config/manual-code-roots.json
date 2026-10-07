@@ -4,6 +4,16 @@
   "modules": {
     "L0/L0.EXE": [
       {
+        "address": "0x80024EBC",
+        "symbol": "game_enqueue_move_request",
+        "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < MAX_MOVE_REQUEST_COUNT, stores request pointers in the 0x80185A6C array, increments the count, and returns the slot byte offset"
+      },
+      {
+        "address": "0x80024EBC",
+        "symbol": "game_enqueue_move_request",
+        "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
+      },
+      {
         "address": "0x8003539C",
         "symbol": "bubsy_update_actor_state",
         "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."
@@ -52,6 +62,16 @@
         "address": "0x8005290C",
         "symbol": "player_actor_sequence_boundary_reached",
         "evidence": "196-byte routine reads actor fields +0x04, +0x05, +0x07, +0x08, +0x0E and a sequence pointer at +0x18; branches on table sentinels -4..-1 and a signed divide-by-100 threshold. Semantic name is provisional."
+      },
+      {
+        "address": "0x800529F8",
+        "symbol": "player_actor_read_sequence_remainder",
+        "evidence": "140-byte helper has 11 direct callers; when sequence-data flag +0x2C bit 0x04 is clear, returns the signed remainder of entries[actor+0x08] modulo 100 through an output pointer."
+      },
+      {
+        "address": "0x80052A84",
+        "symbol": "player_actor_read_cursor_delta",
+        "evidence": "28-byte helper has 3 direct callers and writes actor signed halfword +0x08 minus signed halfword +0x0C to the output pointer."
       },
       {
         "address": "0x8002B138",

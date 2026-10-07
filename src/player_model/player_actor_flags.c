@@ -31,3 +31,19 @@ int32_t player_actor_sequence_boundary_reached(const PlayerActorSequenceView *ac
     *result = actor->threshold_0E >= current_entry / 100;
     return 0;
 }
+
+int32_t player_actor_read_sequence_remainder(const PlayerActorSequenceView *actor, int32_t *remainder_out) {
+    if ((actor->sequence_18->flags_2C & 0x04) != 0) {
+        *remainder_out = 0;
+        return 0;
+    }
+
+    const int32_t entry = actor->sequence_18->entries[actor->cursor_08];
+    *remainder_out = entry % 100;
+    return 0;
+}
+
+int32_t player_actor_read_cursor_delta(const PlayerActorSequenceView *actor, int32_t *delta_out) {
+    *delta_out = actor->cursor_08 - actor->previous_cursor_0C;
+    return 0;
+}

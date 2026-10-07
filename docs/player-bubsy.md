@@ -74,6 +74,12 @@ Otherwise it compares the cursor-derived value directly to the field at `0x0E`.
 The C translation `player_actor_sequence_boundary_reached` has host tests for
 these branches, but the underlying concept may be animation timing, movement
 sequencing, or another actor-sequence protocol; that meaning is not established.
+Two additional called helpers make the sequence data handling clearer: the
+140-byte helper at `0x800529F8` returns `entries[cursor] % 100` unless sequence
+data flag `+0x2C` bit `0x04` disables it, and the 28-byte helper at `0x80052A84`
+returns `cursor_08 - previous_cursor_0C`. C versions are covered by signed,
+disabled-flag, and cursor-delta tests. They remain unmatched and their higher-level
+animation meaning is still uncertain.
 
 ## Actor Event Dispatch
 
@@ -81,13 +87,9 @@ The actor update calls `0x80037214` with mode `0` and the actor pointer. The
 helper reads the current event through the actor component and consults a
 runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
 
-- Mode `0`, runtime mode `0`, event `0x3E0`, and state not `3`: select property
 	`0x35`, set actor flag `0x04`, and dispatch with flags `0`.
-- Runtime mode `1` and event `0x157` (when the special branch is reached):
 	select property `0x54`, set actor flag `0x04`, and dispatch with flags `0`.
-- Other supported mode `0/1` paths select property `0x3E0` or `0x157` according
 	to runtime mode, set flag `0x04`, and dispatch with flag `0x40000000`.
-- Other update modes return without dispatch.
 
 The C reconstruction in `bubsy_actor_events.c` keeps event/property IDs and
 engine operations explicit through callbacks. Their gameplay meanings and the
@@ -125,3 +127,16 @@ The rebuilt code map includes the manually evidenced roots from
 [manual-code-roots.json](../config/manual-code-roots.json). The decomp.dev code
 percentage counts only the two byte-verified getters until further source code
 is matched.
+
+## Movement Request Queue
+
+The shared L0 routine at `0x80024EBC` is tagged by an assertion as
+`../f/game.c:0xB01`. It checks the signed request count against 30, calls the
+assertion helper on overflow, then increments the 16-bit count and stores the
+request pointer in the array based at `0x80185A6C`. Its return value is the
+request-slot byte offset (`old_count * 4`). Six direct callers exist in L0.
+
+This queue is now represented by `game_enqueue_move_request` in
+`src/game/move_requests.c`, with tests for count 29 and overflow at 30. It is
+shared game infrastructure; no direct call from `bubsy_update_actor_state` has
+been established, so it is not yet labeled Bubsy-specific movement behavior.
