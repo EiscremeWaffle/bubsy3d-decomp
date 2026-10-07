@@ -254,7 +254,13 @@ through the matching `0x158`-byte stack-frame epilogue at `0x80037AF4`.
 At entry, event `0x1B` with property `4` is dispatched when `$gp+0x3A4` is
 `-2` and `func_800222E0()` returns a zero low byte. Level `0x13` then takes a
 separate cleanup-and-return branch. These gates are translated and tested; the
-cleanup and event helpers themselves remain unidentified.
+cleanup and event helpers themselves remain unidentified. Otherwise, nonzero
+byte `0x80186462` jumps directly to the `0x80037AF0` epilogue; this skip gate is
+translated in `bubsy_death_state_should_run_main_loop`.
+The following table-driven block is reached only when `$gp+0x3A4` is `-2` or
+`-1`; this range check is translated in
+`bubsy_death_state_uses_counter_entry_list`. The counter's meaning remains
+unknown.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its

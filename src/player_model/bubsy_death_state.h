@@ -9,5 +9,7 @@ int32_t bubsy_death_state_should_dispatch_entry_event(
     uint8_t helper_result_low_byte
 );
 int32_t bubsy_death_state_should_run_level13_cleanup(int16_t level_id);
+int32_t bubsy_death_state_should_run_main_loop(uint8_t state_6462);
+int32_t bubsy_death_state_uses_counter_entry_list(int32_t global_counter_3A4);
 
 #endif
