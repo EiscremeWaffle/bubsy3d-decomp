@@ -10,7 +10,10 @@ This is the current decomp.dev report scope, not a certified whole-game function
 - Indirect sites requiring further review: 2,389
 - Exact C matches configured: 32 bytes across 2 function(s) (0.001071%)
 
-- Exact C data matches configured: 196 bytes across 1 data symbol(s)
+- Exact executable C data matches configured: 196 bytes across 1 data symbol(s)
+- Other disc files: 621,466,361 bytes across 424 files (inventory only; not objdiff data coverage)
+- Unclassified executable payload: 12,829,780 bytes (code or data; not counted as data)
+No section map is present in the PS-X EXE headers; total executable data size is not yet known.
 Objdiff reports fuzzy similarity separately in `config/code-report.json`; partial scores do not add exact matched bytes or functions.
 
 Counts include repeated routines in separate executable images; they are not unique source-function counts.

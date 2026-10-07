@@ -79,6 +79,12 @@ objdiff's heuristic `fuzzy_match_percent`; they do not increase exact counters.
 The `data_sources` entries are checked against the original executable and
 contribute only to `total_data`/`matched_data`, not to code bytes or matched
 functions.
+This denominator is currently limited to identified executable data symbols.
+PS-X EXE headers provide a load address and payload size but no section map; all
+22 recorded headers also have zero memory-fill/BSS fields. The remaining
+12,829,780 loaded bytes are unclassified code-or-data, not a measured data total.
+The separate disc inventory records 621,466,361 bytes across 424 non-EXE files;
+those resource files are not part of objdiff's C-data metric.
 The validator rejects an unlisted fuzzy match and rejects a fuzzy candidate at
 100% until its bytes are independently checked and it is promoted to `symbols`.
 Only metadata is committed. Original code, generated assembly, object files,

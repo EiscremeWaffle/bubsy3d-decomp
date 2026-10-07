@@ -281,11 +281,15 @@ def render_code_map(document):
     payload = sum(int(module["load_end"], 16) - int(module["load_start"], 16) for module in modules)
     unresolved = sum(len(module["unresolved"]) for module in modules)
     base_matches = json.loads((ROOT / "config" / "base-matches.json").read_text(encoding="utf-8"))["units"]
+    disc_map = json.loads((ROOT / "config" / "disc-map.json").read_text(encoding="utf-8"))
+    executable_map = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
     matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
     matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
     matched_percent = matched_code / document["code_bytes"] * 100 if document["code_bytes"] else 0
     data_symbols = [symbol for unit in base_matches.values() for source in unit.get("data_sources", []) for symbol in source["symbols"]]
     matched_data = sum(symbol["size"] for symbol in data_symbols)
+    other_disc_file_bytes = disc_map["total_file_bytes"] - sum(entry["size"] for entry in executable_map["executables"])
+    other_disc_file_count = disc_map["file_count"] - len(executable_map["executables"])
     lines = [
         "# Executable Code Discovery Map", "",
         "This is the current decomp.dev report scope, not a certified whole-game function map.", "",
@@ -296,7 +300,10 @@ def render_code_map(document):
         f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
         f"- Indirect sites requiring further review: {unresolved:,}",
         f"- Exact C matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
-        f"- Exact C data matches configured: {matched_data} bytes across {len(data_symbols)} data symbol(s)",
+        f"- Exact executable C data matches configured: {matched_data} bytes across {len(data_symbols)} data symbol(s)",
+        f"- Other disc files: {other_disc_file_bytes:,} bytes across {other_disc_file_count} files (inventory only; not objdiff data coverage)",
+        f"- Unclassified executable payload: {payload - document['code_bytes']:,} bytes (code or data; not counted as data)",
+        "No section map is present in the PS-X EXE headers; total executable data size is not yet known.",
         "Objdiff reports fuzzy similarity separately in `config/code-report.json`; partial scores do not add exact matched bytes or functions.", "",
         "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
         "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",
