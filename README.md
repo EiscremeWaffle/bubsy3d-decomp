@@ -1,5 +1,6 @@
 # Bubsy 3D: Furbitten Planet (USA)
-[<img_src="https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?w=512&h=256" width="512" height="256">][Progress]
+[<img src="https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?w=512&h=256" width="512" height="256">][Progress]
+
 
 This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having gotten a free subscribtion from work and i wanted to use it for something that so all this wated money doesnt go to true waste so none of this is really my code
 
