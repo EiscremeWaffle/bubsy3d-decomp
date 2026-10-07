@@ -145,3 +145,15 @@ int32_t player_actor_shared_state_make_mode23_plan(
     }
     return 1;
 }
+
+int32_t player_actor_state23_should_dispatch_event_17(
+    uint32_t actor_flags,
+    uint8_t state_6463,
+    int32_t sequence_value
+) {
+    return sequence_value == 0x29A &&
+        (actor_flags & 0x2000u) == 0 &&
+        state_6463 != 1 &&
+        state_6463 != 2 &&
+        state_6463 != 4;
+}

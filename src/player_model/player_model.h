@@ -123,5 +123,10 @@ int32_t player_actor_shared_state_make_mode23_plan(
     uint8_t runtime_mode,
     PlayerActorSharedStateMode23Plan *plan_out
 );
+int32_t player_actor_state23_should_dispatch_event_17(
+    uint32_t actor_flags,
+    uint8_t state_6463,
+    int32_t sequence_value
+);
 
 #endif
