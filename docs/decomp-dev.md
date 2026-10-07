@@ -21,9 +21,10 @@ performed automatically by the setup tools.
 
 ## Current Discovered-Code Integration
 
-The report now contains 44 object groups across all 22 executable images:
-`functions` and `fragments` for each module. It maps 2,876,036 instruction bytes,
-with 10,036 bounded function candidates and 1,154 explicitly labeled fragments.
+The report contains 44 object groups across all 22 executable images:
+`functions` and `fragments` for each module. The current map includes 2,981,616
+instruction bytes, with 10,370 bounded function candidates and 1,167 explicitly
+labeled fragments.
 It is no longer startup-only, but it is still an incomplete static code-discovery
 baseline, not a whole-game code/data or original translation-unit map.
 
@@ -44,8 +45,10 @@ selected ranges for reporting; they do not preserve the original loaded layout,
 reconstruct relocations, or establish the original compiler. Those are prerequisites
 for future source-matching work, not achievements of this baseline.
 
-There are no source-built base objects, so the report is genuinely 0% decompiled
-within its mapped scope. Whole-game progress remains unknown. Counts include
+The initial shared player-model selector reconstruction is in `src/player_model/`
+and has a passing native harness, but it is not yet built as a matched base object.
+The report therefore remains genuinely 0% decompiled within its mapped scope.
+Whole-game progress remains unknown. Counts include
 duplicate routines across module images, and report function counts include
 fragment placeholders. Objdiff emits 100% for empty data denominators, which
 does not represent reconstructed data.

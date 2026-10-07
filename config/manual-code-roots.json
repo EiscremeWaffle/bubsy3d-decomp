@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "scope": "Analyst-confirmed player-model roots from the shared level source outside initial-entry reachability",
+  "modules": {
+    "L0/L0.EXE": [
+      {
+        "address": "0x8003539C",
+        "symbol": "bubsy_update_actor_state",
+        "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."
+      },
+      {
+        "address": "0x8003737C",
+        "symbol": "bubsy_handle_death_state",
+        "evidence": "Bounded routine 0x8003737C..0x80037AF8; validates gBubsyInfo.deathType >= 0 at ../f/bubsy.c line 0x912 and reads/writes related actor/game-state globals. Semantic function name remains provisional."
+      },
+      {
+        "address": "0x80026398",
+        "symbol": "level_initialize_player_model",
+        "evidence": "MIPS stack-frame prologue and matching epilogue at 0x80026620; calls model selector at 0x800296B4; source assertion references ../f/level.c line 0xE99"
+      },
+      {
+        "address": "0x800296B4",
+        "symbol": "level_select_player_model_resource",
+        "evidence": "Function body selects BUB.TZP/PLISKIN.TZP or BUBSWIM.TZP/PLISWIM.TZP; matching epilogue at 0x8002978C; source assertion references ../f/level.c line 0x495"
+      },
+      {
+        "address": "0x8002B138",
+        "symbol": "level_reload_player_model",
+        "evidence": "MIPS stack-frame prologue and matching epilogue at 0x8002B54C; calls model selector at 0x8002B1A4; source assertion references ../f/level.c line 0x809"
+      }
+    ]
+  }
+}

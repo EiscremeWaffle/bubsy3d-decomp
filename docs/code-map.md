@@ -3,11 +3,11 @@
 This is the current decomp.dev report scope, not a certified whole-game function map.
 
 - Executable modules: 22
-- Mapped instruction bytes: 2,876,036
-- Bounded function candidates: 10,036
-- Explicitly labeled reachable fragments: 1,154
-- Unclassified executable payload bytes: 12,942,716
-- Indirect sites requiring further review: 2,368
+- Mapped instruction bytes: 2,981,616
+- Bounded function candidates: 10,370
+- Explicitly labeled reachable fragments: 1,167
+- Unclassified executable payload bytes: 12,837,136
+- Indirect sites requiring further review: 2,389
 - Decompiled source: 0%
 
 Counts include repeated routines in separate executable images; they are not unique source-function counts.
@@ -15,6 +15,7 @@ Fragment symbols are code-block placeholders, not declarations of complete funct
 
 [All ranges, symbols, original fingerprints, pointer evidence, and unresolved sites](../config/code-map.json)
 [Report object groups and symbols](../config/code-units.json)
+[Player-specific first pass and evidence](player-bubsy.md)
 
 ## Discovery Evidence
 
@@ -40,7 +41,7 @@ layout or reconstruct original relocations/translation units. A compiler-matchin
 
 | Module | Code bytes | Bounded candidates | Fragments | Unclassified payload | Indirect sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `L0/L0.EXE` | 130260 | 462 | 51 | 584492 | 104 |
+| `L0/L0.EXE` | 235840 | 796 | 64 | 478912 | 125 |
 | `L1/L1.EXE` | 130260 | 462 | 51 | 629548 | 104 |
 | `L10/L10.EXE` | 130260 | 462 | 51 | 621356 | 104 |
 | `L11/L11.EXE` | 130260 | 462 | 51 | 625452 | 104 |

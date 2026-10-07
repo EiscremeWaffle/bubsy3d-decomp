@@ -18,3 +18,7 @@ jobs:
           python-version: '3.12'
       - name: Test executable verifier with synthetic inputs
         run: python -m unittest discover -s tests -v
+      - name: Compile and test player-model selection
+        run: |
+          cc -std=c11 -Wall -Wextra -Werror -Isrc/player_model src/player_model/player_model.c tests/test_player_model.c -o /tmp/test_player_model
+          /tmp/test_player_model

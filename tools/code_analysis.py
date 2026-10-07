@@ -195,10 +195,18 @@ def static_pointer_targets(data, expected, references):
 
 
 def discover_module(data, expected):
-    entries = set()
-    functions = set()
+    manual_roots = json.loads((ROOT / "config" / "manual-code-roots.json").read_text(encoding="utf-8"))
+    named_roots = manual_roots["modules"].get(expected["filename"], [])
+    entries = {int(root["address"], 16) for root in named_roots}
+    functions = set(entries)
     for iteration in range(32):
         result = analyze_functions(data, expected, trace_reachable(data, expected, entries, functions))
+        for symbol in result["symbols"]:
+            for root in named_roots:
+                if symbol["kind"] == "anchored_function" and symbol["start"] == root["address"]:
+                    symbol["symbol"] = root["symbol"]
+                    symbol["evidence"] = root["evidence"]
+        result["manual_roots"] = named_roots
         discovered, callback_functions, evidence = static_pointer_targets(data, expected, result["indirect_references"])
         load, end = int(result["load_start"], 16), int(result["load_end"], 16)
         for reference in result["address_taken_references"]:
@@ -257,6 +265,9 @@ def validate_discovery(document, manifest):
             if not covered.issubset(addresses) or covered & symbols:
                 raise ValueError("Code symbols overlap or include untraced bytes")
             symbols.update(covered)
+        for root in module.get("manual_roots", []):
+            if not any(symbol["start"] == root["address"] and symbol.get("symbol") == root["symbol"] for symbol in module["symbols"]):
+                raise ValueError(f"Manual code root did not produce a bounded function: {root['symbol']}")
         if symbols != addresses or len(addresses) * 4 != module["reachable_code_bytes"]:
             raise ValueError("Mapped symbols must account for every traced instruction exactly once")
         entry = int(original["entry_point"], 16)
@@ -282,7 +293,8 @@ def render_code_map(document):
         "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
         "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",
         "[All ranges, symbols, original fingerprints, pointer evidence, and unresolved sites](../config/code-map.json)",
-        "[Report object groups and symbols](../config/code-units.json)", "",
+        "[Report object groups and symbols](../config/code-units.json)",
+        "[Player-specific first pass and evidence](player-bubsy.md)", "",
         "## Discovery Evidence", "",
         "The pass starts at validated PS-X EXE entry points and follows valid MIPS-I/GTE control flow,",
         "including delay slots, direct calls, branches, and returns. It iterates statically referenced",
@@ -339,7 +351,7 @@ def write_code_maps(document):
         module_name = "boot" if module["path"] == "SLUS_001.10" else "menu" if module["path"] == "MENU.EXE" else module["path"].split("/")[0].lower()
         for kind, group, prefix in (("anchored_function", "functions", "func"), ("reachable_fragment", "fragments", "fragment")):
             symbols = [
-                {"start": symbol["start"], "end": symbol["end"], "symbol": f"{prefix}_{int(symbol['start'], 16):08X}", "kind": kind}
+                {"start": symbol["start"], "end": symbol["end"], "symbol": symbol.get("symbol", f"{prefix}_{int(symbol['start'], 16):08X}"), "kind": kind}
                 for symbol in module["symbols"] if symbol["kind"] == kind
             ]
             if symbols:

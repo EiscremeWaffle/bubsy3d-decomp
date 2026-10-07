@@ -6,11 +6,15 @@ This is the bginning of a decomp of Bubsy 3D mostly done by LLM due to me having
 
 This is a research scaffold, not a working source rebuild or a port. No matching
 compiler, linker, SDK version, or complete section layout has been established.
-There are no decompiled functions. The current target-derived objdiff report maps
-2,876,036 instruction bytes across all 22 recognized executables, grouped into
-10,036 bounded function candidates and 1,154 explicitly labeled reachable fragments.
-It is still 0% decompiled and is not a complete whole-game denominator.
+One C reconstruction now covers the shared Bubsy/Pliskin normal/swimming model
+selection routine, with a passing native test harness. It is not yet built as a
+matching base object, so decomp.dev remains 0% decompiled. The current map traces
+2,981,616 instruction bytes across all 22 recognized executables, grouped into
+10,370 bounded function candidates and 1,167 explicitly labeled reachable fragments.
+It is still not a complete whole-game denominator.
 See the [current executable code map](docs/code-map.md) for evidence and limitations.
+The first player-specific source reconstruction is documented in
+[docs/player-bubsy.md](docs/player-bubsy.md).
 
 The boot and menu reference fingerprints are in [config/usa.json](config/usa.json).
 All 22 executable fingerprints, including 20 level modules, are in
@@ -92,8 +96,8 @@ fingerprint plus cautious format evidence in [config/disc-map.json](config/disc-
 
 [config/executable-coverage.json](config/executable-coverage.json) accounts for
 all 15,818,752 loaded executable payload bytes using the original startup baseline.
-The newer [config/code-map.json](config/code-map.json) maps 2,876,036 instruction
-bytes and explicitly lists the other 12,942,716 bytes as unclassified code/data.
+The newer [config/code-map.json](config/code-map.json) maps 2,981,616 instruction
+bytes and explicitly lists the other 12,837,136 bytes as unclassified code/data.
 An inventory or a load region is not a complete internal function map.
 
 To reproduce the maps and update the report using your extracted disc:

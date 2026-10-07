@@ -93,6 +93,16 @@ class CodeAnalysisTests(unittest.TestCase):
     def test_readable_code_map_matches_current_discovery(self):
         self.assertEqual((ROOT / "docs" / "code-map.md").read_text(encoding="utf-8"), render_code_map(self.document))
 
+    def test_manual_player_roots_are_present_and_bounded(self):
+        roots = load_json(ROOT / "config" / "manual-code-roots.json")["modules"]["L0/L0.EXE"]
+        module = next(item for item in self.document["modules"] if item["path"] == "L0/L0.EXE")
+        for root in roots:
+            with self.subTest(symbol=root["symbol"]):
+                symbol = next(item for item in module["symbols"] if item.get("symbol") == root["symbol"])
+                self.assertEqual(symbol["start"], root["address"])
+                self.assertEqual(symbol["kind"], "anchored_function")
+                self.assertTrue(root["evidence"])
+
     def one_module(self):
         module = copy.deepcopy(self.document["modules"][0])
         manifest = {"executables": [entry for entry in self.manifest["executables"] if entry["filename"] == module["path"]]}
