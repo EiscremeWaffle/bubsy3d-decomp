@@ -331,6 +331,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800222EC",
+          "end": "0x80022484",
+          "symbol": "func_800222EC",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80022484",
           "end": "0x80022544",
           "symbol": "func_80022484",
@@ -361,9 +367,33 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800226C0",
+          "end": "0x800226E4",
+          "symbol": "func_800226C0",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800226E4",
+          "end": "0x80022744",
+          "symbol": "func_800226E4",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002278C",
           "end": "0x800227A4",
           "symbol": "func_8002278C",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800227A4",
+          "end": "0x80022944",
+          "symbol": "func_800227A4",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80022944",
+          "end": "0x80022B5C",
+          "symbol": "func_80022944",
           "kind": "anchored_function"
         },
         {
@@ -532,6 +562,12 @@
           "start": "0x80029164",
           "end": "0x8002925C",
           "symbol": "func_80029164",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002925C",
+          "end": "0x8002944C",
+          "symbol": "func_8002925C",
           "kind": "anchored_function"
         },
         {
@@ -763,6 +799,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8002D5AC",
+          "end": "0x8002D65C",
+          "symbol": "func_8002D5AC",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002DA44",
           "end": "0x8002DBD4",
           "symbol": "func_8002DA44",
@@ -913,6 +955,24 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800358C8",
+          "end": "0x80035ACC",
+          "symbol": "shared_actor_state_dispatch",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80035FE4",
+          "end": "0x80036018",
+          "symbol": "func_80035FE4",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8003697C",
+          "end": "0x80037214",
+          "symbol": "shared_actor_state_2_handler",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80037214",
           "end": "0x80037350",
           "symbol": "bubsy_process_actor_event",
@@ -934,6 +994,12 @@
           "start": "0x80037AFC",
           "end": "0x80037B08",
           "symbol": "func_80037AFC",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80037D14",
+          "end": "0x80038368",
+          "symbol": "shared_actor_state_23_handler",
           "kind": "anchored_function"
         },
         {
@@ -1381,6 +1447,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8004DE4C",
+          "end": "0x8004DE68",
+          "symbol": "func_8004DE4C",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8004DE68",
           "end": "0x8004DE9C",
           "symbol": "func_8004DE68",
@@ -1815,13 +1887,13 @@
         {
           "start": "0x80052ABC",
           "end": "0x80052AD4",
-          "symbol": "func_80052ABC",
+          "symbol": "player_actor_write_previous_cursor_minus_two",
           "kind": "anchored_function"
         },
         {
           "start": "0x80052AEC",
           "end": "0x80052B74",
-          "symbol": "func_80052AEC",
+          "symbol": "player_actor_select_sequence_state",
           "kind": "anchored_function"
         },
         {
@@ -1882,6 +1954,12 @@
           "start": "0x80053180",
           "end": "0x800531D8",
           "symbol": "func_80053180",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80053270",
+          "end": "0x8005327C",
+          "symbol": "func_80053270",
           "kind": "anchored_function"
         },
         {
@@ -2125,9 +2203,21 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800547C8",
+          "end": "0x800548A0",
+          "symbol": "func_800547C8",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800548A0",
           "end": "0x80054978",
           "symbol": "func_800548A0",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80054978",
+          "end": "0x800549E8",
+          "symbol": "func_80054978",
           "kind": "anchored_function"
         },
         {
@@ -2212,6 +2302,12 @@
           "start": "0x800550A4",
           "end": "0x80055280",
           "symbol": "func_800550A4",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80055280",
+          "end": "0x8005536C",
+          "symbol": "func_80055280",
           "kind": "anchored_function"
         },
         {
@@ -2860,6 +2956,12 @@
           "start": "0x80062CD4",
           "end": "0x80062D4C",
           "symbol": "func_80062CD4",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80062D4C",
+          "end": "0x80062D88",
+          "symbol": "func_80062D4C",
           "kind": "anchored_function"
         },
         {

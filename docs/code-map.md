@@ -3,12 +3,12 @@
 This is the current decomp.dev report scope, not a certified whole-game function map.
 
 - Executable modules: 22
-- Mapped instruction bytes: 2,981,756
-- Bounded function candidates: 10,372
+- Mapped instruction bytes: 2,988,972
+- Bounded function candidates: 10,389
 - Explicitly labeled reachable fragments: 1,167
-- Unclassified executable payload bytes: 12,836,996
+- Unclassified executable payload bytes: 12,829,780
 - Indirect sites requiring further review: 2,389
-- Exact C matches configured: 32 bytes across 2 function(s) (0.001073%)
+- Exact C matches configured: 32 bytes across 2 function(s) (0.001071%)
 
 Counts include repeated routines in separate executable images; they are not unique source-function counts.
 Fragment symbols are code-block placeholders, not declarations of complete functions.
@@ -42,7 +42,7 @@ pinned Clang MIPS-II scheduling profile; this does not establish the original ga
 
 | Module | Code bytes | Bounded candidates | Fragments | Unclassified payload | Indirect sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `L0/L0.EXE` | 235980 | 798 | 64 | 478772 | 125 |
+| `L0/L0.EXE` | 243196 | 815 | 64 | 471556 | 125 |
 | `L1/L1.EXE` | 130260 | 462 | 51 | 629548 | 104 |
 | `L10/L10.EXE` | 130260 | 462 | 51 | 621356 | 104 |
 | `L11/L11.EXE` | 130260 | 462 | 51 | 625452 | 104 |

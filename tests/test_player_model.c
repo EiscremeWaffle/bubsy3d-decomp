@@ -2,7 +2,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "bubsy_actor_update.h"
 #include "bubsy_actor_events.h"
+#include "bubsy_death_state.h"
 #include "move_requests.h"
 #include "player_model.h"
 
@@ -136,6 +138,47 @@ static void test_actor_sequence_helpers(void) {
     actor.previous_cursor_0C = 9;
     assert(player_actor_read_cursor_delta(&actor, &result) == 0);
     assert(result == 3);
+
+    actor.previous_cursor_0C = -3;
+    assert(player_actor_write_previous_cursor_minus_two(&actor, &result) == 0);
+    assert(result == -5);
+    actor.previous_cursor_0C = INT16_MAX;
+    assert(player_actor_write_previous_cursor_minus_two(&actor, &result) == 0);
+    assert(result == INT16_MAX - 2);
+}
+
+static void test_actor_sequence_state_selection(void) {
+    const int32_t entries[] = {-3, 0x12345, 0};
+    PlayerActorSequenceData sequence = {
+        .entries = entries,
+        .entry_count = 2,
+    };
+    PlayerActorSequenceView actor = {
+        .sequence_18 = &sequence,
+        .state_05 = 9,
+        .cursor_08 = 4,
+        .unknown_0A = 6,
+        .previous_cursor_0C = 5,
+        .threshold_0E = 7,
+    };
+
+    assert(player_actor_select_sequence_state(&actor, 0) == PLAYER_SEQUENCE_STATE_SELECTED);
+    assert(actor.state_05 == -3);
+    assert(actor.cursor_08 == 2 && actor.previous_cursor_0C == 2);
+    assert(actor.unknown_0A == 0x2345 && actor.threshold_0E == 1);
+
+    actor.state_05 = 9;
+    actor.cursor_08 = 4;
+    actor.unknown_0A = 6;
+    actor.previous_cursor_0C = 5;
+    actor.threshold_0E = 7;
+    assert(player_actor_select_sequence_state(&actor, 1) == PLAYER_SEQUENCE_ENTRY_NOT_NEGATIVE);
+    assert(actor.state_05 == 9 && actor.cursor_08 == 4);
+    assert(actor.unknown_0A == 6 && actor.previous_cursor_0C == 5);
+    assert(actor.threshold_0E == 7);
+
+    assert(player_actor_select_sequence_state(&actor, 2) == PLAYER_SEQUENCE_INDEX_PAST_TABLE);
+    assert(actor.state_05 == 9 && actor.cursor_08 == 4);
 }
 
 static unsigned int move_assertion_count;
@@ -230,6 +273,55 @@ static void test_actor_event_dispatch(void) {
     assert(log.selected_count == 0 && log.flag_count == 0 && log.dispatch_count == 0);
 }
 
+static void test_bubsy_actor_update_entry_gate(void) {
+    BubsyActorUpdateActorView actor = {0};
+    BubsyActorUpdateEnvironment environment = {0, 7, 9, 12};
+    uint8_t local_state = 0xFF;
+
+    assert(bubsy_actor_update_entry_gate(&actor, 0, &environment, &local_state) == BUBSY_ACTOR_UPDATE_CONTINUE);
+    assert(local_state == 0 && environment.actor_event_guard_6460 == 0);
+    assert(environment.update_mode_647A == 7 && environment.sequence_counter_38C == 12);
+
+    actor.update_state_10 = 0x120;
+    environment.actor_event_guard_6460 = 4;
+    assert(bubsy_actor_update_entry_gate(&actor, 1, &environment, &local_state) == BUBSY_ACTOR_UPDATE_SKIP);
+    assert(local_state == 1 && environment.update_mode_647A == 0);
+    assert(environment.sequence_counter_38C == 0 && environment.actor_event_guard_6460 == 4);
+
+    actor.update_state_10 = 0x200;
+    environment.update_gate_6454 = 1;
+    environment.update_mode_647A = 7;
+    environment.sequence_counter_38C = 12;
+    assert(bubsy_actor_update_entry_gate(&actor, 1, &environment, &local_state) == BUBSY_ACTOR_UPDATE_CONTINUE);
+    assert(local_state == 0 && actor.update_state_10 == 0);
+    assert(environment.update_mode_647A == 7 && environment.sequence_counter_38C == 12);
+    assert(environment.actor_event_guard_6460 == 0);
+}
+
+static void test_bubsy_death_state_progression(void) {
+    assert(bubsy_advance_death_state(-1, 0, 0) == 1);
+    assert(bubsy_advance_death_state(1, 0, 0) == 1);
+    assert(bubsy_advance_death_state(1, 0, 1) == 7);
+    assert(bubsy_advance_death_state(1, 0, 2) == 9);
+    assert(bubsy_advance_death_state(1, 0, -1) == 1);
+    assert(bubsy_advance_death_state(2, 0, 0) == 2);
+    assert(bubsy_advance_death_state(2, 0, 1) == 10);
+    assert(bubsy_advance_death_state(2, 0, -1) == 2);
+    assert(bubsy_advance_death_state(3, 6, 0) == 3);
+    assert(bubsy_advance_death_state(4, 4, 0) == 6);
+    assert(bubsy_advance_death_state(4, 7, 0) == 6);
+    assert(bubsy_advance_death_state(4, 9, 0) == 6);
+    assert(bubsy_advance_death_state(4, 18, 0) == 6);
+    assert(bubsy_advance_death_state(4, 6, 0) == 8);
+    assert(bubsy_advance_death_state(4, 8, 0) == 12);
+    assert(bubsy_advance_death_state(4, 8, 1) == 13);
+    assert(bubsy_advance_death_state(4, 5, 0) == 4);
+    assert(bubsy_advance_death_state(11, 4, 0) == 12);
+    assert(bubsy_advance_death_state(11, 4, 1) == 13);
+    assert(bubsy_advance_death_state(7, 5, 0) == 11);
+    assert(bubsy_advance_death_state(7, 8, 0) == 12);
+}
+
 int main(void) {
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
@@ -241,8 +333,11 @@ int main(void) {
     test_actor_flag_helpers();
     test_actor_sequence_boundary();
     test_actor_sequence_helpers();
+    test_actor_sequence_state_selection();
     test_move_request_queue();
     test_actor_event_dispatch();
+    test_bubsy_actor_update_entry_gate();
+    test_bubsy_death_state_progression();
 
     failed_state.config = &failed_config;
     failed_state.is_swimming = 0;

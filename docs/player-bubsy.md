@@ -65,6 +65,85 @@ not byte-matched: the available compiler chooses different registers and
 delay-slot instructions. They are kept out of the getter base object so fuzzy
 similarity cannot be mistaken for verified matching progress.
 
+The update entry first reads signed halfword `0x80186454`. If nonzero, it
+forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,
+nonzero update mode `a1` instead clears byte `0x8018647A` and `$gp+0x38C`. A
+nonzero actor `+0x10` then takes the direct epilogue path. Otherwise the update
+clears byte `0x80186460`, dispatches actor events in mode `0`, and computes the
+current sequence key as actor-component halfword `+0x0C - 2`.
+
+The entry gate is translated in `bubsy_actor_update.c` and covered by host tests
+for the zero-gate, nonzero-actor-state, and forced-clear branches. It represents
+only this entry slice; the rest of `bubsy_update_actor_state` remains incomplete
+and the slice is not byte-matched.
+
+Actor byte `+0x04` bits `0x80` and `0x100` steer distinct sequence paths. On
+the `0x80` path, when `$gp+0x7EC` is zero and the current key is not `0x309`,
+the update calls `player_actor_select_sequence_state` with index `0x309`; a
+nonzero result triggers the assertion at `../f/bubsy.c:0x41A`. In the later
+local-state path, it chooses sequence index `0x35`, `0x9A`, or `0x54` based on
+`$gp+0x7EC` and actor mask `0x818`. A nonzero result from that selection
+triggers `../f/bubsy.c:0x495`; the update then sets actor flag `0x04` and calls
+the shared 48-caller sequence routine at `0x80052BDC` with mode `0`. These
+branches and IDs are now instruction-grounded, but their gameplay labels
+(movement, animation, interaction, or scene state) remain unresolved.
+
+Immediately following that updater is the shared routine now mapped as
+`shared_actor_state_dispatch` (`0x800358C8..0x80035ACC`). It has eight direct
+callers and takes an actor pointer, a pointer to a halfword state ID, and a
+mode; observed callers use modes `0`, `1`, and `2`, so it is not Bubsy-only.
+It derives a key from component halfword `+0x0C`, tests actor mask `0x1100`,
+updates component fields `+0x30/+0x34`, and calls shared engine helpers. Its
+gameplay role remains unresolved; this function is mapped but not translated or
+byte-matched.
+
+The separate state-ID switch appears in the mapped `func_80036270` range. Its
+dispatch instruction is at `0x800363E4`; it subtracts `2` from the state
+halfword and bounds-checks the resulting index against `49` before loading a
+target from the table at `0x80012B00`. Most entries share a default handler.
+The code range has no direct JAL callers and its containing function ownership
+is still under review, so I’m not attributing the switch to the preceding
+`shared_actor_state_dispatch` helper. State `22` calls
+`bubsy_update_actor_state` in mode `0` when actor `+0x10` is zero; state `27`
+calls `bubsy_handle_death_state`.
+
+State `2` calls a separate `shared_actor_state_2_handler` at `0x8003697C`,
+which returns at `0x80037214`. It has its own `0xE8`-byte frame and no other
+direct callers were found. It reads player model-mode/configuration data and
+calls shared actor/model helpers; its gameplay purpose is still unresolved.
+
+State `23` reaches `shared_actor_state_23_handler` at `0x80037D14`, which
+returns at `0x80038364` after the `jr` delay slot. It has one direct caller.
+Its first path compares the supplied sequence value with `0x29A`, checks actor
+`+0x10` mask `0x2000` and mode byte `0x80186463`, and can call `0x80038C0C`,
+`0x800226C0`, and emit event `0x17`. Other paths inspect component bytes
+`+0x2C`, `+0x00`, and `+0x0C` and mutate shared transition state. Its full
+interaction meaning remains unresolved; it is mapped but untranslated and
+unmatched.
+
+The non-default jump-table destinations are:
+
+| State IDs | Handler block | Verified behavior |
+| --- | --- | --- |
+| `2` | `0x8003653C` | Calls `shared_actor_state_2_handler`; handler semantics unresolved. |
+| `18` | `0x8003680C` | Calls shared handler `0x8004D26C`. |
+| `19` | `0x80036824` | Calls shared handler `0x8004D994`. |
+| `22` | `0x8003677C` | Calls Bubsy updater in mode `0` when actor `+0x10` is zero. |
+| `23` | `0x800367E0` | If actor `+0x10` mask `0x01000000` is clear, calls `shared_actor_state_23_handler`. |
+| `27` | `0x80036768` | Calls the death-state routine. |
+| `39` | `0x8003685C` | Calls shared handler `0x800347EC`. |
+| `40` | `0x8003662C` | State-specific behavior unresolved. |
+| `42` | `0x800366AC` | State-specific behavior unresolved. |
+| `43` | `0x80036554` | State-specific behavior unresolved. |
+| `46` | `0x80036750` | Calls shared handler `0x80039F34`. |
+| `48` | `0x80036524` | State-specific behavior unresolved. |
+| `49` | `0x8003640C` | State-specific behavior unresolved. |
+| `50` | `0x800364A0` | State-specific behavior unresolved. |
+
+All other IDs in `2..50` use the default destination `0x80036874`. The IDs
+remain state-machine values only; their names and player-facing meanings have
+not been recovered.
+
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
 and `0x0E`, plus sequence data through a pointer at `0x18`. When flag bit `0x04`
@@ -80,6 +159,21 @@ data flag `+0x2C` bit `0x04` disables it, and the 28-byte helper at `0x80052A84`
 returns `cursor_08 - previous_cursor_0C`. C versions are covered by signed,
 disabled-flag, and cursor-delta tests. They remain unmatched and their higher-level
 animation meaning is still uncertain.
+
+The 24-byte helper at `0x80052ABC` has 31 direct callers, including the Bubsy
+actor update. It writes the sign-extended halfword at actor offset `0x0C` minus
+2 through its output pointer. The C translation has signed-boundary tests; it is
+not byte-matched and does not add progress credit.
+
+The 136-byte helper at `0x80052AEC` is called by the actor update with sequence
+index `0x309`. It compares the signed index against the signed table length at
+sequence-data offset `0x0C`. An index at or past the length returns `0x11`; a
+nonnegative table entry returns `0x12`; a negative entry selects a state by
+setting actor `+0x05` to the entry's low byte, both cursor fields `+0x08/+0x0C`
+to `index + 2`, field `+0x0A` to the next table entry's low halfword, and field
+`+0x0E` to `1`, then returns `0`. The caller asserts on either nonzero result
+using `../f/bubsy.c:0x41A`. The host C translation tests all three outcomes but
+is not byte-matched.
 
 ## Actor Event Dispatch
 
@@ -108,6 +202,24 @@ through the matching `0x158`-byte stack-frame epilogue at `0x80037AF4`.
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its
 source behavior still needs instruction-by-instruction reconstruction.
+
+The scalar state progression observed inside this routine is now translated in
+`bubsy_death_state.c`, without claiming the whole handler. A negative value
+asserts at `../f/bubsy.c:0x912` and is then set to `1`. For state `1`, the result
+of `func_80082ECC() % 3` keeps state `1` at remainder `0`, sets `7` at remainder
+`1`, sets `9` at remainder `2`, and otherwise remains `1`. State `2` stays `2`
+unless the counter remainder is `1`, when it becomes `10`. State `4` maps to
+`6` for level IDs `4`, `7`, `9`, or `18`, to `8` for ID `6`, and to `11` for
+ID `8`; other level IDs preserve state `4`. Other states are preserved except
+level IDs `5` and `8` select state `11`. State `11` advances to `12` on even
+parity or `13` on odd parity when the level ID is `4`, `6`, or `8`. These are observed scalar transitions,
+not recovered animation names. The C helper is tested but not byte-matched;
+animation/resource calls and the rest of the death handler remain incomplete.
+
+`func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
+and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value
+is not yet established, so the C API accepts that value as input rather than
+claiming it represents elapsed time.
 
 Other `../f/bubsy.c` line-string references, including
 `gBubsyInfo.deathType >= 0`, identify additional routines to investigate next.
