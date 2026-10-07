@@ -139,7 +139,11 @@ mode-0 numeric stage clamps `+0x30` to `5..0x11` unless actor state mask
 `0x18000` bypasses it. An intermediate clear of `+0x34` at the upper cap is
 restored by the shared epilogue, so the observable field is preserved. The
 surviving clamp is translated in `player_actor_shared_state_clamp_mode0_progress`;
-other mode processing remains incomplete.
+other mode processing remains incomplete. Modes `2` and `3` skip their
+callback path when actor mask `0x10000` is set; otherwise they prepare callback
+flags `-0x400`/`0x400` and temporary progress `0xE`, `6`, or `8`. The bounded
+argument-selection logic is captured by `player_actor_shared_state_make_mode23_plan`;
+the callbacks and their gameplay meaning remain unresolved.
 
 The separate state-ID switch appears in the mapped `func_80036270` range. Its
 dispatch instruction is at `0x800363E4`; it subtracts `2` from the state

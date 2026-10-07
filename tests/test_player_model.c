@@ -240,6 +240,23 @@ static void test_actor_shared_state_mode0_progress_clamp(void) {
     assert(shared_state.progress_30 == 2 && shared_state.progress_34 == 8);
 }
 
+static void test_actor_shared_state_mode23_plan(void) {
+    PlayerActorSharedStateMode23Plan plan = {0};
+
+    assert(player_actor_shared_state_make_mode23_plan(1, 0, 0, &plan) == 0);
+    assert(player_actor_shared_state_make_mode23_plan(4, 0, 0, &plan) == 0);
+    assert(player_actor_shared_state_make_mode23_plan(2, 0x10000, 0, &plan) == 0);
+
+    assert(player_actor_shared_state_make_mode23_plan(2, 0, 0, &plan) == 1);
+    assert(plan.callback_flags == -0x400 && plan.temporary_progress == 0xE);
+    assert(player_actor_shared_state_make_mode23_plan(3, 0, 0, &plan) == 1);
+    assert(plan.callback_flags == 0x400 && plan.temporary_progress == 0xE);
+    assert(player_actor_shared_state_make_mode23_plan(2, 0x8000, 0, &plan) == 1);
+    assert(plan.temporary_progress == 8);
+    assert(player_actor_shared_state_make_mode23_plan(3, 0x8000, 1, &plan) == 1);
+    assert(plan.temporary_progress == 6);
+}
+
 static void test_actor_state_target_data(void) {
     assert(sizeof(player_actor_state_targets) == 49 * sizeof(uint32_t));
     assert(player_actor_state_targets[0] == 0x8003653C);
@@ -492,6 +509,7 @@ int main(void) {
     test_actor_shared_state_progress_reset();
     test_actor_shared_state_mode1_numeric_update();
     test_actor_shared_state_mode0_progress_clamp();
+    test_actor_shared_state_mode23_plan();
     test_actor_state_target_data();
     test_move_request_queue();
     test_actor_event_dispatch();

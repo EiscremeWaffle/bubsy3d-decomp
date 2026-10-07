@@ -126,3 +126,22 @@ void player_actor_shared_state_clamp_mode0_progress(
         shared_state->progress_30 = 0x11;
     }
 }
+
+int32_t player_actor_shared_state_make_mode23_plan(
+    uint8_t state_mode,
+    uint32_t actor_state_10,
+    uint8_t runtime_mode,
+    PlayerActorSharedStateMode23Plan *plan_out
+) {
+    if ((state_mode != 2 && state_mode != 3) || (actor_state_10 & 0x10000u) != 0) {
+        return 0;
+    }
+
+    plan_out->callback_flags = state_mode == 3 ? 0x400 : -0x400;
+    if ((actor_state_10 & 0x8000u) == 0) {
+        plan_out->temporary_progress = 0xE;
+    } else {
+        plan_out->temporary_progress = runtime_mode != 0 ? 6 : 8;
+    }
+    return 1;
+}

@@ -66,6 +66,11 @@ typedef struct PlayerActorSharedStateView {
     int32_t progress_34;
 } PlayerActorSharedStateView;
 
+typedef struct PlayerActorSharedStateMode23Plan {
+    int32_t callback_flags;
+    int32_t temporary_progress;
+} PlayerActorSharedStateMode23Plan;
+
 _Static_assert(offsetof(PlayerActorSharedStateView, progress_30) == 0x30, "shared actor progress offset must match the executable");
 _Static_assert(offsetof(PlayerActorSharedStateView, progress_34) == 0x34, "shared actor progress offset must match the executable");
 
@@ -111,6 +116,12 @@ void player_actor_shared_state_apply_mode1_numeric_update(
 void player_actor_shared_state_clamp_mode0_progress(
     uint32_t actor_state_10,
     PlayerActorSharedStateView *shared_state
+);
+int32_t player_actor_shared_state_make_mode23_plan(
+    uint8_t state_mode,
+    uint32_t actor_state_10,
+    uint8_t runtime_mode,
+    PlayerActorSharedStateMode23Plan *plan_out
 );
 
 #endif
