@@ -96,6 +96,27 @@ scheduling profile because that compiler otherwise inserts a MIPS-I load-delay
 two-getter matching profile, not evidence for the original Bubsy compiler, linker,
 flags, or a complete matching build.
 
+## Original Toolchain Investigation
+
+The added CUE/BIN was parsed as an ISO9660 MODE2/2352 disc. Its
+`SLUS_001.10;1` file is 495,616 bytes and SHA-256-identical to
+`original/usa/SLUS_001.10`, so it is the same executable revision already
+analyzed. No definitive compiler banner or version stamp has been identified in
+the executable/disc files. The PS-X EXE headers report GP=0 and zero memory-fill
+fields; startup code instead initializes `$gp` itself (for example,
+`0x80087FE0` in `SLUS_001.10` and `0x800BDD5C` in `L0/L0.EXE`) and clears a
+large RAM range. These are runtime/link-layout fingerprints, not compiler
+identifiers. `spimdisasm`'s PSY-Q compiler setting is an analysis configuration,
+not proof that PSY-Q built the game. PSY-Q/SN Systems remains a possible
+historical hypothesis, not a finding.
+
+The only local compiler is Zig 0.14.1's bundled Clang 19; no `ccpsx`, SN Systems,
+or MIPS GCC compiler is installed. Standard ABI/ISA signatures and our limited
+Clang profile sweeps have not uniquely identified the original compiler. The
+exact getter profile is the closest verified build condition so far, not a
+general-purpose matching profile. A legally obtained original SDK/toolchain,
+build scripts, map files, or symbols would materially improve identification.
+
 After committing and pushing these integration files to `main`, the
 `Executable code progress (scoped snapshot)` workflow validates the snapshot, stages it as
 `build/progress/report.json`, and publishes it inside the artifact
