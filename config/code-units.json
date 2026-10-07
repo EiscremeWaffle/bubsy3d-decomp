@@ -909,7 +909,7 @@
         {
           "start": "0x80037214",
           "end": "0x80037350",
-          "symbol": "func_80037214",
+          "symbol": "bubsy_process_actor_event",
           "kind": "anchored_function"
         },
         {
@@ -1785,7 +1785,7 @@
         {
           "start": "0x8005290C",
           "end": "0x800529D0",
-          "symbol": "func_8005290C",
+          "symbol": "player_actor_sequence_boundary_reached",
           "kind": "anchored_function"
         },
         {

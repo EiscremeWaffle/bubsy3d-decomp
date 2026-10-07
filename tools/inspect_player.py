@@ -9,7 +9,11 @@ import rabbitizer
 from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
 
 
-TERMS = (b"BUBSWIM", b"BUB.TZP", b"Bubsy", b"BUBSY_ID", b"gBubsyInfo", b"deathType", b"bubsy.c", b"PLIS" )
+TERMS = (
+    b"BUBSWIM", b"BUB.TZP", b"Bubsy", b"BUBSY_ID", b"gBubsyInfo",
+    b"deathType", b"bubsy.c", b"PLIS", b"gobj->moveInfo",
+    b"gMoveRequestCount", b"MAX_MOVE_REQUEST_COUNT",
+)
 LOWER_OPCODES = {9, 13, 32, 33, 35, 36, 37, 40, 41, 43, 48, 49, 53, 56, 57, 61}
 
 

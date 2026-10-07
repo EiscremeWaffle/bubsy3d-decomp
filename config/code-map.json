@@ -3579,7 +3579,9 @@
           "start": "0x80037214",
           "end": "0x80037350",
           "size": 316,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "bubsy_process_actor_event",
+          "evidence": "312-byte bounded helper called from bubsy_update_actor_state at 0x800353FC with mode 0 and the actor pointer; branches on opaque event IDs 0x3E0/0x157 and property IDs 0x35/0x54. Reconstructed C preserves these observed branches; semantic labels remain provisional."
         },
         {
           "start": "0x80037350",
@@ -4457,7 +4459,9 @@
           "start": "0x8005290C",
           "end": "0x800529D0",
           "size": 196,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "player_actor_sequence_boundary_reached",
+          "evidence": "196-byte routine reads actor fields +0x04, +0x05, +0x07, +0x08, +0x0E and a sequence pointer at +0x18; branches on table sentinels -4..-1 and a signed divide-by-100 threshold. Semantic name is provisional."
         },
         {
           "start": "0x800529D0",
@@ -13677,6 +13681,11 @@
           "evidence": "Bounded routine 0x8003737C..0x80037AF8; validates gBubsyInfo.deathType >= 0 at ../f/bubsy.c line 0x912 and reads/writes related actor/game-state globals. Semantic function name remains provisional."
         },
         {
+          "address": "0x80037214",
+          "symbol": "bubsy_process_actor_event",
+          "evidence": "312-byte bounded helper called from bubsy_update_actor_state at 0x800353FC with mode 0 and the actor pointer; branches on opaque event IDs 0x3E0/0x157 and property IDs 0x35/0x54. Reconstructed C preserves these observed branches; semantic labels remain provisional."
+        },
+        {
           "address": "0x800283E0",
           "symbol": "level_get_player_model_mode",
           "evidence": "16-byte getter reads the player model-mode byte from RAM address 0x801D89F0 and returns it; nonzero selects BUBSWIM/PLISWIM assets in the adjacent selector"
@@ -13705,6 +13714,11 @@
           "address": "0x80052E30",
           "symbol": "player_actor_clear_flag_04",
           "evidence": "24-byte helper reads the actor byte at +0x04, clears bit 0x04, writes it back, and returns zero"
+        },
+        {
+          "address": "0x8005290C",
+          "symbol": "player_actor_sequence_boundary_reached",
+          "evidence": "196-byte routine reads actor fields +0x04, +0x05, +0x07, +0x08, +0x0E and a sequence pointer at +0x18; branches on table sentinels -4..-1 and a signed divide-by-100 threshold. Semantic name is provisional."
         },
         {
           "address": "0x8002B138",

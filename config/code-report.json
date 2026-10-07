@@ -948,7 +948,7 @@
           "address": "40160"
         },
         {
-          "name": "func_80037214",
+          "name": "bubsy_process_actor_event",
           "size": "316",
           "metadata": {},
           "address": "41484"
@@ -1824,7 +1824,7 @@
           "address": "89264"
         },
         {
-          "name": "func_8005290C",
+          "name": "player_actor_sequence_boundary_reached",
           "size": "196",
           "metadata": {},
           "address": "89368"

@@ -65,6 +65,35 @@ not byte-matched: the available compiler chooses different registers and
 delay-slot instructions. They are kept out of the getter base object so fuzzy
 similarity cannot be mistaken for verified matching progress.
 
+The same update calls `0x8005290C` with the actor's component pointer and an
+output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
+and `0x0E`, plus sequence data through a pointer at `0x18`. When flag bit `0x04`
+is set, it steps a cursor forward or backward according to byte `0x07`; table
+values `-4` through `-1` take a threshold path using signed division by 100.
+Otherwise it compares the cursor-derived value directly to the field at `0x0E`.
+The C translation `player_actor_sequence_boundary_reached` has host tests for
+these branches, but the underlying concept may be animation timing, movement
+sequencing, or another actor-sequence protocol; that meaning is not established.
+
+## Actor Event Dispatch
+
+The actor update calls `0x80037214` with mode `0` and the actor pointer. The
+helper reads the current event through the actor component and consults a
+runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
+
+- Mode `0`, runtime mode `0`, event `0x3E0`, and state not `3`: select property
+	`0x35`, set actor flag `0x04`, and dispatch with flags `0`.
+- Runtime mode `1` and event `0x157` (when the special branch is reached):
+	select property `0x54`, set actor flag `0x04`, and dispatch with flags `0`.
+- Other supported mode `0/1` paths select property `0x3E0` or `0x157` according
+	to runtime mode, set flag `0x04`, and dispatch with flag `0x40000000`.
+- Other update modes return without dispatch.
+
+The C reconstruction in `bubsy_actor_events.c` keeps event/property IDs and
+engine operations explicit through callbacks. Their gameplay meanings and the
+engine callback implementations are still unknown; this function is not yet a
+byte match.
+
 ## Death-State Routine
 
 `0x8003737C..0x80037AF8` is rooted as `bubsy_handle_death_state`. The debug
