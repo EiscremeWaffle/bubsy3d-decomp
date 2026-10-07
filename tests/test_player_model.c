@@ -357,6 +357,43 @@ static void test_bubsy_actor_update_sequence_counter_reset(void) {
     assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 1, 0, 0) == 1);
 }
 
+static void test_bubsy_actor_update_level14_counter_path(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 0) == 1);
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 0, 0, 0x14, 0) == 0);
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 1, 0x14, 0) == 0);
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x13, 0) == 0);
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 1) == 0);
+
+    actor.flags_04 = 0x40;
+    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 0) == 0);
+}
+
+static void test_bubsy_actor_update_sequence_index_for_local_state(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    assert(bubsy_actor_update_sequence_index_for_local_state(&actor, 0, 0) == -1);
+    assert(bubsy_actor_update_sequence_index_for_local_state(&actor, 1, 0) == 0x35);
+    assert(bubsy_actor_update_sequence_index_for_local_state(&actor, 1, 1) == 0x54);
+
+    actor.flags_04 = 0x08;
+    assert(bubsy_actor_update_sequence_index_for_local_state(&actor, 1, 1) == 0x9A);
+    actor.flags_04 = 0x800;
+    assert(bubsy_actor_update_sequence_index_for_local_state(&actor, 1, 2) == 0x9A);
+}
+
+static void test_bubsy_actor_update_sequence_mode_override(void) {
+    int32_t override_value = 0x1234;
+
+    assert(bubsy_actor_update_get_sequence_mode_override(0, 1, &override_value) == 0);
+    assert(override_value == 0x1234);
+    assert(bubsy_actor_update_get_sequence_mode_override(1, 0, &override_value) == 0);
+    assert(override_value == 0x1234);
+    assert(bubsy_actor_update_get_sequence_mode_override(1, 2, &override_value) == 1);
+    assert(override_value == -0xF40);
+}
+
 static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(-1, 0, 0) == 1);
     assert(bubsy_advance_death_state(1, 0, 0) == 1);
@@ -401,6 +438,9 @@ int main(void) {
     test_bubsy_actor_update_local_state_for_sequence();
     test_bubsy_actor_update_mode1_sequence_boundary_gate();
     test_bubsy_actor_update_sequence_counter_reset();
+    test_bubsy_actor_update_level14_counter_path();
+    test_bubsy_actor_update_sequence_index_for_local_state();
+    test_bubsy_actor_update_sequence_mode_override();
     test_bubsy_death_state_progression();
 
     failed_state.config = &failed_config;

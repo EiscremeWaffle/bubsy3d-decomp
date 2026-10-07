@@ -71,3 +71,46 @@ int32_t bubsy_actor_update_should_reset_sequence_counter(
         level_id == 0x14 ||
         (actor->flags_04 & 0x40u) != 0;
 }
+
+int32_t bubsy_actor_update_should_enter_level14_counter_path(
+    const BubsyActorUpdateActorView *actor,
+    int32_t sequence_counter,
+    uint8_t runtime_mode,
+    int16_t level_id,
+    int16_t update_gate
+) {
+    return runtime_mode == 0 &&
+        sequence_counter > 0 &&
+        level_id == 0x14 &&
+        (actor->flags_04 & 0x40u) == 0 &&
+        update_gate == 0;
+}
+
+int32_t bubsy_actor_update_sequence_index_for_local_state(
+    const BubsyActorUpdateActorView *actor,
+    uint8_t local_state_24,
+    uint8_t runtime_mode
+) {
+    if (local_state_24 != 1) {
+        return -1;
+    }
+
+    if (runtime_mode == 0) {
+        return 0x35;
+    }
+
+    return (actor->flags_04 & 0x818u) != 0 ? 0x9A : 0x54;
+}
+
+int32_t bubsy_actor_update_get_sequence_mode_override(
+    uint8_t local_state_24,
+    uint8_t runtime_mode,
+    int32_t *override_out
+) {
+    if (local_state_24 != 1 || runtime_mode == 0) {
+        return 0;
+    }
+
+    *override_out = -0xF40;
+    return 1;
+}

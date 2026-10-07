@@ -53,5 +53,22 @@ int32_t bubsy_actor_update_should_reset_sequence_counter(
     uint8_t runtime_mode,
     int16_t level_id
 );
+int32_t bubsy_actor_update_should_enter_level14_counter_path(
+    const BubsyActorUpdateActorView *actor,
+    int32_t sequence_counter,
+    uint8_t runtime_mode,
+    int16_t level_id,
+    int16_t update_gate
+);
+int32_t bubsy_actor_update_sequence_index_for_local_state(
+    const BubsyActorUpdateActorView *actor,
+    uint8_t local_state_24,
+    uint8_t runtime_mode
+);
+int32_t bubsy_actor_update_get_sequence_mode_override(
+    uint8_t local_state_24,
+    uint8_t runtime_mode,
+    int32_t *override_out
+);
 
 #endif

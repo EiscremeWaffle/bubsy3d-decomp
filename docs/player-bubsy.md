@@ -96,6 +96,11 @@ After a successful boundary check, it increments `$gp+0x38C` and clears the
 counter when mode `1` reaches `12`, the level ID is `0x14`, or actor flags
 `+0x04` contain `0x40`. This reset predicate is tested in
 `bubsy_actor_update_should_reset_sequence_counter`.
+For level `0x14`, a later path is entered only in runtime mode `0`, with a
+positive sequence counter, actor flag `0x40` clear, and update gate
+`0x80186454` zero. The predicate is translated and tested in
+`bubsy_actor_update_should_enter_level14_counter_path`; the calls it gates are
+still unidentified.
 
 On the `0x80` path, it selects index `0x309` only when `$gp+0x7EC` is zero, the
 current key is not `0x309`, and actor state `+0x10` does not contain mask
@@ -103,12 +108,18 @@ current key is not `0x309`, and actor state `+0x10` does not contain mask
 `bubsy_actor_update_should_select_309`; a nonzero result from
 `player_actor_select_sequence_state` triggers the assertion at
 `../f/bubsy.c:0x41A`. In the later
-local-state path, it chooses sequence index `0x35`, `0x9A`, or `0x54` based on
-`$gp+0x7EC` and actor mask `0x818`. A nonzero result from that selection
-triggers `../f/bubsy.c:0x495`; the update then sets actor flag `0x04` and calls
-the shared 48-caller sequence routine at `0x80052BDC` with mode `0`. These
-branches and IDs are now instruction-grounded, but their gameplay labels
-(movement, animation, interaction, or scene state) remain unresolved.
+local-state path, local state `1` selects index `0x35` in runtime mode `0`; in
+nonzero runtime modes it selects `0x9A` when actor mask `0x818` is set, else
+`0x54`. This choice is translated and tested in
+`bubsy_actor_update_sequence_index_for_local_state`. A nonzero result from the
+subsequent state selection triggers `../f/bubsy.c:0x495`; the update then sets
+actor flag `0x04` and calls the shared 48-caller sequence routine at
+`0x80052BDC` with mode `0`. These branches and IDs are instruction-grounded,
+but their gameplay labels (movement, animation, interaction, or scene state)
+remain unresolved.
+For local state `1` in any nonzero runtime mode, the updater also writes
+`-0xF40` to `0x801864A0`; the value selection is translated and tested in
+`bubsy_actor_update_get_sequence_mode_override`.
 
 Immediately following that updater is the shared routine now mapped as
 `shared_actor_state_dispatch` (`0x800358C8..0x80035ACC`). It has eight direct
