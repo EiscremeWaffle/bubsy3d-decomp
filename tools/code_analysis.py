@@ -280,6 +280,10 @@ def render_code_map(document):
     modules = document["modules"]
     payload = sum(int(module["load_end"], 16) - int(module["load_start"], 16) for module in modules)
     unresolved = sum(len(module["unresolved"]) for module in modules)
+    base_matches = json.loads((ROOT / "config" / "base-matches.json").read_text(encoding="utf-8"))["units"]
+    matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
+    matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
+    matched_percent = matched_code / document["code_bytes"] * 100 if document["code_bytes"] else 0
     lines = [
         "# Executable Code Discovery Map", "",
         "This is the current decomp.dev report scope, not a certified whole-game function map.", "",
@@ -289,7 +293,7 @@ def render_code_map(document):
         f"- Explicitly labeled reachable fragments: {document['fragment_count']:,}",
         f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
         f"- Indirect sites requiring further review: {unresolved:,}",
-        "- Decompiled source: 0%", "",
+        f"- Exact C matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
         "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
         "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",
         "[All ranges, symbols, original fingerprints, pointer evidence, and unresolved sites](../config/code-map.json)",
@@ -309,7 +313,8 @@ def render_code_map(document):
         "BIOS/SDK dispatch wrappers also appear among the indirect sites; not every unresolved site",
         "necessarily represents additional game code. Unclassified bytes are not declared code or data.", "",
         "The research target objects pack selected original ranges. They do not preserve the full executable",
-        "layout or reconstruct original relocations/translation units. A compiler-matching build is future work.", "",
+        "layout or reconstruct original relocations/translation units. One getter is verified through the",
+        "pinned Clang MIPS-II scheduling profile; this does not establish the original game's compiler.", "",
         "## Module Coverage", "",
         "| Module | Code bytes | Bounded candidates | Fragments | Unclassified payload | Indirect sites |",
         "| --- | ---: | ---: | ---: | ---: | ---: |",

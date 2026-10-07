@@ -543,7 +543,7 @@
         {
           "start": "0x80029790",
           "end": "0x800297A0",
-          "symbol": "func_80029790",
+          "symbol": "level_get_player_model_global",
           "kind": "anchored_function"
         },
         {

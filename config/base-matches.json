@@ -1,0 +1,24 @@
+{
+  "units": {
+    "l0/functions": {
+      "source": "src/player_model/player_model_global.c",
+      "define": "BUBSY3D_MATCH_ORIGINAL_L0",
+      "compiler": "Zig 0.14.1 bundled Clang",
+      "flags": [
+        "-target", "mipsel-linux-musl",
+        "-march=mips2", "-mabi=32", "-mno-abicalls", "-G0", "-fno-pic",
+        "-fomit-frame-pointer", "-fno-stack-protector", "-O2",
+        "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+      ],
+      "compiler_profile": "Experimental MIPS-II scheduling profile for this getter only; the emitted instructions are MIPS-I. This is not claimed to be the original Bubsy toolchain.",
+      "symbols": [
+        {
+          "name": "level_get_player_model_global",
+          "start": "0x80029790",
+          "end": "0x800297A0",
+          "size": 16
+        }
+      ]
+    }
+  }
+}

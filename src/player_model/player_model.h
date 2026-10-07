@@ -23,5 +23,6 @@ typedef void (*PlayerModelAssertFailure)(int32_t failed, const char *condition, 
 
 int32_t level_select_player_model_resource(PlayerModelState *state, PlayerModelLoadResource load_resource, PlayerModelAssertFailure assert_failure);
 void level_get_player_model(const PlayerModelState *state, void **asset_out);
+void *level_get_player_model_global(void **asset_out);
 
 #endif

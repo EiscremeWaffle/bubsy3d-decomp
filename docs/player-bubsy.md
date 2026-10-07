@@ -33,6 +33,14 @@ selection logic can be tested without pretending the surrounding game globals
 or resource system have been fully reconstructed. The native harness covers
 all four filename branches and the failed-load assertion path.
 
+The getter has a separate [C implementation](../src/player_model/player_model_global.c).
+With `BUBSY3D_MATCH_ORIGINAL_L0`, Zig 0.14.1's bundled Clang compiled that 16-byte
+function to the original L0 bytes exactly. This uses an experimental MIPS-II
+scheduling profile to place the store in the `jr` delay slot; the emitted
+instructions are all MIPS-I. It does not identify the original Bubsy compiler.
+Only this getter currently receives objdiff source-match credit; the selector
+above remains unmatched.
+
 ## Bubsy Actor Routine
 
 `0x8003539C..0x800358C8` is separately rooted as `bubsy_update_actor_state`.

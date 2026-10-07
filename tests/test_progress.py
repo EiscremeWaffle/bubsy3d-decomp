@@ -7,7 +7,7 @@ import unittest
 
 from tools.fetch_tools import download_checked
 from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, stage_report, unit_symbols, validate_report
-from tools.verify_original import HEADER_SIZE
+from tools.verify_original import HEADER_SIZE, ROOT
 
 
 class ProgressTests(unittest.TestCase):
@@ -16,8 +16,13 @@ class ProgressTests(unittest.TestCase):
         self.report = load_json(SNAPSHOT_PATH)
         self.expected_code_bytes = sum(int(symbol["end"], 16) - int(symbol["start"], 16) for unit in self.scope["units"] for symbol in unit_symbols(unit))
 
-    def test_real_snapshot_has_all_declared_zero_match_code_units(self):
+    def test_real_snapshot_has_verified_getter_match(self):
         self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
+        expected = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]["symbols"][0]
+        report_unit = next(unit for unit in self.report["units"] if unit["name"] == "l0/functions")
+        function = next(function for function in report_unit["functions"] if function["name"] == expected["name"])
+        self.assertEqual(int(function["size"]), expected["size"])
+        self.assertEqual(function["fuzzy_match_percent"], 100)
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -48,14 +53,32 @@ class ProgressTests(unittest.TestCase):
             with self.subTest(location=location), self.assertRaises(ValueError):
                 validate_report(report, self.scope)
 
-    def test_rejects_invented_matching_progress(self):
-        for field in ("matched_code", "matched_functions", "complete_code", "fuzzy_match_percent"):
-            for location in ("total", "unit"):
-                report = copy.deepcopy(self.report)
-                measures = report["measures"] if location == "total" else report["units"][0]["measures"]
-                measures[field] = 1
-                with self.subTest(field=field, location=location), self.assertRaises(ValueError):
-                    validate_report(report, self.scope)
+    def test_rejects_invented_progress_in_target_only_unit(self):
+        report = copy.deepcopy(self.report)
+        unit = next(unit for unit in report["units"] if unit["name"] == "l1/functions")
+        unit["measures"]["matched_code"] = 1
+        with self.assertRaisesRegex(ValueError, "without a compiled base"):
+            validate_report(report, self.scope)
+
+    def test_rejects_missing_expected_exact_match(self):
+        report = copy.deepcopy(self.report)
+        unit = next(unit for unit in report["units"] if unit["name"] == "l0/functions")
+        function = next(function for function in unit["functions"] if function["name"] == "level_get_player_model_global")
+        function["fuzzy_match_percent"] = 0
+        with self.assertRaisesRegex(ValueError, "byte-exact source match"):
+            validate_report(report, self.scope)
+
+    def test_rejects_match_totals_below_expected_base(self):
+        report = copy.deepcopy(self.report)
+        report["measures"]["matched_code"] = 15
+        with self.assertRaisesRegex(ValueError, "omits the verified C match"):
+            validate_report(report, self.scope)
+
+    def test_rejects_completed_code_even_with_partial_base(self):
+        report = copy.deepcopy(self.report)
+        report["measures"]["complete_code"] = 1
+        with self.assertRaisesRegex(ValueError, "unsupported complete code"):
+            validate_report(report, self.scope)
 
     def test_rejects_completed_target_unit(self):
         report = copy.deepcopy(self.report)

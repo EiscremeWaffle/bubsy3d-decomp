@@ -8,7 +8,7 @@ This is the current decomp.dev report scope, not a certified whole-game function
 - Explicitly labeled reachable fragments: 1,167
 - Unclassified executable payload bytes: 12,837,136
 - Indirect sites requiring further review: 2,389
-- Decompiled source: 0%
+- Exact C matches configured: 16 bytes across 1 function(s) (0.000537%)
 
 Counts include repeated routines in separate executable images; they are not unique source-function counts.
 Fragment symbols are code-block placeholders, not declarations of complete functions.
@@ -35,7 +35,8 @@ BIOS/SDK dispatch wrappers also appear among the indirect sites; not every unres
 necessarily represents additional game code. Unclassified bytes are not declared code or data.
 
 The research target objects pack selected original ranges. They do not preserve the full executable
-layout or reconstruct original relocations/translation units. A compiler-matching build is future work.
+layout or reconstruct original relocations/translation units. One getter is verified through the
+pinned Clang MIPS-II scheduling profile; this does not establish the original game's compiler.
 
 ## Module Coverage
 

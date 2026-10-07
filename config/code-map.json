@@ -1,4 +1,5 @@
 {
+  "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
   "modules": [
     {
       "path": "L0/L0.EXE",
@@ -3187,7 +3188,9 @@
           "start": "0x80029790",
           "end": "0x800297A0",
           "size": 16,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "level_get_player_model_global",
+          "evidence": "12-byte MIPS getter loads the model pointer from RAM address 0x801D8A08, returns it in v0, and stores it to the caller output in the jr delay slot"
         },
         {
           "start": "0x800297A0",
@@ -13677,6 +13680,11 @@
           "address": "0x800296B4",
           "symbol": "level_select_player_model_resource",
           "evidence": "Function body selects BUB.TZP/PLISKIN.TZP or BUBSWIM.TZP/PLISWIM.TZP; matching epilogue at 0x8002978C; source assertion references ../f/level.c line 0x495"
+        },
+        {
+          "address": "0x80029790",
+          "symbol": "level_get_player_model_global",
+          "evidence": "12-byte MIPS getter loads the model pointer from RAM address 0x801D8A08, returns it in v0, and stores it to the caller output in the jr delay slot"
         },
         {
           "address": "0x8002B138",
@@ -218518,7 +218526,6 @@
       "unclassified_payload_bytes": 356528
     }
   ],
-  "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
   "code_bytes": 2981616,
   "bounded_function_count": 10370,
   "fragment_count": 1167

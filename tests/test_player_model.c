@@ -11,6 +11,7 @@ static int32_t loader_result;
 static unsigned int assertion_count;
 static int asset_marker_storage;
 static void *asset_marker = &asset_marker_storage;
+void *g_player_model_asset;
 
 static int32_t fake_load(const char *path, void **asset_out, int32_t previous_size) {
     loaded_path = path;
@@ -49,6 +50,10 @@ static void test_model_selection(int is_bubsy, int is_swimming, const char *expe
     assert(assertion_count == 0);
 
     level_get_player_model(&state, &asset_out);
+    assert(asset_out == asset_marker);
+    g_player_model_asset = asset_marker;
+    asset_out = NULL;
+    assert(level_get_player_model_global(&asset_out) == asset_marker);
     assert(asset_out == asset_marker);
 }
 

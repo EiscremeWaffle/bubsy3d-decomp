@@ -24,6 +24,11 @@
         "evidence": "Function body selects BUB.TZP/PLISKIN.TZP or BUBSWIM.TZP/PLISWIM.TZP; matching epilogue at 0x8002978C; source assertion references ../f/level.c line 0x495"
       },
       {
+        "address": "0x80029790",
+        "symbol": "level_get_player_model_global",
+        "evidence": "12-byte MIPS getter loads the model pointer from RAM address 0x801D8A08, returns it in v0, and stores it to the caller output in the jr delay slot"
+      },
+      {
         "address": "0x8002B138",
         "symbol": "level_reload_player_model",
         "evidence": "MIPS stack-frame prologue and matching epilogue at 0x8002B54C; calls model selector at 0x8002B1A4; source assertion references ../f/level.c line 0x809"

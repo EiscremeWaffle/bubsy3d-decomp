@@ -11,6 +11,7 @@ from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
 
 SCOPE_PATH = ROOT / "config" / "code-units.json"
 SNAPSHOT_PATH = ROOT / "config" / "code-report.json"
+BASE_MATCHES_PATH = ROOT / "config" / "base-matches.json"
 ZIG = ROOT / "tools" / "bin" / "zig-x86_64-windows-0.14.1" / "zig.exe"
 OBJDIFF = ROOT / "tools" / "bin" / "objdiff-cli.exe"
 
@@ -45,6 +46,9 @@ def validate_report(report, scope):
     if len(units) != len(expected) or {unit["name"] for unit in units} != set(expected):
         raise ValueError("Report units do not match the documented code-map scope")
     total_size = sum(expected.values())
+    base_matches = load_json(BASE_MATCHES_PATH)["units"]
+    expected_matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
+    expected_matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
     for unit in units:
         measures = unit["measures"]
         if int(measures.get("total_code", 0)) != expected[unit["name"]]:
@@ -55,19 +59,45 @@ def validate_report(report, scope):
             raise ValueError("Report symbols do not match the mapped functions and fragments")
         if int(measures.get("total_functions", 0)) != len(actual_symbols) or int(measures.get("total_units", 0)) != 1:
             raise ValueError("Report unit function/symbol and unit counts are inconsistent")
+        matched_functions = {function["name"]: function for function in functions}
+        expected_base = base_matches.get(unit["name"])
+        for symbol in (expected_base["symbols"] if expected_base else []):
+            function = matched_functions.get(symbol["name"])
+            if function is None or int(function["size"]) != symbol["size"] or float(function.get("fuzzy_match_percent", 0)) != 100:
+                raise ValueError(f"Expected byte-exact source match missing for {symbol['name']}")
+        unit_measures = unit["measures"]
+        if int(unit_measures.get("matched_code", 0)) > int(unit_measures.get("total_code", 0)) or int(unit_measures.get("matched_functions", 0)) > int(unit_measures.get("total_functions", 0)):
+            raise ValueError("Matched unit measures exceed their target denominator")
+        if expected_base:
+            exact_bytes = sum(symbol["size"] for symbol in expected_base["symbols"])
+            if int(unit_measures.get("matched_code", 0)) < exact_bytes or int(unit_measures.get("matched_functions", 0)) < len(expected_base["symbols"]):
+                raise ValueError("Matched unit measures omit a required byte-exact source function")
+        elif any(float(unit_measures.get(field, 0)) != 0 for field in ("matched_code", "matched_functions", "fuzzy_match_percent")):
+            raise ValueError("A unit without a compiled base object cannot claim source progress")
+        if any(float(unit_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units")):
+            raise ValueError("Target units must not be marked as fully decompiled")
     measures = report["measures"]
     if int(measures.get("total_code", 0)) != total_size or int(measures.get("total_functions", 0)) != sum(len(group) for group in symbols.values()) or int(measures.get("total_units", 0)) != len(expected):
         raise ValueError("Report totals do not match the code-map scope")
-    for measures in [report["measures"], *(unit["measures"] for unit in units)]:
-        for field in ("matched_code", "matched_functions", "complete_code", "complete_units", "total_data", "matched_data", "complete_data", "fuzzy_match_percent", "matched_code_percent", "matched_functions_percent", "complete_code_percent"):
-            if float(measures.get(field, 0)) != 0:
-                raise ValueError(f"This target-only baseline cannot claim {field}")
+    total_measures = report["measures"]
+    if int(total_measures.get("matched_code", 0)) < expected_matched_code or int(total_measures.get("matched_functions", 0)) < expected_matched_functions:
+        raise ValueError("Aggregate report omits the verified C match")
+    if int(total_measures.get("matched_code", 0)) > total_size or int(total_measures.get("matched_functions", 0)) > int(total_measures.get("total_functions", 0)):
+        raise ValueError("Aggregate matches exceed the target denominator")
+    if any(float(total_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units", "complete_data", "total_data", "matched_data")):
+        raise ValueError("Aggregate report claims unsupported complete code or data matches")
+    if any(not 0 <= float(measures.get("fuzzy_match_percent", 0)) <= 100 for measures in [total_measures, *(unit["measures"] for unit in units)]):
+        raise ValueError("Fuzzy-match percentages must be within 0..100")
     for unit in units:
         if unit.get("metadata", {}).get("complete", False):
             raise ValueError("Target-only units must not be marked complete")
+        allowed_matches = {symbol["name"] for symbol in base_matches.get(unit["name"], {}).get("symbols", [])}
         for function in unit.get("functions", []):
-            if float(function.get("fuzzy_match_percent", 0)) != 0:
-                raise ValueError("Target-only functions must not claim a match")
+            fuzzy = float(function.get("fuzzy_match_percent", 0))
+            if fuzzy and function["name"] not in allowed_matches:
+                raise ValueError("A function without a byte-verified base cannot claim a source match")
+            if function["name"] in allowed_matches and fuzzy != 100:
+                raise ValueError("A configured byte-exact base function must remain a full match")
     if report.get("version") != 2:
         raise ValueError("Expected objdiff 3.8.2 report format version 2")
     return total_size
@@ -130,6 +160,28 @@ def build_report():
             "target_path": target.relative_to(ROOT).as_posix(),
             "metadata": {"complete": False},
         })
+        if unit["name"] in load_json(BASE_MATCHES_PATH)["units"]:
+            base_spec = load_json(BASE_MATCHES_PATH)["units"][unit["name"]]
+            base_object = ROOT / "build" / "base" / unit["name"] / "player_model.o"
+            base_object.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.run(
+                [str(ZIG), "cc", *base_spec["flags"], "-Isrc/player_model", "-c", str(ROOT / base_spec["source"]), "-o", str(base_object)],
+                cwd=ROOT, check=True,
+            )
+            base_elf = ELFFile(io.BytesIO(base_object.read_bytes()))
+            if base_elf.header["e_machine"] != "EM_MIPS" or base_elf.header["e_type"] != "ET_REL" or not base_elf.little_endian or base_elf.elfclass != 32:
+                raise ValueError("Expected a little-endian MIPS ELF32 player base object")
+            original_bytes = b"".join(pieces)
+            for matched in base_spec["symbols"]:
+                matched_symbol = base_elf.get_section_by_name(f".text.{matched['name']}")
+                expected_symbol = next((symbol for symbol in symbols if symbol["symbol"] == matched["name"]), None)
+                if expected_symbol is None:
+                    raise ValueError(f"Matched base symbol {matched['name']} is not in the target unit")
+                expected_bytes = data[HEADER_SIZE + int(expected_symbol["start"], 16) - load:HEADER_SIZE + int(expected_symbol["end"], 16) - load]
+                if matched_symbol is None or matched_symbol.data() != expected_bytes or len(expected_bytes) != matched["size"]:
+                    raise ValueError(f"Player base source does not byte-match original symbol {matched['name']}")
+            units[-1]["base_path"] = base_object.relative_to(ROOT).as_posix()
+            units[-1]["metadata"]["source_path"] = base_spec["source"]
         print(f"Verified {unit['name']}: {len(code)} original code bytes", flush=True)
     configuration = {
         "$schema": "https://raw.githubusercontent.com/encounter/objdiff/v3.8.2/config.schema.json",
@@ -141,7 +193,7 @@ def build_report():
     report = load_json(output)
     total_size = validate_report(report, scope)
     SNAPSHOT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"Saved code-map report: {total_size} mapped bytes, 0% decompiled. Whole-game completeness not established.")
+    print(f"Saved code-map report: {total_size} mapped bytes; {report['measures'].get('matched_code', 0)} matched bytes. Whole-game completeness not established.")
 
 
 def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
@@ -163,7 +215,14 @@ def main():
         print(f"Staged validated report: {stage_report().relative_to(ROOT)}")
     else:
         total_size = validate_report(load_json(SNAPSHOT_PATH), load_json(SCOPE_PATH))
-        print(f"Valid target-only snapshot: {total_size} mapped code bytes; whole-game completeness not established")
+        report = load_json(SNAPSHOT_PATH)
+        measures = report["measures"]
+        print(
+            f"Valid code report: {total_size} mapped bytes, "
+            f"{int(measures.get('matched_code', 0))} matched bytes, "
+            f"{int(measures.get('matched_functions', 0))} matched functions; "
+            "whole-game completeness not established"
+        )
 
 
 if __name__ == "__main__":
