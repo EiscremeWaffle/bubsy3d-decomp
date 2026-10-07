@@ -18,7 +18,8 @@ class ProgressTests(unittest.TestCase):
 
     def test_real_snapshot_has_verified_getter_match(self):
         self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
-        expected_symbols = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]["symbols"]
+        spec = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]
+        expected_symbols = spec["symbols"]
         report_unit = next(unit for unit in self.report["units"] if unit["name"] == "l0/functions")
         for expected in expected_symbols:
             function = next(function for function in report_unit["functions"] if function["name"] == expected["name"])
@@ -26,6 +27,16 @@ class ProgressTests(unittest.TestCase):
                 self.assertEqual(int(function["size"]), expected["size"])
                 self.assertEqual(function["fuzzy_match_percent"], 100)
         self.assertEqual(int(self.report["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_symbols))
+        exact_names = {symbol["name"] for symbol in expected_symbols}
+        fuzzy_names = {symbol for source in spec["fuzzy_sources"] for symbol in source["symbols"]}
+        for name in fuzzy_names:
+            function = next(function for function in report_unit["functions"] if function["name"] == name)
+            with self.subTest(fuzzy_candidate=name):
+                self.assertGreater(function["fuzzy_match_percent"], 0)
+                self.assertLess(function["fuzzy_match_percent"], 100)
+                self.assertNotIn(name, exact_names)
+        self.assertEqual(int(self.report["measures"]["matched_functions"]), len(exact_names))
+        self.assertGreater(float(self.report["measures"]["fuzzy_match_percent"]), float(self.report["measures"]["matched_code_percent"]))
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -63,6 +74,21 @@ class ProgressTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "without a compiled base"):
             validate_report(report, self.scope)
 
+    def test_rejects_fuzzy_score_for_unlisted_function(self):
+        report = copy.deepcopy(self.report)
+        unit = next(unit for unit in report["units"] if unit["name"] == "l1/functions")
+        unit["functions"][0]["fuzzy_match_percent"] = 1
+        with self.assertRaisesRegex(ValueError, "without an exact or explicitly fuzzy source candidate"):
+            validate_report(report, self.scope)
+
+    def test_rejects_unverified_candidate_at_full_match(self):
+        report = copy.deepcopy(self.report)
+        unit = next(unit for unit in report["units"] if unit["name"] == "l0/functions")
+        candidate = next(function for function in unit["functions"] if function["name"] == "player_actor_read_cursor_delta")
+        candidate["fuzzy_match_percent"] = 100
+        with self.assertRaisesRegex(ValueError, "verify its bytes"):
+            validate_report(report, self.scope)
+
     def test_rejects_missing_expected_exact_match(self):
         report = copy.deepcopy(self.report)
         unit = next(unit for unit in report["units"] if unit["name"] == "l0/functions")
@@ -74,7 +100,7 @@ class ProgressTests(unittest.TestCase):
     def test_rejects_match_totals_below_expected_base(self):
         report = copy.deepcopy(self.report)
         report["measures"]["matched_code"] = 15
-        with self.assertRaisesRegex(ValueError, "omits the verified C match"):
+        with self.assertRaisesRegex(ValueError, "byte-verified exact-match allowlist"):
             validate_report(report, self.scope)
 
     def test_rejects_completed_code_even_with_partial_base(self):

@@ -294,6 +294,7 @@ def render_code_map(document):
         f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
         f"- Indirect sites requiring further review: {unresolved:,}",
         f"- Exact C matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
+        "Objdiff reports fuzzy similarity separately in `config/code-report.json`; partial scores do not add exact matched bytes or functions.", "",
         "Counts include repeated routines in separate executable images; they are not unique source-function counts.",
         "Fragment symbols are code-block placeholders, not declarations of complete functions.", "",
         "[All ranges, symbols, original fingerprints, pointer evidence, and unresolved sites](../config/code-map.json)",

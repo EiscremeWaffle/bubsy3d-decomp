@@ -49,6 +49,10 @@ def validate_report(report, scope):
     base_matches = load_json(BASE_MATCHES_PATH)["units"]
     expected_matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
     expected_matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
+    fuzzy_symbols = {
+        name: {symbol for source in spec.get("fuzzy_sources", []) for symbol in source["symbols"]}
+        for name, spec in base_matches.items()
+    }
     for unit in units:
         measures = unit["measures"]
         if int(measures.get("total_code", 0)) != expected[unit["name"]]:
@@ -61,6 +65,12 @@ def validate_report(report, scope):
             raise ValueError("Report unit function/symbol and unit counts are inconsistent")
         matched_functions = {function["name"]: function for function in functions}
         expected_base = base_matches.get(unit["name"])
+        exact_symbols = {symbol["name"] for symbol in expected_base["symbols"]} if expected_base else set()
+        allowed_fuzzy_symbols = fuzzy_symbols.get(unit["name"], set())
+        if exact_symbols & allowed_fuzzy_symbols:
+            raise ValueError("A symbol cannot be both an exact match and a fuzzy candidate")
+        if not allowed_fuzzy_symbols.issubset(actual_symbols):
+            raise ValueError("A configured fuzzy candidate is missing from the target code map")
         for symbol in (expected_base["symbols"] if expected_base else []):
             function = matched_functions.get(symbol["name"])
             if function is None or int(function["size"]) != symbol["size"] or float(function.get("fuzzy_match_percent", 0)) != 100:
@@ -68,10 +78,11 @@ def validate_report(report, scope):
         unit_measures = unit["measures"]
         if int(unit_measures.get("matched_code", 0)) > int(unit_measures.get("total_code", 0)) or int(unit_measures.get("matched_functions", 0)) > int(unit_measures.get("total_functions", 0)):
             raise ValueError("Matched unit measures exceed their target denominator")
+        exact_bytes = sum(symbol["size"] for symbol in (expected_base["symbols"] if expected_base else []))
+        exact_function_count = len(expected_base["symbols"]) if expected_base else 0
         if expected_base:
-            exact_bytes = sum(symbol["size"] for symbol in expected_base["symbols"])
-            if int(unit_measures.get("matched_code", 0)) < exact_bytes or int(unit_measures.get("matched_functions", 0)) < len(expected_base["symbols"]):
-                raise ValueError("Matched unit measures omit a required byte-exact source function")
+            if int(unit_measures.get("matched_code", 0)) != exact_bytes or int(unit_measures.get("matched_functions", 0)) != exact_function_count:
+                raise ValueError("Matched unit measures differ from the byte-verified exact-match allowlist")
         elif any(float(unit_measures.get(field, 0)) != 0 for field in ("matched_code", "matched_functions", "fuzzy_match_percent")):
             raise ValueError("A unit without a compiled base object cannot claim source progress")
         if any(float(unit_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units")):
@@ -80,8 +91,8 @@ def validate_report(report, scope):
     if int(measures.get("total_code", 0)) != total_size or int(measures.get("total_functions", 0)) != sum(len(group) for group in symbols.values()) or int(measures.get("total_units", 0)) != len(expected):
         raise ValueError("Report totals do not match the code-map scope")
     total_measures = report["measures"]
-    if int(total_measures.get("matched_code", 0)) < expected_matched_code or int(total_measures.get("matched_functions", 0)) < expected_matched_functions:
-        raise ValueError("Aggregate report omits the verified C match")
+    if int(total_measures.get("matched_code", 0)) != expected_matched_code or int(total_measures.get("matched_functions", 0)) != expected_matched_functions:
+        raise ValueError("Aggregate matched measures differ from the byte-verified exact-match allowlist")
     if int(total_measures.get("matched_code", 0)) > total_size or int(total_measures.get("matched_functions", 0)) > int(total_measures.get("total_functions", 0)):
         raise ValueError("Aggregate matches exceed the target denominator")
     if any(float(total_measures.get(field, 0)) != 0 for field in ("complete_code", "complete_units", "complete_data", "total_data", "matched_data")):
@@ -91,13 +102,18 @@ def validate_report(report, scope):
     for unit in units:
         if unit.get("metadata", {}).get("complete", False):
             raise ValueError("Target-only units must not be marked complete")
-        allowed_matches = {symbol["name"] for symbol in base_matches.get(unit["name"], {}).get("symbols", [])}
+        base_spec = base_matches.get(unit["name"])
+        exact_symbols = {symbol["name"] for symbol in base_spec["symbols"]} if base_spec else set()
+        allowed_fuzzy_symbols = fuzzy_symbols.get(unit["name"], set())
         for function in unit.get("functions", []):
             fuzzy = float(function.get("fuzzy_match_percent", 0))
-            if fuzzy and function["name"] not in allowed_matches:
-                raise ValueError("A function without a byte-verified base cannot claim a source match")
-            if function["name"] in allowed_matches and fuzzy != 100:
+            name = function["name"]
+            if name in exact_symbols and fuzzy != 100:
                 raise ValueError("A configured byte-exact base function must remain a full match")
+            if name in allowed_fuzzy_symbols and fuzzy == 100:
+                raise ValueError(f"Fuzzy candidate {name} is a full match; verify its bytes and promote it to the exact allowlist")
+            if fuzzy and name not in exact_symbols and name not in allowed_fuzzy_symbols:
+                raise ValueError("A function without an exact or explicitly fuzzy source candidate cannot claim a source match")
     if report.get("version") != 2:
         raise ValueError("Expected objdiff 3.8.2 report format version 2")
     return total_size
@@ -164,8 +180,17 @@ def build_report():
             base_spec = load_json(BASE_MATCHES_PATH)["units"][unit["name"]]
             base_object = ROOT / "build" / "base" / unit["name"] / "player_model.o"
             base_object.parent.mkdir(parents=True, exist_ok=True)
+            fuzzy_sources = base_spec.get("fuzzy_sources", [])
+            source_to_compile = ROOT / base_spec["source"]
+            if fuzzy_sources:
+                source_to_compile = base_object.parent / "fuzzy_sources.c"
+                includes = [base_spec["source"], *(source["source"] for source in fuzzy_sources)]
+                source_to_compile.write_text(
+                    "\n".join(f'#include "{source}"' for source in includes) + "\n",
+                    encoding="utf-8",
+                )
             subprocess.run(
-                [str(ZIG), "cc", *base_spec["flags"], "-Isrc/player_model", "-c", str(ROOT / base_spec["source"]), "-o", str(base_object)],
+                [str(ZIG), "cc", *base_spec["flags"], "-I.", "-Isrc/player_model", "-c", str(source_to_compile), "-o", str(base_object)],
                 cwd=ROOT, check=True,
             )
             base_elf = ELFFile(io.BytesIO(base_object.read_bytes()))
@@ -193,7 +218,13 @@ def build_report():
     report = load_json(output)
     total_size = validate_report(report, scope)
     SNAPSHOT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"Saved code-map report: {total_size} mapped bytes; {report['measures'].get('matched_code', 0)} matched bytes. Whole-game completeness not established.")
+    measures = report["measures"]
+    print(
+        f"Saved code-map report: {total_size} mapped bytes; "
+        f"{measures.get('matched_code', 0)} exact matched bytes; "
+        f"{measures.get('fuzzy_match_percent', 0):.6f}% fuzzy similarity. "
+        "Whole-game completeness not established."
+    )
 
 
 def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
@@ -220,7 +251,8 @@ def main():
         print(
             f"Valid code report: {total_size} mapped bytes, "
             f"{int(measures.get('matched_code', 0))} matched bytes, "
-            f"{int(measures.get('matched_functions', 0))} matched functions; "
+            f"{int(measures.get('matched_functions', 0))} exact matched functions, "
+            f"{float(measures.get('fuzzy_match_percent', 0)):.6f}% fuzzy similarity; "
             "whole-game completeness not established"
         )
 

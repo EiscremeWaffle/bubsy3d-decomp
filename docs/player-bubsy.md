@@ -62,8 +62,9 @@ recovered original symbol. It calls helpers at `0x80052E18` and `0x80052E30` tha
 set and clear bit `0x04` in actor byte offset `0x04`. Their straightforward C
 translations live in `player_actor_flags.c` and pass native state tests, but are
 not byte-matched: the available compiler chooses different registers and
-delay-slot instructions. They are kept out of the getter base object so fuzzy
-similarity cannot be mistaken for verified matching progress.
+delay-slot instructions. They are now included as explicitly listed fuzzy
+candidates in `config/base-matches.json`; their fuzzy percentages are separate
+from the two byte-verified getters and do not add exact match credit.
 
 The update entry first reads signed halfword `0x80186454`. If nonzero, it
 forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,

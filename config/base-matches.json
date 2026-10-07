@@ -11,6 +11,28 @@
         "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
       ],
       "compiler_profile": "Experimental MIPS-II scheduling profile for this getter only; the emitted instructions are MIPS-I. This is not claimed to be the original Bubsy toolchain.",
+      "fuzzy_sources": [
+        {
+          "source": "src/player_model/player_model.c",
+          "symbols": ["level_select_player_model_resource"]
+        },
+        {
+          "source": "src/player_model/player_actor_flags.c",
+          "symbols": [
+            "player_actor_set_flag_04",
+            "player_actor_clear_flag_04",
+            "player_actor_sequence_boundary_reached",
+            "player_actor_read_sequence_remainder",
+            "player_actor_read_cursor_delta",
+            "player_actor_write_previous_cursor_minus_two",
+            "player_actor_select_sequence_state"
+          ]
+        },
+        {
+          "source": "src/player_model/bubsy_actor_events.c",
+          "symbols": ["bubsy_process_actor_event"]
+        }
+      ],
       "symbols": [
         {
           "name": "level_get_player_model_mode",
