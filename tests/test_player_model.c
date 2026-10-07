@@ -505,6 +505,16 @@ static void test_bubsy_death_state_entry_event_gate(void) {
     assert(bubsy_death_state_uses_counter_entry_list(-2) == 1);
     assert(bubsy_death_state_uses_counter_entry_list(-1) == 1);
     assert(bubsy_death_state_uses_counter_entry_list(0) == 0);
+    assert(bubsy_death_state_next_global_counter(-2, 1) == -1);
+    assert(bubsy_death_state_next_global_counter(-1, 1) == 0);
+    assert(bubsy_death_state_next_global_counter(4, 0) == 4);
+    assert(bubsy_death_state_next_global_counter(4, 1) == 0);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(-1, 0, 1, 0) == 1);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(-2, 0, 2, 0) == 1);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(0, 0, 1, 0) == 0);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(-1, 1, 1, 0) == 0);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(-1, 0, 0, 0) == 0);
+    assert(bubsy_death_state_should_dispatch_counter_entry_event(-1, 0, 1, 1) == 0);
 }
 
 int main(void) {

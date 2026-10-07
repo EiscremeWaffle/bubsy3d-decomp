@@ -260,7 +260,12 @@ translated in `bubsy_death_state_should_run_main_loop`.
 The following table-driven block is reached only when `$gp+0x3A4` is `-2` or
 `-1`; this range check is translated in
 `bubsy_death_state_uses_counter_entry_list`. The counter's meaning remains
-unknown.
+unknown. At the block's end, `-2` becomes `-1`; otherwise a helper low byte of
+`1` changes the counter to `0`, and other values are preserved. This transition
+is translated and tested in `bubsy_death_state_next_global_counter`. Within the
+table path, event `0x1B` with property `5` is dispatched only when the list is
+nonempty and its selected entry has byte `+0x20` clear; this branch is modeled
+by `bubsy_death_state_should_dispatch_counter_entry_event`.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its

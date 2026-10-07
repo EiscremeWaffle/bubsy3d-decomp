@@ -53,3 +53,26 @@ int32_t bubsy_death_state_should_run_main_loop(uint8_t state_6462) {
 int32_t bubsy_death_state_uses_counter_entry_list(int32_t global_counter_3A4) {
     return global_counter_3A4 == -2 || global_counter_3A4 == -1;
 }
+
+int32_t bubsy_death_state_next_global_counter(
+    int32_t global_counter_3A4,
+    uint8_t helper_result_low_byte
+) {
+    if (global_counter_3A4 == -2) {
+        return -1;
+    }
+
+    return helper_result_low_byte == 1 ? 0 : global_counter_3A4;
+}
+
+int32_t bubsy_death_state_should_dispatch_counter_entry_event(
+    int32_t global_counter_3A4,
+    uint8_t state_6462,
+    int32_t entry_count,
+    uint8_t entry_flag_20
+) {
+    return (global_counter_3A4 == -2 || global_counter_3A4 == -1) &&
+        state_6462 == 0 &&
+        entry_count > 0 &&
+        entry_flag_20 == 0;
+}
