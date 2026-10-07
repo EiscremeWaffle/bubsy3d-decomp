@@ -291,6 +291,11 @@ animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models this scalar
 progression using the death-type global, level ID, and BIOS counter result.
 Objdiff scores it at 8.910417% fuzzy similarity; this is not exact match credit.
+After the main path begins, the handler clears actor fields `+0x04/+0x10` and
+globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
+`0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
+byte `+0x0C`; this reset block is translated and tested in
+`bubsy_death_state_reset_runtime`.
 
 `func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
 and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value

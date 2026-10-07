@@ -545,6 +545,21 @@ static void test_bubsy_death_state_entry_event_gate(void) {
     assert(bubsy_death_state_should_dispatch_counter_entry_event(-1, 0, 1, 1) == 0);
 }
 
+static void test_bubsy_death_state_runtime_reset(void) {
+    BubsyDeathStateRuntimeView runtime = {0xFFFFFFFF, 0xFFFFFFFF, 1, 1, 0, 1, 1, 1, 1, 0xFFFFFFFF};
+
+    bubsy_death_state_reset_runtime(&runtime, 3);
+    assert(runtime.actor_flags_04 == 0 && runtime.actor_state_10 == 0);
+    assert(runtime.actor_event_guard_6460 == 0 && runtime.state_6461 == 0);
+    assert(runtime.state_6463 == 1 && runtime.state_6479 == 0);
+    assert(runtime.state_64B8 == 0 && runtime.state_649D == 0);
+    assert(runtime.state_6452 == 0 && runtime.state_64C0 == 0);
+
+    runtime.state_6463 = 1;
+    bubsy_death_state_reset_runtime(&runtime, 0);
+    assert(runtime.state_6463 == 0);
+}
+
 int main(void) {
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
@@ -576,6 +591,7 @@ int main(void) {
     test_bubsy_death_state_progression();
     test_bubsy_death_state_initial_normalization();
     test_bubsy_death_state_entry_event_gate();
+    test_bubsy_death_state_runtime_reset();
 
     failed_state.config = &failed_config;
     failed_state.is_swimming = 0;

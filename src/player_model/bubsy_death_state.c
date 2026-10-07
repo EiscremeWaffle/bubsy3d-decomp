@@ -82,6 +82,22 @@ int32_t bubsy_death_state_next_global_counter(
     return helper_result_low_byte == 1 ? 0 : global_counter_3A4;
 }
 
+void bubsy_death_state_reset_runtime(
+    BubsyDeathStateRuntimeView *runtime,
+    uint8_t actor_mode_0C
+) {
+    runtime->actor_flags_04 = 0;
+    runtime->actor_state_10 = 0;
+    runtime->actor_event_guard_6460 = 0;
+    runtime->state_6461 = 0;
+    runtime->state_6463 = actor_mode_0C != 0;
+    runtime->state_6479 = 0;
+    runtime->state_64B8 = 0;
+    runtime->state_649D = 0;
+    runtime->state_6452 = 0;
+    runtime->state_64C0 = 0;
+}
+
 int32_t bubsy_death_state_should_dispatch_counter_entry_event(
     int32_t global_counter_3A4,
     uint8_t state_6462,
