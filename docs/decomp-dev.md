@@ -50,7 +50,7 @@ a passing native harness. Two adjacent 16-byte C getters (character selection an
 model pointer) match the original L0 bytes exactly. The selector itself remains
 unmatched. These getters contribute 32 matched bytes across two functions to
 objdiff's exact counters (0.001071% of the mapped code). The report also records
-0.015781% fuzzy similarity from explicitly listed partial C candidates; that
+0.017344% fuzzy similarity from explicitly listed partial C candidates; that
 estimate is not byte-exact progress. The L0 state-target table contributes 196
 exact matched data bytes separately from code. This metric covers executable
 constants only; disc textures, models, audio, and movies are tracked by the disc

@@ -44,7 +44,8 @@ two small getters and does not identify the original Bubsy compiler.
 Objdiff credits 32 bytes across these two functions. The four-way model selector
 above remains unmatched, as do the Bubsy actor-update and death-state routines;
 the death handler has a clearly marked partial fuzzy candidate, not an exact match.
-The whole-game source percentage therefore still rounds to `0.00%` on decomp.dev.
+decomp.dev still shows `0.01%` exact code progress; these fuzzy candidates do not
+raise the exact matched-byte count.
 
 ## Bubsy Actor Routine
 
@@ -290,7 +291,7 @@ not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models this scalar
 progression using the death-type global, level ID, and BIOS counter result.
-Objdiff scores it at 8.910417% fuzzy similarity; this is not exact match credit.
+Objdiff scores it at 11.34375% fuzzy similarity; this is not exact match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's

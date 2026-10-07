@@ -111,14 +111,41 @@ int32_t bubsy_death_state_should_dispatch_counter_entry_event(
 }
 
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
+extern void *func_80026648(void *actor, void *context);
 extern int32_t func_80082ECC(void);
 
 void bubsy_handle_death_state(void *actor, void *context) {
     volatile int32_t *death_type = (volatile int32_t *)0x80186458u;
     volatile const int16_t *level_id = (volatile const int16_t *)0x801D36F0u;
+    volatile uint8_t *actor_bytes = (volatile uint8_t *)actor;
+    void *death_info = func_80026648(actor, context);
+    BubsyDeathStateRuntimeView runtime;
 
-    (void)actor;
-    (void)context;
     *death_type = bubsy_advance_death_state(*death_type, *level_id, func_80082ECC());
+
+    runtime.actor_flags_04 = *(volatile uint32_t *)(actor_bytes + 0x04);
+    runtime.actor_state_10 = *(volatile uint32_t *)(actor_bytes + 0x10);
+    runtime.actor_event_guard_6460 = *(volatile uint8_t *)0x80186460u;
+    runtime.state_6461 = *(volatile uint8_t *)0x80186461u;
+    runtime.state_6463 = *(volatile uint8_t *)0x80186463u;
+    runtime.state_6479 = *(volatile uint8_t *)0x80186479u;
+    runtime.state_64B8 = *(volatile uint8_t *)0x801864B8u;
+    runtime.state_649D = *(volatile uint8_t *)0x8018649Du;
+    runtime.state_6452 = *(volatile uint16_t *)0x80186452u;
+    runtime.state_64C0 = *(volatile uint32_t *)0x801864C0u;
+    bubsy_death_state_reset_runtime(
+        &runtime,
+        *((volatile const uint8_t *)death_info + 0x0C)
+    );
+    *(volatile uint32_t *)(actor_bytes + 0x04) = runtime.actor_flags_04;
+    *(volatile uint32_t *)(actor_bytes + 0x10) = runtime.actor_state_10;
+    *(volatile uint8_t *)0x80186460u = runtime.actor_event_guard_6460;
+    *(volatile uint8_t *)0x80186461u = runtime.state_6461;
+    *(volatile uint8_t *)0x80186463u = runtime.state_6463;
+    *(volatile uint8_t *)0x80186479u = runtime.state_6479;
+    *(volatile uint8_t *)0x801864B8u = runtime.state_64B8;
+    *(volatile uint8_t *)0x8018649Du = runtime.state_649D;
+    *(volatile uint16_t *)0x80186452u = runtime.state_6452;
+    *(volatile uint32_t *)0x801864C0u = runtime.state_64C0;
 }
 #endif
