@@ -84,9 +84,12 @@ only this entry slice; the rest of `bubsy_update_actor_state` remains incomplete
 and the slice is not byte-matched.
 
 Actor byte `+0x04` bits `0x80` and `0x100` steer distinct sequence paths. On
-the `0x80` path, when `$gp+0x7EC` is zero and the current key is not `0x309`,
-the update calls `player_actor_select_sequence_state` with index `0x309`; a
-nonzero result triggers the assertion at `../f/bubsy.c:0x41A`. In the later
+the `0x80` path, it selects index `0x309` only when `$gp+0x7EC` is zero, the
+current key is not `0x309`, and actor state `+0x10` does not contain mask
+`0x00800000`. This predicate is translated and tested in
+`bubsy_actor_update_should_select_309`; a nonzero result from
+`player_actor_select_sequence_state` triggers the assertion at
+`../f/bubsy.c:0x41A`. In the later
 local-state path, it chooses sequence index `0x35`, `0x9A`, or `0x54` based on
 `$gp+0x7EC` and actor mask `0x818`. A nonzero result from that selection
 triggers `../f/bubsy.c:0x495`; the update then sets actor flag `0x04` and calls

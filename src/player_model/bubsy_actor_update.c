@@ -24,3 +24,14 @@ BubsyActorUpdateEntryResult bubsy_actor_update_entry_gate(
     environment->actor_event_guard_6460 = 0;
     return BUBSY_ACTOR_UPDATE_CONTINUE;
 }
+
+int32_t bubsy_actor_update_should_select_309(
+    const BubsyActorUpdateActorView *actor,
+    int32_t current_sequence_key,
+    uint8_t runtime_mode
+) {
+    return (actor->flags_04 & 0x80u) != 0 &&
+        runtime_mode == 0 &&
+        current_sequence_key != 0x309 &&
+        (actor->update_state_10 & 0x00800000u) == 0;
+}

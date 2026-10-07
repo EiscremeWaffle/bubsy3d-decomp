@@ -5,10 +5,13 @@
 #include <stdint.h>
 
 typedef struct BubsyActorUpdateActorView {
-    uint8_t unknown_00_to_0F[0x10];
+    uint8_t unknown_00_to_03[4];
+    uint32_t flags_04;
+    uint8_t unknown_08_to_0F[8];
     uint32_t update_state_10;
 } BubsyActorUpdateActorView;
 
+_Static_assert(offsetof(BubsyActorUpdateActorView, flags_04) == 0x04, "actor flags offset must match the executable");
 _Static_assert(offsetof(BubsyActorUpdateActorView, update_state_10) == 0x10, "actor update state offset must match the executable");
 
 typedef struct BubsyActorUpdateEnvironment {
@@ -28,6 +31,11 @@ BubsyActorUpdateEntryResult bubsy_actor_update_entry_gate(
     uint8_t update_mode,
     BubsyActorUpdateEnvironment *environment,
     uint8_t *local_state_24
+);
+int32_t bubsy_actor_update_should_select_309(
+    const BubsyActorUpdateActorView *actor,
+    int32_t current_sequence_key,
+    uint8_t runtime_mode
 );
 
 #endif

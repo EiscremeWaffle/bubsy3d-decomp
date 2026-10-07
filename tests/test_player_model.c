@@ -308,6 +308,22 @@ static void test_bubsy_actor_update_entry_gate(void) {
     assert(environment.actor_event_guard_6460 == 0);
 }
 
+static void test_bubsy_actor_update_sequence_309_gate(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    actor.flags_04 = 0x80;
+    assert(bubsy_actor_update_should_select_309(&actor, 0x308, 0) == 1);
+    assert(bubsy_actor_update_should_select_309(&actor, 0x309, 0) == 0);
+    assert(bubsy_actor_update_should_select_309(&actor, 0x308, 1) == 0);
+
+    actor.flags_04 = 0x100;
+    assert(bubsy_actor_update_should_select_309(&actor, 0x308, 0) == 0);
+
+    actor.flags_04 = 0x80;
+    actor.update_state_10 = 0x00800000;
+    assert(bubsy_actor_update_should_select_309(&actor, 0x308, 0) == 0);
+}
+
 static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(-1, 0, 0) == 1);
     assert(bubsy_advance_death_state(1, 0, 0) == 1);
@@ -348,6 +364,7 @@ int main(void) {
     test_move_request_queue();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
+    test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_death_state_progression();
 
     failed_state.config = &failed_config;

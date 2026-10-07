@@ -130,6 +130,15 @@ addressing form materially affect these comparisons. The probe bundles are not
 tracked or used by the report builder, so report progress remains based on its
 existing Zig/Clang build.
 
+Other PS1 decompilation guides support function-by-function byte comparison,
+not guessing a compiler from platform alone. The SOTN guide uses a GCC
+2.6.3-PSX plus maspsx decomp.me preset, with assembly diffs and permuter-based
+iteration; the Rayman PS1 project documents GCC 2.5.7 and a rebuilt-image hash
+check. Brave Fencer Musashi documents its own byte-fingerprinted GCC 2.7.2-PSX
+profile, maspsx 2.56, GNU `as`, and per-file overrides, with whole-binary checks.
+Those profiles differ across games and are evidence for the workflow, not for
+Bubsy's compiler.
+
 Standard ABI/ISA signatures and limited compiler-profile sweeps have not
 uniquely identified the original compiler. The exact getter profile and this
 GCC helper probe are local matching results, not general-purpose matching
