@@ -173,36 +173,6 @@ void bubsy_handle_death_state(void *actor, void *context) {
     if (!bubsy_death_state_should_run_main_loop(*state_6462)) {
         return;
     }
-    if (bubsy_death_state_uses_counter_entry_list(*global_counter)) {
-        volatile int32_t *entry_count = (volatile int32_t *)0x8018645Cu;
-        int32_t count = *entry_count;
-        uint8_t entry_flag = 1;
-
-        if (count > 0) {
-            volatile const uint8_t *entry_list =
-                *(volatile const uint8_t * volatile *)0x801D89A4u;
-            const uint32_t entry_offset = (uint32_t)count * 36u + 0x20u;
-            entry_flag = entry_list[entry_offset];
-        }
-        if (bubsy_death_state_should_dispatch_counter_entry_event(
-                *global_counter,
-                *state_6462,
-                count,
-                entry_flag
-            )) {
-            actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
-            func_8001B558(0x1B, 5, actor_value, count, 0, 0, 0, 0);
-        }
-        *entry_count = -1;
-        if (*global_counter == -2) {
-            *global_counter = -1;
-        } else if ((uint8_t)func_800222E0() == 1) {
-            *global_counter = 0;
-        }
-        actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
-        func_8001B558(0x1B, 0, actor_value, actor_value, 0, 0, 0, 0);
-        return;
-    }
     if (*death_type < 0) {
         func_800556D0(
             0,

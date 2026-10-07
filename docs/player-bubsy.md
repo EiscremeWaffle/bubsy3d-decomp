@@ -269,10 +269,9 @@ unknown. At the block's end, `-2` becomes `-1`; otherwise a helper low byte of
 is translated and tested in `bubsy_death_state_next_global_counter`. Within the
 table path, event `0x1B` with property `5` is dispatched only when the list is
 nonempty and its selected entry has byte `+0x20` clear; this branch is modeled
-by `bubsy_death_state_should_dispatch_counter_entry_event`.
-The report-only candidate also models this event gate, the counter/list state
-writes, and the final event `0x1B` with property `0` before the path returns.
-The intervening engine-helper sequence is still omitted.
+by `bubsy_death_state_should_dispatch_counter_entry_event`. These predicates
+remain narrow, tested semantic models; the report-only handler candidate does
+not yet reproduce the surrounding table path or its engine-helper sequence.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its
@@ -294,9 +293,9 @@ not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models the verified entry
 gates, death-type scalar progression, and runtime reset, while leaving most
-animation/resource calls unfinished. Objdiff scores it at 15.347917% fuzzy
-similarity; L0/functions fuzzy similarity is 0.26346818% and global fuzzy
-similarity is 0.019916%. None of these fuzzy scores are exact-match credit.
+animation/resource calls unfinished. Objdiff scores it at 17.16875% fuzzy
+similarity; L0/functions fuzzy similarity is 0.2789413% and global fuzzy
+similarity is 0.02108551%. None of these fuzzy scores are exact-match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
