@@ -8,7 +8,7 @@ This is the current decomp.dev report scope, not a certified whole-game function
 - Explicitly labeled reachable fragments: 1,167
 - Unclassified executable payload bytes: 12,837,136
 - Indirect sites requiring further review: 2,389
-- Exact C matches configured: 16 bytes across 1 function(s) (0.000537%)
+- Exact C matches configured: 32 bytes across 2 function(s) (0.001073%)
 
 Counts include repeated routines in separate executable images; they are not unique source-function counts.
 Fragment symbols are code-block placeholders, not declarations of complete functions.

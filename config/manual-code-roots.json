@@ -14,6 +14,11 @@
         "evidence": "Bounded routine 0x8003737C..0x80037AF8; validates gBubsyInfo.deathType >= 0 at ../f/bubsy.c line 0x912 and reads/writes related actor/game-state globals. Semantic function name remains provisional."
       },
       {
+        "address": "0x800283E0",
+        "symbol": "level_get_player_model_mode",
+        "evidence": "16-byte getter reads the player model-mode byte from RAM address 0x801D89F0 and returns it; nonzero selects BUBSWIM/PLISWIM assets in the adjacent selector"
+      },
+      {
         "address": "0x80026398",
         "symbol": "level_initialize_player_model",
         "evidence": "MIPS stack-frame prologue and matching epilogue at 0x80026620; calls model selector at 0x800296B4; source assertion references ../f/level.c line 0xE99"
@@ -27,6 +32,16 @@
         "address": "0x80029790",
         "symbol": "level_get_player_model_global",
         "evidence": "12-byte MIPS getter loads the model pointer from RAM address 0x801D8A08, returns it in v0, and stores it to the caller output in the jr delay slot"
+      },
+      {
+        "address": "0x80052E18",
+        "symbol": "player_actor_set_flag_04",
+        "evidence": "24-byte helper reads the actor byte at +0x04, ORs bit 0x04, writes it back, and returns zero; called from the Bubsy actor update path"
+      },
+      {
+        "address": "0x80052E30",
+        "symbol": "player_actor_clear_flag_04",
+        "evidence": "24-byte helper reads the actor byte at +0x04, clears bit 0x04, writes it back, and returns zero"
       },
       {
         "address": "0x8002B138",

@@ -1,13 +1,13 @@
 {
   "measures": {
-    "fuzzy_match_percent": 0.0005366217,
+    "fuzzy_match_percent": 0.0010732434,
     "total_code": "2981616",
-    "matched_code": "16",
-    "matched_code_percent": 0.0005366217,
+    "matched_code": "32",
+    "matched_code_percent": 0.0010732434,
     "matched_data_percent": 100.0,
     "total_functions": 11537,
-    "matched_functions": 1,
-    "matched_functions_percent": 0.008667764,
+    "matched_functions": 2,
+    "matched_functions_percent": 0.017335529,
     "complete_data_percent": 100.0,
     "total_units": 44
   },
@@ -15,14 +15,14 @@
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 0.0073198406,
+        "fuzzy_match_percent": 0.014639681,
         "total_code": "218584",
-        "matched_code": "16",
-        "matched_code_percent": 0.0073198406,
+        "matched_code": "32",
+        "matched_code_percent": 0.014639681,
         "matched_data_percent": 100.0,
         "total_functions": 796,
-        "matched_functions": 1,
-        "matched_functions_percent": 0.12562814,
+        "matched_functions": 2,
+        "matched_functions_percent": 0.2512563,
         "complete_data_percent": 100.0,
         "total_units": 1
       },
@@ -40,7 +40,7 @@
         {
           "name": ".text",
           "size": "218584",
-          "fuzzy_match_percent": 0.0073198406,
+          "fuzzy_match_percent": 0.014639681,
           "metadata": {}
         }
       ],
@@ -484,8 +484,9 @@
           "address": "15064"
         },
         {
-          "name": "func_800283E0",
+          "name": "level_get_player_model_mode",
           "size": "16",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "15588"
         },
@@ -1865,13 +1866,13 @@
           "address": "89988"
         },
         {
-          "name": "func_80052E18",
+          "name": "player_actor_set_flag_04",
           "size": "24",
           "metadata": {},
           "address": "90560"
         },
         {
-          "name": "func_80052E30",
+          "name": "player_actor_clear_flag_04",
           "size": "24",
           "metadata": {},
           "address": "90584"

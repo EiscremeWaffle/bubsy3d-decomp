@@ -7,13 +7,13 @@ int32_t level_select_player_model_resource(
     PlayerModelLoadResource load_resource,
     PlayerModelAssertFailure assert_failure
 ) {
-    const int is_swimming = (state->config->flags_2A2A & PLAYER_MODEL_FORM_FLAG) != 0;
+    const int is_pliskin = (state->config->flags_2A2A & PLAYER_MODEL_FORM_FLAG) != 0;
     const char *path;
 
-    if (state->is_bubsy != 0) {
-        path = is_swimming ? "BUBSWIM.TZP" : "BUB.TZP";
+    if (state->is_swimming != 0) {
+        path = is_pliskin ? "PLISWIM.TZP" : "BUBSWIM.TZP";
     } else {
-        path = is_swimming ? "PLISWIM.TZP" : "PLISKIN.TZP";
+        path = is_pliskin ? "PLISKIN.TZP" : "BUB.TZP";
     }
 
     state->asset_size = load_resource(path, &state->asset, state->asset_size);

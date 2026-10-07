@@ -18,11 +18,14 @@ class ProgressTests(unittest.TestCase):
 
     def test_real_snapshot_has_verified_getter_match(self):
         self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
-        expected = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]["symbols"][0]
+        expected_symbols = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]["symbols"]
         report_unit = next(unit for unit in self.report["units"] if unit["name"] == "l0/functions")
-        function = next(function for function in report_unit["functions"] if function["name"] == expected["name"])
-        self.assertEqual(int(function["size"]), expected["size"])
-        self.assertEqual(function["fuzzy_match_percent"], 100)
+        for expected in expected_symbols:
+            function = next(function for function in report_unit["functions"] if function["name"] == expected["name"])
+            with self.subTest(symbol=expected["name"]):
+                self.assertEqual(int(function["size"]), expected["size"])
+                self.assertEqual(function["fuzzy_match_percent"], 100)
+        self.assertEqual(int(self.report["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_symbols))
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):
         with tempfile.TemporaryDirectory() as directory:

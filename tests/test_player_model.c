@@ -12,6 +12,7 @@ static unsigned int assertion_count;
 static int asset_marker_storage;
 static void *asset_marker = &asset_marker_storage;
 void *g_player_model_asset;
+volatile uint8_t g_player_model_mode;
 
 static int32_t fake_load(const char *path, void **asset_out, int32_t previous_size) {
     loaded_path = path;
@@ -29,13 +30,13 @@ static void fake_assert(int32_t failed, const char *condition, const char *sourc
     assertion_count++;
 }
 
-static void test_model_selection(int is_bubsy, int is_swimming, const char *expected_path) {
+static void test_model_selection(int is_pliskin, int is_swimming, const char *expected_path) {
     LevelModelConfig config = {0};
     PlayerModelState state = {0};
     void *asset_out = NULL;
 
-    config.flags_2A2A = is_swimming ? 0x10 : 0;
-    state.is_bubsy = (uint8_t)is_bubsy;
+    config.flags_2A2A = is_pliskin ? 0x10 : 0;
+    state.is_swimming = (uint8_t)is_swimming;
     state.config = &config;
     state.asset_size = 0x200;
     loader_result = 0x180;
@@ -55,19 +56,31 @@ static void test_model_selection(int is_bubsy, int is_swimming, const char *expe
     asset_out = NULL;
     assert(level_get_player_model_global(&asset_out) == asset_marker);
     assert(asset_out == asset_marker);
+    g_player_model_mode = (uint8_t)is_swimming;
+    assert(level_get_player_model_mode() == (uint8_t)is_swimming);
+}
+
+static void test_actor_flag_helpers(void) {
+    PlayerActorFlagByte actor = {{0, 0, 0, 0}, 0xA1};
+    assert(player_actor_set_flag_04(&actor) == 0);
+    assert(actor.flags_04 == 0xA5);
+    assert(player_actor_clear_flag_04(&actor) == 0);
+    assert(actor.flags_04 == 0xA1);
 }
 
 int main(void) {
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
 
-    test_model_selection(1, 0, "BUB.TZP");
-    test_model_selection(1, 1, "BUBSWIM.TZP");
-    test_model_selection(0, 0, "PLISKIN.TZP");
-    test_model_selection(0, 1, "PLISWIM.TZP");
+    test_model_selection(0, 0, "BUB.TZP");
+    test_model_selection(0, 1, "BUBSWIM.TZP");
+    test_model_selection(1, 0, "PLISKIN.TZP");
+    test_model_selection(1, 1, "PLISWIM.TZP");
+    test_actor_flag_helpers();
 
     failed_state.config = &failed_config;
-    failed_state.is_bubsy = 1;
+    failed_state.is_swimming = 0;
+    failed_config.flags_2A2A = 0;
     loader_result = 0;
     assertion_count = 0;
     assert(level_select_player_model_resource(&failed_state, fake_load, fake_assert) == 0);

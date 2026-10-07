@@ -13,6 +13,12 @@
       "compiler_profile": "Experimental MIPS-II scheduling profile for this getter only; the emitted instructions are MIPS-I. This is not claimed to be the original Bubsy toolchain.",
       "symbols": [
         {
+          "name": "level_get_player_model_mode",
+          "start": "0x800283E0",
+          "end": "0x800283F0",
+          "size": 16
+        },
+        {
           "name": "level_get_player_model_global",
           "start": "0x80029790",
           "end": "0x800297A0",

@@ -447,7 +447,7 @@
         {
           "start": "0x800283E0",
           "end": "0x800283F0",
-          "symbol": "func_800283E0",
+          "symbol": "level_get_player_model_mode",
           "kind": "anchored_function"
         },
         {
@@ -1827,13 +1827,13 @@
         {
           "start": "0x80052E18",
           "end": "0x80052E30",
-          "symbol": "func_80052E18",
+          "symbol": "player_actor_set_flag_04",
           "kind": "anchored_function"
         },
         {
           "start": "0x80052E30",
           "end": "0x80052E48",
-          "symbol": "func_80052E30",
+          "symbol": "player_actor_clear_flag_04",
           "kind": "anchored_function"
         },
         {

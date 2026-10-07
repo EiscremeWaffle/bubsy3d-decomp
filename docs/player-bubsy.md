@@ -6,20 +6,20 @@ implementation. The USA executables are still the authority for behavior.
 ## Model Selection
 
 The shared L0 level routine at `0x800296B4` is identified by four embedded model
-paths and its callers. Its normal/swim branch is:
+paths and its callers. It combines a runtime model-mode byte with a config flag:
 
-| Character selector | Config byte `+0x2A2A`, bit `0x10` | Model path |
+| Mode byte at `0x801D89F0` | Config byte `+0x2A2A`, bit `0x10` | Model path |
 | --- | --- | --- |
-| nonzero | clear | `BUB.TZP` |
-| nonzero | set | `BUBSWIM.TZP` |
-| zero | clear | `PLISKIN.TZP` |
-| zero | set | `PLISWIM.TZP` |
+| zero | clear | `BUB.TZP` |
+| nonzero | clear | `BUBSWIM.TZP` |
+| zero | set | `PLISKIN.TZP` |
+| nonzero | set | `PLISWIM.TZP` |
 
-The character selector is read by `0x800283E0` from `0x801D89F0`; the nonzero
-branch selects Bubsy-named resources. The active config pointer comes from
-`0x800BE698`, and the flag is read at offset `0x2A2A`. The `0x10` flag is named
-as a swimming/model-form flag because it switches to the `*SWIM.TZP` assets;
-the config structure and flag's broader semantics remain unknown.
+The model-mode getter at `0x800283E0` reads byte `0x801D89F0`; nonzero selects
+the `*SWIM.TZP` resources. This getter is byte-matched in C. The active config
+pointer comes from `0x800BE698`, and bit `0x10` at offset `0x2A2A` selects
+Pliskin-named resources when set and Bubsy-named resources when clear. The
+config structure and broader meaning of the mode byte remain unknown.
 
 The selected path is passed to the resource loader at `0x8001BA10`, together
 with the output slot at `0x801D8A08` and current size/value at `0x801D8A0C`.
@@ -33,13 +33,17 @@ selection logic can be tested without pretending the surrounding game globals
 or resource system have been fully reconstructed. The native harness covers
 all four filename branches and the failed-load assertion path.
 
-The getter has a separate [C implementation](../src/player_model/player_model_global.c).
-With `BUBSY3D_MATCH_ORIGINAL_L0`, Zig 0.14.1's bundled Clang compiled that 16-byte
-function to the original L0 bytes exactly. This uses an experimental MIPS-II
-scheduling profile to place the store in the `jr` delay slot; the emitted
-instructions are all MIPS-I. It does not identify the original Bubsy compiler.
-Only this getter currently receives objdiff source-match credit; the selector
-above remains unmatched.
+Both getters have C implementations in
+[player_model_global.c](../src/player_model/player_model_global.c). With
+`BUBSY3D_MATCH_ORIGINAL_L0`, Zig 0.14.1's bundled Clang compiled each 16-byte
+function to its original L0 bytes exactly. The model-pointer getter uses an
+experimental MIPS-II scheduling profile to place the store in the `jr` delay
+slot; the emitted instructions are MIPS-I. This profile is specific to these
+two small getters and does not identify the original Bubsy compiler.
+
+Objdiff credits 32 bytes across these two functions. The four-way model selector
+above remains unmatched, as do the Bubsy actor-update and death-state routines.
+The whole-game source percentage therefore still rounds to `0.00%` on decomp.dev.
 
 ## Bubsy Actor Routine
 
@@ -54,7 +58,12 @@ and `0x38C` from `$gp`. These facts suggest actor interaction/state processing,
 but they do not yet prove the meaning of those IDs or fields. The precise C
 function name, field types, and full gameplay semantics remain unknown. The
 `bubsy_update_actor_state` name is a searchable provisional label, not a
-recovered original symbol.
+recovered original symbol. It calls helpers at `0x80052E18` and `0x80052E30` that
+set and clear bit `0x04` in actor byte offset `0x04`. Their straightforward C
+translations live in `player_actor_flags.c` and pass native state tests, but are
+not byte-matched: the available compiler chooses different registers and
+delay-slot instructions. They are kept out of the getter base object so fuzzy
+similarity cannot be mistaken for verified matching progress.
 
 ## Death-State Routine
 
@@ -85,4 +94,5 @@ python -m unittest discover -s tests -v
 
 The rebuilt code map includes the manually evidenced roots from
 [manual-code-roots.json](../config/manual-code-roots.json). The decomp.dev code
-percentage remains zero until source-built code is compared and matched.
+percentage counts only the two byte-verified getters until further source code
+is matched.
