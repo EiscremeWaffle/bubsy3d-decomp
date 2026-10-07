@@ -37,5 +37,21 @@ int32_t bubsy_actor_update_should_select_309(
     int32_t current_sequence_key,
     uint8_t runtime_mode
 );
+uint8_t bubsy_actor_update_local_state_for_sequence(
+    const BubsyActorUpdateActorView *actor,
+    int32_t current_sequence_key,
+    uint8_t runtime_mode,
+    uint8_t local_state_24
+);
+int32_t bubsy_actor_update_should_check_mode1_sequence_boundary(
+    int32_t current_sequence_key,
+    uint8_t runtime_mode
+);
+int32_t bubsy_actor_update_should_reset_sequence_counter(
+    const BubsyActorUpdateActorView *actor,
+    int32_t sequence_counter_after_increment,
+    uint8_t runtime_mode,
+    int16_t level_id
+);
 
 #endif

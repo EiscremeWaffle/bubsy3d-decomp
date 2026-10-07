@@ -324,6 +324,39 @@ static void test_bubsy_actor_update_sequence_309_gate(void) {
     assert(bubsy_actor_update_should_select_309(&actor, 0x308, 0) == 0);
 }
 
+static void test_bubsy_actor_update_local_state_for_sequence(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    actor.flags_04 = 0x100;
+    assert(bubsy_actor_update_local_state_for_sequence(&actor, 0, 0, 1) == 0);
+    assert(bubsy_actor_update_local_state_for_sequence(&actor, 0x32E, 1, 7) == 7);
+
+    actor.flags_04 = 0;
+    assert(bubsy_actor_update_local_state_for_sequence(&actor, 0x32E, 0, 0) == 1);
+    assert(bubsy_actor_update_local_state_for_sequence(&actor, 0x32D, 0, 7) == 7);
+    assert(bubsy_actor_update_local_state_for_sequence(&actor, 0x32E, 1, 7) == 7);
+}
+
+static void test_bubsy_actor_update_mode1_sequence_boundary_gate(void) {
+    assert(bubsy_actor_update_should_check_mode1_sequence_boundary(0x9A, 1) == 1);
+    assert(bubsy_actor_update_should_check_mode1_sequence_boundary(0x54, 1) == 1);
+    assert(bubsy_actor_update_should_check_mode1_sequence_boundary(0x35, 1) == 0);
+    assert(bubsy_actor_update_should_check_mode1_sequence_boundary(0x54, 0) == 0);
+    assert(bubsy_actor_update_should_check_mode1_sequence_boundary(0x9A, 2) == 0);
+}
+
+static void test_bubsy_actor_update_sequence_counter_reset(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 12, 1, 0) == 1);
+    assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 11, 1, 0) == 0);
+    assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 12, 0, 0) == 0);
+    assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 1, 0, 0x14) == 1);
+
+    actor.flags_04 = 0x40;
+    assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 1, 0, 0) == 1);
+}
+
 static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(-1, 0, 0) == 1);
     assert(bubsy_advance_death_state(1, 0, 0) == 1);
@@ -365,6 +398,9 @@ int main(void) {
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_update_sequence_309_gate();
+    test_bubsy_actor_update_local_state_for_sequence();
+    test_bubsy_actor_update_mode1_sequence_boundary_gate();
+    test_bubsy_actor_update_sequence_counter_reset();
     test_bubsy_death_state_progression();
 
     failed_state.config = &failed_config;

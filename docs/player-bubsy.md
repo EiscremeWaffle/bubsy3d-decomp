@@ -84,7 +84,20 @@ only this entry slice; the rest of `bubsy_update_actor_state` remains incomplete
 and the slice is not byte-matched.
 
 Actor byte `+0x04` bits `0x80` and `0x100` steer distinct sequence paths. On
-the `0x80` path, it selects index `0x309` only when `$gp+0x7EC` is zero, the
+the `0x100` path, the local state byte `+0x24` is cleared when `$gp+0x7EC` is
+zero. With that flag clear, sequence key `0x32E` sets local state to `1` when
+the runtime mode is zero. This local-state predicate is translated and tested
+in `bubsy_actor_update_local_state_for_sequence`.
+
+In runtime mode `1`, the updater checks the sequence boundary for current keys
+`0x9A` and `0x54`; this gate is translated and tested in
+`bubsy_actor_update_should_check_mode1_sequence_boundary`.
+After a successful boundary check, it increments `$gp+0x38C` and clears the
+counter when mode `1` reaches `12`, the level ID is `0x14`, or actor flags
+`+0x04` contain `0x40`. This reset predicate is tested in
+`bubsy_actor_update_should_reset_sequence_counter`.
+
+On the `0x80` path, it selects index `0x309` only when `$gp+0x7EC` is zero, the
 current key is not `0x309`, and actor state `+0x10` does not contain mask
 `0x00800000`. This predicate is translated and tested in
 `bubsy_actor_update_should_select_309`; a nonzero result from
