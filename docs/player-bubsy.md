@@ -168,8 +168,10 @@ Its first path compares the supplied sequence value with `0x29A`, checks actor
 `+0x10` mask `0x2000` and mode byte `0x80186463`, and can call `0x80038C0C`,
 `0x800226C0`, and emit event `0x17`. Other paths inspect component bytes
 `+0x2C`, `+0x00`, and `+0x0C` and mutate shared transition state. Its full
-interaction meaning remains unresolved; it is mapped but untranslated and
-unmatched.
+interaction meaning remains unresolved; it is mapped but not fully translated
+or matched. The event-`0x17` path is gated by sequence `0x29A`, actor mask
+`0x2000` clear, and mode byte other than `1`, `2`, or `4`; this condition is
+translated and tested in `player_actor_state23_should_dispatch_event_17`.
 
 The non-default jump-table destinations are:
 

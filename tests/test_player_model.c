@@ -257,6 +257,16 @@ static void test_actor_shared_state_mode23_plan(void) {
     assert(plan.temporary_progress == 6);
 }
 
+static void test_actor_state23_event_17_gate(void) {
+    assert(player_actor_state23_should_dispatch_event_17(0, 0, 0x29A) == 1);
+    assert(player_actor_state23_should_dispatch_event_17(0, 3, 0x29A) == 1);
+    assert(player_actor_state23_should_dispatch_event_17(0, 1, 0x29A) == 0);
+    assert(player_actor_state23_should_dispatch_event_17(0, 2, 0x29A) == 0);
+    assert(player_actor_state23_should_dispatch_event_17(0, 4, 0x29A) == 0);
+    assert(player_actor_state23_should_dispatch_event_17(0x2000, 0, 0x29A) == 0);
+    assert(player_actor_state23_should_dispatch_event_17(0, 0, 0x298) == 0);
+}
+
 static void test_actor_state_target_data(void) {
     assert(sizeof(player_actor_state_targets) == 49 * sizeof(uint32_t));
     assert(player_actor_state_targets[0] == 0x8003653C);
@@ -533,6 +543,7 @@ int main(void) {
     test_actor_shared_state_mode1_numeric_update();
     test_actor_shared_state_mode0_progress_clamp();
     test_actor_shared_state_mode23_plan();
+    test_actor_state23_event_17_gate();
     test_actor_state_target_data();
     test_move_request_queue();
     test_actor_event_dispatch();
