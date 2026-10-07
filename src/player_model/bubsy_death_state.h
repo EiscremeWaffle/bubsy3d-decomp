@@ -23,6 +23,15 @@ typedef struct BubsyDeathStateRuntimeView {
     uint32_t state_64C0;
 } BubsyDeathStateRuntimeView;
 
+typedef struct BubsyDeathStateFinalizationView {
+    volatile uint8_t *actor_state_2C;
+    volatile uint32_t *actor_component_state_20;
+    volatile uint32_t *nested_state_words[11];
+    volatile int32_t *global_counter_3A4;
+    volatile uint8_t *state_6462;
+    volatile uint8_t *state_6464;
+} BubsyDeathStateFinalizationView;
+
 int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t counter_value);
 int32_t bubsy_death_state_normalize_initial(
     int32_t death_state,
@@ -43,6 +52,7 @@ void bubsy_death_state_reset_runtime(
     BubsyDeathStateRuntimeView *runtime,
     uint8_t actor_mode_0C
 );
+void bubsy_death_state_finalize_runtime(BubsyDeathStateFinalizationView *runtime);
 int32_t bubsy_death_state_should_dispatch_counter_entry_event(
     int32_t global_counter_3A4,
     uint8_t state_6462,

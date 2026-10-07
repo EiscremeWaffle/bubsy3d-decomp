@@ -270,6 +270,9 @@ is translated and tested in `bubsy_death_state_next_global_counter`. Within the
 table path, event `0x1B` with property `5` is dispatched only when the list is
 nonempty and its selected entry has byte `+0x20` clear; this branch is modeled
 by `bubsy_death_state_should_dispatch_counter_entry_event`.
+The report-only candidate also models this event gate, the counter/list state
+writes, and the final event `0x1B` with property `0` before the path returns.
+The intervening engine-helper sequence is still omitted.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its
@@ -299,6 +302,17 @@ globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
 byte `+0x0C`; this reset block is translated and tested in
 `bubsy_death_state_reset_runtime`.
+
+The main path continues after this reset through several animation, event, and
+actor-update helpers. Its terminal block at `0x80037A74..0x80037ACC` sets
+`0x80186462` to `1`, clears actor byte `+0x2C`, sets `$gp+0x3A4` to `-2`, and
+zeros the word at the actor component pointer `+0x20` plus nested-object words
+at offsets `0x30`, `0x34`, `0x38`, `0x3C`, `0x40`, `0x78`, `0x7C`, `0x80`,
+`0x98`, `0x9C`, and `0xA0`; it then clears `0x80186464` and calls
+`func_8001A670`. These terminal effects are modeled and tested in
+`bubsy_death_state_finalize_runtime`. The fuzzy handler candidate includes the
+observed writes and final call but still omits the helper chain between its
+reset and terminal blocks; no full-function or exact-match claim is made.
 
 `func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
 and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value

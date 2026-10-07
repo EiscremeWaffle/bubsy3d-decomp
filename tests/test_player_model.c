@@ -560,6 +560,35 @@ static void test_bubsy_death_state_runtime_reset(void) {
     assert(runtime.state_6463 == 0);
 }
 
+static void test_bubsy_death_state_finalization(void) {
+    uint8_t actor_state_2C = 0xFF;
+    uint32_t actor_component_state_20 = 0xFFFFFFFF;
+    uint32_t nested_state_words[11];
+    int32_t global_counter_3A4 = 0;
+    uint8_t state_6462 = 0;
+    uint8_t state_6464 = 0xFF;
+    BubsyDeathStateFinalizationView runtime = {
+        .actor_state_2C = &actor_state_2C,
+        .actor_component_state_20 = &actor_component_state_20,
+        .global_counter_3A4 = &global_counter_3A4,
+        .state_6462 = &state_6462,
+        .state_6464 = &state_6464,
+    };
+    unsigned int index;
+
+    for (index = 0; index < 11; index++) {
+        nested_state_words[index] = 0xFFFFFFFF;
+        runtime.nested_state_words[index] = &nested_state_words[index];
+    }
+
+    bubsy_death_state_finalize_runtime(&runtime);
+    assert(actor_state_2C == 0 && actor_component_state_20 == 0);
+    assert(global_counter_3A4 == -2 && state_6462 == 1 && state_6464 == 0);
+    for (index = 0; index < 11; index++) {
+        assert(nested_state_words[index] == 0);
+    }
+}
+
 int main(void) {
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
@@ -592,6 +621,7 @@ int main(void) {
     test_bubsy_death_state_initial_normalization();
     test_bubsy_death_state_entry_event_gate();
     test_bubsy_death_state_runtime_reset();
+    test_bubsy_death_state_finalization();
 
     failed_state.config = &failed_config;
     failed_state.is_swimming = 0;
