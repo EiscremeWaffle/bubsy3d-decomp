@@ -181,6 +181,65 @@ static void test_actor_sequence_state_selection(void) {
     assert(actor.state_05 == 9 && actor.cursor_08 == 4);
 }
 
+static void test_actor_shared_state_progress_reset(void) {
+    PlayerActorSharedStateView shared_state = {0};
+
+    shared_state.progress_30 = 7;
+    shared_state.progress_34 = 12;
+    assert(player_actor_shared_state_clear_progress(0x1000, 0x2A6, &shared_state) == 1);
+    assert(shared_state.progress_30 == 0 && shared_state.progress_34 == 0);
+
+    shared_state.progress_30 = 3;
+    shared_state.progress_34 = 9;
+    assert(player_actor_shared_state_clear_progress(0, 0x2A7, &shared_state) == 1);
+    assert(shared_state.progress_30 == 0 && shared_state.progress_34 == 0);
+
+    shared_state.progress_30 = 3;
+    shared_state.progress_34 = 9;
+    assert(player_actor_shared_state_clear_progress(0, 0x2A6, &shared_state) == 0);
+    assert(shared_state.progress_30 == 3 && shared_state.progress_34 == 9);
+    assert(player_actor_shared_state_clear_progress(0x0008, 0x2A6, &shared_state) == 0);
+    assert(shared_state.progress_30 == 3 && shared_state.progress_34 == 9);
+}
+
+static void test_actor_shared_state_mode1_numeric_update(void) {
+    PlayerActorSharedStateView shared_state = {0};
+
+    shared_state.progress_30 = 3;
+    shared_state.progress_34 = 9;
+    player_actor_shared_state_apply_mode1_numeric_update(0x8000, &shared_state);
+    assert(shared_state.progress_30 == 3 && shared_state.progress_34 == 9);
+
+    player_actor_shared_state_apply_mode1_numeric_update(0x10000, &shared_state);
+    assert(shared_state.progress_30 == -0x34 && shared_state.progress_34 == 9);
+
+    shared_state.progress_30 = 4;
+    player_actor_shared_state_apply_mode1_numeric_update(0, &shared_state);
+    assert(shared_state.progress_30 == 4 && shared_state.progress_34 == 9);
+}
+
+static void test_actor_shared_state_mode0_progress_clamp(void) {
+    PlayerActorSharedStateView shared_state = {0};
+
+    shared_state.progress_30 = 3;
+    shared_state.progress_34 = 8;
+    player_actor_shared_state_clamp_mode0_progress(0, &shared_state);
+    assert(shared_state.progress_30 == 5 && shared_state.progress_34 == 8);
+
+    shared_state.progress_30 = 10;
+    player_actor_shared_state_clamp_mode0_progress(0, &shared_state);
+    assert(shared_state.progress_30 == 10 && shared_state.progress_34 == 8);
+
+    shared_state.progress_30 = 18;
+    player_actor_shared_state_clamp_mode0_progress(0, &shared_state);
+    assert(shared_state.progress_30 == 0x11 && shared_state.progress_34 == 8);
+
+    shared_state.progress_30 = 2;
+    shared_state.progress_34 = 8;
+    player_actor_shared_state_clamp_mode0_progress(0x8000, &shared_state);
+    assert(shared_state.progress_30 == 2 && shared_state.progress_34 == 8);
+}
+
 static void test_actor_state_target_data(void) {
     assert(sizeof(player_actor_state_targets) == 49 * sizeof(uint32_t));
     assert(player_actor_state_targets[0] == 0x8003653C);
@@ -430,6 +489,9 @@ int main(void) {
     test_actor_sequence_boundary();
     test_actor_sequence_helpers();
     test_actor_sequence_state_selection();
+    test_actor_shared_state_progress_reset();
+    test_actor_shared_state_mode1_numeric_update();
+    test_actor_shared_state_mode0_progress_clamp();
     test_actor_state_target_data();
     test_move_request_queue();
     test_actor_event_dispatch();

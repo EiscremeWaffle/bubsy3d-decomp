@@ -60,6 +60,15 @@ typedef struct PlayerActorSequenceView {
     const PlayerActorSequenceData *sequence_18;
 } PlayerActorSequenceView;
 
+typedef struct PlayerActorSharedStateView {
+    uint8_t unknown_00_to_2F[0x30];
+    int32_t progress_30;
+    int32_t progress_34;
+} PlayerActorSharedStateView;
+
+_Static_assert(offsetof(PlayerActorSharedStateView, progress_30) == 0x30, "shared actor progress offset must match the executable");
+_Static_assert(offsetof(PlayerActorSharedStateView, progress_34) == 0x34, "shared actor progress offset must match the executable");
+
 extern const uint32_t player_actor_state_targets[49];
 
 enum {
@@ -90,5 +99,18 @@ int32_t player_actor_read_sequence_remainder(const PlayerActorSequenceView *acto
 int32_t player_actor_read_cursor_delta(const PlayerActorSequenceView *actor, int32_t *delta_out);
 int32_t player_actor_write_previous_cursor_minus_two(const PlayerActorSequenceView *actor, int32_t *value_out);
 int32_t player_actor_select_sequence_state(PlayerActorSequenceView *actor, int32_t index);
+int32_t player_actor_shared_state_clear_progress(
+    uint32_t actor_flags,
+    int32_t current_sequence_key,
+    PlayerActorSharedStateView *shared_state
+);
+void player_actor_shared_state_apply_mode1_numeric_update(
+    uint32_t actor_state_10,
+    PlayerActorSharedStateView *shared_state
+);
+void player_actor_shared_state_clamp_mode0_progress(
+    uint32_t actor_state_10,
+    PlayerActorSharedStateView *shared_state
+);
 
 #endif

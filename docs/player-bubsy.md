@@ -127,8 +127,19 @@ callers and takes an actor pointer, a pointer to a halfword state ID, and a
 mode; observed callers use modes `0`, `1`, and `2`, so it is not Bubsy-only.
 It derives a key from component halfword `+0x0C`, tests actor mask `0x1100`,
 updates component fields `+0x30/+0x34`, and calls shared engine helpers. Its
-gameplay role remains unresolved; this function is mapped but not translated or
-byte-matched.
+gameplay role remains unresolved; the complete function is not translated or
+byte-matched. Its initial branch is translated in
+`player_actor_shared_state_clear_progress`: key `0x2A7` or any overlap with
+actor mask `0x1100` clears component words `+0x30` and `+0x34`.
+In mode `1`, actor state mask `0x8000` bypasses the numeric update; otherwise
+mask `0x10000` sets `+0x30` to `-0x34`, and `+0x34` is preserved. This data
+effect is translated in `player_actor_shared_state_apply_mode1_numeric_update`;
+the surrounding callback logic and remaining modes are not yet translated. The
+mode-0 numeric stage clamps `+0x30` to `5..0x11` unless actor state mask
+`0x18000` bypasses it. An intermediate clear of `+0x34` at the upper cap is
+restored by the shared epilogue, so the observable field is preserved. The
+surviving clamp is translated in `player_actor_shared_state_clamp_mode0_progress`;
+other mode processing remains incomplete.
 
 The separate state-ID switch appears in the mapped `func_80036270` range. Its
 dispatch instruction is at `0x800363E4`; it subtracts `2` from the state

@@ -82,3 +82,47 @@ int32_t player_actor_select_sequence_state(PlayerActorSequenceView *actor, int32
     actor->state_05 = (int8_t)entry;
     return PLAYER_SEQUENCE_STATE_SELECTED;
 }
+
+int32_t player_actor_shared_state_clear_progress(
+    uint32_t actor_flags,
+    int32_t current_sequence_key,
+    PlayerActorSharedStateView *shared_state
+) {
+    if (current_sequence_key != 0x2A7 && (actor_flags & 0x1100u) == 0) {
+        return 0;
+    }
+
+    shared_state->progress_30 = 0;
+    shared_state->progress_34 = 0;
+    return 1;
+}
+
+void player_actor_shared_state_apply_mode1_numeric_update(
+    uint32_t actor_state_10,
+    PlayerActorSharedStateView *shared_state
+) {
+    if ((actor_state_10 & 0x8000u) != 0) {
+        return;
+    }
+
+    if ((actor_state_10 & 0x10000u) != 0) {
+        shared_state->progress_30 = -0x34;
+    }
+}
+
+void player_actor_shared_state_clamp_mode0_progress(
+    uint32_t actor_state_10,
+    PlayerActorSharedStateView *shared_state
+) {
+    if ((actor_state_10 & 0x18000u) != 0) {
+        return;
+    }
+
+    if (shared_state->progress_30 < 5) {
+        shared_state->progress_30 = 5;
+    }
+
+    if (shared_state->progress_30 >= 0x11) {
+        shared_state->progress_30 = 0x11;
+    }
+}
