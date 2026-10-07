@@ -494,6 +494,14 @@ static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(7, 8, 0) == 12);
 }
 
+static void test_bubsy_death_state_entry_event_gate(void) {
+    assert(bubsy_death_state_should_dispatch_entry_event(-2, 0) == 1);
+    assert(bubsy_death_state_should_dispatch_entry_event(-2, 1) == 0);
+    assert(bubsy_death_state_should_dispatch_entry_event(0, 0) == 0);
+    assert(bubsy_death_state_should_run_level13_cleanup(0x13) == 1);
+    assert(bubsy_death_state_should_run_level13_cleanup(0x12) == 0);
+}
+
 int main(void) {
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
@@ -522,6 +530,7 @@ int main(void) {
     test_bubsy_actor_update_sequence_index_for_local_state();
     test_bubsy_actor_update_sequence_mode_override();
     test_bubsy_death_state_progression();
+    test_bubsy_death_state_entry_event_gate();
 
     failed_state.config = &failed_config;
     failed_state.is_swimming = 0;

@@ -251,6 +251,10 @@ assertion at `0x8003767C` names `gBubsyInfo.deathType >= 0` and reports
 frame, reads and normalizes the death-type global at `0x80186458`, dispatches
 through numeric state values, calls engine animation/event helpers, and returns
 through the matching `0x158`-byte stack-frame epilogue at `0x80037AF4`.
+At entry, event `0x1B` with property `4` is dispatched when `$gp+0x3A4` is
+`-2` and `func_800222E0()` returns a zero low byte. Level `0x13` then takes a
+separate cleanup-and-return branch. These gates are translated and tested; the
+cleanup and event helpers themselves remain unidentified.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its
