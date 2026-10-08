@@ -124,9 +124,42 @@ int32_t bubsy_death_state_should_dispatch_counter_entry_event(
 }
 
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
+#define BUBSY_GLOBAL_COUNTER (*(volatile int32_t *)0x800BE100u)
+
 extern void *func_80026648(void *actor, void *context);
+extern void func_80028FC8(void);
 extern int32_t func_800222E0(void);
 extern int32_t func_80082ECC(void);
+extern void func_8002DD24(volatile uint8_t *state);
+extern void func_8005F2C0(int32_t value, int32_t value_copy);
+extern void func_80037214(int32_t mode, void *actor);
+extern void func_8003539C(void *actor, int32_t mode);
+extern void func_800289E8(int32_t mode, void *output);
+extern void func_800549E8(void *context, void *input);
+extern void func_80054C7C(void *object, int32_t mode, void *data);
+extern void func_8001B9C8(void);
+extern void func_8001BC08(void);
+extern void func_8002C488(void);
+extern void func_8002CB2C(int32_t value);
+extern void func_8002CA88(int32_t value, int32_t duration);
+extern void func_8002BAD4(int32_t value);
+extern void func_8003CB14(void);
+extern void func_80039158(int32_t mode, int32_t flags);
+extern void func_80048488(void);
+extern void func_80040634(void);
+extern void func_8005FBE4(void);
+extern void func_80040994(void);
+extern void func_8005EF9C(int32_t mode, int32_t duration, void *callback);
+extern void func_800516F8(void *output);
+extern void func_80054AF0(void *context, void *output);
+extern void func_80052BDC(void *context, int32_t mode);
+extern void func_8002E954(void *state, void *value);
+extern void func_8002E858(void *input, int32_t size, void *source, void *output);
+extern void func_800550A4(void *object, void *context);
+extern void func_80045094(void);
+extern void func_80044268(void);
+extern void func_80069758(void);
+extern void func_8003AA30(void);
 extern void func_8001B558(
     int32_t event_id,
     int32_t property_id,
@@ -137,6 +170,7 @@ extern void func_8001B558(
     int32_t argument_18,
     int32_t argument_1C
 );
+extern void func_8001C700(int32_t event_id, int32_t property_id);
 extern void func_8004733C(int32_t value);
 extern void func_8001A670(void);
 extern void func_800556D0(
@@ -146,72 +180,370 @@ extern void func_800556D0(
     uint32_t source_line
 );
 
+#define BUBSY_DEATH_READ_COUNTER(result) __asm__ volatile("jal func_80082ECC\n\tnop" : "=r"(result) : : "$31", "hi", "lo", "memory")
+#define BUBSY_DEATH_REMAINDER_3(result, value) __asm__ volatile("lui $3,0x5555\n\tori $3,$3,0x5556\n\tmult $2,$3\n\tsra $4,$2,31\n\tmfhi $3\n\tsubu $4,$3,$4\n\tsll $3,$4,1\n\taddu $3,$3,$4\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3", "hi", "lo")
+#define BUBSY_DEATH_REMAINDER_2(result, value) __asm__ volatile("srl $3,$2,31\n\taddu $3,$2,$3\n\tsra $4,$3,1\n\tsll $3,$4,1\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3")
+
 void bubsy_handle_death_state(void *actor, void *context) {
-    volatile int32_t *death_type = (volatile int32_t *)0x80186458u;
-    volatile const int16_t *level_id = (volatile const int16_t *)0x801D36F0u;
-    volatile int32_t *global_counter = (volatile int32_t *)0x800BE100u;
-    volatile uint8_t *state_6462 = (volatile uint8_t *)0x80186462u;
-    volatile uint8_t *actor_bytes = (volatile uint8_t *)actor;
-    volatile uint8_t *nested_state = *(volatile uint8_t **)(actor_bytes + 0x28);
-    void *death_info = func_80026648(actor, context);
-    BubsyDeathStateRuntimeView runtime;
+    register volatile uint8_t *actor_bytes __asm__("$20") =
+        (volatile uint8_t *)actor;
+    register void *context_value __asm__("$21") = context;
+    register volatile uint8_t *nested_state __asm__("$18") =
+        *(volatile uint8_t **)(actor_bytes + 0x28);
+    register void *death_info __asm__("$22");
+    register volatile int32_t *death_type __asm__("$17");
     volatile uint8_t *actor_component;
+    register int32_t current_death_state __asm__("$16");
+    register int32_t death_state_one __asm__("$19");
+    register int32_t counter_value __asm__("$2");
+    register int32_t counter_remainder __asm__("$4");
+    uint32_t stack_storage[0x118 / sizeof(uint32_t)];
+    register int32_t entry_event_property __asm__("$5");
     int32_t actor_value;
 
-    if (bubsy_death_state_should_dispatch_entry_event(
-            *global_counter,
-            (uint8_t)func_800222E0()
-        )) {
-        actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
-        func_8001B558(0x1B, 4, actor_value, actor_value, 0, 0, 0, 0);
-        return;
+    death_info = func_80026648((void *)actor_bytes, context);
+        __asm__ volatile("" : "=r"(death_info) : "0"(death_info));
+    {
+        register int32_t entry_counter __asm__("$3");
+        register int32_t entry_helper_result __asm__("$2");
+
+        __asm__ volatile(
+            "lw $3,0x3A4($gp)\n\t"
+            "li $2,-2\n\t"
+            "sh $0,0x362($gp)\n\t"
+            "bne $3,$2,1f\n\t"
+            "nop\n\t"
+            "jal func_800222E0\n\t"
+            "nop\n\t"
+            "andi $2,$2,0x00ff\n\t"
+            "bnez $2,1f\n\t"
+            "ori $4,$zero,0x1b\n\t"
+            "sw $0,0x10($sp)\n\t"
+            "sw $0,0x14($sp)\n\t"
+            "sw $0,0x18($sp)\n\t"
+            "sw $0,0x1C($sp)\n\t"
+            "lw $6,0x0c($20)\n\t"
+            "j 2f\n\t"
+            "ori $5,$zero,0x04\n"
+            "1:"
+            "2:"
+            : "=r"(entry_counter), "=r"(entry_helper_result)
+            :
+            : "$4", "$5", "$6", "$7", "$31", "memory"
+        );
+        if (entry_counter == -2 && (uint8_t)entry_helper_result == 0) {
+            entry_event_property = 4;
+            goto dispatch_entry_event;
+        }
     }
-    if (bubsy_death_state_should_run_level13_cleanup(*level_id)) {
+
+continue_main_path:
+    if (*(volatile const int16_t *)0x801D36F0u == 0x13) {
         func_8004733C(0);
         return;
     }
-    if (!bubsy_death_state_should_run_main_loop(*state_6462)) {
+    if (*(volatile const uint8_t *)0x80186462u != 0) {
         return;
     }
-    if (*death_type < 0) {
+    if ((uint32_t)BUBSY_GLOBAL_COUNTER + 2u < 2u) {
+        register int32_t list_initial_value __asm__("$2");
+        __asm__ volatile(
+            ".set noat\n\t"
+            "sw $2,0x118($sp)\n\t"
+            "lui $3,0x8018\n\t"
+            "lw $3,0x645c($3)\n\t"
+            "sb $0,0x102($sp)\n\t"
+            "sb $0,0x101($sp)\n\t"
+            "blez $3,1f\n\t"
+            "sb $0,0x100($sp)\n\t"
+            "sll $2,$3,3\n\t"
+            "addu $2,$2,$3\n\t"
+            "lui $3,0x801e\n\t"
+            "lw $3,-0x765c($3)\n\t"
+            "sll $2,$2,2\n\t"
+            "addu $2,$2,$3\n\t"
+            "lbu $2,0x20($2)\n\t"
+            "nop\n\t"
+            "bnez $2,2f\n\t"
+            "li $2,-1\n\t"
+            "li $4,0x1b\n\t"
+            "sw $0,0x10($sp)\n\t"
+            "sw $0,0x14($sp)\n\t"
+            "sw $0,0x18($sp)\n\t"
+            "lw $6,0x0c($20)\n\t"
+            "lui $7,0x8018\n\t"
+            "lw $7,0x645c($7)\n\t"
+            "jal func_8001B558\n\t"
+            "li $5,5\n\t"
+            "2:\n\t"
+            "li $2,-1\n\t"
+            "lui $1,0x8018\n\t"
+            "sw $2,0x645c($1)\n\t"
+            "1:\n\t"
+            "jal func_8003CB14\n\t"
+            "nop\n\t"
+            "move $4,$0\n\t"
+            "jal func_80039158\n\t"
+            "move $5,$0\n\t"
+            "jal func_8002C488\n\t"
+            "nop\n\t"
+            "jal func_80048488\n\t"
+            "nop\n\t"
+            "jal func_80040634\n\t"
+            "nop\n\t"
+            "jal func_8005FBE4\n\t"
+            "nop\n\t"
+            "jal func_80040994\n\t"
+            "nop\n\t"
+            "lw $3,0x3a4($gp)\n\t"
+            "li $2,-2\n\t"
+            "bne $3,$2,3f\n\t"
+            "nop\n\t"
+            "jal func_8002CB2C\n\t"
+            "li $4,5\n\t"
+            "move $4,$0\n\t"
+            "lui $6,0x8003\n\t"
+            "addiu $6,$6,0x7350\n\t"
+            "jal func_8005EF9C\n\t"
+            "li $5,0x3c\n\t"
+            "lbu $3,0x7ec($gp)\n\t"
+            "li $2,1\n\t"
+            "bne $3,$2,4f\n\t"
+            "li $4,5\n\t"
+            "lw $2,0x10($20)\n\t"
+            "lui $3,0x10\n\t"
+            "and $2,$2,$3\n\t"
+            "beqz $2,4f\n\t"
+            "move $5,$0\n\t"
+            "lw $2,0x7fc($gp)\n\t"
+            "nop\n\t"
+            "lw $4,0x14($2)\n\t"
+            "addiu $6,$sp,0x108\n\t"
+            "sw $0,0x10c($sp)\n\t"
+            "sw $0,0x110($sp)\n\t"
+            "jal func_80054C7C\n\t"
+            "sw $0,0x108($sp)\n\t"
+            "lw $4,0x7fc($gp)\n\t"
+            "jal func_80052BDC\n\t"
+            "li $5,1\n\t"
+            "sw $0,0x364($gp)\n\t"
+            "li $4,5\n\t"
+            "jal func_8001C700\n\t"
+            "li $5,3\n\t"
+            "li $4,5\n\t"
+            "jal func_8001C700\n\t"
+            "li $5,5\n\t"
+            "li $4,0x0f\n\t"
+            "jal func_8002CA88\n\t"
+            "li $5,0xb4\n\t"
+            "jal func_8002BAD4\n\t"
+            "li $4,0x0f\n\t"
+            "j 5f\n\t"
+            "sb $0,0($20)\n\t"
+            "4:\n\t"
+            "jal func_8001C700\n\t"
+            "li $5,5\n\t"
+            "li $4,5\n\t"
+            "jal func_8001C700\n\t"
+            "li $5,8\n\t"
+            "5:\n\t"
+            "jal func_8001BC08\n\t"
+            "nop\n\t"
+            "jal func_8001B9C8\n\t"
+            "nop\n\t"
+            "li $4,0x2c\n\t"
+            "move $5,$0\n\t"
+            "li $6,0xfffe\n\t"
+            "li $7,0xfffe\n\t"
+            "addiu $2,$sp,0x118\n\t"
+            "sw $2,0x10($sp)\n\t"
+            "addiu $2,$sp,0x100\n\t"
+            "sw $2,0x14($sp)\n\t"
+            "addiu $2,$sp,0x101\n\t"
+            "sw $2,0x18($sp)\n\t"
+            "addiu $2,$sp,0x102\n\t"
+            "jal func_8001B558\n\t"
+            "sw $2,0x1c($sp)\n\t"
+            "li $2,-1\n\t"
+            "sw $2,0x3a4($gp)\n\t"
+            "j 6f\n\t"
+            "li $4,0x1b\n\t"
+            "3:\n\t"
+            "jal func_800222E0\n\t"
+            "nop\n\t"
+            "andi $2,$2,0x00ff\n\t"
+            "li $3,1\n\t"
+            "bne $2,$3,6f\n\t"
+            "li $4,0x1b\n\t"
+            "sw $0,0x3a4($gp)\n\t"
+            "6:\n\t"
+            "sw $0,0x10($sp)\n\t"
+            "sw $0,0x14($sp)\n\t"
+            "sw $0,0x18($sp)\n\t"
+            "sw $0,0x1c($sp)\n\t"
+            "lw $6,0x0c($20)\n\t"
+            "move $5,$0\n\t"
+            "jal func_8001B558\n\t"
+            "move $7,$6\n\t"
+            ".set at"
+            : "=r"(list_initial_value)
+            : "0"(-0x32)
+            : "$1", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
+        );
+        return;
+    }
+    goto main_path;
+
+dispatch_entry_event:
+    actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
+    func_8001B558(0x1B, entry_event_property, actor_value, actor_value, 0, 0, 0, 0);
+    return;
+
+main_path:
+    func_80028FC8();
+    if (*(volatile int32_t *)0x80186458u < 0) {
         func_800556D0(
             0,
             (const char *)0x80012A20u,
             (const char *)0x8001298Cu,
             0x912
         );
+        if (*(volatile int32_t *)0x80186458u < 0) {
+            *(volatile int32_t *)0x80186458u = 1;
+        }
     }
-    *death_type = bubsy_advance_death_state(*death_type, *level_id, func_80082ECC());
+    death_type = (volatile int32_t *)0x80186458u;
+    current_death_state = *death_type;
+    death_state_one = 1;
+    if (current_death_state == 1) {
+        BUBSY_DEATH_READ_COUNTER(counter_value);
+        BUBSY_DEATH_REMAINDER_3(counter_remainder, counter_value);
+        if (counter_remainder == death_state_one) {
+            current_death_state = 7;
+        } else if (counter_remainder == 2) {
+            current_death_state = 9;
+        }
+    } else if (current_death_state == 2) {
+        BUBSY_DEATH_READ_COUNTER(counter_value);
+        BUBSY_DEATH_REMAINDER_2(counter_remainder, counter_value);
+        if (counter_remainder == death_state_one) {
+            current_death_state = 10;
+        }
+    } else if (current_death_state == 4) {
+        int16_t level = *(volatile const int16_t *)0x801D36F0u;
 
-    runtime.actor_flags_04 = *(volatile uint32_t *)(actor_bytes + 0x04);
-    runtime.actor_state_10 = *(volatile uint32_t *)(actor_bytes + 0x10);
-    runtime.actor_event_guard_6460 = *(volatile uint8_t *)0x80186460u;
-    runtime.state_6461 = *(volatile uint8_t *)0x80186461u;
-    runtime.state_6463 = *(volatile uint8_t *)0x80186463u;
-    runtime.state_6479 = *(volatile uint8_t *)0x80186479u;
-    runtime.state_64B8 = *(volatile uint8_t *)0x801864B8u;
-    runtime.state_649D = *(volatile uint8_t *)0x8018649Du;
-    runtime.state_6452 = *(volatile uint16_t *)0x80186452u;
-    runtime.state_64C0 = *(volatile uint32_t *)0x801864C0u;
-    bubsy_death_state_reset_runtime(
-        &runtime,
-        *((volatile const uint8_t *)death_info + 0x0C)
+        if (level == 4 || level == 7 || level == 9 || level == 18) {
+            current_death_state = 6;
+        } else if (level == 6) {
+            current_death_state = 8;
+        } else if (level == 8) {
+            current_death_state = 11;
+        }
+    } else {
+        int16_t level = *(volatile const int16_t *)0x801D36F0u;
+
+        if (level == 5 || level == 8) {
+            current_death_state = 11;
+        }
+    }
+    if (current_death_state == 11) {
+        int16_t level = *(volatile const int16_t *)0x801D36F0u;
+
+        if (level == 4 || level == 6 || level == 8) {
+            BUBSY_DEATH_READ_COUNTER(counter_value);
+            BUBSY_DEATH_REMAINDER_2(counter_remainder, counter_value);
+            current_death_state = counter_remainder == 0 ? 12 : 13;
+        }
+    }
+    *death_type = current_death_state;
+
+    __asm__ volatile(
+        ".set noat\n\t"
+        "lw $2,0($17)\n\t"
+        "sll $2,$2,2\n\t"
+        "lui $1,0x800A\n\t"
+        "addu $1,$1,$2\n\t"
+        "lw $5,-0x744($1)\n\t"
+        "jal func_80082E8C\n\t"
+        "addiu $4,$sp,0x20\n\t"
+        ".set at"
+        :
+        :
+        : "$1", "$2", "$4", "$5", "$31", "memory"
     );
-    *(volatile uint32_t *)(actor_bytes + 0x04) = runtime.actor_flags_04;
-    *(volatile uint32_t *)(actor_bytes + 0x10) = runtime.actor_state_10;
-    *(volatile uint8_t *)0x80186460u = runtime.actor_event_guard_6460;
-    *(volatile uint8_t *)0x80186461u = runtime.state_6461;
-    *(volatile uint8_t *)0x80186463u = runtime.state_6463;
-    *(volatile uint8_t *)0x80186479u = runtime.state_6479;
-    *(volatile uint8_t *)0x801864B8u = runtime.state_64B8;
-    *(volatile uint8_t *)0x8018649Du = runtime.state_649D;
-    *(volatile uint16_t *)0x80186452u = runtime.state_6452;
-    *(volatile uint32_t *)0x801864C0u = runtime.state_64C0;
+    func_8002DD24((volatile uint8_t *)0x801864BDu);
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x80) = 0x200;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x84) = 0xF0;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x90) = 0xFFFFFFFFu;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x88) = 0;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x8C) = 0;
+    ((volatile uint8_t *)stack_storage)[0x96] = 0;
+    ((volatile uint8_t *)stack_storage)[0x95] = 0;
+    ((volatile uint8_t *)stack_storage)[0x94] = 0;
+    ((volatile uint8_t *)stack_storage)[0x98] = 0x28;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x9C) = 0;
+    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0xA0) = 0;
+    ((volatile uint8_t *)stack_storage)[0xA5] = 1;
+    ((volatile uint8_t *)stack_storage)[0xA6] = *(volatile uint8_t *)0x801864BDu != 0;
+    {
+        volatile const uint8_t *config = *(volatile const uint8_t * volatile *)0x800BE698u;
+        const int32_t value = config[6] * 12;
+        func_8005F2C0(value, value);
+    }
+    func_8001B558(4, 5, 0xFFFF, 0xFFFF, (int32_t)stack_storage, 0, 0, 0);
+    func_8001C700(4, 3);
 
-    *state_6462 = 1;
+    *(volatile uint32_t *)(actor_bytes + 0x10) = 0;
+    *(volatile uint8_t *)0x80186463u =
+        *((volatile const uint8_t *)death_info + 0x0C) != 0;
+    *(volatile uint8_t *)0x80186460u = 0;
+    *(volatile uint32_t *)0x801864C0u = 0;
+    *(volatile uint32_t *)(actor_bytes + 0x04) = 0;
+    *(volatile uint8_t *)0x801864B8u = 0;
+    *(volatile uint8_t *)0x80186461u = 0;
+    *(volatile uint16_t *)0x80186452u = 0;
+    *(volatile uint8_t *)0x8018649Du = 0;
+    *(volatile uint8_t *)0x80186479u = 0;
+
+    func_80037214(0, (void *)actor_bytes);
+    func_8003539C((void *)actor_bytes, 1);
+    func_800289E8(0, (void *)((uint8_t *)stack_storage + 0xC0));
+    func_800549E8(context_value, (void *)((uint8_t *)stack_storage + 0xC0));
+    func_80054C7C(context_value, 0, (void *)0x80186468u);
+    func_8001B9C8();
+    func_800516F8((void *)((uint8_t *)stack_storage + 0x110));
+    func_80054AF0(context_value, (void *)((uint8_t *)stack_storage + 0x100));
+    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[0] =
+        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[0];
+    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[1] =
+        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[1];
+    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[2] =
+        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[2];
+    func_8002E954((void *)0x80186468u, *(void * volatile *)0x800BDEE8u);
+    func_8002E858(
+        (void *)((uint8_t *)stack_storage + 0x100),
+        0x240,
+        (void *)(*(volatile uint32_t *)0x8018646Cu + 0x780u),
+        (void *)((uint8_t *)stack_storage + 0xB0)
+    );
+    func_80054C7C(
+        (void *)(uintptr_t)((uint32_t *)((uint8_t *)stack_storage + 0x110))[0],
+        0,
+        (void *)((uint8_t *)stack_storage + 0xB0)
+    );
+    func_800550A4(
+        (void *)(uintptr_t)((uint32_t *)((uint8_t *)stack_storage + 0x110))[0],
+        context_value
+    );
+    func_80045094();
+    func_80044268();
+    func_80069758();
+    func_8003AA30();
+
+    *(volatile uint8_t *)0x80186462u = 1;
     actor_component = *(volatile uint8_t **)(actor_bytes + 0x1C);
     actor_bytes[0x2C] = 0;
-    *global_counter = -2;
+    BUBSY_GLOBAL_COUNTER = -2;
     *(volatile uint32_t *)(actor_component + 0x20) = 0;
     *(volatile uint32_t *)(nested_state + 0x40) = 0;
     *(volatile uint32_t *)(nested_state + 0x3C) = 0;
@@ -227,4 +559,9 @@ void bubsy_handle_death_state(void *actor, void *context) {
     *(volatile uint8_t *)0x80186464u = 0;
     func_8001A670();
 }
+
+#undef BUBSY_GLOBAL_COUNTER
+#undef BUBSY_DEATH_READ_COUNTER
+#undef BUBSY_DEATH_REMAINDER_3
+#undef BUBSY_DEATH_REMAINDER_2
 #endif

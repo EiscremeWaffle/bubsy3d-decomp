@@ -270,8 +270,10 @@ is translated and tested in `bubsy_death_state_next_global_counter`. Within the
 table path, event `0x1B` with property `5` is dispatched only when the list is
 nonempty and its selected entry has byte `+0x20` clear; this branch is modeled
 by `bubsy_death_state_should_dispatch_counter_entry_event`. These predicates
-remain narrow, tested semantic models; the report-only handler candidate does
-not yet reproduce the surrounding table path or its engine-helper sequence.
+remain narrow, tested semantic models. The report-only handler candidate now
+includes the observed table path, its conditional property-5 event, helper-call
+sequence, counter updates, and property-0 return event. The engine helpers'
+broader behavior is still unidentified.
 
 The observed state values and timing arithmetic are not yet mapped to named
 death animations or gameplay rules. The routine is in the code treemap, but its
@@ -292,10 +294,11 @@ parity or `13` on odd parity when the level ID is `4`, `6`, or `8`. These are ob
 not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models the verified entry
-gates, death-type scalar progression, and runtime reset, while leaving most
-animation/resource calls unfinished. Objdiff scores it at 17.16875% fuzzy
-similarity; L0/functions fuzzy similarity is 0.2789413% and global fuzzy
-similarity is 0.02108551%. None of these fuzzy scores are exact-match credit.
+gates, counter-list path, death-type scalar progression, resource/event setup,
+runtime reset, main helper sequence, and terminal writes. Several animation
+and engine-helper semantics remain unresolved. Objdiff scores it at 40.641666%
+fuzzy similarity; L0/functions fuzzy similarity is 0.47841018% and global fuzzy
+similarity is 0.036163606%. None of these fuzzy scores are exact-match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
@@ -309,9 +312,9 @@ zeros the word at the actor component pointer `+0x20` plus nested-object words
 at offsets `0x30`, `0x34`, `0x38`, `0x3C`, `0x40`, `0x78`, `0x7C`, `0x80`,
 `0x98`, `0x9C`, and `0xA0`; it then clears `0x80186464` and calls
 `func_8001A670`. These terminal effects are modeled and tested in
-`bubsy_death_state_finalize_runtime`. The fuzzy handler candidate includes the
-observed writes and final call but still omits the helper chain between its
-reset and terminal blocks; no full-function or exact-match claim is made.
+`bubsy_death_state_finalize_runtime`. The report candidate also emits the
+observed main-path helper sequence and terminal call. It remains incomplete and
+is not byte-matched; no full-function claim is made.
 
 `func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
 and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value

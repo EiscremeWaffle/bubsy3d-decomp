@@ -1,6 +1,6 @@
 {
   "measures": {
-    "fuzzy_match_percent": 0.02108551,
+    "fuzzy_match_percent": 0.036163606,
     "total_code": "2988972",
     "matched_code": "32",
     "matched_code_percent": 0.0010706022,
@@ -16,7 +16,7 @@
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 0.2789413,
+        "fuzzy_match_percent": 0.47841018,
         "total_code": "225940",
         "matched_code": "32",
         "matched_code_percent": 0.014163052,
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "225940",
-          "fuzzy_match_percent": 0.2789413,
+          "fuzzy_match_percent": 0.47841018,
           "metadata": {}
         }
       ],
@@ -1038,7 +1038,7 @@
         {
           "name": "bubsy_handle_death_state",
           "size": "1920",
-          "fuzzy_match_percent": 17.16875,
+          "fuzzy_match_percent": 40.641666,
           "metadata": {},
           "address": "46888"
         },
