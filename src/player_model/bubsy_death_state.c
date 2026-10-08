@@ -240,7 +240,18 @@ continue_main_path:
     if (*(volatile const uint8_t *)0x80186462u != 0) {
         return;
     }
-    if ((uint32_t)BUBSY_GLOBAL_COUNTER + 2u < 2u) {
+    {
+        int32_t counter_list_gate;
+        __asm__ volatile(
+            "lw $2,0x3a4($gp)\n\t"
+            "nop\n\t"
+            "addiu $2,$2,2\n\t"
+            "sltiu $2,$2,2"
+            : "=r"(counter_list_gate)
+            :
+            : "memory"
+        );
+        if (counter_list_gate != 0) {
         register int32_t list_initial_value __asm__("$2");
         __asm__ volatile(
             ".set noat\n\t"
@@ -387,6 +398,7 @@ continue_main_path:
             : "$1", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
         );
         return;
+        }
     }
     func_80028FC8();
     if (*(volatile int32_t *)0x80186458u < 0) {
@@ -522,7 +534,9 @@ continue_main_path:
 
     __asm__ volatile(
         ".set noat\n\t"
-        "lw $2,0($17)\n\t"
+        "lui $2,0x8018\n\t"
+        "lw $2,0x6458($2)\n\t"
+        "nop\n\t"
         "sll $2,$2,2\n\t"
         "lui $1,0x800A\n\t"
         "addu $1,$1,$2\n\t"

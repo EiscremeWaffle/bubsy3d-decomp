@@ -298,9 +298,9 @@ animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models the verified entry
 gates, counter-list path, death-type scalar progression, resource/event setup,
 runtime reset, main helper sequence, and terminal writes. Several animation
-and engine-helper semantics remain unresolved. Objdiff scores it at 51.020832%
-fuzzy similarity; L0/functions fuzzy similarity is 0.56661063% and global fuzzy
-similarity is 0.04283078%. None of these fuzzy scores are exact-match credit.
+and engine-helper semantics remain unresolved. Objdiff scores it at 52.025%
+fuzzy similarity; L0/functions fuzzy similarity is 0.5751438% and global fuzzy
+similarity is 0.043475814%. None of these fuzzy scores are exact-match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
