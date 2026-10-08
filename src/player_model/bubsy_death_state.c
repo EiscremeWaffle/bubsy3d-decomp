@@ -241,7 +241,7 @@ continue_main_path:
         return;
     }
     {
-        int32_t counter_list_gate;
+        register int32_t counter_list_gate __asm__("$2");
         __asm__ volatile(
             "lw $2,0x3a4($gp)\n\t"
             "nop\n\t"
