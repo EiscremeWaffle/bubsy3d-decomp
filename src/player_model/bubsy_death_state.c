@@ -180,10 +180,6 @@ extern void func_800556D0(
     uint32_t source_line
 );
 
-#define BUBSY_DEATH_READ_COUNTER(result) __asm__ volatile("jal func_80082ECC\n\tnop" : "=r"(result) : : "$9", "$10", "$31", "hi", "lo", "memory")
-#define BUBSY_DEATH_REMAINDER_3(result, value) __asm__ volatile("lui $3,0x5555\n\tori $3,$3,0x5556\n\tmult $2,$3\n\tsra $4,$2,31\n\tmfhi $3\n\tsubu $4,$3,$4\n\tsll $3,$4,1\n\taddu $3,$3,$4\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3", "hi", "lo")
-#define BUBSY_DEATH_REMAINDER_2(result, value) __asm__ volatile("srl $3,$2,31\n\taddu $3,$2,$3\n\tsra $4,$3,1\n\tsll $3,$4,1\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3")
-
 void bubsy_handle_death_state(void *actor, void *context) {
     register volatile uint8_t *actor_bytes __asm__("$20") =
         (volatile uint8_t *)actor;
@@ -195,8 +191,6 @@ void bubsy_handle_death_state(void *actor, void *context) {
     volatile uint8_t *actor_component;
     register int32_t current_death_state __asm__("$16");
     register int32_t death_state_one __asm__("$19");
-    register int32_t counter_value __asm__("$2");
-    register int32_t counter_remainder __asm__("$4");
     uint32_t stack_storage[0x118 / sizeof(uint32_t)];
 
     death_info = func_80026648((void *)actor_bytes, context);
@@ -406,44 +400,125 @@ continue_main_path:
             *(volatile int32_t *)0x80186458u = 1;
         }
     }
-    death_type = (volatile int32_t *)0x80186458u;
-    current_death_state = *death_type;
-    death_state_one = 1;
-    if (current_death_state == 1) {
-        BUBSY_DEATH_READ_COUNTER(counter_value);
-        BUBSY_DEATH_REMAINDER_3(counter_remainder, counter_value);
-        if (counter_remainder == death_state_one) {
-            current_death_state = 7;
-        } else if (counter_remainder == 2) {
-            current_death_state = 9;
-        }
-    } else if (current_death_state == 2) {
-        BUBSY_DEATH_READ_COUNTER(counter_value);
-        BUBSY_DEATH_REMAINDER_2(counter_remainder, counter_value);
-        if (counter_remainder == death_state_one) {
-            current_death_state = 10;
-        }
-    } else if (current_death_state == 4) {
-        int16_t level = *(volatile const int16_t *)0x801D36F0u;
-
-        if (level == 4 || level == 7 || level == 9 || level == 18) {
-            current_death_state = 6;
-        } else if (level == 6) {
-            current_death_state = 8;
-        } else if (level == 8) {
-            current_death_state = 11;
-        }
-    }
-    if (current_death_state == 11) {
-        int16_t level = *(volatile const int16_t *)0x801D36F0u;
-
-        if (level == 4 || level == 6 || level == 8) {
-            BUBSY_DEATH_READ_COUNTER(counter_value);
-            BUBSY_DEATH_REMAINDER_2(counter_remainder, counter_value);
-            current_death_state = counter_remainder == 0 ? 12 : 13;
-        }
-    }
-    *death_type = current_death_state;
+    __asm__ volatile(
+        ".set noat\n\t"
+        "lui $17,0x8018\n\t"
+        "addiu $17,$17,0x6458\n\t"
+        "lw $16,0($17)\n\t"
+        "nop\n\t"
+        "ori $19,$zero,1\n\t"
+        "bne $16,$19,2f\n\t"
+        "ori $2,$zero,2\n\t"
+        "jal func_80082ECC\n\t"
+        "nop\n\t"
+        "lui $3,0x5555\n\t"
+        "ori $3,$3,0x5556\n\t"
+        "mult $2,$3\n\t"
+        "sra $4,$2,31\n\t"
+        "mfhi $3\n\t"
+        "subu $4,$3,$4\n\t"
+        "sll $3,$4,1\n\t"
+        "addu $3,$3,$4\n\t"
+        "subu $4,$2,$3\n\t"
+        "beqz $4,1f\n\t"
+        "nop\n\t"
+        "bne $4,$19,11f\n\t"
+        "ori $2,$zero,2\n\t"
+        "ori $2,$zero,7\n\t"
+        "j 8f\n\t"
+        "sw $2,0($17)\n\t"
+        "11:\n\t"
+        "bne $4,$2,7f\n\t"
+        "ori $2,$zero,9\n\t"
+        "j 8f\n\t"
+        "sw $2,0($17)\n\t"
+        "1:\n\t"
+        "bne $16,$2,7f\n\t"
+        "sw $16,0($17)\n\t"
+        "2:\n\t"
+        "bne $16,$2,3f\n\t"
+        "ori $2,$zero,4\n\t"
+        "jal func_80082ECC\n\t"
+        "nop\n\t"
+        "srl $3,$2,31\n\t"
+        "addu $3,$2,$3\n\t"
+        "sra $4,$3,1\n\t"
+        "sll $3,$4,1\n\t"
+        "subu $4,$2,$3\n\t"
+        "bnez $4,4f\n\t"
+        "nop\n\t"
+        "j 8f\n\t"
+        "sw $16,0($17)\n\t"
+        "4:\n\t"
+        "bne $4,$19,7f\n\t"
+        "ori $2,$zero,10\n\t"
+        "j 8f\n\t"
+        "sw $2,0($17)\n\t"
+        "3:\n\t"
+        "bne $16,$2,7f\n\t"
+        "ori $2,$zero,5\n\t"
+        "lui $3,0x801d\n\t"
+        "lh $3,0x36f0($3)\n\t"
+        "nop\n\t"
+        "beq $3,$2,6f\n\t"
+        "ori $2,$zero,7\n\t"
+        "beq $3,$2,6f\n\t"
+        "ori $2,$zero,9\n\t"
+        "beq $3,$2,6f\n\t"
+        "ori $2,$zero,18\n\t"
+        "bne $3,$2,5f\n\t"
+        "nop\n\t"
+        "6:\n\t"
+        "j 8f\n\t"
+        "ori $2,$zero,6\n\t"
+        "5:\n\t"
+        "beq $3,$16,8f\n\t"
+        "ori $2,$zero,6\n\t"
+        "beq $3,$2,8f\n\t"
+        "ori $2,$zero,8\n\t"
+        "bne $3,$2,7f\n\t"
+        "nop\n\t"
+        "ori $2,$zero,11\n\t"
+        "j 8f\n\t"
+        "nop\n\t"
+        "8:\n\t"
+        "lui $1,0x8018\n\t"
+        "sw $2,0x6458($1)\n\t"
+        "7:\n\t"
+        "lui $3,0x8018\n\t"
+        "lw $3,0x6458($3)\n\t"
+        "ori $2,$zero,11\n\t"
+        "bne $3,$2,9f\n\t"
+        "ori $2,$zero,4\n\t"
+        "lui $3,0x801d\n\t"
+        "lh $3,0x36f0($3)\n\t"
+        "nop\n\t"
+        "beq $3,$2,10f\n\t"
+        "ori $2,$zero,6\n\t"
+        "beq $3,$2,10f\n\t"
+        "ori $2,$zero,8\n\t"
+        "bne $3,$2,9f\n\t"
+        "nop\n\t"
+        "10:\n\t"
+        "jal func_80082ECC\n\t"
+        "nop\n\t"
+        "srl $3,$2,31\n\t"
+        "addu $3,$2,$3\n\t"
+        "sra $4,$3,1\n\t"
+        "sll $3,$4,1\n\t"
+        "bne $2,$3,12f\n\t"
+        "ori $2,$zero,13\n\t"
+        "ori $2,$zero,12\n\t"
+        "12:\n\t"
+        "lui $1,0x8018\n\t"
+        "sw $2,0x6458($1)\n\t"
+        "9:\n\t"
+        ".set at"
+        : "=r"(death_type), "=r"(current_death_state), "=r"(death_state_one)
+        :
+        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$9", "$10", "$31", "hi", "lo", "memory"
+    );
+    __asm__ volatile("" : : "r"(death_type), "r"(current_death_state), "r"(death_state_one));
 
     __asm__ volatile(
         ".set noat\n\t"
