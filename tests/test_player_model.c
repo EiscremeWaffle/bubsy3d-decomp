@@ -489,19 +489,25 @@ static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(2, 0, 0) == 2);
     assert(bubsy_advance_death_state(2, 0, 1) == 10);
     assert(bubsy_advance_death_state(2, 0, -1) == 2);
-    assert(bubsy_advance_death_state(3, 6, 0) == 3);
-    assert(bubsy_advance_death_state(4, 4, 0) == 6);
+    assert(bubsy_advance_death_state(3, 6, 0) == 12);
+    assert(bubsy_advance_death_state(4, 4, 0) == 11);
     assert(bubsy_advance_death_state(4, 7, 0) == 6);
     assert(bubsy_advance_death_state(4, 9, 0) == 6);
     assert(bubsy_advance_death_state(4, 18, 0) == 6);
-    assert(bubsy_advance_death_state(4, 6, 0) == 8);
-    assert(bubsy_advance_death_state(4, 8, 0) == 12);
-    assert(bubsy_advance_death_state(4, 8, 1) == 13);
-    assert(bubsy_advance_death_state(4, 5, 0) == 4);
-    assert(bubsy_advance_death_state(11, 4, 0) == 12);
-    assert(bubsy_advance_death_state(11, 4, 1) == 13);
+    assert(bubsy_advance_death_state(4, 6, 0) == 11);
+    assert(bubsy_advance_death_state(4, 6, 1) == 11);
+    assert(bubsy_advance_death_state(4, 8, 0) == 11);
+    assert(bubsy_advance_death_state(4, 8, 1) == 11);
+    assert(bubsy_advance_death_state(4, 5, 0) == 6);
+    assert(bubsy_advance_death_state(11, 4, 0) == 11);
+    assert(bubsy_advance_death_state(11, 4, 1) == 11);
+    assert(bubsy_advance_death_state(11, 8, 1) == 11);
     assert(bubsy_advance_death_state(7, 5, 0) == 7);
-    assert(bubsy_advance_death_state(7, 8, 0) == 7);
+    assert(bubsy_advance_death_state(7, 8, 0) == 12);
+    assert(bubsy_advance_death_state(7, 8, 1) == 13);
+    assert(bubsy_advance_death_state(1, 8, -1) == 13);
+    assert(bubsy_advance_death_state(1, 8, 0) == 12);
+    assert(bubsy_advance_death_state(2, 6, -1) == 13);
 }
 
 static unsigned int death_assertion_count;

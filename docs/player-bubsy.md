@@ -41,9 +41,10 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-Objdiff credits 32 bytes across these two functions. The four-way model selector
-above remains unmatched, as do the Bubsy actor-update and death-state routines;
-the death handler has a clearly marked partial fuzzy candidate, not an exact match.
+The published report credits 32 bytes across these two functions. The four-way
+model selector and Bubsy actor-update remain unmatched. The death handler has
+a verified local GCC byte match described below, but remains a fuzzy candidate
+in the Clang-based publication report.
 decomp.dev still shows `0.01%` exact code progress; these fuzzy candidates do not
 raise the exact matched-byte count.
 
@@ -259,8 +260,9 @@ At entry, event `0x1B` with property `4` is dispatched when `$gp+0x3A4` is
 `-2` and `func_800222E0()` returns a zero low byte. Level `0x13` then takes a
 separate cleanup-and-return branch. These gates are translated and tested; the
 cleanup and event helpers themselves remain unidentified. Otherwise, nonzero
-byte `0x80186462` jumps directly to the `0x80037AF0` epilogue; this skip gate is
-translated in `bubsy_death_state_should_run_main_loop`.
+byte `0x80186462` skips the main body but still reaches the final
+`func_8001A670` call at `0x80037AC8` before the epilogue. The main-body predicate
+is translated in `bubsy_death_state_should_run_main_loop`.
 The following table-driven block is reached only when `$gp+0x3A4` is `-2` or
 `-1`; this range check is translated in
 `bubsy_death_state_uses_counter_entry_list`. The counter's meaning remains
@@ -285,22 +287,35 @@ calls the assertion callback with condition `gBubsyInfo.deathType >= 0`, source
 `../f/bubsy.c`, line `0x912`, then is set to `1` by
 `bubsy_death_state_normalize_initial`. For state `1`, the result
 of `func_80082ECC() % 3` keeps state `1` at remainder `0`, sets `7` at remainder
-`1`, sets `9` at remainder `2`, and otherwise remains `1`. State `2` stays `2`
-unless the counter remainder is `1`, when it becomes `10`. State `4` maps to
-`6` for level IDs `4`, `7`, `9`, or `18`, to `8` for ID `6`, and to `11` for
-ID `8`; other level IDs preserve state `4`. Other states are preserved except
-level IDs `5` and `8` do not trigger this state-4 mapping. States other than
-`1`, `2`, and `4` are preserved by the level-based transition block. State `11`
-advances to `12` on even parity or `13` on odd parity when the level ID is `4`,
-`6`, or `8`. These are observed scalar transitions,
-not recovered animation names. The C helper is tested but not byte-matched;
-animation/resource calls and the rest of the death handler remain incomplete.
-The report-only `bubsy_handle_death_state` candidate models the verified entry
+`1`, and sets `9` at remainder `2`. Other remainders initially preserve state
+`1`; all these paths then reach the final parity gate. State `2` initially
+stays `2` unless the counter remainder is `1`, when it becomes `10`. State `4`
+maps to `6` for level IDs `5`, `7`, `9`, or `18`, and to `11` for IDs `4`, `6`,
+or `8`; other level IDs preserve state `4`. The final gate at `0x800377D0`
+uses `beq`, so state
+`11` skips the parity transition and remains `11`. Other states reaching this
+gate become `12` on even parity or `13` on odd parity on level IDs `4`, `6`,
+or `8`. These are observed scalar transitions,
+not recovered animation names. The standalone C helper is tested but not
+byte-matched. The target-only `bubsy_handle_death_state` implementation models the verified entry
 gates, counter-list path, death-type scalar progression, resource/event setup,
 runtime reset, main helper sequence, and terminal writes. Several animation
-and engine-helper semantics remain unresolved. Objdiff scores it at 54.539585%
-fuzzy similarity; L0/functions fuzzy similarity is 0.5965124% and global fuzzy
-similarity is 0.04509109%. None of these fuzzy scores are exact-match credit.
+and engine-helper semantics remain unresolved. The GCC 2.7.2/MASPSX probe now
+produces all 480 original instructions. Independently linking it with LLD at
+`0x8003737C` and resolving helper symbols to their observed addresses gives
+1,920 identical bytes, with no differences. Objdiff also reports 100% for a
+relocation-resolved verification object derived from that linked compiler
+output, not from the original executable. The matched function's SHA-256 is
+`eb2e2bdbb080e0ffa3e8adf93e0843a710dd3ffab3a2d7fd684c8143cccd01d1`.
+Probe artifacts are under `build/toolchain-probes/`, including
+`bubsy-death-linked.elf` and `death-linked-exact.json`.
+
+This is a local assembly-backed byte match, not fully recovered high-level C.
+The publication pipeline still compiles with Clang and its validated snapshot
+records 54.539585% fuzzy similarity for this function. Its newer raw reports
+omit the required exact-data measure and are not staged for publication,
+although the two 196-byte table sections compare equal. The local GCC proof
+does not change the publication allowlist or exact-match totals.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's
@@ -315,8 +330,9 @@ at offsets `0x30`, `0x34`, `0x38`, `0x3C`, `0x40`, `0x78`, `0x7C`, `0x80`,
 `0x98`, `0x9C`, and `0xA0`; it then clears `0x80186464` and calls
 `func_8001A670`. These terminal effects are modeled and tested in
 `bubsy_death_state_finalize_runtime`. The report candidate also emits the
-observed main-path helper sequence and terminal call. It remains incomplete and
-is not byte-matched; no full-function claim is made.
+observed main-path helper sequence and terminal call. These target instructions
+are included in the verified local GCC match; the high-level meanings of the
+engine helpers remain unresolved.
 
 `func_80082ECC` is a BIOS-vector stub: it sets `$t2` to `0xA0`, jumps there,
 and sets `$t1` to `0x2F` in the delay slot. The meaning of its returned value

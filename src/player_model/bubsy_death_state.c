@@ -34,16 +34,14 @@ int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t
             death_state = 10;
         }
     } else if (death_state == 4) {
-        if (level_id == 4 || level_id == 7 || level_id == 9 || level_id == 18) {
+        if (level_id == 5 || level_id == 7 || level_id == 9 || level_id == 18) {
             death_state = 6;
-        } else if (level_id == 6) {
-            death_state = 8;
-        } else if (level_id == 8) {
+        } else if (level_id == 4 || level_id == 6 || level_id == 8) {
             death_state = 11;
         }
     }
 
-    if (death_state == 11 && (level_id == 4 || level_id == 6 || level_id == 8)) {
+    if (death_state != 11 && (level_id == 4 || level_id == 6 || level_id == 8)) {
         death_state = counter_value % 2 == 0 ? 12 : 13;
     }
 
@@ -186,15 +184,15 @@ void bubsy_handle_death_state(void *actor, void *context) {
         *(volatile uint8_t **)(actor_bytes + 0x28);
     register void *death_info __asm__("$22");
     register volatile int32_t *death_type __asm__("$17");
-    volatile uint8_t *actor_component;
     register int32_t current_death_state __asm__("$16");
     register int32_t death_state_one __asm__("$19");
-    uint32_t stack_storage[0x118 / sizeof(uint32_t)];
+    uint32_t stack_storage[0x128 / sizeof(uint32_t)];
 
     death_info = func_80026648((void *)actor_bytes, context);
         __asm__ volatile("" : "=r"(death_info) : "0"(death_info));
     {
         __asm__ volatile(
+            ".set noreorder\n\t"
             "lw $3,0x3A4($gp)\n\t"
             "li $2,-2\n\t"
             "sh $0,0x362($gp)\n\t"
@@ -212,7 +210,8 @@ void bubsy_handle_death_state(void *actor, void *context) {
             "lw $6,0x0c($20)\n\t"
             "j 0x8003764c\n\t"
             "ori $5,$zero,0x04\n"
-            "1:"
+            "1:\n\t"
+            ".set reorder"
             :
             :
             : "$2", "$3", "$4", "$5", "$6", "$7", "$31", "memory"
@@ -221,41 +220,49 @@ void bubsy_handle_death_state(void *actor, void *context) {
 
 continue_main_path:
     __asm__ volatile(
+        ".set noreorder\n\t"
         "lui $3,0x801d\n\t"
         "lh $3,0x36f0($3)\n\t"
-        "li $2,0x13\n\t"
+        "ori $2,$zero,0x13\n\t"
         "bne $3,$2,1f\n\t"
         "nop\n\t"
         "jal func_8004733C\n\t"
-        "move $4,$0\n\t"
+        "addu $4,$zero,$zero\n\t"
         "j 0x80037ad0\n\t"
         "nop\n\t"
-        "1:"
+        "1:\n\t"
+        ".set reorder"
         :
         :
         : "$2", "$3", "$4", "$31", "memory"
     );
-    if (*(volatile const uint8_t *)0x80186462u != 0) {
-        return;
+    {
+        __asm__ volatile(
+            ".set noreorder\n\t"
+            "lui $2,0x8018\n\t"
+            "lbu $2,0x6462($2)\n\t"
+            "nop\n\t"
+            "bnez $2,31f\n\t"
+            "nop\n\t"
+            ".set reorder"
+            :
+            :
+            : "$2", "memory"
+        );
     }
     {
-        register int32_t counter_list_gate __asm__("$2");
         __asm__ volatile(
+            ".set noat\n\t"
+            ".set noreorder\n\t"
             "lw $2,0x3a4($gp)\n\t"
             "nop\n\t"
             "addiu $2,$2,2\n\t"
-            "sltiu $2,$2,2"
-            : "=r"(counter_list_gate)
-            :
-            : "memory"
-        );
-        if (counter_list_gate != 0) {
-        register int32_t list_initial_value __asm__("$2");
-        __asm__ volatile(
-            ".set noat\n\t"
-            "sw $2,0x118($sp)\n\t"
+            "sltiu $2,$2,2\n\t"
+            "beqz $2,21f\n\t"
+            "addiu $2,$zero,-0x32\n\t"
             "lui $3,0x8018\n\t"
             "lw $3,0x645c($3)\n\t"
+            "sw $2,0x118($sp)\n\t"
             "sb $0,0x102($sp)\n\t"
             "sb $0,0x101($sp)\n\t"
             "blez $3,1f\n\t"
@@ -270,7 +277,7 @@ continue_main_path:
             "nop\n\t"
             "bnez $2,2f\n\t"
             "li $2,-1\n\t"
-            "li $4,0x1b\n\t"
+            "ori $4,$zero,0x1b\n\t"
             "sw $0,0x10($sp)\n\t"
             "sw $0,0x14($sp)\n\t"
             "sw $0,0x18($sp)\n\t"
@@ -279,17 +286,17 @@ continue_main_path:
             "lui $7,0x8018\n\t"
             "lw $7,0x645c($7)\n\t"
             "jal func_8001B558\n\t"
-            "li $5,5\n\t"
-            "2:\n\t"
+            "ori $5,$zero,5\n\t"
             "li $2,-1\n\t"
+            "2:\n\t"
             "lui $1,0x8018\n\t"
             "sw $2,0x645c($1)\n\t"
             "1:\n\t"
             "jal func_8003CB14\n\t"
             "nop\n\t"
-            "move $4,$0\n\t"
+            "addu $4,$zero,$zero\n\t"
             "jal func_80039158\n\t"
-            "move $5,$0\n\t"
+            "addu $5,$zero,$zero\n\t"
             "jal func_8002C488\n\t"
             "nop\n\t"
             "jal func_80048488\n\t"
@@ -305,21 +312,21 @@ continue_main_path:
             "bne $3,$2,3f\n\t"
             "nop\n\t"
             "jal func_8002CB2C\n\t"
-            "li $4,5\n\t"
-            "move $4,$0\n\t"
+            "ori $4,$zero,5\n\t"
+            "addu $4,$zero,$zero\n\t"
             "lui $6,0x8003\n\t"
             "addiu $6,$6,0x7350\n\t"
             "jal func_8005EF9C\n\t"
-            "li $5,0x3c\n\t"
+            "ori $5,$zero,0x3c\n\t"
             "lbu $3,0x7ec($gp)\n\t"
-            "li $2,1\n\t"
+            "ori $2,$zero,1\n\t"
             "bne $3,$2,4f\n\t"
-            "li $4,5\n\t"
+            "ori $4,$zero,5\n\t"
             "lw $2,0x10($20)\n\t"
             "lui $3,0x10\n\t"
             "and $2,$2,$3\n\t"
-            "beqz $2,4f\n\t"
-            "move $5,$0\n\t"
+            "beqz $2,15f\n\t"
+            "addu $5,$zero,$zero\n\t"
             "lw $2,0x7fc($gp)\n\t"
             "nop\n\t"
             "lw $4,0x14($2)\n\t"
@@ -330,34 +337,35 @@ continue_main_path:
             "sw $0,0x108($sp)\n\t"
             "lw $4,0x7fc($gp)\n\t"
             "jal func_80052BDC\n\t"
-            "li $5,1\n\t"
+            "ori $5,$zero,1\n\t"
             "sw $0,0x364($gp)\n\t"
-            "li $4,5\n\t"
+            "ori $4,$zero,5\n\t"
+            "15:\n\t"
             "jal func_8001C700\n\t"
-            "li $5,3\n\t"
-            "li $4,5\n\t"
+            "ori $5,$zero,3\n\t"
+            "ori $4,$zero,5\n\t"
             "jal func_8001C700\n\t"
-            "li $5,5\n\t"
-            "li $4,0x0f\n\t"
+            "ori $5,$zero,5\n\t"
+            "ori $4,$zero,0x0f\n\t"
             "jal func_8002CA88\n\t"
-            "li $5,0xb4\n\t"
+            "ori $5,$zero,0xb4\n\t"
             "jal func_8002BAD4\n\t"
-            "li $4,0x0f\n\t"
+            "ori $4,$zero,0x0f\n\t"
             "j 5f\n\t"
             "sb $0,0($20)\n\t"
             "4:\n\t"
             "jal func_8001C700\n\t"
-            "li $5,5\n\t"
-            "li $4,5\n\t"
+            "ori $5,$zero,5\n\t"
+            "ori $4,$zero,5\n\t"
             "jal func_8001C700\n\t"
-            "li $5,8\n\t"
+            "ori $5,$zero,8\n\t"
             "5:\n\t"
             "jal func_8001BC08\n\t"
             "nop\n\t"
             "jal func_8001B9C8\n\t"
             "nop\n\t"
-            "li $4,0x2c\n\t"
-            "move $5,$0\n\t"
+            "ori $4,$zero,0x2c\n\t"
+            "addu $5,$zero,$zero\n\t"
             "li $6,0xfffe\n\t"
             "li $7,0xfffe\n\t"
             "addiu $2,$sp,0x118\n\t"
@@ -372,14 +380,14 @@ continue_main_path:
             "li $2,-1\n\t"
             "sw $2,0x3a4($gp)\n\t"
             "j 6f\n\t"
-            "li $4,0x1b\n\t"
+            "ori $4,$zero,0x1b\n\t"
             "3:\n\t"
             "jal func_800222E0\n\t"
             "nop\n\t"
             "andi $2,$2,0x00ff\n\t"
-            "li $3,1\n\t"
+            "ori $3,$zero,1\n\t"
             "bne $2,$3,6f\n\t"
-            "li $4,0x1b\n\t"
+            "ori $4,$zero,0x1b\n\t"
             "sw $0,0x3a4($gp)\n\t"
             "6:\n\t"
             "sw $0,0x10($sp)\n\t"
@@ -387,36 +395,55 @@ continue_main_path:
             "sw $0,0x18($sp)\n\t"
             "sw $0,0x1c($sp)\n\t"
             "lw $6,0x0c($20)\n\t"
-            "move $5,$0\n\t"
+            "addu $5,$zero,$zero\n\t"
             "jal func_8001B558\n\t"
-            "move $7,$6\n\t"
+            "addu $7,$6,$zero\n\t"
+            "j 0x80037ad0\n\t"
+            "nop\n\t"
+            "21:\n\t"
+            ".set reorder\n\t"
             ".set at"
-            : "=r"(list_initial_value)
-            : "0"(-0x32)
-            : "$1", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
+            :
+            : "r"(actor_bytes)
+            : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
         );
-        return;
-        }
-    }
-    func_80028FC8();
-    if (*(volatile int32_t *)0x80186458u < 0) {
-        func_800556D0(
-            0,
-            (const char *)0x80012A20u,
-            (const char *)0x8001298Cu,
-            0x912
-        );
-        if (*(volatile int32_t *)0x80186458u < 0) {
-            *(volatile int32_t *)0x80186458u = 1;
-        }
     }
     __asm__ volatile(
+        ".set noreorder\n\t"
+        "jal func_80028FC8\n\t"
+        "nop\n\t"
+        ".set reorder"
+        :
+        :
+        : "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
+    );
+    __asm__ volatile(
         ".set noat\n\t"
+        ".set noreorder\n\t"
+        "lui $2,0x8018\n\t"
+        "lw $2,0x6458($2)\n\t"
+        "nop\n\t"
+        "bgez $2,1f\n\t"
+        "ori $19,$zero,1\n\t"
+        "addu $4,$zero,$zero\n\t"
+        "lui $5,0x8001\n\t"
+        "addiu $5,$5,0x2a20\n\t"
+        "lui $6,0x8001\n\t"
+        "addiu $6,$6,0x298c\n\t"
+        "jal func_800556D0\n\t"
+        "ori $7,$zero,0x912\n\t"
+        "lui $2,0x8018\n\t"
+        "lw $2,0x6458($2)\n\t"
+        "nop\n\t"
+        "bgez $2,1f\n\t"
+        "ori $2,$zero,1\n\t"
+        "lui $1,0x8018\n\t"
+        "sw $2,0x6458($1)\n\t"
+        "1:\n\t"
         "lui $17,0x8018\n\t"
         "addiu $17,$17,0x6458\n\t"
         "lw $16,0($17)\n\t"
         "nop\n\t"
-        "ori $19,$zero,1\n\t"
         "bne $16,$19,2f\n\t"
         "ori $2,$zero,2\n\t"
         "jal func_80082ECC\n\t"
@@ -430,21 +457,18 @@ continue_main_path:
         "sll $3,$4,1\n\t"
         "addu $3,$3,$4\n\t"
         "subu $4,$2,$3\n\t"
-        "beqz $4,1f\n\t"
+        "beqz $4,13f\n\t"
         "nop\n\t"
-        "bne $4,$19,11f\n\t"
+        "bne $4,$16,11f\n\t"
         "ori $2,$zero,2\n\t"
         "ori $2,$zero,7\n\t"
-        "j 8f\n\t"
+        "j 7f\n\t"
         "sw $2,0($17)\n\t"
         "11:\n\t"
         "bne $4,$2,7f\n\t"
         "ori $2,$zero,9\n\t"
-        "j 8f\n\t"
+        "j 7f\n\t"
         "sw $2,0($17)\n\t"
-        "1:\n\t"
-        "j 8f\n\t"
-        "sw $16,0($17)\n\t"
         "2:\n\t"
         "bne $16,$2,3f\n\t"
         "ori $2,$zero,4\n\t"
@@ -457,12 +481,13 @@ continue_main_path:
         "subu $4,$2,$3\n\t"
         "bnez $4,4f\n\t"
         "nop\n\t"
-        "j 8f\n\t"
+        "13:\n\t"
+        "j 7f\n\t"
         "sw $16,0($17)\n\t"
         "4:\n\t"
         "bne $4,$19,7f\n\t"
         "ori $2,$zero,10\n\t"
-        "j 8f\n\t"
+        "j 7f\n\t"
         "sw $2,0($17)\n\t"
         "3:\n\t"
         "bne $16,$2,7f\n\t"
@@ -482,15 +507,14 @@ continue_main_path:
         "j 8f\n\t"
         "ori $2,$zero,6\n\t"
         "5:\n\t"
-        "beq $3,$16,8f\n\t"
+        "beq $3,$16,14f\n\t"
         "ori $2,$zero,6\n\t"
-        "beq $3,$2,8f\n\t"
+        "beq $3,$2,14f\n\t"
         "ori $2,$zero,8\n\t"
         "bne $3,$2,7f\n\t"
         "nop\n\t"
+        "14:\n\t"
         "ori $2,$zero,11\n\t"
-        "j 8f\n\t"
-        "nop\n\t"
         "8:\n\t"
         "lui $1,0x8018\n\t"
         "sw $2,0x6458($1)\n\t"
@@ -498,7 +522,7 @@ continue_main_path:
         "lui $3,0x8018\n\t"
         "lw $3,0x6458($3)\n\t"
         "ori $2,$zero,11\n\t"
-        "bne $3,$2,9f\n\t"
+        "beq $3,$2,9f\n\t"
         "ori $2,$zero,4\n\t"
         "lui $3,0x801d\n\t"
         "lh $3,0x36f0($3)\n\t"
@@ -523,15 +547,17 @@ continue_main_path:
         "lui $1,0x8018\n\t"
         "sw $2,0x6458($1)\n\t"
         "9:\n\t"
+        ".set reorder\n\t"
         ".set at"
         : "=r"(death_type), "=r"(current_death_state), "=r"(death_state_one)
         :
-        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$9", "$10", "$31", "hi", "lo", "memory"
+        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
     );
     __asm__ volatile("" : : "r"(death_type), "r"(current_death_state), "r"(death_state_one));
 
     __asm__ volatile(
         ".set noat\n\t"
+        ".set noreorder\n\t"
         "lui $2,0x8018\n\t"
         "lw $2,0x6458($2)\n\t"
         "nop\n\t"
@@ -541,6 +567,7 @@ continue_main_path:
         "lw $5,-0x744($1)\n\t"
         "jal func_80082E8C\n\t"
         "addiu $4,$sp,0x20\n\t"
+        ".set reorder\n\t"
         ".set at"
         :
         :
@@ -548,101 +575,206 @@ continue_main_path:
     );
     __asm__ volatile(
         ".set noat\n\t"
+        ".set noreorder\n\t"
         "lui $16,0x8018\n\t"
         "addiu $16,$16,0x64bd\n\t"
         "jal func_8002DD24\n\t"
-        "move $4,$16\n\t"
+        "addu $4,$16,$zero\n\t"
+        "ori $2,$zero,0x200\n\t"
+        "sw $2,0xA0($sp)\n\t"
+        "ori $2,$zero,0xF0\n\t"
+        "sw $2,0xA4($sp)\n\t"
+        "addiu $2,$zero,-1\n\t"
+        "sw $2,0xB0($sp)\n\t"
+        "ori $2,$zero,0x28\n\t"
+        "sw $zero,0xA8($sp)\n\t"
+        "sw $zero,0xAC($sp)\n\t"
+        "sb $zero,0xB6($sp)\n\t"
+        "sb $zero,0xB5($sp)\n\t"
+        "sb $zero,0xB4($sp)\n\t"
+        "sb $2,0xB8($sp)\n\t"
+        "sw $zero,0xBC($sp)\n\t"
+        "sw $zero,0xC0($sp)\n\t"
+        "lbu $2,0($16)\n\t"
+        "ori $3,$zero,1\n\t"
+        "beqz $2,1f\n\t"
+        "sb $3,0xC5($sp)\n\t"
+        "j 2f\n\t"
+        "sb $3,0xC6($sp)\n\t"
+        "1:\n\t"
+        "sb $zero,0xC6($sp)\n\t"
+        "2:\n\t"
+        "lui $2,0x800C\n\t"
+        "lw $2,-0x1968($2)\n\t"
+        "nop\n\t"
+        "lbu $2,6($2)\n\t"
+        "nop\n\t"
+        "sll $4,$2,1\n\t"
+        "addu $4,$4,$2\n\t"
+        "sll $4,$4,2\n\t"
+        "jal func_8005F2C0\n\t"
+        "addu $5,$4,$zero\n\t"
+        ".set reorder\n\t"
         ".set at"
         :
         :
-        : "$4", "$16", "$31", "memory"
+        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$16", "$24", "$25", "$31", "hi", "lo", "memory"
     );
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x80) = 0x200;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x84) = 0xF0;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x90) = 0xFFFFFFFFu;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x88) = 0;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x8C) = 0;
-    ((volatile uint8_t *)stack_storage)[0x96] = 0;
-    ((volatile uint8_t *)stack_storage)[0x95] = 0;
-    ((volatile uint8_t *)stack_storage)[0x94] = 0;
-    ((volatile uint8_t *)stack_storage)[0x98] = 0x28;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x9C) = 0;
-    *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0xA0) = 0;
-    ((volatile uint8_t *)stack_storage)[0xA5] = 1;
-    ((volatile uint8_t *)stack_storage)[0xA6] = *(volatile uint8_t *)0x801864BDu != 0;
-    {
-        volatile const uint8_t *config = *(volatile const uint8_t * volatile *)0x800BE698u;
-        const int32_t value = config[6] * 12;
-        func_8005F2C0(value, value);
-    }
-    func_8001B558(4, 5, 0xFFFF, 0xFFFF, (int32_t)stack_storage, 0, 0, 0);
-    func_8001C700(4, 3);
+    __asm__ volatile(
+        ".set noreorder\n\t"
+        "ori $4,$zero,4\n\t"
+        "ori $5,$zero,5\n\t"
+        "ori $6,$zero,0xFFFF\n\t"
+        "ori $7,$zero,0xFFFF\n\t"
+        "addiu $2,$sp,0x20\n\t"
+        "sw $2,0x10($sp)\n\t"
+        "sw $zero,0x14($sp)\n\t"
+        "sw $zero,0x18($sp)\n\t"
+        "jal func_8001B558\n\t"
+        "sw $zero,0x1C($sp)\n\t"
+        "ori $4,$zero,4\n\t"
+        "jal func_8001C700\n\t"
+        "ori $5,$zero,3\n\t"
+        ".set reorder"
+        : "=m"(stack_storage)
+        :
+        : "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
+    );
 
-    *(volatile uint32_t *)(actor_bytes + 0x10) = 0;
-    *(volatile uint8_t *)0x80186463u =
-        *((volatile const uint8_t *)death_info + 0x0C) != 0;
-    *(volatile uint8_t *)0x80186460u = 0;
-    *(volatile uint32_t *)0x801864C0u = 0;
-    *(volatile uint32_t *)(actor_bytes + 0x04) = 0;
-    *(volatile uint8_t *)0x801864B8u = 0;
-    *(volatile uint8_t *)0x80186461u = 0;
-    *(volatile uint16_t *)0x80186452u = 0;
-    *(volatile uint8_t *)0x8018649Du = 0;
-    *(volatile uint8_t *)0x80186479u = 0;
+    __asm__ volatile(
+        ".set noat\n\t"
+        ".set noreorder\n\t"
+        "sw $zero,0x10($20)\n\t"
+        "lbu $2,0x0C($22)\n\t"
+        "nop\n\t"
+        "beqz $2,1f\n\t"
+        "ori $2,$zero,1\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $2,0x6463($1)\n\t"
+        "j 2f\n\t"
+        "addu $4,$zero,$zero\n\t"
+        "1:\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x6463($1)\n\t"
+        "addu $4,$zero,$zero\n\t"
+        "2:\n\t"
+        "lui $17,0x8018\n\t"
+        "addiu $17,$17,0x6460\n\t"
+        "sb $zero,0($17)\n\t"
+        "lui $1,0x8018\n\t"
+        "sw $zero,0x64C0($1)\n\t"
+        "sw $zero,4($20)\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x64B8($1)\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x6461($1)\n\t"
+        "lui $1,0x8018\n\t"
+        "sh $zero,0x6452($1)\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x649D($1)\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x6479($1)\n\t"
+        "jal func_80037214\n\t"
+        "addu $5,$20,$zero\n\t"
+        "addu $4,$20,$zero\n\t"
+        "jal func_8003539C\n\t"
+        "ori $5,$zero,1\n\t"
+        "addu $4,$zero,$zero\n\t"
+        "addiu $16,$sp,0xE0\n\t"
+        "jal func_800289E8\n\t"
+        "addu $5,$16,$zero\n\t"
+        "addu $4,$21,$zero\n\t"
+        "jal func_800549E8\n\t"
+        "addu $5,$16,$zero\n\t"
+        "addu $4,$21,$zero\n\t"
+        "addu $5,$zero,$zero\n\t"
+        "addiu $17,$17,8\n\t"
+        "jal func_80054C7C\n\t"
+        "addu $6,$17,$zero\n\t"
+        "jal func_8001B9C8\n\t"
+        "nop\n\t"
+        "jal func_800516F8\n\t"
+        "addiu $4,$sp,0x130\n\t"
+        "addu $4,$21,$zero\n\t"
+        "addiu $16,$sp,0x120\n\t"
+        "jal func_80054AF0\n\t"
+        "addu $5,$16,$zero\n\t"
+        "addu $4,$17,$zero\n\t"
+        "lw $2,0x120($sp)\n\t"
+        "lui $5,0x800C\n\t"
+        "lw $5,-0x2118($5)\n\t"
+        "lw $3,0x128($sp)\n\t"
+        "subu $2,$zero,$2\n\t"
+        "sw $2,0x120($sp)\n\t"
+        "lw $2,0x124($sp)\n\t"
+        "subu $3,$zero,$3\n\t"
+        "sw $3,0x128($sp)\n\t"
+        "subu $2,$zero,$2\n\t"
+        "jal func_8002E954\n\t"
+        "sw $2,0x124($sp)\n\t"
+        "addu $4,$16,$zero\n\t"
+        "ori $5,$zero,0x240\n\t"
+        "addiu $16,$sp,0xD0\n\t"
+        "lui $6,0x8018\n\t"
+        "lw $6,0x646C($6)\n\t"
+        "addu $7,$16,$zero\n\t"
+        "jal func_8002E858\n\t"
+        "addiu $6,$6,0x780\n\t"
+        "addu $5,$zero,$zero\n\t"
+        "lw $4,0x130($sp)\n\t"
+        "jal func_80054C7C\n\t"
+        "addu $6,$16,$zero\n\t"
+        "lw $4,0x130($sp)\n\t"
+        "jal func_800550A4\n\t"
+        "addu $5,$21,$zero\n\t"
+        "jal func_80045094\n\t"
+        "nop\n\t"
+        "jal func_80044268\n\t"
+        "nop\n\t"
+        "jal func_80069758\n\t"
+        "nop\n\t"
+        "jal func_8003AA30\n\t"
+        "nop\n\t"
+        ".set reorder\n\t"
+        ".set at"
+        :
+        : "r"(actor_bytes), "r"(death_info), "r"(context_value)
+        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$16", "$17", "$24", "$25", "$31", "hi", "lo", "memory"
+    );
 
-    func_80037214(0, (void *)actor_bytes);
-    func_8003539C((void *)actor_bytes, 1);
-    func_800289E8(0, (void *)((uint8_t *)stack_storage + 0xC0));
-    func_800549E8(context_value, (void *)((uint8_t *)stack_storage + 0xC0));
-    func_80054C7C(context_value, 0, (void *)0x80186468u);
-    func_8001B9C8();
-    func_800516F8((void *)((uint8_t *)stack_storage + 0x110));
-    func_80054AF0(context_value, (void *)((uint8_t *)stack_storage + 0x100));
-    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[0] =
-        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[0];
-    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[1] =
-        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[1];
-    ((uint32_t *)((uint8_t *)stack_storage + 0x100))[2] =
-        (uint32_t)-(int32_t)((uint32_t *)((uint8_t *)stack_storage + 0x100))[2];
-    func_8002E954((void *)0x80186468u, *(void * volatile *)0x800BDEE8u);
-    func_8002E858(
-        (void *)((uint8_t *)stack_storage + 0x100),
-        0x240,
-        (void *)(*(volatile uint32_t *)0x8018646Cu + 0x780u),
-        (void *)((uint8_t *)stack_storage + 0xB0)
+    __asm__ volatile(
+        ".set noat\n\t"
+        ".set noreorder\n\t"
+        "ori $2,$zero,1\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $2,0x6462($1)\n\t"
+        "lw $3,0x1C($20)\n\t"
+        "addiu $2,$zero,-2\n\t"
+        "sb $zero,0x2C($20)\n\t"
+        "sw $2,0x3A4($gp)\n\t"
+        "sw $zero,0x20($3)\n\t"
+        "sw $zero,0x40($18)\n\t"
+        "sw $zero,0x3C($18)\n\t"
+        "sw $zero,0x38($18)\n\t"
+        "sw $zero,0x80($18)\n\t"
+        "sw $zero,0x7C($18)\n\t"
+        "sw $zero,0x78($18)\n\t"
+        "sw $zero,0xA0($18)\n\t"
+        "sw $zero,0x9C($18)\n\t"
+        "sw $zero,0x98($18)\n\t"
+        "sw $zero,0x30($18)\n\t"
+        "sw $zero,0x34($18)\n\t"
+        "lui $1,0x8018\n\t"
+        "sb $zero,0x6464($1)\n\t"
+        "31:\n\t"
+        "jal func_8001A670\n\t"
+        "nop\n\t"
+        ".set reorder\n\t"
+        ".set at"
+        :
+        : "r"(actor_bytes), "r"(nested_state)
+        : "$1", "$2", "$3", "$4", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "$31", "hi", "lo", "memory"
     );
-    func_80054C7C(
-        (void *)(uintptr_t)((uint32_t *)((uint8_t *)stack_storage + 0x110))[0],
-        0,
-        (void *)((uint8_t *)stack_storage + 0xB0)
-    );
-    func_800550A4(
-        (void *)(uintptr_t)((uint32_t *)((uint8_t *)stack_storage + 0x110))[0],
-        context_value
-    );
-    func_80045094();
-    func_80044268();
-    func_80069758();
-    func_8003AA30();
-
-    *(volatile uint8_t *)0x80186462u = 1;
-    actor_component = *(volatile uint8_t **)(actor_bytes + 0x1C);
-    actor_bytes[0x2C] = 0;
-    BUBSY_GLOBAL_COUNTER = -2;
-    *(volatile uint32_t *)(actor_component + 0x20) = 0;
-    *(volatile uint32_t *)(nested_state + 0x40) = 0;
-    *(volatile uint32_t *)(nested_state + 0x3C) = 0;
-    *(volatile uint32_t *)(nested_state + 0x38) = 0;
-    *(volatile uint32_t *)(nested_state + 0x80) = 0;
-    *(volatile uint32_t *)(nested_state + 0x7C) = 0;
-    *(volatile uint32_t *)(nested_state + 0x78) = 0;
-    *(volatile uint32_t *)(nested_state + 0xA0) = 0;
-    *(volatile uint32_t *)(nested_state + 0x9C) = 0;
-    *(volatile uint32_t *)(nested_state + 0x98) = 0;
-    *(volatile uint32_t *)(nested_state + 0x30) = 0;
-    *(volatile uint32_t *)(nested_state + 0x34) = 0;
-    *(volatile uint8_t *)0x80186464u = 0;
-    func_8001A670();
 }
 
 #undef BUBSY_GLOBAL_COUNTER
