@@ -1,14 +1,14 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report contains 1,952 exact code bytes across three functions:
-two Clang-built getters and the GCC 2.7.2 assembly-backed Bubsy death handler.
-The shared Bubsy/Pliskin normal/swimming model selector remains a fuzzy C
-candidate with a passing native test harness. The current report maps
+The validated report contains 3,060 exact code bytes across 12 functions:
+two Clang-built getters, seven GCC C helpers, and three GCC assembly-backed
+functions. All nine previously configured fuzzy candidates are now exact;
+their portable host models remain covered by native regression tests. The current report maps
 2,988,972 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
-section layout remain unresolved, and the death match is not recovered
-high-level C.
+section layout remain unresolved. Assembly-backed matches are not fully
+recovered high-level C, and the larger Bubsy actor updater remains incomplete.
 It is still not a complete whole-game denominator.
 See the [current executable code map](docs/code-map.md) for evidence and limitations.
 The first player-specific source reconstruction is documented in
@@ -71,10 +71,10 @@ From the repository root on Windows x86_64:
 ```
 
 The downloader fetches checksum-pinned Zig 0.14.1, objdiff-cli 3.8.2,
-GCC 2.7.2 PSX from old-gcc release 0.17, and MASPSX revision
+GCC 2.6.3/2.7.2 PSX from old-gcc release 0.17, and MASPSX revision
 `e85ecb373828aabea96d7e6400974d4f91ce8c74` into ignored local storage.
-The matching profile reproduces one assembly-backed handler; it does not
-identify the complete original game toolchain.
+Per-function matching profiles reproduce the verified C and assembly-backed
+functions; they do not identify the complete original game toolchain.
 The analyzer follows control flow and corroborated pointer references with
 rabbitizer and spimdisasm. The builder verifies executable hashes and checks
 selected MIPS-I ELF32 target bytes against those originals. It generates

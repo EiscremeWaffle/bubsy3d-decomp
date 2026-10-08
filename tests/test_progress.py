@@ -8,13 +8,33 @@ import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
-from tools.fetch_tools import download_checked, extract_tar_checked
-from tools.gcc_match import helper_definitions
-from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
+from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
+from tools.gcc_match import helper_definitions, normalize_delay_slots
+from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
 
 class ProgressTests(unittest.TestCase):
+    def test_delay_slot_normalization_uses_compiler_reorder_modes(self):
+        source = ".set reorder\nbne $2,$0,label\nsb $0,0($5)\n.set noreorder\njal func_8001A670\nmove $4,$16\n"
+        converted = ".set noreorder\nbne $2,$0,label\nnop # DEBUG: branch/jump\nsb $0,0($5)\njal func_8001A670\nnop # DEBUG: branch/jump\nmove $4,$16\n"
+        expected = converted.replace("jal func_8001A670\nnop # DEBUG: branch/jump\n", "jal func_8001A670\n")
+        self.assertEqual(normalize_delay_slots(converted, source), expected)
+        with self.assertRaisesRegex(ValueError, "branches differ"):
+            normalize_delay_slots(".set noreorder\n", source)
+
+    def test_matching_tools_reject_unknown_compiler(self):
+        with self.assertRaisesRegex(ValueError, "Unsupported matching compiler"):
+            fetch_matching_tools("unregistered-compiler")
+
+    def test_delay_slot_normalization_preserves_required_return_nop(self):
+        required = ".set noreorder\nj $31\nnop # DEBUG: branch/jump\n.end helper\n"
+        self.assertEqual(normalize_delay_slots(required), required)
+        duplicate = ".set noreorder\njal func_8001A670\nnop # DEBUG: branch/jump\nmove $4,$16\n"
+        self.assertEqual(normalize_delay_slots(duplicate), duplicate.replace("nop # DEBUG: branch/jump\n", ""))
+        reordered = ".set noreorder\n.set reorder\nj $31\nnop # DEBUG: branch/jump\n.end helper\n"
+        self.assertEqual(normalize_delay_slots(reordered), reordered.replace("nop # DEBUG: branch/jump\n", ""))
+
     def test_matching_source_requires_compiled_byte_equality(self):
         symbol = {"name": "handler", "start": "0x80010000", "end": "0x80010004", "size": 4}
         spec = {"symbols": [symbol], "matching_sources": [{"symbols": ["handler"]}]}
@@ -86,7 +106,10 @@ class ProgressTests(unittest.TestCase):
                 self.assertLess(function["fuzzy_match_percent"], 100)
                 self.assertNotIn(name, exact_names)
         self.assertEqual(int(self.report["measures"]["matched_functions"]), len(exact_names))
-        self.assertGreater(float(self.report["measures"]["fuzzy_match_percent"]), float(self.report["measures"]["matched_code_percent"]))
+        if fuzzy_names:
+            self.assertGreater(float(self.report["measures"]["fuzzy_match_percent"]), float(self.report["measures"]["matched_code_percent"]))
+        else:
+            self.assertAlmostEqual(float(self.report["measures"]["fuzzy_match_percent"]), float(self.report["measures"]["matched_code_percent"]), places=6)
 
     def test_stages_exact_snapshot_with_discoverable_filename(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -141,9 +164,13 @@ class ProgressTests(unittest.TestCase):
     def test_rejects_unverified_candidate_at_full_match(self):
         report = copy.deepcopy(self.report)
         unit = next(unit for unit in report["units"] if unit["name"] == "l0/functions")
-        candidate = next(function for function in unit["functions"] if function["name"] == "player_actor_read_cursor_delta")
+        base_matches = load_json(BASE_MATCHES_PATH)
+        spec = base_matches["units"]["l0/functions"]
+        exact_names = {symbol["name"] for symbol in spec["symbols"]}
+        candidate = next(function for function in unit["functions"] if function["name"] not in exact_names)
+        spec["fuzzy_sources"].append({"source": "src/player_model/player_actor_flags.c", "symbols": [candidate["name"]]})
         candidate["fuzzy_match_percent"] = 100
-        with self.assertRaisesRegex(ValueError, "verify its bytes"):
+        with patch("tools.progress.load_json", return_value=base_matches), self.assertRaisesRegex(ValueError, "verify its bytes"):
             validate_report(report, self.scope)
 
     def test_rejects_missing_expected_exact_match(self):

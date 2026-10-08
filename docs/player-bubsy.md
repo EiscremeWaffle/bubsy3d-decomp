@@ -41,12 +41,17 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report credits 32 bytes across these getters plus 1,920 bytes for
-the assembly-backed GCC death handler described below: 1,952 exact code bytes
-across three functions, or approximately `0.0653%` of the mapped code. The
-four-way model selector and Bubsy actor-update remain fuzzy candidates and do
-not raise the exact matched-byte count. The progress site changes only after
-this snapshot is committed, pushed, and published by GitHub Actions.
+The validated report now credits 3,060 exact code bytes across 12 functions,
+or approximately `0.1024%` of the mapped code. All nine previously configured
+fuzzy candidates are exact. Nine functions now match from C: the two getters,
+four small actor accessors, and three sequence helpers. The C matching paths
+use GCC register annotations and empty compiler barriers, not MIPS opcode
+blocks. Three still use target-only assembly-backed implementations:
+the model selector, event dispatcher, and death handler.
+The portable host models remain separately tested; this does not claim fully
+recovered high-level C for the assembly-backed functions. The larger actor
+updater is still incomplete. The progress site changes only after this snapshot
+is committed, pushed, and published by GitHub Actions.
 
 ## Bubsy Actor Routine
 
@@ -68,11 +73,13 @@ compiled from this actual source with `-O2 -G8 -msoft-float`, maspsx ASPSX 2.30
 processing, and MIPS-I assembly matches four helpers exactly: flag set at
 `0x80052E18` (24 bytes), flag clear at `0x80052E30` (24), cursor delta at
 `0x80052A84` (28), and previous-cursor-minus-two at `0x80052ABC` (24). The
-sequence-boundary, sequence-remainder, and sequence-state helpers do not match
-in that probe. This isolated result does not identify the game's complete build
-toolchain. The standard progress build still uses Zig/Clang, so all seven remain
-explicitly listed as fuzzy candidates in `config/base-matches.json`; those
-scores do not add exact match credit.
+sequence-boundary, sequence-remainder, and sequence-state helpers now also match
+from C. The selector uses GCC 2.7.2, while GCC 2.6.3 produces the original
+multiply-high register choices in the boundary and remainder calculations.
+Their C paths preserve access widths, observable store ordering, and original
+branches with compiler-only constraints. All seven are rebuilt, linked, byte-checked, and credited by the
+standard progress pipeline through `config/base-matches.json`. This does not
+identify the game's complete build toolchain or recover all gameplay meanings.
 
 The update entry first reads signed halfword `0x80186454`. If nonzero, it
 forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,
@@ -203,25 +210,25 @@ The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
 and `0x0E`, plus sequence data through a pointer at `0x18`. When flag bit `0x04`
 is set, it steps a cursor forward or backward according to byte `0x07`; table
-values `-4` through `-1` take a threshold path using signed division by 100.
-Otherwise it compares the cursor-derived value directly to the field at `0x0E`.
+values `-4` through `-1` take a threshold path using signed division by 1,000.
+Other table values produce false. When the actor flag is clear, the result is
+always true, without a threshold comparison. The next cursor is computed in
+32 bits, without truncation back to a signed halfword.
 The C translation `player_actor_sequence_boundary_reached` has host tests for
 these branches, but the underlying concept may be animation timing, movement
 sequencing, or another actor-sequence protocol; that meaning is not established.
 Two additional called helpers make the sequence data handling clearer: the
-140-byte helper at `0x800529F8` returns `entries[cursor] % 100` unless sequence
-data flag `+0x2C` bit `0x04` disables it, and the 28-byte helper at `0x80052A84`
+140-byte helper at `0x800529F8` returns `entries[cursor] % 1000` unless sequence
+data flag `+0x2C` bit `0x04` is set, in which case it returns the signed cursor
+itself. The 28-byte helper at `0x80052A84`
 returns `cursor_08 - previous_cursor_0C`. C versions are covered by signed,
-disabled-flag, and cursor-delta tests. The GCC sweep matches cursor-delta but not
-the sequence-boundary or remainder helpers. All three remain outside the exact
-allowlist used by the standard Zig/Clang report; their higher-level animation
-meaning is still uncertain.
+flagged-cursor, and cursor-delta tests. All three are now matching C in the exact allowlist. Their
+higher-level animation meaning is still uncertain.
 
 The 24-byte helper at `0x80052ABC` has 31 direct callers, including the Bubsy
 actor update. It writes the sign-extended halfword at actor offset `0x0C` minus
 2 through its output pointer. The C translation has signed-boundary tests and
-matches under the GCC sweep, but the standard Zig/Clang report does not credit
-that local probe as an exact match.
+matches in C under the pinned GCC profile and is credited in the validated report.
 
 The 136-byte helper at `0x80052AEC` is called by the actor update with sequence
 index `0x309`. It compares the signed index against the signed table length at
@@ -230,8 +237,9 @@ nonnegative table entry returns `0x12`; a negative entry selects a state by
 setting actor `+0x05` to the entry's low byte, both cursor fields `+0x08/+0x0C`
 to `index + 2`, field `+0x0A` to the next table entry's low halfword, and field
 `+0x0E` to `1`, then returns `0`. The caller asserts on either nonzero result
-using `../f/bubsy.c:0x41A`. The host C translation tests all three outcomes but
-is not byte-matched.
+using `../f/bubsy.c:0x41A`. The host C translation tests all three outcomes; the
+target C implementation preserves the original repeated pointer loads and store
+order and matches all 136 bytes exactly without MIPS opcode strings.
 
 ## Actor Event Dispatch
 
@@ -239,14 +247,16 @@ The actor update calls `0x80037214` with mode `0` and the actor pointer. The
 helper reads the current event through the actor component and consults a
 runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
 
-	`0x35`, set actor flag `0x04`, and dispatch with flags `0`.
-	select property `0x54`, set actor flag `0x04`, and dispatch with flags `0`.
-	to runtime mode, set flag `0x04`, and dispatch with flag `0x40000000`.
+- Mode `0`, runtime mode `0`, event `0x3E0`, and state byte not `3`: select `0x35`, set actor flag `0x04`, and dispatch with flags `0`.
+- Mode `0`, runtime mode `1`, and event `0x157`: select `0x54`, set actor flag `0x04`, and dispatch with flags `0`.
+- Other mode-`0` events: no selection, flag change, or dispatch; return `0x157`.
+- Mode `1`: select `0x3E0` for runtime mode `0`, else `0x157`, set actor flag `0x04`, and dispatch with flag `0x40000000`.
+- Other modes: no dispatch; return `1`.
 
 The C reconstruction in `bubsy_actor_events.c` keeps event/property IDs and
 engine operations explicit through callbacks. Their gameplay meanings and the
-engine callback implementations are still unknown; this function is not yet a
-byte match.
+engine callback implementations are still unknown. The original two-argument
+runtime ABI is implemented separately for the target and matches all 316 bytes.
 
 ## Death-State Routine
 
@@ -319,7 +329,7 @@ original executable. Build and source hashes are recorded under
 This is an assembly-backed byte match, not fully recovered high-level C or a
 complete game rebuild. The new validated snapshot reports this function at
 100% and includes its 1,920 bytes in exact credit. Clang still builds the
-getters and fuzzy candidates; the death source is excluded from that bundle.
+getters and the data table; the completed GCC sources are excluded from that bundle.
 This also removes unused death-model readonly helper tables that interfered
 with objdiff's aggregate data-section matching. All 196 original table bytes
 are still checked independently and credited by objdiff. The validator has not

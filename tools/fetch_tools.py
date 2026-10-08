@@ -15,6 +15,13 @@ OBJDIFF_URL = "https://github.com/encounter/objdiff/releases/download/v3.8.2/obj
 OBJDIFF_HASH = "36d229ac6ce74a26b47f42cf86ea8e808d8cd834a54aa62d7ed3f47b765d971b"
 GCC_URL = "https://github.com/decompals/old-gcc/releases/download/0.17/gcc-2.7.2-psx.tar.gz"
 GCC_HASH = "500a459b3485e885a8d302cac23c2a4632f3900e03a09153f6190699fd723571"
+GCC_COMPILERS = {
+    "gcc-2.7.2-psx": (GCC_URL, GCC_HASH),
+    "gcc-2.6.3-psx": (
+        "https://github.com/decompals/old-gcc/releases/download/0.17/gcc-2.6.3-psx.tar.gz",
+        "01e6e8c4933414ea3f8d8e3bc766a1f5fafd4fc0110e0b75d1f691bd791989b1",
+    ),
+}
 MASPSX_COMMIT = "e85ecb373828aabea96d7e6400974d4f91ce8c74"
 MASPSX_URL = f"https://codeload.github.com/mkst/maspsx/tar.gz/{MASPSX_COMMIT}"
 MASPSX_HASH = "9f8ea9827b785ae41437befa8ebdceb8c00f3b1e8f3a90c506948e2df1079bde"
@@ -42,10 +49,13 @@ def extract_tar_checked(archive, destination):
         package.extractall(destination, filter="data")
 
 
-def fetch_matching_tools():
-    gcc_archive = download_checked(GCC_URL, GCC_HASH, TOOL_DIR / "gcc-2.7.2-psx.tar.gz")
+def fetch_matching_tools(compiler="gcc-2.7.2-psx"):
+    if compiler not in GCC_COMPILERS:
+        raise ValueError(f"Unsupported matching compiler profile: {compiler}")
+    url, checksum = GCC_COMPILERS[compiler]
+    gcc_archive = download_checked(url, checksum, TOOL_DIR / f"{compiler}.tar.gz")
     maspsx_archive = download_checked(MASPSX_URL, MASPSX_HASH, TOOL_DIR / f"maspsx-{MASPSX_COMMIT}.tar.gz")
-    gcc_directory = TOOL_DIR / "gcc-2.7.2-psx"
+    gcc_directory = TOOL_DIR / compiler
     extract_tar_checked(gcc_archive, gcc_directory)
     extract_tar_checked(maspsx_archive, TOOL_DIR)
     return gcc_directory, TOOL_DIR / f"maspsx-{MASPSX_COMMIT}"
@@ -63,8 +73,9 @@ def main():
                 raise ValueError("Unsafe path in Zig archive")
         package.extractall(TOOL_DIR)
     download_checked(OBJDIFF_URL, OBJDIFF_HASH, TOOL_DIR / "objdiff-cli.exe")
-    fetch_matching_tools()
-    print("Ready: Zig 0.14.1, objdiff-cli 3.8.2, GCC 2.7.2 PSX, and pinned MASPSX (SHA256 verified)")
+    for compiler in GCC_COMPILERS:
+        fetch_matching_tools(compiler)
+    print("Ready: Zig 0.14.1, objdiff-cli 3.8.2, GCC 2.6.3/2.7.2 PSX, and pinned MASPSX (SHA256 verified)")
 
 
 if __name__ == "__main__":

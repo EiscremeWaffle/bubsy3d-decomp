@@ -73,13 +73,13 @@ static void test_actor_flag_helpers(void) {
 }
 
 static void test_actor_sequence_boundary(void) {
-    const int32_t entries[] = {250, -1, 350, 50};
+    const int32_t entries[] = {2500, -1, 3500, 50};
     PlayerActorSequenceData sequence = {.entries = entries};
     PlayerActorSequenceView actor = {0};
     uint8_t result = 0xFF;
 
     actor.cursor_08 = 250;
-    actor.threshold_0E = 2;
+    actor.threshold_0E = -2;
     actor.sequence_18 = &sequence;
     assert(player_actor_sequence_boundary_reached(&actor, &result) == 0);
     assert(result == 1);
@@ -116,7 +116,7 @@ static void test_actor_sequence_boundary(void) {
 }
 
 static void test_actor_sequence_helpers(void) {
-    const int32_t entries[] = {250, -101, 350};
+    const int32_t entries[] = {2500, -1001, 3500};
     PlayerActorSequenceData sequence = {.entries = entries};
     PlayerActorSequenceView actor = {0};
     int32_t result = 0;
@@ -124,7 +124,7 @@ static void test_actor_sequence_helpers(void) {
     actor.sequence_18 = &sequence;
     actor.cursor_08 = 0;
     assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
-    assert(result == 50);
+    assert(result == 500);
     actor.cursor_08 = 1;
     assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
     assert(result == -1);
@@ -132,7 +132,10 @@ static void test_actor_sequence_helpers(void) {
     sequence.flags_2C = 0x04;
     result = -1;
     assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
-    assert(result == 0);
+    assert(result == 1);
+    actor.cursor_08 = -5;
+    assert(player_actor_read_sequence_remainder(&actor, &result) == 0);
+    assert(result == -5);
 
     actor.cursor_08 = 12;
     actor.previous_cursor_0C = 9;
@@ -331,7 +334,7 @@ static int32_t record_actor_dispatch(void *context, void *actor_component, uint3
     return 0x42;
 }
 
-static EventCallLog run_actor_event(uint8_t update_mode, uint8_t runtime_mode, uint16_t event_id, uint8_t state_6463) {
+static EventCallLog run_actor_event(uint8_t update_mode, uint8_t runtime_mode, uint16_t event_id, uint8_t state_6463, int32_t expected_return) {
     EventCallLog log = {0};
     int actor_component;
     BubsyActorEventOps ops = {
@@ -344,28 +347,32 @@ static EventCallLog run_actor_event(uint8_t update_mode, uint8_t runtime_mode, u
         record_active_flag,
         record_actor_dispatch,
     };
-    assert(bubsy_process_actor_event(update_mode, &ops) == (update_mode > 1 ? 1 : 0x42));
+    assert(bubsy_process_actor_event(update_mode, &ops) == expected_return);
     return log;
 }
 
 static void test_actor_event_dispatch(void) {
-    EventCallLog log = run_actor_event(0, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 0);
+    EventCallLog log = run_actor_event(0, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 0, 0x42);
     assert(log.selected_count == 1 && log.property_id == BUBSY_EVENT_PROPERTY_NORMAL);
     assert(log.flag_count == 1 && log.dispatch_count == 1 && log.dispatch_flags == 0);
 
-    log = run_actor_event(0, 1, BUBSY_EVENT_PROPERTY_KIND_157, 0);
+    log = run_actor_event(0, 1, BUBSY_EVENT_PROPERTY_KIND_157, 0, 0x42);
     assert(log.selected_count == 1 && log.property_id == BUBSY_EVENT_PROPERTY_SWIM_MODE);
     assert(log.flag_count == 1 && log.dispatch_count == 1 && log.dispatch_flags == 0);
 
-    log = run_actor_event(0, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 3);
-    assert(log.selected_count == 1 && log.property_id == BUBSY_EVENT_PROPERTY_KIND_3E0);
-    assert(log.dispatch_flags == BUBSY_EVENT_SPECIAL_FLAG);
+    log = run_actor_event(0, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 3, BUBSY_EVENT_PROPERTY_KIND_157);
+    assert(log.selected_count == 0 && log.flag_count == 0 && log.dispatch_count == 0);
 
-    log = run_actor_event(1, 1, BUBSY_EVENT_PROPERTY_KIND_157, 0);
+    log = run_actor_event(1, 1, BUBSY_EVENT_PROPERTY_KIND_157, 0, 0x42);
     assert(log.selected_count == 1 && log.property_id == BUBSY_EVENT_PROPERTY_KIND_157);
     assert(log.dispatch_flags == BUBSY_EVENT_SPECIAL_FLAG);
 
-    log = run_actor_event(2, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 0);
+    log = run_actor_event(2, 0, BUBSY_EVENT_PROPERTY_KIND_3E0, 0, 1);
+    assert(log.selected_count == 0 && log.flag_count == 0 && log.dispatch_count == 0);
+
+    log = run_actor_event(0, 0, 0x999, 0, BUBSY_EVENT_PROPERTY_KIND_157);
+    assert(log.selected_count == 0 && log.flag_count == 0 && log.dispatch_count == 0);
+    log = run_actor_event(0, 2, BUBSY_EVENT_PROPERTY_KIND_157, 0, BUBSY_EVENT_PROPERTY_KIND_157);
     assert(log.selected_count == 0 && log.flag_count == 0 && log.dispatch_count == 0);
 }
 

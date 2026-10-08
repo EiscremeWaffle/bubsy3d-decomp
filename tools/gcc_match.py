@@ -7,7 +7,7 @@ import re
 import subprocess
 import sys
 
-from tools.fetch_tools import GCC_HASH, MASPSX_HASH, fetch_matching_tools
+from tools.fetch_tools import GCC_COMPILERS, MASPSX_HASH, fetch_matching_tools
 from tools.verify_original import ROOT
 
 
@@ -42,14 +42,58 @@ def helper_definitions(names):
     return definitions
 
 
+def normalize_delay_slots(assembly, compiler_assembly=None):
+    lines = assembly.splitlines()
+    result = []
+    noreorder = False
+    branch_pattern = re.compile(r"^(?:b|beq|bne|beqz|bnez|bgtz|blez|bgez|bltz|j|jr|jal|jalr)\s")
+    source_modes = []
+    if compiler_assembly is not None:
+        source_noreorder = False
+        for source_line in compiler_assembly.splitlines():
+            source_line = source_line.split("#", 1)[0].strip()
+            if re.fullmatch(r"\.set\s+noreorder", source_line):
+                source_noreorder = True
+            elif re.fullmatch(r"\.set\s+reorder", source_line):
+                source_noreorder = False
+            elif branch_pattern.match(source_line):
+                source_modes.append(source_noreorder)
+    branch_index = 0
+    explicit_slot = False
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if re.fullmatch(r"\.set\s+noreorder", stripped):
+            noreorder = True
+        elif re.fullmatch(r"\.set\s+reorder", stripped):
+            noreorder = False
+            if compiler_assembly is not None:
+                line = ".set noreorder"
+        if compiler_assembly is not None and branch_pattern.match(stripped):
+            if branch_index >= len(source_modes):
+                raise ValueError("Unsupported branch expansion in assembler conversion")
+            explicit_slot = source_modes[branch_index]
+            branch_index += 1
+        if stripped.startswith("nop") and "# DEBUG: branch/jump" in line:
+            following = next((item.strip() for item in lines[index + 1:] if item.strip() and not item.lstrip().startswith("#")), "")
+            if compiler_assembly is not None:
+                if explicit_slot and not following.startswith(".end"):
+                    continue
+            elif not (noreorder and following.startswith(".end")):
+                continue
+        result.append(line)
+    if compiler_assembly is not None and branch_index != len(source_modes):
+        raise ValueError("Compiler branches differ from assembler conversion")
+    return "\n".join(result) + "\n"
+
+
 def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     from elftools.elf.elffile import ELFFile
     from tools.progress import compiled_symbol_bytes
 
-    if source_spec["compiler"] != "gcc-2.7.2-psx":
+    if source_spec["compiler"] not in GCC_COMPILERS:
         raise ValueError("Unsupported matching compiler profile")
     directory.mkdir(parents=True, exist_ok=True)
-    gcc_directory, maspsx_directory = fetch_matching_tools()
+    gcc_directory, maspsx_directory = fetch_matching_tools(source_spec["compiler"])
     name = symbol_spec["name"]
     source = ROOT / source_spec["source"]
     assembly = directory / f"{name}.gcc.s"
@@ -70,16 +114,13 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         run_tool(linux_command(["cp", f"{workspace}/output.s", linux_path(assembly)]))
     finally:
         run_tool(linux_command(["rm", "-r", "--", workspace]))
+    compiler_assembly = assembly.read_text(encoding="ascii")
     converted = run_tool([
         sys.executable, str(maspsx_directory / "maspsx.py"),
         "--aspsx-version", "2.30", "--force-stdin",
-    ], assembly.read_text(encoding="ascii"))
-    converted_lines = [
-        line for line in converted.splitlines()
-        if not (line.strip().startswith("nop") and "# DEBUG: branch/jump" in line)
-    ]
+    ], compiler_assembly)
     converted_assembly = directory / f"{name}.maspsx.s"
-    converted_assembly.write_text("\n".join(converted_lines) + "\n", encoding="ascii")
+    converted_assembly.write_text(normalize_delay_slots(converted, compiler_assembly), encoding="ascii")
     object_path = directory / f"{name}.o"
     run_tool([
         str(zig), "cc", "-target", "mipsel-linux-musl", "-march=mips1", "-mabi=32",
@@ -118,7 +159,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         "symbol": name, "address": symbol_spec["start"], "size": len(code),
         "source": source_spec["source"], "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
         "compiler": source_spec["compiler"], "flags": source_spec["flags"],
-        "gcc_archive_sha256": GCC_HASH, "maspsx_archive_sha256": MASPSX_HASH,
+        "gcc_archive_sha256": GCC_COMPILERS[source_spec["compiler"]][1], "maspsx_archive_sha256": MASPSX_HASH,
         "linker": linker_version, "compiled_sha256": hashlib.sha256(code).hexdigest(),
         "headers": {
             header: hashlib.sha256((ROOT / header).read_bytes()).hexdigest()

@@ -93,7 +93,11 @@ _Static_assert(offsetof(PlayerActorSequenceView, sequence_18) == 0x18, "sequence
 typedef int32_t (*PlayerModelLoadResource)(const char *path, void **asset_out, int32_t previous_size);
 typedef void (*PlayerModelAssertFailure)(int32_t failed, const char *condition, const char *source_path, uint32_t source_line);
 
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+void level_select_player_model_resource(void);
+#else
 int32_t level_select_player_model_resource(PlayerModelState *state, PlayerModelLoadResource load_resource, PlayerModelAssertFailure assert_failure);
+#endif
 uint8_t level_get_player_model_mode(void);
 void level_get_player_model(const PlayerModelState *state, void **asset_out);
 void *level_get_player_model_global(void **asset_out);

@@ -22,6 +22,10 @@ typedef struct BubsyActorEventOps {
     int32_t (*dispatch)(void *context, void *actor_component, uint32_t flags);
 } BubsyActorEventOps;
 
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+int32_t bubsy_process_actor_event(int32_t update_mode, void *actor);
+#else
 int32_t bubsy_process_actor_event(uint8_t update_mode, const BubsyActorEventOps *ops);
+#endif
 
 #endif

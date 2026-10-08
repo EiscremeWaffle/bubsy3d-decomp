@@ -11,12 +11,62 @@ int32_t player_actor_clear_flag_04(PlayerActorFlagByte *actor) {
 }
 
 int32_t player_actor_sequence_boundary_reached(const PlayerActorSequenceView *actor, uint8_t *result) {
-    int16_t next_cursor;
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    register const PlayerActorSequenceView *actor_value __asm__("$6") = actor;
+    register uint8_t *output __asm__("$5") = result;
+    register uint32_t flags __asm__("$2");
+    register int32_t next_cursor __asm__("$4");
+    register const PlayerActorSequenceData *sequence __asm__("$7");
+    register const int32_t *entries __asm__("$7");
+    register int32_t current_entry __asm__("$4");
+    register int32_t quotient __asm__("$3");
+    register uintptr_t next_address __asm__("$2");
+    uint32_t next_entry;
+
+    __asm__ volatile("" : "=r"(output) : "0"(output));
+    flags = actor_value->flags_04;
+    __asm__ volatile("" : "=r"(flags) : "0"(flags));
+    next_cursor = actor_value->cursor_08;
+    sequence = actor_value->sequence_18;
+    __asm__ volatile("" : "=r"(next_cursor), "=r"(sequence) : "0"(next_cursor), "1"(sequence));
+    if ((flags & 4) == 0) {
+        goto boundary_true;
+    }
+    if (actor_value->state_05 == -1) {
+        *output = 0;
+        __asm__ volatile("" : : : "memory");
+    }
+    if (actor_value->advance_cursor_07 != 0) {
+        next_cursor++;
+    } else {
+        next_cursor--;
+    }
+    entries = sequence->entries;
+    next_address = (uint32_t)next_cursor * sizeof(int32_t) + (uintptr_t)entries;
+    __asm__ volatile("" : "=r"(next_address) : "0"(next_address));
+    next_entry = (uint32_t)*(const int32_t *)next_address + 4;
+    if (next_entry >= 4) {
+        goto boundary_false;
+    }
+    current_entry = entries[actor_value->cursor_08];
+    quotient = current_entry / 1000;
+    if (actor_value->threshold_0E < quotient) {
+        goto boundary_false;
+    }
+boundary_true:
+    *output = 1;
+    goto boundary_done;
+boundary_false:
+    *output = 0;
+boundary_done:
+    return 0;
+#else
+    int32_t next_cursor;
     int32_t next_entry;
     int32_t current_entry;
 
     if ((actor->flags_04 & 0x04) == 0) {
-        *result = actor->threshold_0E >= actor->cursor_08 / 100;
+        *result = 1;
         return 0;
     }
 
@@ -32,21 +82,43 @@ int32_t player_actor_sequence_boundary_reached(const PlayerActorSequenceView *ac
     }
 
     current_entry = actor->sequence_18->entries[actor->cursor_08];
-    *result = actor->threshold_0E >= current_entry / 100;
+    *result = actor->threshold_0E >= current_entry / 1000;
     return 0;
+#endif
 }
 
 int32_t player_actor_read_sequence_remainder(const PlayerActorSequenceView *actor, int32_t *remainder_out) {
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    register const PlayerActorSequenceView *actor_value __asm__("$3") = actor;
+    register int32_t *output __asm__("$6");
+    register const PlayerActorSequenceData *sequence __asm__("$5");
+    register int32_t entry __asm__("$5");
+    register int32_t quotient __asm__("$4");
+
+    __asm__ volatile("" : "=r"(actor_value) : "0"(actor_value) : "memory");
+    output = remainder_out;
+    __asm__ volatile("" : "=r"(output) : "0"(output) : "memory");
+    sequence = actor_value->sequence_18;
+    if ((sequence->flags_2C & 0x04) != 0) {
+        *output = actor_value->cursor_08;
+        return 0;
+    }
+    entry = sequence->entries[actor_value->cursor_08];
+    quotient = entry / 1000;
+    *output = entry - quotient * 1000;
+    return 0;
+#else
     int32_t entry;
 
     if ((actor->sequence_18->flags_2C & 0x04) != 0) {
-        *remainder_out = 0;
+        *remainder_out = actor->cursor_08;
         return 0;
     }
 
     entry = actor->sequence_18->entries[actor->cursor_08];
-    *remainder_out = entry % 100;
+    *remainder_out = entry % 1000;
     return 0;
+#endif
 }
 
 int32_t player_actor_read_cursor_delta(const PlayerActorSequenceView *actor, int32_t *delta_out) {
@@ -60,6 +132,37 @@ int32_t player_actor_write_previous_cursor_minus_two(const PlayerActorSequenceVi
 }
 
 int32_t player_actor_select_sequence_state(PlayerActorSequenceView *actor, int32_t index) {
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    register volatile PlayerActorSequenceView *actor_value __asm__("$6") = actor;
+    register const volatile PlayerActorSequenceData *sequence __asm__("$4") = actor_value->sequence_18;
+    register int32_t index_value __asm__("$5") = index;
+    register uint32_t entry_offset __asm__("$7") = (uint32_t)index * sizeof(int32_t);
+    register int32_t next_cursor __asm__("$3");
+    register uintptr_t state_address __asm__("$3");
+    register uint16_t next_entry __asm__("$2");
+    register uint8_t state_byte __asm__("$4");
+
+    if (index_value >= ((const PlayerActorSequenceData *)sequence)->entry_count) {
+        return PLAYER_SEQUENCE_INDEX_PAST_TABLE;
+    }
+    if (*(const int32_t *)(entry_offset + (uintptr_t)sequence->entries) >= 0) {
+        return PLAYER_SEQUENCE_ENTRY_NOT_NEGATIVE;
+    }
+
+    next_cursor = index_value + 2;
+    actor_value->cursor_08 = next_cursor;
+    next_entry = *(const volatile uint16_t *)(entry_offset + (uintptr_t)sequence->entries + 4);
+    actor_value->previous_cursor_0C = next_cursor;
+    actor_value->unknown_0A = next_entry;
+    __asm__ volatile("" : : : "memory");
+    state_address = (uintptr_t)sequence->entries;
+    __asm__ volatile("" : "=r"(state_address) : "0"(state_address));
+    state_address = entry_offset + state_address;
+    state_byte = *(const volatile uint8_t *)state_address;
+    actor_value->threshold_0E = 1;
+    actor_value->state_05 = state_byte;
+    return PLAYER_SEQUENCE_STATE_SELECTED;
+#else
     const PlayerActorSequenceData *sequence;
     int32_t entry;
     int16_t next_cursor;
@@ -81,6 +184,7 @@ int32_t player_actor_select_sequence_state(PlayerActorSequenceView *actor, int32
     actor->threshold_0E = 1;
     actor->state_05 = (int8_t)entry;
     return PLAYER_SEQUENCE_STATE_SELECTED;
+#endif
 }
 
 int32_t player_actor_shared_state_clear_progress(

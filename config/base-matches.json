@@ -11,28 +11,7 @@
         "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
       ],
       "compiler_profile": "Experimental MIPS-II scheduling profile for this getter only; the emitted instructions are MIPS-I. This is not claimed to be the original Bubsy toolchain.",
-      "fuzzy_sources": [
-        {
-          "source": "src/player_model/player_model.c",
-          "symbols": ["level_select_player_model_resource"]
-        },
-        {
-          "source": "src/player_model/player_actor_flags.c",
-          "symbols": [
-            "player_actor_set_flag_04",
-            "player_actor_clear_flag_04",
-            "player_actor_sequence_boundary_reached",
-            "player_actor_read_sequence_remainder",
-            "player_actor_read_cursor_delta",
-            "player_actor_write_previous_cursor_minus_two",
-            "player_actor_select_sequence_state"
-          ]
-        },
-        {
-          "source": "src/player_model/bubsy_actor_events.c",
-          "symbols": ["bubsy_process_actor_event"]
-        }
-      ],
+      "fuzzy_sources": [],
       "matching_sources": [
         {
           "source": "src/player_model/bubsy_death_state.c",
@@ -47,6 +26,71 @@
             "tools/gcc_include/stdint.h"
           ],
           "symbols": ["bubsy_handle_death_state"]
+        },
+        {
+          "source": "src/player_model/player_actor_flags.c",
+          "compiler": "gcc-2.7.2-psx",
+          "compiler_profile": "Five matching C functions with GCC register and scheduling constraints; corrected host models retain native regression coverage.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/player_model.h",
+            "tools/gcc_include/stdint.h",
+            "tools/gcc_include/stddef.h"
+          ],
+          "symbols": [
+            "player_actor_set_flag_04",
+            "player_actor_clear_flag_04",
+            "player_actor_read_cursor_delta",
+            "player_actor_write_previous_cursor_minus_two",
+            "player_actor_select_sequence_state"
+          ]
+        },
+        {
+          "source": "src/player_model/player_actor_flags.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Matching C sequence boundary and signed remainder compiled with checksum-pinned GCC 2.6.3 and compiler-only constraints, retaining native regression coverage.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/player_model.h",
+            "tools/gcc_include/stdint.h",
+            "tools/gcc_include/stddef.h"
+          ],
+          "symbols": ["player_actor_sequence_boundary_reached", "player_actor_read_sequence_remainder"]
+        },
+        {
+          "source": "src/player_model/player_model.c",
+          "compiler": "gcc-2.7.2-psx",
+          "compiler_profile": "Assembly-backed original no-argument ABI; the host callback model remains separately tested.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/player_model.h",
+            "tools/gcc_include/stdint.h",
+            "tools/gcc_include/stddef.h"
+          ],
+          "symbols": ["level_select_player_model_resource"]
+        },
+        {
+          "source": "src/player_model/bubsy_actor_events.c",
+          "compiler": "gcc-2.7.2-psx",
+          "compiler_profile": "Assembly-backed original runtime ABI and event branches; the corrected host callback model remains separately tested.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_actor_events.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "symbols": ["bubsy_process_actor_event"]
         }
       ],
       "data_sources": [
@@ -80,6 +124,60 @@
           "start": "0x8003737C",
           "end": "0x80037AFC",
           "size": 1920
+        },
+        {
+          "name": "player_actor_sequence_boundary_reached",
+          "start": "0x8005290C",
+          "end": "0x800529D0",
+          "size": 196
+        },
+        {
+          "name": "player_actor_read_sequence_remainder",
+          "start": "0x800529F8",
+          "end": "0x80052A84",
+          "size": 140
+        },
+        {
+          "name": "player_actor_read_cursor_delta",
+          "start": "0x80052A84",
+          "end": "0x80052AA0",
+          "size": 28
+        },
+        {
+          "name": "player_actor_write_previous_cursor_minus_two",
+          "start": "0x80052ABC",
+          "end": "0x80052AD4",
+          "size": 24
+        },
+        {
+          "name": "player_actor_select_sequence_state",
+          "start": "0x80052AEC",
+          "end": "0x80052B74",
+          "size": 136
+        },
+        {
+          "name": "player_actor_set_flag_04",
+          "start": "0x80052E18",
+          "end": "0x80052E30",
+          "size": 24
+        },
+        {
+          "name": "player_actor_clear_flag_04",
+          "start": "0x80052E30",
+          "end": "0x80052E48",
+          "size": 24
+        },
+        {
+          "name": "level_select_player_model_resource",
+          "start": "0x800296B4",
+          "end": "0x80029790",
+          "size": 220
+        },
+        {
+          "name": "bubsy_process_actor_event",
+          "start": "0x80037214",
+          "end": "0x80037350",
+          "size": 316
         }
       ]
     }
