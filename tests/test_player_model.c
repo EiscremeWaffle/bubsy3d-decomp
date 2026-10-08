@@ -500,8 +500,8 @@ static void test_bubsy_death_state_progression(void) {
     assert(bubsy_advance_death_state(4, 5, 0) == 4);
     assert(bubsy_advance_death_state(11, 4, 0) == 12);
     assert(bubsy_advance_death_state(11, 4, 1) == 13);
-    assert(bubsy_advance_death_state(7, 5, 0) == 11);
-    assert(bubsy_advance_death_state(7, 8, 0) == 12);
+    assert(bubsy_advance_death_state(7, 5, 0) == 7);
+    assert(bubsy_advance_death_state(7, 8, 0) == 7);
 }
 
 static unsigned int death_assertion_count;

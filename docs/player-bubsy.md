@@ -289,16 +289,18 @@ of `func_80082ECC() % 3` keeps state `1` at remainder `0`, sets `7` at remainder
 unless the counter remainder is `1`, when it becomes `10`. State `4` maps to
 `6` for level IDs `4`, `7`, `9`, or `18`, to `8` for ID `6`, and to `11` for
 ID `8`; other level IDs preserve state `4`. Other states are preserved except
-level IDs `5` and `8` select state `11`. State `11` advances to `12` on even
-parity or `13` on odd parity when the level ID is `4`, `6`, or `8`. These are observed scalar transitions,
+level IDs `5` and `8` do not trigger this state-4 mapping. States other than
+`1`, `2`, and `4` are preserved by the level-based transition block. State `11`
+advances to `12` on even parity or `13` on odd parity when the level ID is `4`,
+`6`, or `8`. These are observed scalar transitions,
 not recovered animation names. The C helper is tested but not byte-matched;
 animation/resource calls and the rest of the death handler remain incomplete.
 The report-only `bubsy_handle_death_state` candidate models the verified entry
 gates, counter-list path, death-type scalar progression, resource/event setup,
 runtime reset, main helper sequence, and terminal writes. Several animation
-and engine-helper semantics remain unresolved. Objdiff scores it at 44.016666%
-fuzzy similarity; L0/functions fuzzy similarity is 0.5070904% and global fuzzy
-similarity is 0.038331572%. None of these fuzzy scores are exact-match credit.
+and engine-helper semantics remain unresolved. Objdiff scores it at 44.78125%
+fuzzy similarity; L0/functions fuzzy similarity is 0.51358765% and global fuzzy
+similarity is 0.03882271%. None of these fuzzy scores are exact-match credit.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's

@@ -433,12 +433,6 @@ continue_main_path:
         } else if (level == 8) {
             current_death_state = 11;
         }
-    } else {
-        int16_t level = *(volatile const int16_t *)0x801D36F0u;
-
-        if (level == 5 || level == 8) {
-            current_death_state = 11;
-        }
     }
     if (current_death_state == 11) {
         int16_t level = *(volatile const int16_t *)0x801D36F0u;
