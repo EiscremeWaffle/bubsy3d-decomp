@@ -180,7 +180,7 @@ extern void func_800556D0(
     uint32_t source_line
 );
 
-#define BUBSY_DEATH_READ_COUNTER(result) __asm__ volatile("jal func_80082ECC\n\tnop" : "=r"(result) : : "$31", "hi", "lo", "memory")
+#define BUBSY_DEATH_READ_COUNTER(result) __asm__ volatile("jal func_80082ECC\n\tnop" : "=r"(result) : : "$9", "$10", "$31", "hi", "lo", "memory")
 #define BUBSY_DEATH_REMAINDER_3(result, value) __asm__ volatile("lui $3,0x5555\n\tori $3,$3,0x5556\n\tmult $2,$3\n\tsra $4,$2,31\n\tmfhi $3\n\tsubu $4,$3,$4\n\tsll $3,$4,1\n\taddu $3,$3,$4\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3", "hi", "lo")
 #define BUBSY_DEATH_REMAINDER_2(result, value) __asm__ volatile("srl $3,$2,31\n\taddu $3,$2,$3\n\tsra $4,$3,1\n\tsll $3,$4,1\n\tsubu $4,$2,$3" : "=r"(result) : "r"(value) : "$3")
 
@@ -228,10 +228,21 @@ void bubsy_handle_death_state(void *actor, void *context) {
     }
 
 continue_main_path:
-    if (*(volatile const int16_t *)0x801D36F0u == 0x13) {
-        func_8004733C(0);
-        return;
-    }
+    __asm__ volatile(
+        "lui $3,0x801d\n\t"
+        "lh $3,0x36f0($3)\n\t"
+        "li $2,0x13\n\t"
+        "bne $3,$2,1f\n\t"
+        "nop\n\t"
+        "jal func_8004733C\n\t"
+        "move $4,$0\n\t"
+        "j 0x80037ad0\n\t"
+        "nop\n\t"
+        "1:"
+        :
+        :
+        : "$2", "$3", "$4", "$31", "memory"
+    );
     if (*(volatile const uint8_t *)0x80186462u != 0) {
         return;
     }
@@ -260,6 +271,7 @@ continue_main_path:
             "sw $0,0x10($sp)\n\t"
             "sw $0,0x14($sp)\n\t"
             "sw $0,0x18($sp)\n\t"
+            "sw $0,0x1C($sp)\n\t"
             "lw $6,0x0c($20)\n\t"
             "lui $7,0x8018\n\t"
             "lw $7,0x645c($7)\n\t"
@@ -451,7 +463,7 @@ continue_main_path:
         ".set at"
         :
         :
-        : "$1", "$2", "$4", "$5", "$31", "memory"
+        : "$1", "$2", "$4", "$5", "$9", "$10", "$31", "memory"
     );
     func_8002DD24((volatile uint8_t *)0x801864BDu);
     *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x80) = 0x200;
