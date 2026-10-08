@@ -445,7 +445,7 @@ continue_main_path:
         "j 8f\n\t"
         "sw $2,0($17)\n\t"
         "1:\n\t"
-        "bne $16,$2,7f\n\t"
+        "j 8f\n\t"
         "sw $16,0($17)\n\t"
         "2:\n\t"
         "bne $16,$2,3f\n\t"
@@ -548,7 +548,17 @@ continue_main_path:
         :
         : "$1", "$2", "$4", "$5", "$9", "$10", "$31", "memory"
     );
-    func_8002DD24((volatile uint8_t *)0x801864BDu);
+    __asm__ volatile(
+        ".set noat\n\t"
+        "lui $16,0x8018\n\t"
+        "addiu $16,$16,0x64bd\n\t"
+        "jal func_8002DD24\n\t"
+        "move $4,$16\n\t"
+        ".set at"
+        :
+        :
+        : "$4", "$16", "$31", "memory"
+    );
     *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x80) = 0x200;
     *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x84) = 0xF0;
     *(volatile uint32_t *)((volatile uint8_t *)stack_storage + 0x90) = 0xFFFFFFFFu;
