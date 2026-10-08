@@ -223,10 +223,9 @@ void bubsy_handle_death_state(void *actor, void *context) {
             "sw $0,0x18($sp)\n\t"
             "sw $0,0x1C($sp)\n\t"
             "lw $6,0x0c($20)\n\t"
-            "j 2f\n\t"
+            "j 0x8003764c\n\t"
             "ori $5,$zero,0x04\n"
             "1:"
-            "2:"
             : "=r"(entry_counter), "=r"(entry_helper_result)
             :
             : "$4", "$5", "$6", "$7", "$31", "memory"
