@@ -41,8 +41,6 @@ int32_t bubsy_advance_death_state(int32_t death_state, int16_t level_id, int32_t
         } else if (level_id == 8) {
             death_state = 11;
         }
-    } else if (level_id == 5 || level_id == 8) {
-        death_state = 11;
     }
 
     if (death_state == 11 && (level_id == 4 || level_id == 6 || level_id == 8)) {
