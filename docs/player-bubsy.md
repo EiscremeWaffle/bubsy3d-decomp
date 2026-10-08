@@ -41,12 +41,12 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The published report credits 32 bytes across these two functions. The four-way
-model selector and Bubsy actor-update remain unmatched. The death handler has
-a verified local GCC byte match described below, but remains a fuzzy candidate
-in the Clang-based publication report.
-decomp.dev still shows `0.01%` exact code progress; these fuzzy candidates do not
-raise the exact matched-byte count.
+The validated report credits 32 bytes across these getters plus 1,920 bytes for
+the assembly-backed GCC death handler described below: 1,952 exact code bytes
+across three functions, or approximately `0.0653%` of the mapped code. The
+four-way model selector and Bubsy actor-update remain fuzzy candidates and do
+not raise the exact matched-byte count. The progress site changes only after
+this snapshot is committed, pushed, and published by GitHub Actions.
 
 ## Bubsy Actor Routine
 
@@ -250,7 +250,7 @@ byte match.
 
 ## Death-State Routine
 
-`0x8003737C..0x80037AF8` is rooted as `bubsy_handle_death_state`. The debug
+`0x8003737C..0x80037AFC` is rooted as `bubsy_handle_death_state`. The debug
 assertion at `0x8003767C` names `gBubsyInfo.deathType >= 0` and reports
 `../f/bubsy.c`, line `0x912`. The routine initializes a large temporary state
 frame, reads and normalizes the death-type global at `0x80186458`, dispatches
@@ -307,15 +307,23 @@ produces all 480 original instructions. Independently linking it with LLD at
 relocation-resolved verification object derived from that linked compiler
 output, not from the original executable. The matched function's SHA-256 is
 `eb2e2bdbb080e0ffa3e8adf93e0843a710dd3ffab3a2d7fd684c8143cccd01d1`.
-Probe artifacts are under `build/toolchain-probes/`, including
-`bubsy-death-linked.elf` and `death-linked-exact.json`.
+This build is now reproduced by `python -m tools.progress build` using the
+tracked `tools/gcc_match.py` implementation and matching profile in
+`config/base-matches.json`. It downloads checksum-pinned GCC/MASPSX inputs,
+compiles the tracked source and headers on a temporary Linux filesystem, and
+resolves all helper symbols with LLD. Only the linked compiler output is
+packaged into the combined base object, after comparison with the hash-verified
+original executable. Build and source hashes are recorded under
+`build/base/l0/functions/matching/bubsy_handle_death_state/`.
 
-This is a local assembly-backed byte match, not fully recovered high-level C.
-The publication pipeline still compiles with Clang and its validated snapshot
-records 54.539585% fuzzy similarity for this function. Its newer raw reports
-omit the required exact-data measure and are not staged for publication,
-although the two 196-byte table sections compare equal. The local GCC proof
-does not change the publication allowlist or exact-match totals.
+This is an assembly-backed byte match, not fully recovered high-level C or a
+complete game rebuild. The new validated snapshot reports this function at
+100% and includes its 1,920 bytes in exact credit. Clang still builds the
+getters and fuzzy candidates; the death source is excluded from that bundle.
+This also removes unused death-model readonly helper tables that interfered
+with objdiff's aggregate data-section matching. All 196 original table bytes
+are still checked independently and credited by objdiff. The validator has not
+been relaxed and no report measures are filled in manually.
 After the main path begins, the handler clears actor fields `+0x04/+0x10` and
 globals `0x80186460`, `0x80186461`, `0x80186452`, `0x80186479`, `0x8018649D`,
 `0x801864B8`, and `0x801864C0`. It sets `0x80186463` from the returned object's

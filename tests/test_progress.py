@@ -1,16 +1,61 @@
 import copy
 import hashlib
+import io
 from pathlib import Path
 import struct
+import tarfile
 import tempfile
 import unittest
+from unittest.mock import Mock, patch
 
-from tools.fetch_tools import download_checked
-from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, extract_startup, load_json, stage_report, unit_symbols, validate_report
+from tools.fetch_tools import download_checked, extract_tar_checked
+from tools.gcc_match import helper_definitions
+from tools.progress import SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
 
 class ProgressTests(unittest.TestCase):
+    def test_matching_source_requires_compiled_byte_equality(self):
+        symbol = {"name": "handler", "start": "0x80010000", "end": "0x80010004", "size": 4}
+        spec = {"symbols": [symbol], "matching_sources": [{"symbols": ["handler"]}]}
+        mapped = [{"symbol": "handler", "start": symbol["start"], "end": symbol["end"]}]
+        reference = bytes(HEADER_SIZE) + b"CODE"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch("tools.gcc_match.build_gcc_symbol", return_value=b"CODE"):
+                declarations = matching_source_declarations(spec, reference, 0x80010000, mapped, root)
+            self.assertEqual(len(declarations), 1)
+            self.assertEqual((root / "matching/handler/handler.bin").read_bytes(), b"CODE")
+            with patch("tools.gcc_match.build_gcc_symbol", return_value=b"FAIL"):
+                with self.assertRaisesRegex(ValueError, "does not byte-match"):
+                    matching_source_declarations(spec, reference, 0x80010000, mapped, root)
+            self.assertEqual((root / "matching/handler/handler.bin").read_bytes(), b"CODE")
+            spec["symbols"] = []
+            with self.assertRaisesRegex(ValueError, "exact allowlist"):
+                matching_source_declarations(spec, reference, 0x80010000, mapped, root)
+
+    def test_matching_linker_requires_explicit_helper_addresses(self):
+        self.assertEqual(helper_definitions(["func_8001A670", "func_8001A670"]),
+                         ["--defsym=func_8001A670=0x8001A670"])
+        for name in ("unknown_global", "func_8001A67X"):
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "Unmapped"):
+                helper_definitions([name])
+
+    def test_compiled_symbol_bytes_uses_symbol_bounds(self):
+        elf = Mock()
+        section = Mock()
+        section.__getitem__ = Mock(return_value=0x80037000)
+        section.data.return_value = b"prefix" + b"code" + b"suffix"
+        elf.get_section.return_value = section
+        symbol = {"st_info": {"type": "STT_FUNC"}, "st_shndx": 1,
+                  "st_value": 0x80037006, "st_size": 4}
+        elf.get_section_by_name.return_value.get_symbol_by_name.return_value = [symbol]
+        self.assertEqual(compiled_symbol_bytes(elf, "handler", "STT_FUNC"), b"code")
+        for field, value in (("st_value", 0x80036FFF), ("st_size", 100), ("st_shndx", "SHN_ABS")):
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                elf.get_section_by_name.return_value.get_symbol_by_name.return_value = [{**symbol, field: value}]
+                compiled_symbol_bytes(elf, "handler", "STT_FUNC")
+
     def setUp(self):
         self.scope = load_json(SCOPE_PATH)
         self.report = load_json(SNAPSHOT_PATH)
@@ -157,6 +202,18 @@ class ProgressTests(unittest.TestCase):
             self.assertEqual(download_checked("https://example.invalid/tool", digest, path), path)
             with self.assertRaisesRegex(ValueError, "SHA256"):
                 download_checked("https://example.invalid/tool", "0" * 64, path)
+
+    def test_rejects_tool_archive_path_traversal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive = root / "unsafe.tar.gz"
+            with tarfile.open(archive, "w:gz") as package:
+                member = tarfile.TarInfo("../escape")
+                member.size = 4
+                package.addfile(member, io.BytesIO(b"evil"))
+            with self.assertRaises(tarfile.FilterError):
+                extract_tar_checked(archive, root / "tools")
+            self.assertFalse((root / "escape").exists())
 
 
 if __name__ == "__main__":

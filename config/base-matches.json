@@ -31,9 +31,21 @@
         {
           "source": "src/player_model/bubsy_actor_events.c",
           "symbols": ["bubsy_process_actor_event"]
-        },
+        }
+      ],
+      "matching_sources": [
         {
           "source": "src/player_model/bubsy_death_state.c",
+          "compiler": "gcc-2.7.2-psx",
+          "compiler_profile": "Assembly-backed match compiled with checksum-pinned GCC 2.7.2 PSX and MASPSX 2.30, independently linked by LLD before byte verification. Not fully recovered high-level C.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_death_state.h",
+            "tools/gcc_include/stdint.h"
+          ],
           "symbols": ["bubsy_handle_death_state"]
         }
       ],
@@ -62,6 +74,12 @@
           "start": "0x80029790",
           "end": "0x800297A0",
           "size": 16
+        },
+        {
+          "name": "bubsy_handle_death_state",
+          "start": "0x8003737C",
+          "end": "0x80037AFC",
+          "size": 1920
         }
       ]
     }

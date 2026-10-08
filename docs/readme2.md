@@ -1,12 +1,14 @@
 ## Status
 
-This is a research scaffold, not a working source rebuild or a port. No matching
-compiler, linker, SDK version, or complete section layout has been established.
-One C reconstruction now covers the shared Bubsy/Pliskin normal/swimming model
-selection routine, with a passing native test harness. It is not yet built as a
-matching base object, so decomp.dev remains 0% decompiled. The current map traces
-2,981,616 instruction bytes across all 22 recognized executables, grouped into
-10,370 bounded function candidates and 1,167 explicitly labeled reachable fragments.
+This is a research scaffold, not a working whole-game source rebuild or a port.
+The validated report contains 1,952 exact code bytes across three functions:
+two Clang-built getters and the GCC 2.7.2 assembly-backed Bubsy death handler.
+The shared Bubsy/Pliskin normal/swimming model selector remains a fuzzy C
+candidate with a passing native test harness. The current report maps
+2,988,972 instruction bytes across all 22 recognized executables, including
+explicitly labeled reachable fragments. The original SDK version and complete
+section layout remain unresolved, and the death match is not recovered
+high-level C.
 It is still not a complete whole-game denominator.
 See the [current executable code map](docs/code-map.md) for evidence and limitations.
 The first player-specific source reconstruction is documented in
@@ -65,10 +67,14 @@ From the repository root on Windows x86_64:
 .\.venv\Scripts\python.exe -m tools.code_analysis --functions --write-map
 .\.venv\Scripts\python.exe -m tools.progress build
 .\.venv\Scripts\python.exe -m tools.progress validate
+.\.venv\Scripts\python.exe -m tools.progress stage
 ```
 
-The downloader fetches checksum-pinned Zig 0.14.1 and objdiff-cli 3.8.2 into
-ignored local storage. These are research tools, not the original game compiler.
+The downloader fetches checksum-pinned Zig 0.14.1, objdiff-cli 3.8.2,
+GCC 2.7.2 PSX from old-gcc release 0.17, and MASPSX revision
+`e85ecb373828aabea96d7e6400974d4f91ce8c74` into ignored local storage.
+The matching profile reproduces one assembly-backed handler; it does not
+identify the complete original game toolchain.
 The analyzer follows control flow and corroborated pointer references with
 rabbitizer and spimdisasm. The builder verifies executable hashes and checks
 selected MIPS-I ELF32 target bytes against those originals. It generates
@@ -81,8 +87,34 @@ across modules. The previous 3,784-byte startup-only snapshot remains historical
 metadata. Select version `SLUS_001.10_code` on decomp.dev to see the expanded map.
 
 The snapshot must be regenerated and reviewed locally whenever its scope changes.
-The current validator intentionally rejects nonzero matching claims until the
-project establishes source-built objects and replaces this target-only baseline.
+The validator credits only registered source-built functions whose bytes are
+verified against the fingerprinted executables. It rejects fuzzy candidates at
+100% until independently verified and promoted, unsupported exact totals, and
+missing data credit. The staged report must equal the validated snapshot.
+
+### Matching Handler Prerequisites
+
+The Windows x86_64 build requires a default x86_64 Linux WSL distribution that
+can execute the static 32-bit GCC binaries, plus `ld.lld` with MIPS ELF32 support
+(tested with LLD 21.1.8). Check it from PowerShell:
+
+```powershell
+wsl.exe --exec ld.lld --version
+```
+
+If LLD is missing, install it yourself inside the default Ubuntu WSL
+distribution with `sudo apt-get install lld`. The build uses Windows Python for
+MASPSX and Zig for MIPS assembly, and copies only declared tracked source/header
+inputs into a temporary Linux directory for GCC. That avoids the old compiler's
+filesystem-stat limitation on Windows-mounted files. No manual files under a
+particular user's home directory or earlier probe outputs are required.
+
+`config/base-matches.json` declares the source, compatibility header, compiler
+flags, symbol address, and byte size. `tools/gcc_match.py` rebuilds and links the
+handler; `tools/progress.py` checks its bytes before including compiled output
+in the base object. Generated proof metadata, objects, and binaries remain under
+`build/` and must not be committed. Only source, configuration, tests, docs, and
+the validated report metadata are tracked.
 
 ## Complete Disc Inventory
 

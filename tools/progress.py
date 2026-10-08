@@ -39,6 +39,56 @@ def unit_symbols(unit):
     return unit["symbols"] if "symbols" in unit else [unit]
 
 
+def compiled_symbol_bytes(elf, name, expected_type):
+    table = elf.get_section_by_name(".symtab")
+    matches = table.get_symbol_by_name(name) if table else None
+    if not matches or len(matches) != 1:
+        raise ValueError(f"Expected one compiled symbol for {name}")
+    symbol = matches[0]
+    if symbol["st_info"]["type"] != expected_type or not isinstance(symbol["st_shndx"], int):
+        raise ValueError(f"Compiled symbol {name} has an incorrect type or section")
+    section = elf.get_section(symbol["st_shndx"])
+    offset = symbol["st_value"] - section["sh_addr"]
+    size = symbol["st_size"]
+    data = section.data()
+    if size <= 0 or offset < 0 or offset + size > len(data):
+        raise ValueError(f"Compiled symbol {name} is outside its section")
+    return data[offset:offset + size]
+
+
+def matching_source_declarations(base_spec, data, load, symbols, directory):
+    from tools.gcc_match import build_gcc_symbol
+
+    exact = {symbol["name"]: symbol for symbol in base_spec["symbols"]}
+    mapped = {symbol["symbol"]: symbol for symbol in symbols}
+    declarations = []
+    included = set()
+    for source in base_spec.get("matching_sources", []):
+        for name in source["symbols"]:
+            if name not in exact or name not in mapped or name in included:
+                raise ValueError(f"Matching source {name} must have one mapped exact allowlist entry")
+            spec = exact[name]
+            if spec["start"] != mapped[name]["start"] or spec["end"] != mapped[name]["end"]:
+                raise ValueError(f"Matching source {name} differs from the verified code map")
+            output = directory / "matching" / name
+            code = build_gcc_symbol(source, spec, output, ZIG)
+            offset = HEADER_SIZE + int(spec["start"], 16) - load
+            expected = data[offset:offset + spec["size"]]
+            if len(expected) != spec["size"] or code != expected:
+                raise ValueError(f"Matching source does not byte-match original symbol {name}")
+            output.mkdir(parents=True, exist_ok=True)
+            blob = output / f"{name}.bin"
+            blob.write_bytes(code)
+            assembly = (
+                f'.pushsection .text.{name},"ax",@progbits\n.balign 4\n'
+                f'.global {name}\n.type {name},@function\n{name}:\n'
+                f'.incbin "{blob.as_posix()}"\n.size {name}, . - {name}\n.popsection\n'
+            )
+            declarations.append(f"__asm__({json.dumps(assembly)});")
+            included.add(name)
+    return declarations
+
+
 def validate_report(report, scope):
     symbols = {unit["name"]: {symbol["symbol"]: int(symbol["end"], 16) - int(symbol["start"], 16) for symbol in unit_symbols(unit)} for unit in scope["units"]}
     expected = {name: sum(sizes.values()) for name, sizes in symbols.items()}
@@ -191,7 +241,7 @@ def build_report():
         target = directory / "target.o"
         subprocess.run(
             [str(ZIG), "cc", "-target", "mipsel-linux-musl", "-march=mips1", "-mabi=32", "-c", str(assembly), "-o", str(target)],
-            cwd=ROOT, check=True,
+            cwd=ROOT, check=True, input=b"",
         )
         elf = ELFFile(io.BytesIO(target.read_bytes()))
         if elf.header["e_machine"] != "EM_MIPS" or elf.header["e_type"] != "ET_REL" or not elf.little_endian or elf.elfclass != 32 or elf.header["e_flags"] & 0xF0000000:
@@ -220,35 +270,35 @@ def build_report():
             data_sources = base_spec.get("data_sources", [])
             source_to_compile = ROOT / base_spec["source"]
             additional_sources = [*fuzzy_sources, *data_sources]
-            if additional_sources:
+            matching_declarations = matching_source_declarations(base_spec, data, load, symbols, base_object.parent)
+            if additional_sources or matching_declarations:
                 source_to_compile = base_object.parent / "fuzzy_sources.c"
                 includes = [base_spec["source"], *(source["source"] for source in additional_sources)]
                 source_to_compile.write_text(
-                    "\n".join(f'#include "{source}"' for source in includes) + "\n",
+                    "\n".join([*(f'#include "{source}"' for source in includes), *matching_declarations]) + "\n",
                     encoding="utf-8",
                 )
             subprocess.run(
                 [str(ZIG), "cc", *base_spec["flags"], "-I.", "-Isrc/player_model", "-c", str(source_to_compile), "-o", str(base_object)],
-                cwd=ROOT, check=True,
+                cwd=ROOT, check=True, input=b"",
             )
             base_elf = ELFFile(io.BytesIO(base_object.read_bytes()))
             if base_elf.header["e_machine"] != "EM_MIPS" or base_elf.header["e_type"] != "ET_REL" or not base_elf.little_endian or base_elf.elfclass != 32:
                 raise ValueError("Expected a little-endian MIPS ELF32 player base object")
             original_bytes = b"".join(pieces)
             for matched in base_spec["symbols"]:
-                matched_symbol = base_elf.get_section_by_name(f".text.{matched['name']}")
+                matched_bytes = compiled_symbol_bytes(base_elf, matched["name"], "STT_FUNC")
                 expected_symbol = next((symbol for symbol in symbols if symbol["symbol"] == matched["name"]), None)
                 if expected_symbol is None:
                     raise ValueError(f"Matched base symbol {matched['name']} is not in the target unit")
                 expected_bytes = data[HEADER_SIZE + int(expected_symbol["start"], 16) - load:HEADER_SIZE + int(expected_symbol["end"], 16) - load]
-                if matched_symbol is None or matched_symbol.data() != expected_bytes or len(expected_bytes) != matched["size"]:
+                if matched_bytes != expected_bytes or len(expected_bytes) != matched["size"]:
                     raise ValueError(f"Player base source does not byte-match original symbol {matched['name']}")
             for source in data_sources:
                 for matched in source["symbols"]:
-                    matched_symbol = base_elf.get_section_by_name(f'.rodata.{matched["name"]}')
-                    matches = base_elf.get_section_by_name(".symtab").get_symbol_by_name(matched["name"])
+                    matched_bytes = compiled_symbol_bytes(base_elf, matched["name"], "STT_OBJECT")
                     expected_bytes = data_pieces[matched["name"]]
-                    if matched_symbol is None or matched_symbol.data() != expected_bytes or not matches or matches[0]["st_size"] != matched["size"] or matches[0]["st_info"]["type"] != "STT_OBJECT":
+                    if matched_bytes != expected_bytes or len(matched_bytes) != matched["size"]:
                         raise ValueError(f"Player base source does not byte-match original data symbol {matched['name']}")
             units[-1]["base_path"] = base_object.relative_to(ROOT).as_posix()
             units[-1]["metadata"]["source_path"] = base_spec["source"]
@@ -259,7 +309,7 @@ def build_report():
     }
     (ROOT / "objdiff.json").write_text(json.dumps(configuration, indent=2) + "\n", encoding="utf-8")
     output = ROOT / "build" / "code" / "report.json"
-    subprocess.run([str(OBJDIFF), "report", "generate", "-o", str(output)], cwd=ROOT, check=True)
+    subprocess.run([str(OBJDIFF), "report", "generate", "-o", str(output)], cwd=ROOT, check=True, input=b"")
     report = load_json(output)
     total_size = validate_report(report, scope)
     SNAPSHOT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

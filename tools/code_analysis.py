@@ -299,7 +299,7 @@ def render_code_map(document):
         f"- Explicitly labeled reachable fragments: {document['fragment_count']:,}",
         f"- Unclassified executable payload bytes: {payload - document['code_bytes']:,}",
         f"- Indirect sites requiring further review: {unresolved:,}",
-        f"- Exact C matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
+        f"- Exact source matches configured: {matched_code} bytes across {matched_functions} function(s) ({matched_percent:.6f}%)", "",
         f"- Exact executable C data matches configured: {matched_data} bytes across {len(data_symbols)} data symbol(s)",
         f"- Other disc files: {other_disc_file_bytes:,} bytes across {other_disc_file_count} files (inventory only; not objdiff data coverage)",
         f"- Unclassified executable payload: {payload - document['code_bytes']:,} bytes (code or data; not counted as data)",
