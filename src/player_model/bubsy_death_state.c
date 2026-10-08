@@ -198,15 +198,10 @@ void bubsy_handle_death_state(void *actor, void *context) {
     register int32_t counter_value __asm__("$2");
     register int32_t counter_remainder __asm__("$4");
     uint32_t stack_storage[0x118 / sizeof(uint32_t)];
-    register int32_t entry_event_property __asm__("$5");
-    int32_t actor_value;
 
     death_info = func_80026648((void *)actor_bytes, context);
         __asm__ volatile("" : "=r"(death_info) : "0"(death_info));
     {
-        register int32_t entry_counter __asm__("$3");
-        register int32_t entry_helper_result __asm__("$2");
-
         __asm__ volatile(
             "lw $3,0x3A4($gp)\n\t"
             "li $2,-2\n\t"
@@ -226,14 +221,10 @@ void bubsy_handle_death_state(void *actor, void *context) {
             "j 0x8003764c\n\t"
             "ori $5,$zero,0x04\n"
             "1:"
-            : "=r"(entry_counter), "=r"(entry_helper_result)
             :
-            : "$4", "$5", "$6", "$7", "$31", "memory"
+            :
+            : "$2", "$3", "$4", "$5", "$6", "$7", "$31", "memory"
         );
-        if (entry_counter == -2 && (uint8_t)entry_helper_result == 0) {
-            entry_event_property = 4;
-            goto dispatch_entry_event;
-        }
     }
 
 continue_main_path:
@@ -391,14 +382,6 @@ continue_main_path:
         );
         return;
     }
-    goto main_path;
-
-dispatch_entry_event:
-    actor_value = *(volatile int32_t *)(actor_bytes + 0x0C);
-    func_8001B558(0x1B, entry_event_property, actor_value, actor_value, 0, 0, 0, 0);
-    return;
-
-main_path:
     func_80028FC8();
     if (*(volatile int32_t *)0x80186458u < 0) {
         func_800556D0(
