@@ -60,6 +60,10 @@ class ProgressTests(unittest.TestCase):
         for name in ("unknown_global", "func_8001A67X"):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, "Unmapped"):
                 helper_definitions([name])
+        self.assertEqual(helper_definitions(["g_value"], {"g_value": "0x801D8A0C"}),
+                         ["--defsym=g_value=0x801D8A0C"])
+        with self.assertRaisesRegex(ValueError, "Invalid mapped global"):
+            helper_definitions(["g_value"], {"g_value": "0x100"})
 
     def test_compiled_symbol_bytes_uses_symbol_bounds(self):
         elf = Mock()

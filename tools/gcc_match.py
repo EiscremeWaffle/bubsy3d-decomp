@@ -32,13 +32,20 @@ def linux_path(path):
     return path.as_posix()
 
 
-def helper_definitions(names):
+def helper_definitions(names, globals=None):
+    globals = globals or {}
     definitions = []
     for name in sorted(set(names)):
         match = re.fullmatch(r"func_([0-9A-Fa-f]{8})", name)
-        if match is None:
+        if match is not None:
+            address = int(match.group(1), 16)
+        elif name in globals and re.fullmatch(r"[A-Za-z_]\w*", name):
+            address = int(globals[name], 16)
+            if not 0x80000000 <= address <= 0xFFFFFFFF:
+                raise ValueError(f"Invalid mapped global address: {name}")
+        else:
             raise ValueError(f"Unmapped GCC external symbol: {name}")
-        definitions.append(f"--defsym={name}=0x{match.group(1)}")
+        definitions.append(f"--defsym={name}=0x{address:08X}")
     return definitions
 
 
@@ -145,7 +152,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     run_tool(linux_command([
         "ld.lld", "-m", "elf32ltsmip", "-T", linux_path(linker_script),
         f"--entry={name}", linux_path(object_path), "-o", linux_path(linked_path),
-        *helper_definitions(undefined),
+        *helper_definitions(undefined, source_spec.get("globals")),
     ]))
     linked = ELFFile(io.BytesIO(linked_path.read_bytes()))
     linked_symbol = linked.get_section_by_name(".symtab").get_symbol_by_name(name)[0]
@@ -159,6 +166,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         "symbol": name, "address": symbol_spec["start"], "size": len(code),
         "source": source_spec["source"], "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
         "compiler": source_spec["compiler"], "flags": source_spec["flags"],
+        "globals": source_spec.get("globals", {}),
         "gcc_archive_sha256": GCC_COMPILERS[source_spec["compiler"]][1], "maspsx_archive_sha256": MASPSX_HASH,
         "linker": linker_version, "compiled_sha256": hashlib.sha256(code).hexdigest(),
         "headers": {

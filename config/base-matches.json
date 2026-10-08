@@ -68,7 +68,7 @@
           "compiler": "gcc-2.7.2-psx",
           "compiler_profile": "Assembly-backed original no-argument ABI; the host callback model remains separately tested.",
           "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-O2", "-G0", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "headers": [
@@ -77,6 +77,7 @@
             "tools/gcc_include/stddef.h"
           ],
           "symbols": ["level_select_player_model_resource"]
+          ,"globals": {"g_player_model_resource_value": "0x801D8A0C"}
         },
         {
           "source": "src/player_model/bubsy_actor_events.c",
