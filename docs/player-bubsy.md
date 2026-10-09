@@ -42,14 +42,13 @@ slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
 The validated report currently credits 2,744 exact code bytes across 11
-functions, or approximately `0.0918%` of mapped code. Eight of the nine
-previously configured fuzzy candidates are exact; the actor-event dispatcher
-remains fuzzy while its C output is refined. Ten exact functions match from C:
-the two getters, seven actor sequence helpers, and the model-resource selector.
-Their target paths use compiler constraints and scheduling barriers, not MIPS
-opcode blocks. The death handler remains assembly-backed. The larger actor
-updater is still incomplete. The progress site changes only after this snapshot
-is committed, pushed, and published by GitHub Actions.
+functions, or approximately `0.0918%` of mapped code. This consists of two
+Clang-built getters, eight GCC C functions (the seven actor sequence helpers
+and model-resource selector), and the assembly-backed death handler. The
+actor-event dispatcher remains fuzzy; the target-only C draft for
+`shared_actor_state_dispatch` is also not exact and earns no progress credit.
+The progress site changes only after this snapshot is committed, pushed, and
+published by GitHub Actions.
 
 ## Bubsy Actor Routine
 
@@ -69,10 +68,11 @@ set and clear bit `0x04` in actor byte offset `0x04`. The C translations live in
 `player_actor_flags.c` and pass native state tests. A compiler sweep found
 checksum-pinned GCC 2.6.3 matches all seven helpers in that source file,
 including the multiply-high register choices in the boundary and remainder
-helpers; GCC 2.7.2 differed in those C division sequences. GCC 2.6.3 also
-matches the C model-resource selector. The standard profiles now use 2.6.3 for
-these source files. This is stronger byte-match evidence, not proof that the
-whole game used that compiler or recovery of all gameplay meanings.
+helpers. It also matches the C model-resource selector and the assembly-backed
+death handler. GCC 2.7.2 differed on the remainder helper's multiply-high
+register selection. The standard profiles now use 2.6.3 for these verified
+functions. This is stronger byte-match evidence, not proof that the whole game
+used that compiler or recovery of all gameplay meanings.
 
 The update entry first reads signed halfword `0x80186454`. If nonzero, it
 forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,
@@ -135,14 +135,17 @@ byte-matched. Its initial branch is translated in
 `player_actor_shared_state_clear_progress`: key `0x2A7` or any overlap with
 actor mask `0x1100` clears component words `+0x30` and `+0x34`.
 In mode `1`, actor state mask `0x8000` bypasses the numeric update; otherwise
-mask `0x10000` sets `+0x30` to `-0x34`, and `+0x34` is preserved. This data
-effect is translated in `player_actor_shared_state_apply_mode1_numeric_update`;
-the surrounding callback logic and remaining modes are not yet translated. The
+mask `0x10000` sets `+0x30` to `-0x34`. When that mask is clear, `+0x34` is
+temporarily set to zero if `+0x30 < -0x11`, or to `-0x198C` otherwise; the
+callback path then restores its saved value. The scalar update is translated in
+`player_actor_shared_state_apply_mode1_numeric_update`; the callback effects and
+remaining modes are not yet translated. The
 mode-0 numeric stage clamps `+0x30` to `5..0x11` unless actor state mask
-`0x18000` bypasses it. An intermediate clear of `+0x34` at the upper cap is
-restored by the shared epilogue, so the observable field is preserved. The
-surviving clamp is translated in `player_actor_shared_state_clamp_mode0_progress`;
-other mode processing remains incomplete. Modes `2` and `3` skip their
+`0x18000` bypasses it. Before the callback, `+0x34` is temporarily set to
+`0x198C` below the upper cap or cleared at the cap, then restored by the shared
+epilogue. The surviving clamp is translated in
+`player_actor_shared_state_clamp_mode0_progress`; its callback side effects and
+other mode processing remain incomplete. Modes `2` and `3` skip their
 callback path when actor mask `0x10000` is set; otherwise they prepare callback
 flags `-0x400`/`0x400` and temporary progress `0xE`, `6`, or `8`. The bounded
 argument-selection logic is captured by `player_actor_shared_state_make_mode23_plan`;
@@ -305,7 +308,7 @@ not recovered animation names. The standalone C helper is tested but not
 byte-matched. The target-only `bubsy_handle_death_state` implementation models the verified entry
 gates, counter-list path, death-type scalar progression, resource/event setup,
 runtime reset, main helper sequence, and terminal writes. Several animation
-and engine-helper semantics remain unresolved. The GCC 2.7.2/MASPSX probe now
+and engine-helper semantics remain unresolved. The GCC 2.6.3/MASPSX probe now
 produces all 480 original instructions. Independently linking it with LLD at
 `0x8003737C` and resolving helper symbols to their observed addresses gives
 1,920 identical bytes, with no differences. Objdiff also reports 100% for a

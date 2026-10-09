@@ -3,8 +3,9 @@
 This is a research scaffold, not a working whole-game source rebuild or a port.
 The validated report currently contains 2,744 exact code bytes across 11
 functions: two Clang-built getters, eight GCC C functions, and one GCC
-assembly-backed function. Eight of nine previous fuzzy candidates are exact;
-the actor-event dispatcher remains fuzzy while its C reconstruction is refined.
+assembly-backed function. The actor-event dispatcher remains fuzzy while its C
+reconstruction is refined; the experimental shared actor-state dispatcher is
+also not byte-matched or credited.
 Portable host models remain covered by native regression tests. The current report maps
 2,988,972 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
@@ -14,6 +15,8 @@ It is still not a complete whole-game denominator.
 See the [current executable code map](docs/code-map.md) for evidence and limitations.
 The first player-specific source reconstruction is documented in
 [docs/player-bubsy.md](docs/player-bubsy.md).
+Contributors extending the byte-matched source work should start with the
+[decompilation workflow guide](docs/contributor-decompilation-guide.md).
 
 The boot and menu reference fingerprints are in [config/usa.json](config/usa.json).
 All 22 executable fingerprints, including 20 level modules, are in
