@@ -4,6 +4,7 @@ import json
 import struct
 
 from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
+from tools.progress import expand_base_matches
 
 
 def contiguous_ranges(addresses):
@@ -280,7 +281,7 @@ def render_code_map(document):
     modules = document["modules"]
     payload = sum(int(module["load_end"], 16) - int(module["load_start"], 16) for module in modules)
     unresolved = sum(len(module["unresolved"]) for module in modules)
-    base_matches = json.loads((ROOT / "config" / "base-matches.json").read_text(encoding="utf-8"))["units"]
+    base_matches = expand_base_matches(json.loads((ROOT / "config" / "base-matches.json").read_text(encoding="utf-8")))
     disc_map = json.loads((ROOT / "config" / "disc-map.json").read_text(encoding="utf-8"))
     executable_map = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
     matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])

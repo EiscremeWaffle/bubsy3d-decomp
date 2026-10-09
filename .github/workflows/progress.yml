@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
       - name: Test the code-map and report validators
         run: python -m unittest discover -s tests -v
       - name: Validate and stage report with decomp.dev filename
