@@ -1,5 +1,31 @@
 #include "bubsy_actor_update.h"
 
+BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
+    const BubsyActorUpdateActorView *actor,
+    uint16_t handler_state_id,
+    int32_t handler_state_aux,
+    uint8_t runtime_state_6461,
+    uint8_t update_lock_6479,
+    int16_t update_gate_6454,
+    uint8_t runtime_mode
+) {
+    if (runtime_state_6461 != 5 ||
+        (actor->update_state_10 & 0x00010000u) != 0 ||
+        update_lock_6479 != 0 ||
+        update_gate_6454 != 0 ||
+        (actor->flags_04 & 0x00000100u) != 0) {
+        return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
+    }
+
+    if (handler_state_id == 0x25 ||
+        (handler_state_id == 0x26 && handler_state_aux != -2)) {
+        return runtime_mode == 0 ?
+            BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED : BUBSY_ACTOR_DEFAULT_ROUTE_SWIM;
+    }
+
+    return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
+}
+
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
 #include "player_model.h"
 

@@ -26,11 +26,26 @@ typedef enum BubsyActorUpdateEntryResult {
     BUBSY_ACTOR_UPDATE_CONTINUE = 1,
 } BubsyActorUpdateEntryResult;
 
+typedef enum BubsyActorDefaultStateRoute {
+    BUBSY_ACTOR_DEFAULT_ROUTE_SKIP = 0,
+    BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED = 1,
+    BUBSY_ACTOR_DEFAULT_ROUTE_SWIM = 2,
+} BubsyActorDefaultStateRoute;
+
 BubsyActorUpdateEntryResult bubsy_actor_update_entry_gate(
     BubsyActorUpdateActorView *actor,
     uint8_t update_mode,
     BubsyActorUpdateEnvironment *environment,
     uint8_t *local_state_24
+);
+BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
+    const BubsyActorUpdateActorView *actor,
+    uint16_t handler_state_id,
+    int32_t handler_state_aux,
+    uint8_t runtime_state_6461,
+    uint8_t update_lock_6479,
+    int16_t update_gate_6454,
+    uint8_t runtime_mode
 );
 int32_t bubsy_actor_update_should_select_309(
     const BubsyActorUpdateActorView *actor,

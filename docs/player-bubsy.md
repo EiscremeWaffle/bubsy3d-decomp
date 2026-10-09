@@ -41,11 +41,12 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 15,040 exact code bytes across 91
-functions, or `0.503183%` of mapped code. The total includes two Clang-built
+The validated report currently credits 15,176 exact code bytes across 92
+functions, or `0.507733%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death handler,
-20 assembly-backed copies of `func_80010128`, 22 C copies of
-`func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
+20 assembly-backed copies of `func_80010128`, the L0 assembly-backed Q20.12 dot
+product `func_800100A0`, 22 C copies of `func_80072F4C`, and 38 repeated copies
+of two actor-flag/cursor helpers. The
 actor-event dispatcher remains fuzzy; the target-only C draft for
 `shared_actor_state_dispatch` is also not exact and earns no progress credit.
 The progress site changes only after this snapshot is committed, pushed, and
@@ -202,6 +203,33 @@ The non-default jump-table destinations are:
 All other IDs in `2..50` use the default destination `0x80036874`. The IDs
 remain state-machine values only; their names and player-facing meanings have
 not been recovered.
+
+### Grounded/Swim Routing
+
+The default-state block at `0x80036874` can route to `0x8004B35C` when the
+runtime state byte `0x80186461` is `5`, the actor `+0x10` mask `0x10000` is
+clear, lock byte `0x80186479` and gate halfword `0x80186454` are zero, and
+actor flag `+0x04` bit `0x100` is clear. Descriptor state `0x25` takes this
+route directly; state `0x26` takes it only when descriptor word `+0x04` is not
+`-2`. Runtime mode zero selects `0x8004B35C`; nonzero mode selects
+`0x8004BFF8`. `bubsy_actor_state_route_default` models and tests these routing
+conditions.
+
+The grounded handler starts with a `0x68`-byte frame and contains a 33-entry
+computed state switch at `0x8004B4D0`, backed by the table at `0x800139A8`.
+Every table target lies inside the handler body, but the L0 discovery map stops
+at the indirect jump, so this handler is not yet a verified bounded function.
+The inspected stores update actor state/flags, a companion object field, and
+global counters; no direct world-position or velocity write has been identified
+yet. Treat this as the grounded actor-state route, not a proven locomotion
+integrator.
+
+The grounded handler at `0x8004B35C` calls `func_800100A0` while combining two
+three-component Q20.12 vectors. Its C host model computes the signed dot
+product; its target profile is assembly-backed and byte-exact for the single
+L0 copy. This confirms transform math on the grounded path, but does not by
+itself establish how the resulting value changes Bubsy's world position or
+velocity.
 
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,

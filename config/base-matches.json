@@ -65,6 +65,17 @@
           ],
           "symbols": ["level_select_player_model_resource"],
           "globals": {"g_player_model_resource_value": "0x801D8A0C"}
+        },
+        {
+          "source": "src/player_model/player_vector_dot.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed target sequence compiled using checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; the host C path expresses the signed Q20.12 dot product.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800100A0"]
         }
       ],
       "fuzzy_sources": [
@@ -156,6 +167,12 @@
           "start": "0x800296B4",
           "end": "0x80029790",
           "size": 220
+        },
+        {
+          "name": "func_800100A0",
+          "start": "0x800100A0",
+          "end": "0x80010128",
+          "size": 136
         }
       ]
     }

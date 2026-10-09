@@ -401,6 +401,34 @@ static void test_bubsy_actor_update_entry_gate(void) {
     assert(environment.actor_event_guard_6460 == 0);
 }
 
+static void test_bubsy_actor_default_state_route(void) {
+    BubsyActorUpdateActorView actor = {0};
+
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 1) == BUBSY_ACTOR_DEFAULT_ROUTE_SWIM);
+    assert(bubsy_actor_state_route_default(&actor, 0x26, -1, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    assert(bubsy_actor_state_route_default(&actor, 0x26, -2, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x24, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 4, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 1, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 1, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+
+    actor.flags_04 = 0x100;
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    actor.flags_04 = 0;
+    actor.update_state_10 = 0x10000;
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+}
+
+static void test_fixed_q12_dot_product(void) {
+    const int32_t left[3] = {0x1000, 0x0800, -0x1000};
+    const int32_t right[3] = {0x1000, 0x1000, 0x0800};
+    int32_t result = 0;
+
+    assert(func_800100A0(left, right, &result) == 0);
+    assert(result == 0x1000);
+}
+
 static void test_bubsy_actor_update_sequence_309_gate(void) {
     BubsyActorUpdateActorView actor = {0};
 
@@ -623,6 +651,8 @@ int main(void) {
     test_move_request_queue();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
+    test_bubsy_actor_default_state_route();
+    test_fixed_q12_dot_product();
     test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_actor_update_local_state_for_sequence();
     test_bubsy_actor_update_mode1_sequence_boundary_gate();

@@ -22,5 +22,5 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Compile and test player-model selection
         run: |
-          cc -std=c11 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/move_requests.c src/player_model/player_model.c src/player_model/player_model_global.c src/player_model/player_actor_flags.c src/player_model/player_actor_state_table.c src/player_model/bubsy_actor_events.c src/player_model/bubsy_actor_update.c src/player_model/bubsy_death_state.c tests/test_player_model.c -o /tmp/test_player_model
+          cc -std=c11 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/move_requests.c src/player_model/player_model.c src/player_model/player_model_global.c src/player_model/player_vector_dot.c src/player_model/player_actor_flags.c src/player_model/player_actor_state_table.c src/player_model/bubsy_actor_events.c src/player_model/bubsy_actor_update.c src/player_model/bubsy_death_state.c tests/test_player_model.c -o /tmp/test_player_model
           /tmp/test_player_model
