@@ -86,6 +86,10 @@
         {
           "source": "src/player_model/shared_actor_state_2.c",
           "symbols": ["shared_actor_state_2_handler"]
+        },
+        {
+          "source": "src/player_model/player_vector_range.c",
+          "symbols": ["func_80053D68"]
         }
       ],
       "data_sources": [

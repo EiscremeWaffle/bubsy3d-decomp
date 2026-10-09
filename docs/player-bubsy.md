@@ -231,6 +231,11 @@ L0 copy. This confirms transform math on the grounded path, but does not by
 itself establish how the resulting value changes Bubsy's world position or
 velocity.
 
+The transform wrapper also calls `func_80053D68`, a vector range-conditioning
+helper that selects a shift from the largest component magnitude. Its C model
+and threshold tests are in `player_vector_range.c`; the current 36.9% objdiff
+similarity is diagnostic only and earns no exact credit.
+
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
 and `0x0E`, plus sequence data through a pointer at `0x18`. When flag bit `0x04`

@@ -429,6 +429,32 @@ static void test_fixed_q12_dot_product(void) {
     assert(result == 0x1000);
 }
 
+static void test_vector_range_scaling(void) {
+    int32_t input[3] = {16, -32, 48};
+    int32_t output[3] = {0};
+
+    assert(func_80053D68(input, output) == 0);
+    assert(output[0] == 0x1000 && output[1] == -0x2000 && output[2] == 0x3000);
+
+    input[0] = 0x1001;
+    input[1] = -2;
+    input[2] = 3;
+    assert(func_80053D68(input, output) == 0);
+    assert(output[0] == 0x4004 && output[1] == -8 && output[2] == 12);
+
+    input[0] = 0x4001;
+    input[1] = -32;
+    input[2] = 16;
+    assert(func_80053D68(input, output) == 0);
+    assert(output[0] == 0x400 && output[1] == -2 && output[2] == 1);
+
+    input[0] = 0x01000001;
+    input[1] = -0x1000;
+    input[2] = 0x800;
+    assert(func_80053D68(input, output) == 0);
+    assert(output[0] == 0x2000 && output[1] == -2 && output[2] == 1);
+}
+
 static void test_bubsy_actor_update_sequence_309_gate(void) {
     BubsyActorUpdateActorView actor = {0};
 
@@ -653,6 +679,7 @@ int main(void) {
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_default_state_route();
     test_fixed_q12_dot_product();
+    test_vector_range_scaling();
     test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_actor_update_local_state_for_sequence();
     test_bubsy_actor_update_mode1_sequence_boundary_gate();
