@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
 from tools.gcc_match import helper_definitions, normalize_delay_slots
-from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
+from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, expand_base_matches, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
 
@@ -65,6 +65,52 @@ class ProgressTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Invalid mapped global"):
             helper_definitions(["g_value"], {"g_value": "0x100"})
 
+    def test_shared_match_specs_expand_into_each_unit(self):
+        configuration = {
+            "units": {
+                "l0/functions": {
+                    "source": "base.c",
+                    "symbols": [{"name": "existing"}],
+                }
+            },
+            "shared_matches": [{
+                "units": ["l0/functions", "l1/functions"],
+                "unit_overrides": {
+                    "l2/functions": {
+                        "symbols": [{"name": "variant", "start": "0x80020000", "end": "0x80020004", "size": 4}],
+                        "matching_sources": [{"symbols": ["variant"]}],
+                    }
+                },
+                "source": "shared.c",
+                "flags": ["-O2"],
+                "symbols": [{"name": "shared"}],
+                "matching_sources": [{"symbols": ["shared"]}],
+                "function_profile": {
+                    "source": "matrix.c",
+                    "compiler": "gcc-2.6.3-psx",
+                    "flags": ["-O2"],
+                    "headers": [],
+                    "symbol_macro": "MATRIX_FUNCTION",
+                },
+                "function_variants": [
+                    {"unit": "l0/functions", "name": "func_l0", "start": "0x80010000", "end": "0x80010004"},
+                    {"unit": "l1/functions", "name": "func_l1", "start": "0x80020000", "end": "0x80020008"},
+                ],
+            }],
+        }
+        expanded = expand_base_matches(configuration)
+        self.assertEqual([item["name"] for item in expanded["l0/functions"]["symbols"]], ["existing", "shared", "func_l0"])
+        self.assertEqual(expanded["l0/functions"]["source"], "base.c")
+        self.assertEqual(expanded["l1/functions"]["source"], "shared.c")
+        self.assertEqual(expanded["l1/functions"]["flags"], ["-O2"])
+        self.assertEqual([item["name"] for item in expanded["l1/functions"]["symbols"]], ["shared", "func_l1"])
+        self.assertEqual(expanded["l1/functions"]["matching_sources"][0], {"symbols": ["shared"]})
+        self.assertEqual(expanded["l1/functions"]["matching_sources"][1]["symbols"], ["func_l1"])
+        self.assertEqual(expanded["l1/functions"]["matching_sources"][1]["flags"], ["-O2", "-DMATRIX_FUNCTION=func_l1"])
+        self.assertEqual(expanded["l1/functions"]["symbols"][1]["size"], 8)
+        self.assertEqual(expanded["l2/functions"]["symbols"], [{"name": "variant", "start": "0x80020000", "end": "0x80020004", "size": 4}])
+        self.assertEqual(expanded["l2/functions"]["matching_sources"], [{"symbols": ["variant"]}])
+
     def test_compiled_symbol_bytes_uses_symbol_bounds(self):
         elf = Mock()
         section = Mock()
@@ -87,7 +133,8 @@ class ProgressTests(unittest.TestCase):
 
     def test_real_snapshot_has_verified_getter_match(self):
         self.assertEqual(validate_report(self.report, self.scope), self.expected_code_bytes)
-        spec = load_json(ROOT / "config" / "base-matches.json")["units"]["l0/functions"]
+        base_matches = expand_base_matches(load_json(ROOT / "config" / "base-matches.json"))
+        spec = base_matches["l0/functions"]
         expected_symbols = spec["symbols"]
         report_unit = next(unit for unit in self.report["units"] if unit["name"] == "l0/functions")
         for expected in expected_symbols:
@@ -95,7 +142,9 @@ class ProgressTests(unittest.TestCase):
             with self.subTest(symbol=expected["name"]):
                 self.assertEqual(int(function["size"]), expected["size"])
                 self.assertEqual(function["fuzzy_match_percent"], 100)
-        self.assertEqual(int(self.report["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_symbols))
+        self.assertEqual(int(report_unit["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_symbols))
+        expected_all_symbols = [symbol for unit_spec in base_matches.values() for symbol in unit_spec["symbols"]]
+        self.assertEqual(int(self.report["measures"]["matched_code"]), sum(symbol["size"] for symbol in expected_all_symbols))
         data_symbols = [symbol for source in spec["data_sources"] for symbol in source["symbols"]]
         expected_data = sum(symbol["size"] for symbol in data_symbols)
         self.assertEqual(int(self.report["measures"]["total_data"]), expected_data)
@@ -109,7 +158,7 @@ class ProgressTests(unittest.TestCase):
                 self.assertGreater(function["fuzzy_match_percent"], 0)
                 self.assertLess(function["fuzzy_match_percent"], 100)
                 self.assertNotIn(name, exact_names)
-        self.assertEqual(int(self.report["measures"]["matched_functions"]), len(exact_names))
+        self.assertEqual(int(self.report["measures"]["matched_functions"]), len(expected_all_symbols))
         if fuzzy_names:
             self.assertGreater(float(self.report["measures"]["fuzzy_match_percent"]), float(self.report["measures"]["matched_code_percent"]))
         else:
@@ -153,14 +202,14 @@ class ProgressTests(unittest.TestCase):
 
     def test_rejects_invented_progress_in_target_only_unit(self):
         report = copy.deepcopy(self.report)
-        unit = next(unit for unit in report["units"] if unit["name"] == "l1/functions")
+        unit = next(unit for unit in report["units"] if unit["name"] == "l1/fragments")
         unit["measures"]["matched_code"] = 1
         with self.assertRaisesRegex(ValueError, "without a compiled base"):
             validate_report(report, self.scope)
 
     def test_rejects_fuzzy_score_for_unlisted_function(self):
         report = copy.deepcopy(self.report)
-        unit = next(unit for unit in report["units"] if unit["name"] == "l1/functions")
+        unit = next(unit for unit in report["units"] if unit["name"] == "l1/fragments")
         unit["functions"][0]["fuzzy_match_percent"] = 1
         with self.assertRaisesRegex(ValueError, "without an exact or explicitly fuzzy source candidate"):
             validate_report(report, self.scope)
@@ -169,8 +218,9 @@ class ProgressTests(unittest.TestCase):
         report = copy.deepcopy(self.report)
         unit = next(unit for unit in report["units"] if unit["name"] == "l0/functions")
         base_matches = load_json(BASE_MATCHES_PATH)
+        expanded = expand_base_matches(copy.deepcopy(base_matches))
         spec = base_matches["units"]["l0/functions"]
-        exact_names = {symbol["name"] for symbol in spec["symbols"]}
+        exact_names = {symbol["name"] for symbol in expanded["l0/functions"]["symbols"]}
         candidate = next(function for function in unit["functions"] if function["name"] not in exact_names)
         spec["fuzzy_sources"].append({"source": "src/player_model/player_actor_flags.c", "symbols": [candidate["name"]]})
         candidate["fuzzy_match_percent"] = 100

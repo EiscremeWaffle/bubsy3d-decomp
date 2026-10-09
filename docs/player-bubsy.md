@@ -41,10 +41,11 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 2,744 exact code bytes across 11
-functions, or approximately `0.0918%` of mapped code. This consists of two
-Clang-built getters, eight GCC C functions (the seven actor sequence helpers
-and model-resource selector), and the assembly-backed death handler. The
+The validated report currently credits 15,040 exact code bytes across 91
+functions, or `0.503183%` of mapped code. The total includes two Clang-built
+getters, eight original GCC C functions, the assembly-backed death handler,
+20 assembly-backed copies of `func_80010128`, 22 C copies of
+`func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
 actor-event dispatcher remains fuzzy; the target-only C draft for
 `shared_actor_state_dispatch` is also not exact and earns no progress credit.
 The progress site changes only after this snapshot is committed, pushed, and

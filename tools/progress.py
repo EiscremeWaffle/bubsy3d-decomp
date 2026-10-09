@@ -20,6 +20,49 @@ def load_json(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def expand_base_matches(configuration):
+    units = configuration["units"]
+    list_fields = {"matching_sources", "fuzzy_sources", "data_sources", "symbols"}
+    for shared in configuration.get("shared_matches", []):
+        template = {
+            key: value for key, value in shared.items()
+            if key not in {"units", "unit_overrides", "function_variants", "function_profile"}
+        }
+        targets = [(name, template) for name in shared.get("units", [])]
+        targets.extend(
+            (name, {**template, **override})
+            for name, override in shared.get("unit_overrides", {}).items()
+        )
+        for name, values in targets:
+            spec = units.setdefault(name, {})
+            for key, value in values.items():
+                if key in list_fields:
+                    spec.setdefault(key, []).extend(value)
+                else:
+                    spec.setdefault(key, value)
+        profile = shared.get("function_profile")
+        for variant in shared.get("function_variants", []):
+            name = variant["unit"]
+            symbol_name = variant["name"]
+            spec = units.setdefault(name, {})
+            for key, value in template.items():
+                if key not in list_fields:
+                    spec.setdefault(key, value)
+            source = {key: value for key, value in profile.items() if key != "symbol_macro"}
+            source["flags"] = [*profile["flags"], f"-D{profile['symbol_macro']}={symbol_name}"]
+            source["symbols"] = [symbol_name]
+            spec.setdefault("matching_sources", []).append(source)
+            start = int(variant["start"], 16)
+            end = int(variant["end"], 16)
+            spec.setdefault("symbols", []).append({
+                "name": symbol_name,
+                "start": variant["start"],
+                "end": variant["end"],
+                "size": end - start,
+            })
+    return units
+
+
 def extract_startup(data, expected, unit):
     start = int(unit["start"], 16)
     end = int(unit["end"], 16)
@@ -96,7 +139,7 @@ def validate_report(report, scope):
     if len(units) != len(expected) or {unit["name"] for unit in units} != set(expected):
         raise ValueError("Report units do not match the documented code-map scope")
     total_size = sum(expected.values())
-    base_matches = load_json(BASE_MATCHES_PATH)["units"]
+    base_matches = expand_base_matches(load_json(BASE_MATCHES_PATH))
     expected_matched_code = sum(symbol["size"] for unit in base_matches.values() for symbol in unit["symbols"])
     expected_matched_functions = sum(len(unit["symbols"]) for unit in base_matches.values())
     expected_data_by_unit = {
@@ -186,7 +229,7 @@ def build_report():
 
     scope = load_json(SCOPE_PATH)
     manifest = load_json(ROOT / "config" / "executable-map.json")
-    base_specs = load_json(BASE_MATCHES_PATH)["units"]
+    base_specs = expand_base_matches(load_json(BASE_MATCHES_PATH))
     executables = {entry["filename"]: entry for entry in manifest["executables"]}
     units = []
     for unit in scope["units"]:

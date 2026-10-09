@@ -71,6 +71,10 @@
         {
           "source": "src/player_model/bubsy_actor_events.c",
           "symbols": ["bubsy_process_actor_event"]
+        },
+        {
+          "source": "src/player_model/shared_actor_state_2.c",
+          "symbols": ["shared_actor_state_2_handler"]
         }
       ],
       "data_sources": [
@@ -155,5 +159,150 @@
         }
       ]
     }
-  }
+  },
+  "shared_matches": [
+    {
+      "units": [
+        "l0/functions", "l1/functions", "l10/functions", "l11/functions",
+        "l12/functions", "l13/functions", "l14/functions", "l15/functions",
+        "l16/functions", "l17/functions", "l18/functions", "l19/functions",
+        "l2/functions", "l20/functions", "l4/functions", "l5/functions",
+        "l6/functions", "l7/functions", "l8/functions", "l9/functions"
+      ],
+      "source": "src/player_model/player_model_global.c",
+      "flags": [
+        "-target", "mipsel-linux-musl",
+        "-march=mips2", "-mabi=32", "-mno-abicalls", "-G0", "-fno-pic",
+        "-fomit-frame-pointer", "-fno-stack-protector", "-O2",
+        "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+      ],
+      "matching_sources": [
+        {
+          "source": "src/player_model/player_vector_cross.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed target sequence compiled through checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; a separate host C model is retained. This is not a high-level C match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80010128"]
+        }
+      ],
+      "symbols": [
+        {
+          "name": "func_80010128",
+          "start": "0x80010128",
+          "end": "0x80010220",
+          "size": 248
+        }
+      ]
+    },
+    {
+      "source": "src/player_model/player_model_global.c",
+      "flags": [
+        "-target", "mipsel-linux-musl",
+        "-march=mips2", "-mabi=32", "-mno-abicalls", "-G0", "-fno-pic",
+        "-fomit-frame-pointer", "-fno-stack-protector", "-O2",
+        "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+      ],
+      "function_profile": {
+        "source": "src/player_model/player_matrix_scale.c",
+        "compiler": "gcc-2.6.3-psx",
+        "compiler_profile": "C implementation with a fixed-register scale constraint, compiled using checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; each mapped variant is independently byte-verified.",
+        "flags": [
+          "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+          "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+        ],
+        "headers": ["tools/gcc_include/stdint.h"],
+        "symbol_macro": "MATRIX_SCALE_FUNCTION"
+      },
+      "function_variants": [
+        {"unit":"l0/functions","name":"func_80072F4C","start":"0x80072F4C","end":"0x80073070"},
+        {"unit":"l1/functions","name":"func_800756F4","start":"0x800756F4","end":"0x80075818"},
+        {"unit":"l10/functions","name":"func_80073CB4","start":"0x80073CB4","end":"0x80073DD8"},
+        {"unit":"l11/functions","name":"func_800779A0","start":"0x800779A0","end":"0x80077AC4"},
+        {"unit":"l12/functions","name":"func_800780E0","start":"0x800780E0","end":"0x80078204"},
+        {"unit":"l13/functions","name":"func_800781EC","start":"0x800781EC","end":"0x80078310"},
+        {"unit":"l14/functions","name":"func_80076F34","start":"0x80076F34","end":"0x80077058"},
+        {"unit":"l15/functions","name":"func_8007809C","start":"0x8007809C","end":"0x800781C0"},
+        {"unit":"l16/functions","name":"func_800772F4","start":"0x800772F4","end":"0x80077418"},
+        {"unit":"l17/functions","name":"func_8006FC5C","start":"0x8006FC5C","end":"0x8006FD80"},
+        {"unit":"l18/functions","name":"func_80071EDC","start":"0x80071EDC","end":"0x80072000"},
+        {"unit":"l19/functions","name":"func_80072190","start":"0x80072190","end":"0x800722B4"},
+        {"unit":"l2/functions","name":"func_8007556C","start":"0x8007556C","end":"0x80075690"},
+        {"unit":"l20/functions","name":"func_800754C8","start":"0x800754C8","end":"0x800755EC"},
+        {"unit":"l4/functions","name":"func_80073A88","start":"0x80073A88","end":"0x80073BAC"},
+        {"unit":"l5/functions","name":"func_80074A58","start":"0x80074A58","end":"0x80074B7C"},
+        {"unit":"l6/functions","name":"func_800733D0","start":"0x800733D0","end":"0x800734F4"},
+        {"unit":"l7/functions","name":"func_80077F8C","start":"0x80077F8C","end":"0x800780B0"},
+        {"unit":"l8/functions","name":"func_800730A4","start":"0x800730A4","end":"0x800731C8"},
+        {"unit":"l9/functions","name":"func_80077988","start":"0x80077988","end":"0x80077AAC"},
+        {"unit":"menu/functions","name":"func_80047994","start":"0x80047994","end":"0x80047AB8"},
+        {"unit":"boot/functions","name":"func_800479A8","start":"0x800479A8","end":"0x80047ACC"}
+      ]
+    },
+    {
+      "function_profile": {
+        "source": "src/player_model/player_actor_flags.c",
+        "compiler": "gcc-2.6.3-psx",
+        "compiler_profile": "C helper compiled with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; exact bytes are independently verified in each level module.",
+        "flags": ["-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer", "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"],
+        "headers": ["src/player_model/player_model.h", "tools/gcc_include/stdint.h", "tools/gcc_include/stddef.h"],
+        "symbol_macro": "player_actor_set_flag_04"
+      },
+      "function_variants": [
+        {"unit":"l1/functions","name":"func_800555C0","start":"0x800555C0","end":"0x800555D8"},
+        {"unit":"l10/functions","name":"func_80053B80","start":"0x80053B80","end":"0x80053B98"},
+        {"unit":"l11/functions","name":"func_8005786C","start":"0x8005786C","end":"0x80057884"},
+        {"unit":"l12/functions","name":"func_80057FAC","start":"0x80057FAC","end":"0x80057FC4"},
+        {"unit":"l13/functions","name":"func_800580B8","start":"0x800580B8","end":"0x800580D0"},
+        {"unit":"l14/functions","name":"func_80056E00","start":"0x80056E00","end":"0x80056E18"},
+        {"unit":"l15/functions","name":"func_80057F68","start":"0x80057F68","end":"0x80057F80"},
+        {"unit":"l16/functions","name":"func_800571C0","start":"0x800571C0","end":"0x800571D8"},
+        {"unit":"l17/functions","name":"func_8004FB28","start":"0x8004FB28","end":"0x8004FB40"},
+        {"unit":"l18/functions","name":"func_80051DA8","start":"0x80051DA8","end":"0x80051DC0"},
+        {"unit":"l19/functions","name":"func_8005205C","start":"0x8005205C","end":"0x80052074"},
+        {"unit":"l2/functions","name":"func_80055438","start":"0x80055438","end":"0x80055450"},
+        {"unit":"l20/functions","name":"func_80055394","start":"0x80055394","end":"0x800553AC"},
+        {"unit":"l4/functions","name":"func_800538CC","start":"0x800538CC","end":"0x800538E4"},
+        {"unit":"l5/functions","name":"func_80054924","start":"0x80054924","end":"0x8005493C"},
+        {"unit":"l6/functions","name":"func_80053214","start":"0x80053214","end":"0x8005322C"},
+        {"unit":"l7/functions","name":"func_80057E58","start":"0x80057E58","end":"0x80057E70"},
+        {"unit":"l8/functions","name":"func_80052EE8","start":"0x80052EE8","end":"0x80052F00"},
+        {"unit":"l9/functions","name":"func_80057854","start":"0x80057854","end":"0x8005786C"}
+      ]
+    },
+    {
+      "function_profile": {
+        "source": "src/player_model/player_actor_flags.c",
+        "compiler": "gcc-2.6.3-psx",
+        "compiler_profile": "C helper compiled with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; exact bytes are independently verified in each level module.",
+        "flags": ["-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer", "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"],
+        "headers": ["src/player_model/player_model.h", "tools/gcc_include/stdint.h", "tools/gcc_include/stddef.h"],
+        "symbol_macro": "player_actor_write_previous_cursor_minus_two"
+      },
+      "function_variants": [
+        {"unit":"l1/functions","name":"func_80055264","start":"0x80055264","end":"0x8005527C"},
+        {"unit":"l10/functions","name":"func_80053824","start":"0x80053824","end":"0x8005383C"},
+        {"unit":"l11/functions","name":"func_80057510","start":"0x80057510","end":"0x80057528"},
+        {"unit":"l12/functions","name":"func_80057C50","start":"0x80057C50","end":"0x80057C68"},
+        {"unit":"l13/functions","name":"func_80057D5C","start":"0x80057D5C","end":"0x80057D74"},
+        {"unit":"l14/functions","name":"func_80056AA4","start":"0x80056AA4","end":"0x80056ABC"},
+        {"unit":"l15/functions","name":"func_80057C0C","start":"0x80057C0C","end":"0x80057C24"},
+        {"unit":"l16/functions","name":"func_80056E64","start":"0x80056E64","end":"0x80056E7C"},
+        {"unit":"l17/functions","name":"func_8004F7CC","start":"0x8004F7CC","end":"0x8004F7E4"},
+        {"unit":"l18/functions","name":"func_80051A4C","start":"0x80051A4C","end":"0x80051A64"},
+        {"unit":"l19/functions","name":"func_80051D00","start":"0x80051D00","end":"0x80051D18"},
+        {"unit":"l2/functions","name":"func_800550DC","start":"0x800550DC","end":"0x800550F4"},
+        {"unit":"l20/functions","name":"func_80055038","start":"0x80055038","end":"0x80055050"},
+        {"unit":"l4/functions","name":"func_80053570","start":"0x80053570","end":"0x80053588"},
+        {"unit":"l5/functions","name":"func_800545C8","start":"0x800545C8","end":"0x800545E0"},
+        {"unit":"l6/functions","name":"func_80052EB8","start":"0x80052EB8","end":"0x80052ED0"},
+        {"unit":"l7/functions","name":"func_80057AFC","start":"0x80057AFC","end":"0x80057B14"},
+        {"unit":"l8/functions","name":"func_80052B8C","start":"0x80052B8C","end":"0x80052BA4"},
+        {"unit":"l9/functions","name":"func_800574F8","start":"0x800574F8","end":"0x80057510"}
+      ]
+    }
+  ]
 }
