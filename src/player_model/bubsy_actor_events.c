@@ -1,98 +1,86 @@
 #include "bubsy_actor_events.h"
 
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
+register volatile uint8_t *bubsy_runtime_globals __asm__("$28");
+extern int32_t func_80052ABC(void *component, int32_t *event_out);
+extern int32_t func_80052AEC(void *component, int32_t property_id);
+extern int32_t func_80052E18(void *component);
+extern int32_t func_800532CC(void *component, int32_t active, int32_t argument_2, int32_t argument_3, uint32_t flags);
+
 int32_t bubsy_process_actor_event(int32_t update_mode, void *actor) {
     register void *actor_value __asm__("$16") = actor;
-    register int32_t mode_value __asm__("$4") = update_mode;
-    register int32_t return_value __asm__("$2");
-    uint32_t stack_storage[0x20 / sizeof(uint32_t)];
-    __asm__ volatile(
-        ".set noreorder\n\t"
-        "beqz $4,1f\n\t"
-        "sw $31,0x24($sp)\n\t"
-        "ori $2,$zero,1\n\t"
-        "beq $4,$2,4f\n\t"
-        "nop\n\t"
-        "j 5f\n\t"
-        "nop\n\t"
-        "1:\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052ABC\n\t"
-        "addiu $5,$sp,0x18\n\t"
-        "lbu $2,0x7EC($gp)\n\t"
-        "nop\n\t"
-        "bnez $2,2f\n\t"
-        "ori $2,$zero,0x3E0\n\t"
-        "lw $3,0x18($sp)\n\t"
-        "nop\n\t"
-        "bne $3,$2,2f\n\t"
-        "ori $2,$zero,3\n\t"
-        "lui $3,0x8018\n\t"
-        "lbu $3,0x6463($3)\n\t"
-        "nop\n\t"
-        "beq $3,$2,2f\n\t"
-        "nop\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052AEC\n\t"
-        "ori $5,$zero,0x35\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052E18\n\t"
-        "nop\n\t"
-        "ori $5,$zero,1\n\t"
-        "addu $6,$zero,$zero\n\t"
-        "j 6f\n\t"
-        "sw $zero,0x10($sp)\n\t"
-        "2:\n\t"
-        "lbu $3,0x7EC($gp)\n\t"
-        "ori $2,$zero,1\n\t"
-        "bne $3,$2,5f\n\t"
-        "ori $2,$zero,0x157\n\t"
-        "lw $3,0x18($sp)\n\t"
-        "nop\n\t"
-        "bne $3,$2,5f\n\t"
-        "nop\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052AEC\n\t"
-        "ori $5,$zero,0x54\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052E18\n\t"
-        "nop\n\t"
-        "ori $5,$zero,1\n\t"
-        "addu $6,$zero,$zero\n\t"
-        "j 6f\n\t"
-        "sw $zero,0x10($sp)\n\t"
-        "4:\n\t"
-        "lbu $2,0x7EC($gp)\n\t"
-        "nop\n\t"
-        "bnez $2,3f\n\t"
-        "ori $5,$zero,0x157\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "j 7f\n\t"
-        "ori $5,$zero,0x3E0\n\t"
-        "3:\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "7:\n\t"
-        "jal func_80052AEC\n\t"
-        "nop\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_80052E18\n\t"
-        "nop\n\t"
-        "ori $5,$zero,1\n\t"
-        "addu $6,$zero,$zero\n\t"
-        "lui $2,0x4000\n\t"
-        "sw $2,0x10($sp)\n\t"
-        "6:\n\t"
-        "lw $4,0x1C($16)\n\t"
-        "jal func_800532CC\n\t"
-        "addu $7,$zero,$zero\n\t"
-        "5:\n\t"
-        "lw $31,0x24($sp)\n\t"
-        ".set reorder"
-        : "=r"(return_value), "=r"(mode_value), "=m"(stack_storage)
-        : "1"(mode_value), "r"(actor_value)
-        : "$3", "$5", "$6", "$7", "$8", "$9", "$10", "$11", "$12", "$13", "$14", "$15", "$24", "$25", "hi", "lo", "memory"
-    );
-    return return_value;
+    register int32_t property_id __asm__("$5");
+    register uintptr_t state_base __asm__("$3");
+    register int32_t event_value __asm__("$3");
+    int32_t event_data[2];
+    register void *component_value __asm__("$4");
+
+    switch (update_mode) {
+        case 0: break;
+        case 1: goto mode_one;
+        default: return 1;
+    }
+    func_80052ABC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), event_data);
+    {
+        register uint32_t runtime_mode __asm__("$2") = bubsy_runtime_globals[0x7EC];
+        __asm__ volatile("" : "=r"(runtime_mode) : "0"(runtime_mode));
+        if (runtime_mode != 0) {
+            goto mode_zero_swim;
+        }
+    }
+    {
+        register int32_t expected_event __asm__("$2") = BUBSY_EVENT_PROPERTY_KIND_3E0;
+        event_value = event_data[0];
+        if (event_value != expected_event) {
+            goto mode_zero_swim;
+        }
+        __asm__ volatile("" : "=r"(expected_event) : "0"(expected_event));
+        expected_event = 3;
+        __asm__ volatile("" : : : "memory");
+        state_base = 0x80180000u;
+        __asm__ volatile("" : "=r"(state_base) : "0"(state_base));
+        event_value = *(volatile uint8_t *)(state_base + 0x6463);
+        __asm__ volatile("" : "=r"(event_value) : "0"(event_value));
+        if (event_value == expected_event) {
+            goto mode_zero_swim;
+        }
+    }
+    func_80052AEC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), BUBSY_EVENT_PROPERTY_NORMAL);
+    func_80052E18(*(void * volatile *)((uint8_t *)actor_value + 0x1C));
+    return func_800532CC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), 1, 0, 0, 0);
+
+mode_zero_swim:
+    {
+        register uint32_t runtime_mode __asm__("$3") = bubsy_runtime_globals[0x7EC];
+        register int32_t mode_one_value __asm__("$2") = 1;
+        __asm__ volatile("" : "=r"(runtime_mode) : "0"(runtime_mode));
+        if (runtime_mode != mode_one_value) {
+            return BUBSY_EVENT_PROPERTY_KIND_157;
+        }
+    }
+    {
+        register int32_t expected_event __asm__("$2") = BUBSY_EVENT_PROPERTY_KIND_157;
+        event_value = event_data[0];
+        if (event_value != expected_event) {
+            return expected_event;
+        }
+    }
+    func_80052AEC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), BUBSY_EVENT_PROPERTY_SWIM_MODE);
+    func_80052E18(*(void * volatile *)((uint8_t *)actor_value + 0x1C));
+    __asm__ volatile("" : : : "$8", "memory");
+    return func_800532CC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), 1, 0, 0, 0);
+mode_one:
+    if (bubsy_runtime_globals[0x7EC] == 0) {
+        component_value = *(void * volatile *)((uint8_t *)actor_value + 0x1C);
+        property_id = BUBSY_EVENT_PROPERTY_KIND_3E0;
+    } else {
+        component_value = *(void * volatile *)((uint8_t *)actor_value + 0x1C);
+        property_id = BUBSY_EVENT_PROPERTY_KIND_157;
+    }
+mode_one_select:
+    func_80052AEC(component_value, property_id);
+    func_80052E18(*(void * volatile *)((uint8_t *)actor_value + 0x1C));
+    return func_800532CC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), 1, 0, 0, BUBSY_EVENT_SPECIAL_FLAG);
 }
 #else
 int32_t bubsy_process_actor_event(uint8_t update_mode, const BubsyActorEventOps *ops) {

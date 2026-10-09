@@ -1,10 +1,11 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report contains 3,060 exact code bytes across 12 functions:
-two Clang-built getters, seven GCC C helpers, and three GCC assembly-backed
-functions. All nine previously configured fuzzy candidates are now exact;
-their portable host models remain covered by native regression tests. The current report maps
+The validated report currently contains 2,744 exact code bytes across 11
+functions: two Clang-built getters, eight GCC C functions, and one GCC
+assembly-backed function. Eight of nine previous fuzzy candidates are exact;
+the actor-event dispatcher remains fuzzy while its C reconstruction is refined.
+Portable host models remain covered by native regression tests. The current report maps
 2,988,972 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully

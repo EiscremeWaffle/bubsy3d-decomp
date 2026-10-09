@@ -15,8 +15,8 @@
       "matching_sources": [
         {
           "source": "src/player_model/bubsy_death_state.c",
-          "compiler": "gcc-2.7.2-psx",
-          "compiler_profile": "Assembly-backed match compiled with checksum-pinned GCC 2.7.2 PSX and MASPSX 2.30, independently linked by LLD before byte verification. Not fully recovered high-level C.",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed match compiled with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, independently linked by LLD before byte verification. Not fully recovered high-level C.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -29,8 +29,8 @@
         },
         {
           "source": "src/player_model/player_actor_flags.c",
-          "compiler": "gcc-2.7.2-psx",
-          "compiler_profile": "Five matching C functions with GCC register and scheduling constraints; corrected host models retain native regression coverage.",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "All seven matching C functions use GCC register and scheduling constraints with checksum-pinned GCC 2.6.3; corrected host models retain native regression coverage.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -43,30 +43,17 @@
           "symbols": [
             "player_actor_set_flag_04",
             "player_actor_clear_flag_04",
+            "player_actor_sequence_boundary_reached",
+            "player_actor_read_sequence_remainder",
             "player_actor_read_cursor_delta",
             "player_actor_write_previous_cursor_minus_two",
             "player_actor_select_sequence_state"
           ]
         },
         {
-          "source": "src/player_model/player_actor_flags.c",
-          "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Matching C sequence boundary and signed remainder compiled with checksum-pinned GCC 2.6.3 and compiler-only constraints, retaining native regression coverage.",
-          "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
-            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
-          ],
-          "headers": [
-            "src/player_model/player_model.h",
-            "tools/gcc_include/stdint.h",
-            "tools/gcc_include/stddef.h"
-          ],
-          "symbols": ["player_actor_sequence_boundary_reached", "player_actor_read_sequence_remainder"]
-        },
-        {
           "source": "src/player_model/player_model.c",
-          "compiler": "gcc-2.7.2-psx",
-          "compiler_profile": "Assembly-backed original no-argument ABI; the host callback model remains separately tested.",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C implementation of the original no-argument ABI, byte-matched with checksum-pinned GCC 2.6.3; the host callback model remains separately tested.",
           "flags": [
             "-O2", "-G0", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -76,21 +63,13 @@
             "tools/gcc_include/stdint.h",
             "tools/gcc_include/stddef.h"
           ],
-          "symbols": ["level_select_player_model_resource"]
-          ,"globals": {"g_player_model_resource_value": "0x801D8A0C"}
-        },
+          "symbols": ["level_select_player_model_resource"],
+          "globals": {"g_player_model_resource_value": "0x801D8A0C"}
+        }
+      ],
+      "fuzzy_sources": [
         {
           "source": "src/player_model/bubsy_actor_events.c",
-          "compiler": "gcc-2.7.2-psx",
-          "compiler_profile": "Assembly-backed original runtime ABI and event branches; the corrected host callback model remains separately tested.",
-          "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
-            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
-          ],
-          "headers": [
-            "src/player_model/bubsy_actor_events.h",
-            "tools/gcc_include/stdint.h"
-          ],
           "symbols": ["bubsy_process_actor_event"]
         }
       ],
@@ -173,12 +152,6 @@
           "start": "0x800296B4",
           "end": "0x80029790",
           "size": 220
-        },
-        {
-          "name": "bubsy_process_actor_event",
-          "start": "0x80037214",
-          "end": "0x80037350",
-          "size": 316
         }
       ]
     }

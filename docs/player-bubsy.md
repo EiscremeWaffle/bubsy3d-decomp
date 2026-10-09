@@ -41,15 +41,13 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report now credits 3,060 exact code bytes across 12 functions,
-or approximately `0.1024%` of the mapped code. All nine previously configured
-fuzzy candidates are exact. Nine functions now match from C: the two getters,
-four small actor accessors, and three sequence helpers. The C matching paths
-use GCC register annotations and empty compiler barriers, not MIPS opcode
-blocks. Three still use target-only assembly-backed implementations:
-the model selector, event dispatcher, and death handler.
-The portable host models remain separately tested; this does not claim fully
-recovered high-level C for the assembly-backed functions. The larger actor
+The validated report currently credits 2,744 exact code bytes across 11
+functions, or approximately `0.0918%` of mapped code. Eight of the nine
+previously configured fuzzy candidates are exact; the actor-event dispatcher
+remains fuzzy while its C output is refined. Ten exact functions match from C:
+the two getters, seven actor sequence helpers, and the model-resource selector.
+Their target paths use compiler constraints and scheduling barriers, not MIPS
+opcode blocks. The death handler remains assembly-backed. The larger actor
 updater is still incomplete. The progress site changes only after this snapshot
 is committed, pushed, and published by GitHub Actions.
 
@@ -68,18 +66,13 @@ function name, field types, and full gameplay semantics remain unknown. The
 `bubsy_update_actor_state` name is a searchable provisional label, not a
 recovered original symbol. It calls helpers at `0x80052E18` and `0x80052E30` that
 set and clear bit `0x04` in actor byte offset `0x04`. The C translations live in
-`player_actor_flags.c` and pass native state tests. A local GCC 2.7.2-PSX probe
-compiled from this actual source with `-O2 -G8 -msoft-float`, maspsx ASPSX 2.30
-processing, and MIPS-I assembly matches four helpers exactly: flag set at
-`0x80052E18` (24 bytes), flag clear at `0x80052E30` (24), cursor delta at
-`0x80052A84` (28), and previous-cursor-minus-two at `0x80052ABC` (24). The
-sequence-boundary, sequence-remainder, and sequence-state helpers now also match
-from C. The selector uses GCC 2.7.2, while GCC 2.6.3 produces the original
-multiply-high register choices in the boundary and remainder calculations.
-Their C paths preserve access widths, observable store ordering, and original
-branches with compiler-only constraints. All seven are rebuilt, linked, byte-checked, and credited by the
-standard progress pipeline through `config/base-matches.json`. This does not
-identify the game's complete build toolchain or recover all gameplay meanings.
+`player_actor_flags.c` and pass native state tests. A compiler sweep found
+checksum-pinned GCC 2.6.3 matches all seven helpers in that source file,
+including the multiply-high register choices in the boundary and remainder
+helpers; GCC 2.7.2 differed in those C division sequences. GCC 2.6.3 also
+matches the C model-resource selector. The standard profiles now use 2.6.3 for
+these source files. This is stronger byte-match evidence, not proof that the
+whole game used that compiler or recovery of all gameplay meanings.
 
 The update entry first reads signed halfword `0x80186454`. If nonzero, it
 forces its local `+0x24` state byte to zero and clears actor `+0x10`. If zero,
@@ -253,10 +246,12 @@ runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
 - Mode `1`: select `0x3E0` for runtime mode `0`, else `0x157`, set actor flag `0x04`, and dispatch with flag `0x40000000`.
 - Other modes: no dispatch; return `1`.
 
-The C reconstruction in `bubsy_actor_events.c` keeps event/property IDs and
-engine operations explicit through callbacks. Their gameplay meanings and the
-engine callback implementations are still unknown. The original two-argument
-runtime ABI is implemented separately for the target and matches all 316 bytes.
+The portable C model in `bubsy_actor_events.c` keeps event/property IDs and
+engine operations explicit through callbacks. The target C version uses the
+original two-argument ABI and follows the observed branches, but still differs
+from the original 316-byte body. It remains a fuzzy candidate until compiled C
+matches every byte. Gameplay meanings and engine callback implementations are
+still unknown.
 
 ## Death-State Routine
 
