@@ -90,6 +90,10 @@
         {
           "source": "src/player_model/player_vector_range.c",
           "symbols": ["func_80053D68"]
+        },
+        {
+          "source": "src/player_model/player_vector_transform.c",
+          "symbols": ["func_8005395C"]
         }
       ],
       "data_sources": [

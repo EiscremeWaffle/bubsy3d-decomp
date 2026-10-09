@@ -17,6 +17,20 @@ static int asset_marker_storage;
 static void *asset_marker = &asset_marker_storage;
 void *g_player_model_asset;
 volatile uint8_t g_player_model_mode;
+static int32_t vector_transform_scale;
+
+int32_t func_8005385C(const int32_t *input, int32_t *output) {
+    (void)input;
+    output[0] = vector_transform_scale;
+    output[1] = 0;
+    output[2] = 0;
+    return 0;
+}
+
+int32_t func_80053350(int32_t value, int32_t scale, int32_t *output) {
+    *output = (int32_t)(((long long)value * scale) >> 12);
+    return 0;
+}
 
 static int32_t fake_load(const char *path, void **asset_out, int32_t previous_size) {
     loaded_path = path;
@@ -455,6 +469,19 @@ static void test_vector_range_scaling(void) {
     assert(output[0] == 0x2000 && output[1] == -2 && output[2] == 1);
 }
 
+static void test_grounded_vector_transform(void) {
+    const int32_t input[3] = {16, -32, 48};
+    int32_t output[3] = {1, 2, 3};
+
+    vector_transform_scale = 0;
+    assert(func_8005395C(input, output) == 7);
+    assert(output[0] == 0 && output[1] == 0 && output[2] == 0);
+
+    vector_transform_scale = 0x1000;
+    assert(func_8005395C(input, output) == 0);
+    assert(output[0] == 0x1000 && output[1] == -0x2000 && output[2] == 0x3000);
+}
+
 static void test_bubsy_actor_update_sequence_309_gate(void) {
     BubsyActorUpdateActorView actor = {0};
 
@@ -680,6 +707,7 @@ int main(void) {
     test_bubsy_actor_default_state_route();
     test_fixed_q12_dot_product();
     test_vector_range_scaling();
+    test_grounded_vector_transform();
     test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_actor_update_local_state_for_sequence();
     test_bubsy_actor_update_mode1_sequence_boundary_gate();

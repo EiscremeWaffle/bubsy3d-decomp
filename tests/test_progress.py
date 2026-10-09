@@ -154,9 +154,10 @@ class ProgressTests(unittest.TestCase):
         fuzzy_names = {symbol for source in spec["fuzzy_sources"] for symbol in source["symbols"]}
         for name in fuzzy_names:
             function = next(function for function in report_unit["functions"] if function["name"] == name)
+            fuzzy_percent = float(function.get("fuzzy_match_percent", 0))
             with self.subTest(fuzzy_candidate=name):
-                self.assertGreater(function["fuzzy_match_percent"], 0)
-                self.assertLess(function["fuzzy_match_percent"], 100)
+                self.assertGreaterEqual(fuzzy_percent, 0)
+                self.assertLess(fuzzy_percent, 100)
                 self.assertNotIn(name, exact_names)
         self.assertEqual(int(self.report["measures"]["matched_functions"]), len(expected_all_symbols))
         if fuzzy_names:

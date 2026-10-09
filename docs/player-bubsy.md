@@ -236,6 +236,14 @@ helper that selects a shift from the largest component magnitude. Its C model
 and threshold tests are in `player_vector_range.c`; the current 36.9% objdiff
 similarity is diagnostic only and earns no exact credit.
 
+The grounded handler calls `func_8005395C` to range-condition a 3-vector,
+transform it with an engine-provided matrix, and scale the resulting components
+by the transformed x value. A host C model with stubbed transform helpers is in
+`player_vector_transform.c` and passes zero/nonzero-result tests, but its GCC
+output is four bytes larger than the 136-byte target and it earns no exact
+credit. This is transform/pose processing evidence, not yet a proven update of
+Bubsy's world position or velocity.
+
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
 and `0x0E`, plus sequence data through a pointer at `0x18`. When flag bit `0x04`
