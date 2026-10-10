@@ -17,13 +17,21 @@ static int asset_marker_storage;
 static void *asset_marker = &asset_marker_storage;
 void *g_player_model_asset;
 volatile uint8_t g_player_model_mode;
-static int32_t vector_transform_scale;
+static int32_t vector_length_result;
+static int32_t vector_length_input;
+static unsigned int vector_length_call_count;
+static unsigned int vector_square_call_count;
 
-int32_t func_8005385C(const int32_t *input, int32_t *output) {
-    (void)input;
-    output[0] = vector_transform_scale;
-    output[1] = 0;
-    output[2] = 0;
+int32_t func_8001007C(int32_t left, int32_t right, int32_t *output) {
+    *output = (int32_t)(((long long)left * right) >> 12);
+    vector_square_call_count++;
+    return 0;
+}
+
+int32_t func_8005359C(int32_t value, int32_t *output) {
+    vector_length_input = value;
+    vector_length_call_count++;
+    *output = vector_length_result;
     return 0;
 }
 
@@ -434,6 +442,529 @@ static void test_bubsy_actor_default_state_route(void) {
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
 }
 
+static void test_bubsy_grounded_case38_descriptor(void) {
+    uint8_t descriptor_state = 2;
+
+    assert(bubsy_grounded_case38_update_descriptor(&descriptor_state) ==
+        BUBSY_GROUNDED_CASE38_CALL_39158);
+    assert(descriptor_state == 4);
+
+    descriptor_state = 1;
+    assert(bubsy_grounded_case38_update_descriptor(&descriptor_state) ==
+        (BUBSY_GROUNDED_CASE38_CALL_39158 | BUBSY_GROUNDED_CASE38_CALL_2262C_11));
+    assert(descriptor_state == 0);
+
+    descriptor_state = 5;
+    assert(bubsy_grounded_case38_update_descriptor(&descriptor_state) ==
+        BUBSY_GROUNDED_CASE38_CALL_39158);
+    assert(descriptor_state == 5);
+}
+
+static void test_bubsy_grounded_dispatch_table(void) {
+    static const uint32_t expected_targets[33] = {
+        0x8004B990, 0x8004BE60, 0x8004BC48, 0x8004BE60, 0x8004BC48,
+        0x8004BE60, 0x8004B70C, 0x8004B770, 0x8004B838, 0x8004B8D8,
+        0x8004B77C, 0x8004B7F8, 0x8004BFD0, 0x8004BFD0, 0x8004B4D8,
+        0x8004B578, 0x8004BFD0, 0x8004BFD0, 0x8004BFD0, 0x8004BFD0,
+        0x8004BFD0, 0x8004BFD0, 0x8004BFD0, 0x8004BA18, 0x8004BA28,
+        0x8004BA34, 0x8004BB68, 0x8004BDA4, 0x8004BE4C, 0x8004BDA4,
+        0x8004BE4C, 0x8004B66C, 0x8004B6C0,
+    };
+    unsigned int index;
+
+    for (index = 0; index < 33; index++) {
+        assert(bubsy_grounded_handler_case_target((uint16_t)(index + 6)) == expected_targets[index]);
+    }
+    assert(bubsy_grounded_handler_case_target(5) == 0x8004BFD0);
+    assert(bubsy_grounded_handler_case_target(39) == 0x8004BFD0);
+}
+
+static void test_bubsy_grounded_handler_prelude(void) {
+    int16_t descriptor_state = 0;
+
+    assert(bubsy_grounded_handler_should_dispatch_switch(14, 2, 0x1100, 0x1000,
+        &descriptor_state) == 1);
+    assert(bubsy_grounded_handler_should_dispatch_switch(14, 3, 0x1100, 0,
+        &descriptor_state) == 0);
+    assert(bubsy_grounded_handler_should_dispatch_switch(14, 3, 0, 0x1000,
+        &descriptor_state) == 0);
+    assert(descriptor_state == 1);
+    descriptor_state = 5;
+    assert(bubsy_grounded_handler_should_dispatch_switch(14, 3, 0, 0x1000,
+        &descriptor_state) == 0);
+    assert(descriptor_state == 5);
+    assert(bubsy_grounded_handler_should_dispatch_switch(14, 3, 0, 0,
+        &descriptor_state) == 1);
+    descriptor_state = 5;
+    assert(bubsy_grounded_handler_should_dispatch_switch(15, 3, 0, 0x1000,
+        &descriptor_state) == 0);
+    assert(descriptor_state == 0);
+    assert(bubsy_grounded_handler_should_dispatch_switch(15, 3, 0, 0,
+        &descriptor_state) == 1);
+    assert(bubsy_grounded_handler_should_dispatch_switch(20, 3, 0x1100, 0x1000,
+        &descriptor_state) == 1);
+}
+
+static void test_bubsy_grounded_case37(void) {
+    uint8_t descriptor_state = 0;
+
+    assert(bubsy_grounded_case37_select_action(0, &descriptor_state) == BUBSY_GROUNDED_CASE37_INITIALIZE);
+    assert(descriptor_state == 1);
+
+    descriptor_state = 5;
+    assert(bubsy_grounded_case37_select_action(0, &descriptor_state) == BUBSY_GROUNDED_CASE37_NO_ACTION);
+    assert(descriptor_state == 5);
+
+    descriptor_state = 3;
+    assert(bubsy_grounded_case37_select_action(0, &descriptor_state) == BUBSY_GROUNDED_CASE37_PROCESS_ACTOR);
+    assert(descriptor_state == 3);
+    assert(bubsy_grounded_case37_select_action(0x100, &descriptor_state) == BUBSY_GROUNDED_CASE37_NO_ACTION);
+    assert(bubsy_grounded_case37_select_action(0x1000, &descriptor_state) == BUBSY_GROUNDED_CASE37_NO_ACTION);
+    assert(descriptor_state == 3);
+}
+
+static void test_bubsy_grounded_cases29_30(void) {
+    uint8_t descriptor_state = 0xA5;
+
+    assert(bubsy_grounded_cases29_30_update_descriptor(29, &descriptor_state) == 1);
+    assert(descriptor_state == 1);
+    assert(bubsy_grounded_cases29_30_update_descriptor(30, &descriptor_state) == 1);
+    assert(descriptor_state == 0);
+    descriptor_state = 0xA5;
+    assert(bubsy_grounded_cases29_30_update_descriptor(31, &descriptor_state) == 0);
+    assert(descriptor_state == 0xA5);
+}
+
+static void test_bubsy_grounded_cases13_34_36(void) {
+    uint8_t actor_state = 0xA5;
+    uint16_t descriptor_state = 0xBEEF;
+
+    assert(bubsy_grounded_cases13_34_36_update_state(13, &actor_state, &descriptor_state) == 1);
+    assert(actor_state == 2 && descriptor_state == 0xBEEF);
+    actor_state = 0xA5;
+    assert(bubsy_grounded_cases13_34_36_update_state(34, &actor_state, &descriptor_state) == 1);
+    assert(actor_state == 2 && descriptor_state == 0);
+    actor_state = 0xA5;
+    descriptor_state = 0xBEEF;
+    assert(bubsy_grounded_cases13_34_36_update_state(36, &actor_state, &descriptor_state) == 1);
+    assert(actor_state == 2 && descriptor_state == 0);
+    actor_state = 0xA5;
+    descriptor_state = 0xBEEF;
+    assert(bubsy_grounded_cases13_34_36_update_state(35, &actor_state, &descriptor_state) == 0);
+    assert(actor_state == 0xA5 && descriptor_state == 0xBEEF);
+}
+
+static void test_bubsy_grounded_case21(void) {
+    int16_t descriptor_state = 4;
+
+    assert(bubsy_grounded_case21_select_action(0, 0x1000, 0, 0xCCB, &descriptor_state) ==
+        (BUBSY_GROUNDED_CASE21_CALL_2E7D8 | BUBSY_GROUNDED_CASE21_CALL_22650_08 |
+            BUBSY_GROUNDED_CASE21_CALL_347EC_1));
+    assert(descriptor_state == 0);
+
+    descriptor_state = 4;
+    assert(bubsy_grounded_case21_select_action(0, 0x1000, 0, 0xCCC, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE21_CALL_2262C_0C);
+    assert(descriptor_state == 0);
+
+    descriptor_state = 4;
+    assert(bubsy_grounded_case21_select_action(0x40, 0x1000, 0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE21_CALL_2262C_0C);
+    descriptor_state = 4;
+    assert(bubsy_grounded_case21_select_action(0, 0, 0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE21_CALL_2262C_0C);
+    descriptor_state = 4;
+    assert(bubsy_grounded_case21_select_action(0, 0x1000, 1, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE21_CALL_2262C_0C);
+    descriptor_state = 5;
+    assert(bubsy_grounded_case21_select_action(0, 0x1000, 0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE21_CALL_2262C_0C);
+    assert(descriptor_state == 0);
+}
+
+static void test_bubsy_grounded_case12(void) {
+    uint8_t actor_state = 0;
+    int16_t descriptor_state = 2;
+
+    assert(bubsy_grounded_case12_update_state(0x800, 0x1000, &actor_state, &descriptor_state) ==
+        (BUBSY_GROUNDED_CASE12_CALL_2262C_0C | BUBSY_GROUNDED_CASE12_CALL_347EC_1));
+    assert(actor_state == 1 && descriptor_state == 5);
+
+    actor_state = 1;
+    descriptor_state = 2;
+    assert(bubsy_grounded_case12_update_state(0x800, 0, &actor_state, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE12_NO_ACTION);
+    assert(actor_state == 1 && descriptor_state == 5);
+
+    descriptor_state = 2;
+    assert(bubsy_grounded_case12_update_state(0x100, 0x1000, &actor_state, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE12_NO_ACTION);
+    assert(descriptor_state == 2);
+    assert(bubsy_grounded_case12_update_state(0x800, 0xA0084, &actor_state, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE12_NO_ACTION);
+    assert(descriptor_state == 2);
+}
+
+static void test_bubsy_grounded_case17(void) {
+    uint8_t actor_state_00 = 0xA5;
+    uint8_t actor_state_01 = 0xA5;
+    uint8_t descriptor_state_14 = 0xA5;
+
+    assert(bubsy_grounded_case17_update_state(0, &actor_state_00, &actor_state_01, &descriptor_state_14) ==
+        BUBSY_GROUNDED_CASE17_CALL_1C700);
+    assert(actor_state_00 == 0xA5 && actor_state_01 == 2 && descriptor_state_14 == 0);
+
+    actor_state_00 = 0xA5;
+    descriptor_state_14 = 0xA5;
+    assert(bubsy_grounded_case17_update_state(0x40, &actor_state_00, &actor_state_01, &descriptor_state_14) ==
+        (BUBSY_GROUNDED_CASE17_CALL_1C700 | BUBSY_GROUNDED_CASE17_CALL_22650_02 |
+            BUBSY_GROUNDED_CASE17_CALL_347EC_1));
+    assert(actor_state_00 == 0 && actor_state_01 == 2 && descriptor_state_14 == 0);
+}
+
+static void test_bubsy_grounded_case16(void) {
+    uint8_t descriptor_state = 0;
+
+    assert(bubsy_grounded_case16_should_dispatch(0, 0, 0, &descriptor_state) == 1);
+    assert(descriptor_state == 1);
+
+    descriptor_state = 0;
+    assert(bubsy_grounded_case16_should_dispatch(0x2, 0, 0, &descriptor_state) == 0);
+    assert(descriptor_state == 0);
+
+    descriptor_state = 1;
+    assert(bubsy_grounded_case16_should_dispatch(0, 0, 1, &descriptor_state) == 0);
+    assert(descriptor_state == 1);
+    assert(bubsy_grounded_case16_should_dispatch(0x100, 0, 0, &descriptor_state) == 0);
+    assert(bubsy_grounded_case16_should_dispatch(0, 0x80000, 0, &descriptor_state) == 0);
+}
+
+static void test_bubsy_grounded_case14(void) {
+    uint32_t actor_state = 0x100;
+    uint32_t linked_state = 0x200;
+
+    assert(bubsy_grounded_case14_prepare(0x800, &actor_state, 0, &linked_state) ==
+        (BUBSY_GROUNDED_CASE14_CALL_22650_07 | BUBSY_GROUNDED_CASE14_SELECT_2BE |
+            BUBSY_GROUNDED_CASE14_ASSERT_ON_SELECTION_FAILURE | BUBSY_GROUNDED_CASE14_CALL_52E18));
+    assert(actor_state == 0 && linked_state == 0);
+
+    actor_state = 0x100;
+    linked_state = 0x200;
+    assert(bubsy_grounded_case14_prepare(0x800, &actor_state, 2, &linked_state) == BUBSY_GROUNDED_CASE14_NO_ACTION);
+    assert(actor_state == 0x100 && linked_state == 0x200);
+    assert(bubsy_grounded_case14_prepare(0x1104, &actor_state, 0, &linked_state) == BUBSY_GROUNDED_CASE14_NO_ACTION);
+    assert(bubsy_grounded_case14_prepare(0, &actor_state, 0, &linked_state) == BUBSY_GROUNDED_CASE14_NO_ACTION);
+    actor_state = 0x01000000;
+    assert(bubsy_grounded_case14_prepare(0x800, &actor_state, 0, &linked_state) == BUBSY_GROUNDED_CASE14_NO_ACTION);
+    assert(actor_state == 0x01000000 && linked_state == 0x200);
+}
+
+static void test_bubsy_grounded_case15(void) {
+    assert(bubsy_grounded_case15_select_actions(0x2BE, 0) ==
+        (BUBSY_GROUNDED_CASE15_SELECT_2C3 | BUBSY_GROUNDED_CASE15_CALL_52E18 |
+            BUBSY_GROUNDED_CASE15_REQUEST_MOVE));
+    assert(bubsy_grounded_case15_select_actions(0x2BD, 1) ==
+        (BUBSY_GROUNDED_CASE15_CALL_2262C_07 | BUBSY_GROUNDED_CASE15_CALL_3539C_1));
+    assert(bubsy_grounded_case15_select_actions(0x2BD, 0) ==
+        BUBSY_GROUNDED_CASE15_REQUEST_MOVE);
+    assert(bubsy_grounded_case15_select_actions(0x2BF, 2) ==
+        BUBSY_GROUNDED_CASE15_REQUEST_MOVE);
+}
+
+static void test_bubsy_grounded_case6(void) {
+    uint8_t descriptor_state = 0;
+
+    assert(bubsy_grounded_case6_select_action(0, 0x44, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_CALL_358C8_MODE_0);
+    assert(descriptor_state == 1);
+    descriptor_state = 0;
+    assert(bubsy_grounded_case6_select_action(0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_CALL_35ACC);
+    assert(descriptor_state == 1);
+    descriptor_state = 0;
+    assert(bubsy_grounded_case6_select_action(0x4, 0x44, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_NO_ACTION);
+    assert(descriptor_state == 0);
+    assert(bubsy_grounded_case6_select_action(0, 0x82000, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_NO_ACTION);
+    assert(bubsy_grounded_case6_select_action(0x40, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_NO_ACTION);
+    assert(bubsy_grounded_case6_select_action(0, 0x01020080, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE6_NO_ACTION);
+    assert(descriptor_state == 1);
+}
+
+static void test_bubsy_grounded_cases33_35(void) {
+    uint16_t descriptor_state = 0xBEEF;
+    int32_t linked_counter = 0x1234;
+    const BubsyGroundedCases33_35Actions actions = BUBSY_GROUNDED_CASE33_35_CALL_22650_0F |
+        BUBSY_GROUNDED_CASE33_35_CALL_22650_08 | BUBSY_GROUNDED_CASE33_35_CALL_347EC_1;
+
+    assert(bubsy_grounded_cases33_35_prepare(33, 0, 0, 0, &descriptor_state, &linked_counter) == actions);
+    assert(descriptor_state == 3 && linked_counter == 0);
+    descriptor_state = 0xBEEF;
+    linked_counter = 0x1234;
+    assert(bubsy_grounded_cases33_35_prepare(35, 0, 0, 0, &descriptor_state, &linked_counter) == actions);
+    assert(descriptor_state == 2 && linked_counter == 0);
+
+    descriptor_state = 0xBEEF;
+    linked_counter = 0x1234;
+    assert(bubsy_grounded_cases33_35_prepare(34, 0, 0, 0, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(bubsy_grounded_cases33_35_prepare(33, 0x4, 0, 0, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(bubsy_grounded_cases33_35_prepare(33, 0x1140, 0, 0, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(bubsy_grounded_cases33_35_prepare(33, 0, 0x100000, 0, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(bubsy_grounded_cases33_35_prepare(33, 0, 1, 0, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(bubsy_grounded_cases33_35_prepare(33, 0, 0, 1, &descriptor_state, &linked_counter) == BUBSY_GROUNDED_CASE33_35_NO_ACTION);
+    assert(descriptor_state == 0xBEEF && linked_counter == 0x1234);
+}
+
+static void test_bubsy_grounded_case20(void) {
+    const uint8_t base_actions = BUBSY_GROUNDED_CASE20_CALL_516F8_54AF0 |
+        BUBSY_GROUNDED_CASE20_CALL_22650_0C;
+
+    assert(bubsy_grounded_case20_select_actions(0, 0, 0, 0x348) ==
+        (base_actions | BUBSY_GROUNDED_CASE20_SELECT_349));
+    assert(bubsy_grounded_case20_select_actions(0, 0, 0, 0x349) == base_actions);
+    assert(bubsy_grounded_case20_select_actions(0, 0x80, 0, 0) == base_actions);
+    assert(bubsy_grounded_case20_select_actions(1, 0, 0, 0) == BUBSY_GROUNDED_CASE20_NO_ACTION);
+    assert(bubsy_grounded_case20_select_actions(0, 0, 1, 0) == BUBSY_GROUNDED_CASE20_NO_ACTION);
+    assert(bubsy_grounded_case20_select_actions(0, 0x100, 0, 0) == BUBSY_GROUNDED_CASE20_NO_ACTION);
+}
+
+static void test_bubsy_grounded_case31_counter(void) {
+    uint8_t counter = 10;
+
+    assert(bubsy_grounded_case31_advance_counter(0, 0, 0, &counter) ==
+        BUBSY_GROUNDED_CASE31_COUNTER_BELOW_11);
+    assert(counter == 11);
+    assert(bubsy_grounded_case31_advance_counter(0, 0, 0, &counter) ==
+        BUBSY_GROUNDED_CASE31_COUNTER_SEQUENCE_PATH);
+    assert(counter == 12);
+    counter = 0xFF;
+    assert(bubsy_grounded_case31_advance_counter(0, 0, 0, &counter) ==
+        BUBSY_GROUNDED_CASE31_COUNTER_SEQUENCE_PATH);
+    assert(counter == 0);
+
+    counter = 4;
+    assert(bubsy_grounded_case31_advance_counter(0x4, 0, 0, &counter) == BUBSY_GROUNDED_CASE31_SKIP);
+    assert(bubsy_grounded_case31_advance_counter(0, 0x80, 0, &counter) == BUBSY_GROUNDED_CASE31_SKIP);
+    assert(bubsy_grounded_case31_advance_counter(0, 0, 1, &counter) == BUBSY_GROUNDED_CASE31_SKIP);
+    assert(bubsy_grounded_case31_advance_counter(0x40, 0, 0, &counter) == BUBSY_GROUNDED_CASE31_ALTERNATE);
+    assert(bubsy_grounded_case31_advance_counter(0, 0x40, 0, &counter) == BUBSY_GROUNDED_CASE31_ALTERNATE);
+    assert(counter == 4);
+}
+
+static void test_bubsy_grounded_case31_followups(void) {
+    int16_t descriptor_state = 0;
+    int32_t linked_counter = 0;
+    const uint8_t common_sequence_actions = BUBSY_GROUNDED_CASE31_SET_LINKED_30_TO_MINUS_11 |
+        BUBSY_GROUNDED_CASE31_CALL_22944;
+
+    assert(bubsy_grounded_case31_select_alternate_action(0, 0x1000, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_SET_DESCRIPTOR_02_TO_2);
+    assert(descriptor_state == 2);
+    descriptor_state = 0;
+    assert(bubsy_grounded_case31_select_alternate_action(0, 0x44, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_CALL_358C8_MODE_1);
+    assert(bubsy_grounded_case31_select_alternate_action(0, 0x10044, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_NO_ACTION);
+    assert(bubsy_grounded_case31_select_alternate_action(0x40, 0x44, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_NO_ACTION);
+    descriptor_state = 2;
+    assert(bubsy_grounded_case31_select_alternate_action(0, 0x1000, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_NO_ACTION);
+    assert(bubsy_grounded_case31_select_alternate_action(0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE31_NO_ACTION);
+
+    assert(bubsy_grounded_case31_select_sequence_actions(0, &linked_counter) == common_sequence_actions);
+    assert(linked_counter == -0x11);
+    linked_counter = 4;
+    assert(bubsy_grounded_case31_select_sequence_actions(1, &linked_counter) ==
+        (common_sequence_actions | BUBSY_GROUNDED_CASE31_CALL_52AEC_0 |
+            BUBSY_GROUNDED_CASE31_CALL_52E18 | BUBSY_GROUNDED_CASE31_CALL_22650_17));
+    assert(linked_counter == -0x11);
+}
+
+static void test_bubsy_grounded_cases8_10(void) {
+    int16_t descriptor_state = 0;
+
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 0x1000, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_SET_DESCRIPTOR_STATE);
+    assert(descriptor_state == 3);
+    descriptor_state = 0;
+    assert(bubsy_grounded_cases8_10_select_action(10, 0, 0x1000, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_SET_DESCRIPTOR_STATE);
+    assert(descriptor_state == 4);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 4, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_CALL_358C8_MODE_3);
+    assert(bubsy_grounded_cases8_10_select_action(10, 0, 4, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE10_CALL_358C8_MODE_2);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_CONTINUE_COUNTER_PATH);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 0x80, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_EPILOGUE);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0x4, 0, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_EPILOGUE);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 0x82000, 0, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_EPILOGUE);
+    assert(bubsy_grounded_cases8_10_select_action(8, 0, 0x1000, 1, &descriptor_state) ==
+        BUBSY_GROUNDED_CASE8_10_EPILOGUE);
+    assert(descriptor_state == 4);
+}
+
+static void test_bubsy_grounded_cases8_10_counter_path(void) {
+    int32_t global_gate = 1;
+    uint32_t global_state = 8;
+    int16_t global_counter = 39;
+    uint8_t actions = (uint8_t)bubsy_grounded_cases8_10_update_counter_path(
+        8, 0, 0, &global_gate, &global_state, &global_counter);
+
+    assert(actions == (BUBSY_GROUNDED_CASE8_10_CALL_4FFEC |
+        BUBSY_GROUNDED_CASE8_10_CLEAR_GP_540 |
+        BUBSY_GROUNDED_CASE8_10_INCREMENT_GP_COUNTER |
+        BUBSY_GROUNDED_CASE8_10_CALL_34EF8));
+    assert(global_gate == 0 && global_state == 8 && global_counter == 40);
+
+    global_gate = 0;
+    global_state = 10;
+    global_counter = 12;
+    actions = (uint8_t)bubsy_grounded_cases8_10_update_counter_path(
+        8, 0, 0, &global_gate, &global_state, &global_counter);
+    assert(actions == (BUBSY_GROUNDED_CASE8_10_CLEAR_GP_540 |
+        BUBSY_GROUNDED_CASE8_10_RESET_GP_COUNTER |
+        BUBSY_GROUNDED_CASE8_10_INCREMENT_GP_COUNTER |
+        BUBSY_GROUNDED_CASE8_10_CALL_34EF8));
+    assert(global_state == 8 && global_counter == 1);
+
+    global_state = 8;
+    global_counter = 40;
+    actions = (uint8_t)bubsy_grounded_cases8_10_update_counter_path(
+        8, 0, 0, &global_gate, &global_state, &global_counter);
+    assert((actions & BUBSY_GROUNDED_CASE8_10_CLAMP_GP_COUNTER) != 0);
+    assert(global_counter == 40);
+
+    global_gate = 4;
+    global_state = 10;
+    global_counter = 7;
+    assert(bubsy_grounded_cases8_10_update_counter_path(
+        8, 0, 5, &global_gate, &global_state, &global_counter) ==
+        BUBSY_GROUNDED_CASE8_10_COUNTER_NO_ACTION);
+    assert(global_gate == 4 && global_state == 10 && global_counter == 7);
+    assert(bubsy_grounded_cases8_10_update_counter_path(
+        8, 0x80, 0, &global_gate, &global_state, &global_counter) ==
+        BUBSY_GROUNDED_CASE8_10_COUNTER_NO_ACTION);
+}
+
+static void test_bubsy_grounded_case32(void) {
+    uint8_t actor_state_01 = 0;
+    uint8_t descriptor_counter_4D = 3;
+    uint8_t descriptor_state_4C = 4;
+    uint8_t descriptor_state_68 = 5;
+    int16_t descriptor_state_02 = 6;
+    int32_t linked_counter_30 = 7;
+
+    assert(bubsy_grounded_case32_update_state(0, 0x1000, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_CLEAR_DESCRIPTOR_02);
+    assert(descriptor_state_02 == 0 && descriptor_counter_4D == 3);
+
+    descriptor_state_02 = 6;
+    assert(bubsy_grounded_case32_update_state(0, 0x44, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_CALL_2262C_17);
+    assert(descriptor_state_4C == 0 && descriptor_state_68 == 1 && descriptor_state_02 == 6);
+
+    descriptor_state_4C = 4;
+    descriptor_state_68 = 5;
+    assert(bubsy_grounded_case32_update_state(0, 0, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) ==
+        (BUBSY_GROUNDED_CASE32_CALL_22650_10 | BUBSY_GROUNDED_CASE32_CALL_347EC_1));
+    assert(actor_state_01 == 2 && descriptor_counter_4D == 0 && linked_counter_30 == 0);
+
+    actor_state_01 = 0;
+    descriptor_counter_4D = 11;
+    linked_counter_30 = 7;
+    assert(bubsy_grounded_case32_update_state(0, 0, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) ==
+        (BUBSY_GROUNDED_CASE32_CALL_2262C_17 | BUBSY_GROUNDED_CASE32_CALL_3539C_1));
+    assert(descriptor_counter_4D == 0 && linked_counter_30 == 7 && actor_state_01 == 0);
+
+    descriptor_counter_4D = 3;
+    assert(bubsy_grounded_case32_update_state(0, 0x01002000, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) ==
+        (BUBSY_GROUNDED_CASE32_CALL_2262C_17 | BUBSY_GROUNDED_CASE32_CALL_3539C_1));
+    assert(descriptor_counter_4D == 0);
+    assert(bubsy_grounded_case32_update_state(0x40, 0, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_NO_ACTION);
+    assert(bubsy_grounded_case32_update_state(0, 0x20000, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_NO_ACTION);
+}
+
+static void test_bubsy_grounded_case7(void) {
+    uint8_t actor_state_01 = 0;
+    uint8_t descriptor_state_4C = 4;
+    uint8_t descriptor_state_68 = 5;
+    int16_t descriptor_state_02 = 6;
+
+    assert(bubsy_grounded_case7_update_state(0x1000, &actor_state_01,
+        &descriptor_state_4C, &descriptor_state_68, &descriptor_state_02) ==
+        BUBSY_GROUNDED_CASE7_SET_ACTOR_STATE);
+    assert(actor_state_01 == 2 && descriptor_state_02 == 0);
+    assert(descriptor_state_4C == 4 && descriptor_state_68 == 5);
+
+    assert(bubsy_grounded_case7_update_state(0, &actor_state_01,
+        &descriptor_state_4C, &descriptor_state_68, &descriptor_state_02) ==
+        BUBSY_GROUNDED_CASE7_CALL_2269C_0F);
+    assert(descriptor_state_4C == 0 && descriptor_state_68 == 1);
+}
+
+static void test_bubsy_grounded_cases9_11(void) {
+    uint32_t actor_state_10 = 0x220;
+    uint32_t actor_state_14 = 0x1234;
+    uint8_t actor_state_01 = 0;
+    int16_t descriptor_state_02 = 1;
+    uint8_t expected = BUBSY_GROUNDED_CASE9_11_SELECT_2B5 |
+        BUBSY_GROUNDED_CASE9_11_CALL_52E18 |
+        BUBSY_GROUNDED_CASE9_11_CALL_4FF50 |
+        BUBSY_GROUNDED_CASE9_11_CALL_34EF8;
+
+    assert(bubsy_grounded_cases9_11_update_state(9, 0x2BB, &actor_state_10,
+        &actor_state_14, &actor_state_01, &descriptor_state_02, 0, 1) == expected);
+    assert(actor_state_10 == 0x220 && actor_state_14 == 0x1234);
+
+    actor_state_10 = 0x620;
+    actor_state_14 = 0x1234;
+    assert(bubsy_grounded_cases9_11_update_state(11, 0x2B8, &actor_state_10,
+        &actor_state_14, &actor_state_01, &descriptor_state_02, 1, 1) ==
+        (BUBSY_GROUNDED_CASE9_11_SELECT_2B5 | BUBSY_GROUNDED_CASE9_11_CALL_52E18 |
+            BUBSY_GROUNDED_CASE9_11_CALL_34EF8));
+    assert(actor_state_10 == 0x220 && actor_state_14 == 0x1234);
+
+    actor_state_10 = 0;
+    actor_state_14 = 0x1234;
+    assert(bubsy_grounded_cases9_11_update_state(9, 0, &actor_state_10,
+        &actor_state_14, &actor_state_01, &descriptor_state_02, 0, 1) ==
+        BUBSY_GROUNDED_CASE9_11_RESET_AND_CALL_3539C_1);
+    assert(actor_state_10 == 0 && actor_state_14 == 0);
+
+    actor_state_10 = 0x1000;
+    actor_state_14 = 0x1234;
+    actor_state_01 = 0;
+    descriptor_state_02 = 5;
+    assert(bubsy_grounded_cases9_11_update_state(11, 0x2B8, &actor_state_10,
+        &actor_state_14, &actor_state_01, &descriptor_state_02, 0, 0) ==
+        BUBSY_GROUNDED_CASE9_11_SET_ACTOR_STATE);
+    assert(actor_state_01 == 2 && descriptor_state_02 == 0 && actor_state_14 == 0x1234);
+    assert(bubsy_grounded_cases9_11_update_state(10, 0, &actor_state_10,
+        &actor_state_14, &actor_state_01, &descriptor_state_02, 0, 0) ==
+        BUBSY_GROUNDED_CASE9_11_NO_ACTION);
+}
+
 static void test_fixed_q12_dot_product(void) {
     const int32_t left[3] = {0x1000, 0x0800, -0x1000};
     const int32_t right[3] = {0x1000, 0x1000, 0x0800};
@@ -469,17 +1000,40 @@ static void test_vector_range_scaling(void) {
     assert(output[0] == 0x2000 && output[1] == -2 && output[2] == 1);
 }
 
+static void test_vector_length_q12(void) {
+    const int32_t input[3] = {3 * 0x1000, 4 * 0x1000, 12 * 0x1000};
+    const int32_t zero[3] = {0, 0, 0};
+    int32_t output = 0;
+
+    vector_length_result = 13 * 0x1000;
+    vector_length_input = 0;
+    vector_length_call_count = 0;
+    vector_square_call_count = 0;
+    assert(func_8005385C(input, &output) == 0);
+    assert(vector_length_input == 169 * 0x1000);
+    assert(output == 13 * 0x1000);
+    assert(vector_square_call_count == 3 && vector_length_call_count == 1);
+
+    vector_length_result = 0;
+    vector_length_call_count = 0;
+    vector_square_call_count = 0;
+    assert(func_8005385C(zero, &output) == 0);
+    assert(vector_length_input == 0 && output == 0);
+    assert(vector_square_call_count == 0 && vector_length_call_count == 1);
+}
+
 static void test_grounded_vector_transform(void) {
     const int32_t input[3] = {16, -32, 48};
     int32_t output[3] = {1, 2, 3};
 
-    vector_transform_scale = 0;
+    vector_length_result = 0;
     assert(func_8005395C(input, output) == 7);
     assert(output[0] == 0 && output[1] == 0 && output[2] == 0);
 
-    vector_transform_scale = 0x1000;
+    vector_length_result = 0x1000;
     assert(func_8005395C(input, output) == 0);
     assert(output[0] == 0x1000 && output[1] == -0x2000 && output[2] == 0x3000);
+    assert(vector_length_input == 14 * 0x1000);
 }
 
 static void test_bubsy_actor_update_sequence_309_gate(void) {
@@ -705,8 +1259,31 @@ int main(void) {
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_default_state_route();
+    test_bubsy_grounded_dispatch_table();
+    test_bubsy_grounded_handler_prelude();
+    test_bubsy_grounded_case38_descriptor();
+    test_bubsy_grounded_case37();
+    test_bubsy_grounded_cases29_30();
+    test_bubsy_grounded_cases13_34_36();
+    test_bubsy_grounded_case21();
+    test_bubsy_grounded_case12();
+    test_bubsy_grounded_case17();
+    test_bubsy_grounded_case16();
+    test_bubsy_grounded_case14();
+    test_bubsy_grounded_case15();
+    test_bubsy_grounded_case6();
+    test_bubsy_grounded_cases33_35();
+    test_bubsy_grounded_case20();
+    test_bubsy_grounded_case31_counter();
+    test_bubsy_grounded_case31_followups();
+    test_bubsy_grounded_cases8_10();
+    test_bubsy_grounded_cases8_10_counter_path();
+    test_bubsy_grounded_case32();
+    test_bubsy_grounded_case7();
+    test_bubsy_grounded_cases9_11();
     test_fixed_q12_dot_product();
     test_vector_range_scaling();
+    test_vector_length_q12();
     test_grounded_vector_transform();
     test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_actor_update_local_state_for_sequence();

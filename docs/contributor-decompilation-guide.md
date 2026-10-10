@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 2,988,972 code bytes. Exact progress requires 14,945 bytes to reach 0.5%; the current report validates 15,176 exact code bytes across 92 functions (0.507733%) and 196 exact data bytes. New exact coverage includes 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
+The current validated scope maps 3,002,136 code bytes. Exact progress requires 15,011 bytes to reach 0.5%; the current report validates 18,404 exact code bytes across 93 functions (0.613030%) and 196 exact data bytes. New exact coverage includes the assembly-backed grounded state handler, 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
 
 ## Setup
 

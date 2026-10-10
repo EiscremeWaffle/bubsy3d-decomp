@@ -1,5 +1,523 @@
 #include "bubsy_actor_update.h"
 
+uint32_t bubsy_grounded_handler_case_target(uint16_t state_id) {
+    static const uint32_t targets[33] = {
+        0x8004B990, 0x8004BE60, 0x8004BC48, 0x8004BE60, 0x8004BC48,
+        0x8004BE60, 0x8004B70C, 0x8004B770, 0x8004B838, 0x8004B8D8,
+        0x8004B77C, 0x8004B7F8, 0x8004BFD0, 0x8004BFD0, 0x8004B4D8,
+        0x8004B578, 0x8004BFD0, 0x8004BFD0, 0x8004BFD0, 0x8004BFD0,
+        0x8004BFD0, 0x8004BFD0, 0x8004BFD0, 0x8004BA18, 0x8004BA28,
+        0x8004BA34, 0x8004BB68, 0x8004BDA4, 0x8004BE4C, 0x8004BDA4,
+        0x8004BE4C, 0x8004B66C, 0x8004B6C0,
+    };
+
+    if (state_id < 6 || state_id > 38) {
+        return 0x8004BFD0;
+    }
+    return targets[state_id - 6];
+}
+
+int32_t bubsy_grounded_handler_should_dispatch_switch(
+    uint16_t state_id,
+    int32_t descriptor_lookup_word_04,
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    int16_t *descriptor_state_02
+) {
+    if (descriptor_lookup_word_04 != 3) {
+        return 1;
+    }
+    if (state_id == 14) {
+        if ((actor_flags_04 & 0x1100u) != 0) {
+            return 0;
+        }
+        if ((actor_state_10 & 0x1000u) != 0) {
+            if (*descriptor_state_02 == 0) {
+                *descriptor_state_02 = 1;
+            }
+            return 0;
+        }
+        return 1;
+    }
+    if (state_id == 15 && (actor_state_10 & 0x1000u) != 0) {
+        *descriptor_state_02 = 0;
+        return 0;
+    }
+    return 1;
+}
+
+uint8_t bubsy_grounded_case38_update_descriptor(uint8_t *descriptor_state_11) {
+    uint8_t actions = BUBSY_GROUNDED_CASE38_CALL_39158;
+
+    if (*descriptor_state_11 == 2) {
+        *descriptor_state_11 = 4;
+        return actions;
+    }
+    if (*descriptor_state_11 == 1) {
+        *descriptor_state_11 = 0;
+        return actions | BUBSY_GROUNDED_CASE38_CALL_2262C_11;
+    }
+    return actions;
+}
+
+BubsyGroundedCase37Action bubsy_grounded_case37_select_action(
+    uint32_t actor_flags_04,
+    uint8_t *descriptor_state_11
+) {
+    if ((actor_flags_04 & 0x1100u) != 0) {
+        return BUBSY_GROUNDED_CASE37_NO_ACTION;
+    }
+    if (*descriptor_state_11 == 0) {
+        *descriptor_state_11 = 1;
+        return BUBSY_GROUNDED_CASE37_INITIALIZE;
+    }
+    if (*descriptor_state_11 == 5) {
+        return BUBSY_GROUNDED_CASE37_NO_ACTION;
+    }
+    return BUBSY_GROUNDED_CASE37_PROCESS_ACTOR;
+}
+
+int32_t bubsy_grounded_cases29_30_update_descriptor(
+    uint16_t state_id,
+    uint8_t *descriptor_state_10
+) {
+    if (state_id == 29) {
+        *descriptor_state_10 = 1;
+        return 1;
+    }
+    if (state_id == 30) {
+        *descriptor_state_10 = 0;
+        return 1;
+    }
+    return 0;
+}
+
+int32_t bubsy_grounded_cases13_34_36_update_state(
+    uint16_t state_id,
+    uint8_t *actor_state_01,
+    uint16_t *descriptor_state_00
+) {
+    if (state_id != 13 && state_id != 34 && state_id != 36) {
+        return 0;
+    }
+    *actor_state_01 = 2;
+    if (state_id != 13) {
+        *descriptor_state_00 = 0;
+    }
+    return 1;
+}
+
+BubsyGroundedCase21Action bubsy_grounded_case21_select_action(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    int32_t companion_state_28,
+    int32_t normalized_dot,
+    int16_t *descriptor_state_02
+) {
+    BubsyGroundedCase21Action actions = BUBSY_GROUNDED_CASE21_CALL_2262C_0C;
+
+    if ((actor_state_10 & 0x1000u) != 0 &&
+        (actor_flags_04 & 0x40u) == 0 &&
+        companion_state_28 == 0 &&
+        normalized_dot < 0xCCC &&
+        *descriptor_state_02 != 5) {
+        actions = BUBSY_GROUNDED_CASE21_CALL_2E7D8 |
+            BUBSY_GROUNDED_CASE21_CALL_22650_08 |
+            BUBSY_GROUNDED_CASE21_CALL_347EC_1;
+    }
+    *descriptor_state_02 = 0;
+    return actions;
+}
+
+uint8_t bubsy_grounded_case12_update_state(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t *actor_state_01,
+    int16_t *descriptor_state_02
+) {
+    uint8_t actions = BUBSY_GROUNDED_CASE12_NO_ACTION;
+
+    if ((actor_flags_04 & 0x1104u) != 0 ||
+        (actor_flags_04 & 0x818u) == 0 ||
+        (actor_state_10 & 0xA0084u) != 0) {
+        return actions;
+    }
+
+    if ((actor_state_10 & 0x1000u) != 0) {
+        actions |= BUBSY_GROUNDED_CASE12_CALL_2262C_0C;
+    }
+    *descriptor_state_02 = 5;
+    if (*actor_state_01 != 1) {
+        *actor_state_01 = 1;
+        actions |= BUBSY_GROUNDED_CASE12_CALL_347EC_1;
+    }
+    return actions;
+}
+
+uint8_t bubsy_grounded_case17_update_state(
+    uint32_t actor_state_10,
+    uint8_t *actor_state_00,
+    uint8_t *actor_state_01,
+    uint8_t *descriptor_state_14
+) {
+    uint8_t actions = BUBSY_GROUNDED_CASE17_CALL_1C700;
+
+    *descriptor_state_14 = 0;
+    *actor_state_01 = 2;
+    if ((actor_state_10 & 0x44u) != 0) {
+        *actor_state_00 = 0;
+        actions |= BUBSY_GROUNDED_CASE17_CALL_22650_02 |
+            BUBSY_GROUNDED_CASE17_CALL_347EC_1;
+    }
+    return actions;
+}
+
+int32_t bubsy_grounded_case16_should_dispatch(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t actor_state_01,
+    uint8_t *descriptor_state_14
+) {
+    if (*descriptor_state_14 == 0) {
+        if ((actor_flags_04 & 0x2u) != 0) {
+            return 0;
+        }
+        *descriptor_state_14 = 1;
+    }
+    return (actor_flags_04 & 0x1104u) == 0 &&
+        (actor_state_10 & 0xA9180u) == 0 && actor_state_01 != 1;
+}
+
+BubsyGroundedCase14Actions bubsy_grounded_case14_prepare(
+    uint32_t actor_flags_04,
+    uint32_t *actor_state_10,
+    uint8_t descriptor_state_11,
+    uint32_t *linked_state_30
+) {
+    if ((*actor_state_10 & 0x010000C4u) != 0 ||
+        (actor_flags_04 & 0x818u) == 0 ||
+        descriptor_state_11 == 2 ||
+        (actor_flags_04 & 0x1104u) != 0) {
+        return BUBSY_GROUNDED_CASE14_NO_ACTION;
+    }
+    *actor_state_10 = 0;
+    *linked_state_30 = 0;
+    return BUBSY_GROUNDED_CASE14_CALL_22650_07 |
+        BUBSY_GROUNDED_CASE14_SELECT_2BE |
+        BUBSY_GROUNDED_CASE14_ASSERT_ON_SELECTION_FAILURE |
+        BUBSY_GROUNDED_CASE14_CALL_52E18;
+}
+
+uint8_t bubsy_grounded_case15_select_actions(
+    int32_t current_sequence_key,
+    uint8_t sequence_boundary_reached
+) {
+    if (current_sequence_key == 0x2BE) {
+        return BUBSY_GROUNDED_CASE15_SELECT_2C3 |
+            BUBSY_GROUNDED_CASE15_CALL_52E18 |
+            BUBSY_GROUNDED_CASE15_REQUEST_MOVE;
+    }
+    if (sequence_boundary_reached == 1) {
+        return BUBSY_GROUNDED_CASE15_CALL_2262C_07 |
+            BUBSY_GROUNDED_CASE15_CALL_3539C_1;
+    }
+    return BUBSY_GROUNDED_CASE15_REQUEST_MOVE;
+}
+
+BubsyGroundedCase6Action bubsy_grounded_case6_select_action(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t *descriptor_state_4C
+) {
+    if ((actor_flags_04 & 0x4u) != 0 ||
+        (actor_state_10 & 0x82000u) != 0 ||
+        (actor_flags_04 & 0x1140u) != 0) {
+        return BUBSY_GROUNDED_CASE6_NO_ACTION;
+    }
+    *descriptor_state_4C = 1;
+    if ((actor_state_10 & 0x44u) != 0) {
+        return BUBSY_GROUNDED_CASE6_CALL_358C8_MODE_0;
+    }
+    if ((actor_state_10 & 0x01020080u) == 0) {
+        return BUBSY_GROUNDED_CASE6_CALL_35ACC;
+    }
+    return BUBSY_GROUNDED_CASE6_NO_ACTION;
+}
+
+uint8_t bubsy_grounded_case20_select_actions(
+    uint8_t descriptor_state_0D,
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    int32_t current_sequence_key
+) {
+    uint8_t actions;
+
+    if (descriptor_state_0D != 0 || actor_state_10 != 0 ||
+        (actor_flags_04 & 0x1100u) != 0) {
+        return BUBSY_GROUNDED_CASE20_NO_ACTION;
+    }
+    actions = BUBSY_GROUNDED_CASE20_CALL_516F8_54AF0 |
+        BUBSY_GROUNDED_CASE20_CALL_22650_0C;
+    if ((actor_flags_04 & 0x80u) == 0 && current_sequence_key != 0x349) {
+        actions |= BUBSY_GROUNDED_CASE20_SELECT_349;
+    }
+    return actions;
+}
+
+BubsyGroundedCase31Path bubsy_grounded_case31_advance_counter(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t descriptor_state_4C,
+    uint8_t *descriptor_counter_4D
+) {
+    uint8_t previous = *descriptor_counter_4D;
+
+    if ((actor_flags_04 & 0x1104u) != 0 ||
+        (actor_state_10 & 0xA0080u) != 0 || descriptor_state_4C != 0) {
+        return BUBSY_GROUNDED_CASE31_SKIP;
+    }
+    if ((actor_flags_04 & 0x40u) != 0 || (actor_state_10 & 0x1044u) != 0) {
+        return BUBSY_GROUNDED_CASE31_ALTERNATE;
+    }
+    *descriptor_counter_4D = (uint8_t)(previous + 1);
+    return previous < 11 ?
+        BUBSY_GROUNDED_CASE31_COUNTER_BELOW_11 :
+        BUBSY_GROUNDED_CASE31_COUNTER_SEQUENCE_PATH;
+}
+
+BubsyGroundedCase31Actions bubsy_grounded_case31_select_alternate_action(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    int16_t *descriptor_state_02
+) {
+    if ((actor_flags_04 & 0x40u) == 0 && (actor_state_10 & 0x1044u) == 0) {
+        return BUBSY_GROUNDED_CASE31_NO_ACTION;
+    }
+    if ((actor_state_10 & 0x1000u) != 0) {
+        if (*descriptor_state_02 != 0) {
+            return BUBSY_GROUNDED_CASE31_NO_ACTION;
+        }
+        *descriptor_state_02 = 2;
+        return BUBSY_GROUNDED_CASE31_SET_DESCRIPTOR_02_TO_2;
+    }
+    if ((actor_state_10 & 0x44u) != 0 &&
+        (actor_state_10 & 0x10000u) == 0 &&
+        (actor_flags_04 & 0x40u) == 0) {
+        return BUBSY_GROUNDED_CASE31_CALL_358C8_MODE_1;
+    }
+    return BUBSY_GROUNDED_CASE31_NO_ACTION;
+}
+
+uint8_t bubsy_grounded_case31_select_sequence_actions(
+    int32_t current_sequence_key,
+    int32_t *linked_counter_30
+) {
+    uint8_t actions = BUBSY_GROUNDED_CASE31_SET_LINKED_30_TO_MINUS_11 |
+        BUBSY_GROUNDED_CASE31_CALL_22944;
+
+    *linked_counter_30 = -0x11;
+    if (current_sequence_key != 0) {
+        actions |= BUBSY_GROUNDED_CASE31_CALL_52AEC_0 |
+            BUBSY_GROUNDED_CASE31_CALL_52E18 |
+            BUBSY_GROUNDED_CASE31_CALL_22650_17;
+    }
+    return actions;
+}
+
+BubsyGroundedCases8_10Action bubsy_grounded_cases8_10_select_action(
+    uint16_t state_id,
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t actor_state_01,
+    int16_t *descriptor_state_02
+) {
+    if ((state_id != 8 && state_id != 10) ||
+        (actor_flags_04 & 0x4u) != 0 ||
+        (actor_state_10 & 0x82000u) != 0 ||
+        (actor_flags_04 & 0x1100u) != 0) {
+        return BUBSY_GROUNDED_CASE8_10_EPILOGUE;
+    }
+    if ((actor_state_10 & 0x1000u) != 0) {
+        if (*descriptor_state_02 != 0 || actor_state_01 == 1) {
+            return BUBSY_GROUNDED_CASE8_10_EPILOGUE;
+        }
+        *descriptor_state_02 = state_id == 8 ? 3 : 4;
+        return BUBSY_GROUNDED_CASE8_10_SET_DESCRIPTOR_STATE;
+    }
+    if ((actor_state_10 & 0x8104u) == 4) {
+        return state_id == 8 ?
+            BUBSY_GROUNDED_CASE8_CALL_358C8_MODE_3 :
+            BUBSY_GROUNDED_CASE10_CALL_358C8_MODE_2;
+    }
+    if ((actor_state_10 & 0x80u) != 0) {
+        return BUBSY_GROUNDED_CASE8_10_EPILOGUE;
+    }
+    return BUBSY_GROUNDED_CASE8_10_CONTINUE_COUNTER_PATH;
+}
+
+BubsyGroundedCases8_10CounterActions bubsy_grounded_cases8_10_update_counter_path(
+    uint16_t state_id,
+    uint32_t actor_state_10,
+    uint8_t descriptor_state_11,
+    int32_t *global_gate_540,
+    uint32_t *global_state_544,
+    int16_t *global_counter_53C
+) {
+    BubsyGroundedCases8_10CounterActions actions =
+        BUBSY_GROUNDED_CASE8_10_CLEAR_GP_540 |
+        BUBSY_GROUNDED_CASE8_10_INCREMENT_GP_COUNTER |
+        BUBSY_GROUNDED_CASE8_10_CALL_34EF8;
+    int32_t next_counter;
+
+    if ((state_id != 8 && state_id != 10) ||
+        (actor_state_10 & 0x80u) != 0 || descriptor_state_11 == 5) {
+        return BUBSY_GROUNDED_CASE8_10_COUNTER_NO_ACTION;
+    }
+    if (*global_gate_540 != 0) {
+        actions |= BUBSY_GROUNDED_CASE8_10_CALL_4FFEC;
+    }
+    *global_gate_540 = 0;
+    if (*global_state_544 != state_id) {
+        *global_state_544 = state_id;
+        *global_counter_53C = 0;
+        actions |= BUBSY_GROUNDED_CASE8_10_RESET_GP_COUNTER;
+    }
+    next_counter = (int32_t)*global_counter_53C + 1;
+    if (next_counter > INT16_MAX) {
+        next_counter -= 0x10000;
+    }
+    *global_counter_53C = (int16_t)next_counter;
+    if (next_counter >= 0x29) {
+        *global_counter_53C = 0x28;
+        actions |= BUBSY_GROUNDED_CASE8_10_CLAMP_GP_COUNTER;
+    }
+    return actions;
+}
+
+uint8_t bubsy_grounded_case32_update_state(
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t *actor_state_01,
+    uint8_t *descriptor_counter_4D,
+    uint8_t *descriptor_state_4C,
+    uint8_t *descriptor_state_68,
+    int16_t *descriptor_state_02,
+    int32_t *linked_counter_30
+) {
+    uint8_t actions = BUBSY_GROUNDED_CASE32_NO_ACTION;
+
+    if ((actor_state_10 & 0x20000u) != 0 || (actor_flags_04 & 0x40u) != 0) {
+        return actions;
+    }
+    if ((actor_state_10 & 0x1000u) != 0) {
+        *descriptor_state_02 = 0;
+        return BUBSY_GROUNDED_CASE32_CLEAR_DESCRIPTOR_02;
+    }
+    if ((actor_state_10 & 0x44u) != 0) {
+        *descriptor_state_4C = 0;
+        *descriptor_state_68 = 1;
+        return BUBSY_GROUNDED_CASE32_CALL_2262C_17;
+    }
+
+    if (*descriptor_counter_4D < 11 && (actor_state_10 & 0x01002000u) == 0) {
+        *linked_counter_30 = 0;
+        *actor_state_01 = 2;
+        *descriptor_counter_4D = 0;
+        actions = BUBSY_GROUNDED_CASE32_CALL_22650_10 |
+            BUBSY_GROUNDED_CASE32_CALL_347EC_1;
+    } else {
+        *descriptor_counter_4D = 0;
+        actions = BUBSY_GROUNDED_CASE32_CALL_2262C_17 |
+            BUBSY_GROUNDED_CASE32_CALL_3539C_1;
+    }
+    return actions;
+}
+
+BubsyGroundedCase7Actions bubsy_grounded_case7_update_state(
+    uint32_t actor_state_10,
+    uint8_t *actor_state_01,
+    uint8_t *descriptor_state_4C,
+    uint8_t *descriptor_state_68,
+    int16_t *descriptor_state_02
+) {
+    if ((actor_state_10 & 0x1000u) != 0) {
+        *actor_state_01 = 2;
+        *descriptor_state_02 = 0;
+        return BUBSY_GROUNDED_CASE7_SET_ACTOR_STATE;
+    }
+    *descriptor_state_4C = 0;
+    *descriptor_state_68 = 1;
+    return BUBSY_GROUNDED_CASE7_CALL_2269C_0F;
+}
+
+uint8_t bubsy_grounded_cases9_11_update_state(
+    uint16_t state_id,
+    int32_t current_sequence_key,
+    uint32_t *actor_state_10,
+    uint32_t *actor_state_14,
+    uint8_t *actor_state_01,
+    int16_t *descriptor_state_02,
+    int32_t global_540_nonzero,
+    int32_t global_53C_nonzero
+) {
+    uint8_t actions = BUBSY_GROUNDED_CASE9_11_NO_ACTION;
+    uint32_t previous_state_10;
+    int32_t sequence_matches;
+
+    if (state_id != 9 && state_id != 11) {
+        return actions;
+    }
+    if ((*actor_state_10 & 0x1000u) != 0) {
+        *actor_state_01 = 2;
+        *descriptor_state_02 = 0;
+        return BUBSY_GROUNDED_CASE9_11_SET_ACTOR_STATE;
+    }
+
+    sequence_matches = state_id == 9 ?
+        current_sequence_key == 0x2BB : current_sequence_key == 0x2B8;
+    if (sequence_matches) {
+        actions |= BUBSY_GROUNDED_CASE9_11_SELECT_2B5 |
+            BUBSY_GROUNDED_CASE9_11_CALL_52E18;
+    }
+
+    previous_state_10 = *actor_state_10;
+    *actor_state_10 &= ~0x500u;
+    if ((previous_state_10 & 0x220u) != 0 && global_53C_nonzero != 0) {
+        if (global_540_nonzero == 0) {
+            actions |= BUBSY_GROUNDED_CASE9_11_CALL_4FF50;
+        }
+        actions |= BUBSY_GROUNDED_CASE9_11_CALL_34EF8;
+    } else {
+        *actor_state_14 = 0;
+        *actor_state_10 &= ~0x220u;
+        actions |= BUBSY_GROUNDED_CASE9_11_RESET_AND_CALL_3539C_1;
+    }
+    return actions;
+}
+
+BubsyGroundedCases33_35Actions bubsy_grounded_cases33_35_prepare(
+    uint16_t state_id,
+    uint32_t actor_flags_04,
+    uint32_t actor_state_10,
+    uint8_t actor_state_01,
+    uint16_t *descriptor_state_00,
+    int32_t *linked_counter_30
+) {
+    if ((state_id != 33 && state_id != 35) ||
+        (actor_flags_04 & 0x4u) != 0 ||
+        (actor_state_10 & 0x01080000u) != 0 ||
+        (actor_flags_04 & 0x1140u) != 0 ||
+        actor_state_10 != 0 ||
+        actor_state_01 == 1) {
+        return BUBSY_GROUNDED_CASE33_35_NO_ACTION;
+    }
+    *descriptor_state_00 = state_id == 33 ? 3 : 2;
+    *linked_counter_30 = 0;
+    return BUBSY_GROUNDED_CASE33_35_CALL_22650_0F |
+        BUBSY_GROUNDED_CASE33_35_CALL_22650_08 |
+        BUBSY_GROUNDED_CASE33_35_CALL_347EC_1;
+}
+
 BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
     const BubsyActorUpdateActorView *actor,
     uint16_t handler_state_id,

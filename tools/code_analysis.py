@@ -195,6 +195,93 @@ def static_pointer_targets(data, expected, references):
     return entries, functions, evidence
 
 
+def promote_manual_switch_roots(data, expected, discovery):
+    import rabbitizer
+
+    load = int(expected["load_address"], 16)
+    image_end = load + int(expected["payload_size"], 16)
+    reachable = {address for span in discovery["ranges"] for address in range(int(span["start"], 16), int(span["end"], 16), 4)}
+    indirect_references = {
+        (int(reference["site"], 16), int(reference["reference"], 16))
+        for reference in discovery["indirect_references"]
+        if reference["kind"] == "indirect_jump_reference"
+    }
+
+    for root in discovery.get("manual_roots", []):
+        if "end" not in root:
+            continue
+        start = int(root["address"], 16)
+        end = int(root["end"], 16)
+        if start % 4 or end % 4 or not load <= start < end <= image_end:
+            raise ValueError(f"Invalid manual function bounds for {root['symbol']}")
+        function_addresses = set(range(start, end, 4))
+        if not function_addresses.issubset(reachable):
+            raise ValueError(f"Manual function {root['symbol']} includes untraced bytes")
+
+        table_specs = root.get("computed_jump_tables", [])
+        table_sites = {int(spec["site"], 16) for spec in table_specs}
+        observed_indirect_sites = set()
+        for address in function_addresses:
+            word, = struct.unpack_from("<I", data, HEADER_SIZE + address - load)
+            instruction = rabbitizer.Instruction(word, address, rabbitizer.InstrCategory.R3000GTE)
+            if not instruction.isValid():
+                raise ValueError(f"Invalid instruction in manual function {root['symbol']} at 0x{address:08X}")
+            if instruction.isBranch() and not instruction.doesLink():
+                target = instruction.getBranchVramGeneric()
+                if target not in function_addresses:
+                    raise ValueError(f"Manual function {root['symbol']} has an external branch at 0x{address:08X}")
+            if instruction.isJumpWithAddress() and not instruction.doesLink():
+                target = instruction.getInstrIndexAsVram()
+                if target not in function_addresses:
+                    raise ValueError(f"Manual function {root['symbol']} has an external jump at 0x{address:08X}")
+            if instruction.isJump() and not instruction.isJumpWithAddress() and not instruction.doesLink() and not instruction.isReturn():
+                observed_indirect_sites.add(address)
+            if instruction.isReturn() and address != end - 8:
+                raise ValueError(f"Manual function {root['symbol']} has a nonterminal return at 0x{address:08X}")
+        if observed_indirect_sites != table_sites:
+            raise ValueError(f"Manual function {root['symbol']} has an unaccounted indirect exit")
+
+        for spec in table_specs:
+            site = int(spec["site"], 16)
+            table = int(spec["table"], 16)
+            count = spec["count"]
+            if (site, table) not in indirect_references or count <= 0 or table % 4 or table < load or table + count * 4 > image_end:
+                raise ValueError(f"Invalid computed switch evidence for {root['symbol']}")
+            for index in range(count):
+                target, = struct.unpack_from("<I", data, HEADER_SIZE + table - load + index * 4)
+                if target not in function_addresses or target not in reachable:
+                    raise ValueError(f"Computed switch for {root['symbol']} targets outside its bounded body")
+
+        return_address = end - 8
+        return_word, = struct.unpack_from("<I", data, HEADER_SIZE + return_address - load)
+        delay_word, = struct.unpack_from("<I", data, HEADER_SIZE + return_address + 4 - load)
+        return_instruction = rabbitizer.Instruction(return_word, return_address, rabbitizer.InstrCategory.R3000GTE)
+        delay_instruction = rabbitizer.Instruction(delay_word, return_address + 4, rabbitizer.InstrCategory.R3000GTE)
+        if not return_instruction.isReturn() or not delay_instruction.isValid() or delay_instruction.hasDelaySlot():
+            raise ValueError(f"Manual function {root['symbol']} does not end in a valid return and delay slot")
+
+        overlapping = [
+            symbol for symbol in discovery["symbols"]
+            if int(symbol["start"], 16) < end and start < int(symbol["end"], 16)
+        ]
+        if any(
+            symbol["kind"] != "reachable_fragment" or
+            int(symbol["start"], 16) < start or int(symbol["end"], 16) > end
+            for symbol in overlapping
+        ):
+            raise ValueError(f"Manual function {root['symbol']} overlaps another bounded symbol")
+        discovery["symbols"] = [symbol for symbol in discovery["symbols"] if symbol not in overlapping]
+        discovery["symbols"].append({
+            "start": f"0x{start:08X}", "end": f"0x{end:08X}", "size": end - start,
+            "kind": "anchored_function", "symbol": root["symbol"], "evidence": root["evidence"],
+        })
+        discovery["symbols"].sort(key=lambda symbol: int(symbol["start"], 16))
+        discovery["anchored_functions"] += 1
+        discovery["reachable_fragments"] -= len(overlapping)
+
+    return discovery
+
+
 def discover_module(data, expected):
     manual_roots = json.loads((ROOT / "config" / "manual-code-roots.json").read_text(encoding="utf-8"))
     named_roots = manual_roots["modules"].get(expected["filename"], [])
@@ -226,7 +313,7 @@ def discover_module(data, expected):
         result["static_pointer_evidence"] = evidence
         result["discovery_passes"] = iteration + 1
         if discovered.issubset(entries) and callback_functions.issubset(functions):
-            return result
+            return promote_manual_switch_roots(data, expected, result)
         entries.update(discovered)
         functions.update(callback_functions)
     raise ValueError(f"Indirect-reference discovery did not converge for {expected['filename']}")

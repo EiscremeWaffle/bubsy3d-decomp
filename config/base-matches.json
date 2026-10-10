@@ -76,6 +76,17 @@
           ],
           "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_800100A0"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_state_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["bubsy_grounded_state_handler"]
         }
       ],
       "fuzzy_sources": [
@@ -93,7 +104,7 @@
         },
         {
           "source": "src/player_model/player_vector_transform.c",
-          "symbols": ["func_8005395C"]
+          "symbols": ["func_8005385C", "func_8005395C"]
         }
       ],
       "data_sources": [
@@ -181,6 +192,12 @@
           "start": "0x800100A0",
           "end": "0x80010128",
           "size": 136
+        },
+        {
+          "name": "bubsy_grounded_state_handler",
+          "start": "0x8004B35C",
+          "end": "0x8004BFF8",
+          "size": 3228
         }
       ]
     }

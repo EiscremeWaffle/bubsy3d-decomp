@@ -403,6 +403,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80022C94",
+          "end": "0x800231C4",
+          "symbol": "func_80022C94",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80024EBC",
           "end": "0x80024F2C",
           "symbol": "game_enqueue_move_request",
@@ -505,6 +511,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800288D8",
+          "end": "0x800289E8",
+          "symbol": "func_800288D8",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800289E8",
           "end": "0x80028B5C",
           "symbol": "func_800289E8",
@@ -568,6 +580,12 @@
           "start": "0x8002925C",
           "end": "0x8002944C",
           "symbol": "func_8002925C",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002944C",
+          "end": "0x80029548",
+          "symbol": "func_8002944C",
           "kind": "anchored_function"
         },
         {
@@ -883,6 +901,18 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8002E7D8",
+          "end": "0x8002E7FC",
+          "symbol": "func_8002E7D8",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002E7FC",
+          "end": "0x8002E824",
+          "symbol": "func_8002E7FC",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002E858",
           "end": "0x8002E910",
           "symbol": "func_8002E858",
@@ -949,6 +979,18 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800347EC",
+          "end": "0x80034EF8",
+          "symbol": "func_800347EC",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80034EF8",
+          "end": "0x8003539C",
+          "symbol": "func_80034EF8",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8003539C",
           "end": "0x800358C8",
           "symbol": "bubsy_update_actor_state",
@@ -958,6 +1000,12 @@
           "start": "0x800358C8",
           "end": "0x80035ACC",
           "symbol": "shared_actor_state_dispatch",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80035ACC",
+          "end": "0x80035FE4",
+          "symbol": "func_80035ACC",
           "kind": "anchored_function"
         },
         {
@@ -994,6 +1042,12 @@
           "start": "0x80037AFC",
           "end": "0x80037B08",
           "symbol": "func_80037AFC",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80037B30",
+          "end": "0x80037D14",
+          "symbol": "func_80037B30",
           "kind": "anchored_function"
         },
         {
@@ -1438,6 +1492,12 @@
           "start": "0x8004B264",
           "end": "0x8004B2A4",
           "symbol": "func_8004B264",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8004B35C",
+          "end": "0x8004BFF8",
+          "symbol": "bubsy_grounded_state_handler",
           "kind": "anchored_function"
         },
         {
@@ -4804,6 +4864,66 @@
           "start": "0x800959B0",
           "end": "0x80095A64",
           "symbol": "func_800959B0",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80095A64",
+          "end": "0x80095DE0",
+          "symbol": "func_80095A64",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80095DE0",
+          "end": "0x80095E90",
+          "symbol": "func_80095DE0",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80095E90",
+          "end": "0x80095F58",
+          "symbol": "func_80095E90",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80095F58",
+          "end": "0x80096058",
+          "symbol": "func_80095F58",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80096058",
+          "end": "0x8009615C",
+          "symbol": "func_80096058",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8009615C",
+          "end": "0x80096224",
+          "symbol": "func_8009615C",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800963E0",
+          "end": "0x80096454",
+          "symbol": "func_800963E0",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80096454",
+          "end": "0x80096768",
+          "symbol": "func_80096454",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80096768",
+          "end": "0x80096854",
+          "symbol": "func_80096768",
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80096854",
+          "end": "0x800968BC",
+          "symbol": "func_80096854",
           "kind": "anchored_function"
         },
         {

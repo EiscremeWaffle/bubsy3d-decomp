@@ -41,12 +41,12 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 15,176 exact code bytes across 92
-functions, or `0.507733%` of mapped code. The total includes two Clang-built
-getters, eight original GCC C functions, the assembly-backed death handler,
-20 assembly-backed copies of `func_80010128`, the L0 assembly-backed Q20.12 dot
-product `func_800100A0`, 22 C copies of `func_80072F4C`, and 38 repeated copies
-of two actor-flag/cursor helpers. The
+The validated report currently credits 18,404 exact code bytes across 93
+functions, or `0.613030%` of mapped code. The total includes two Clang-built
+getters, eight original GCC C functions, the assembly-backed death and
+grounded-state handlers, 20 assembly-backed copies of `func_80010128`, the L0
+assembly-backed Q20.12 dot product `func_800100A0`, 22 C copies of
+`func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
 actor-event dispatcher remains fuzzy; the target-only C draft for
 `shared_actor_state_dispatch` is also not exact and earns no progress credit.
 The progress site changes only after this snapshot is committed, pushed, and
@@ -223,6 +223,155 @@ The inspected stores update actor state/flags, a companion object field, and
 global counters; no direct world-position or velocity write has been identified
 yet. Treat this as the grounded actor-state route, not a proven locomotion
 integrator.
+Before the table dispatch, descriptor lookup value `3` enables special gates
+for states `14` and `15`. State `14` skips the switch when actor flags overlap
+`0x1100`, or when actor state bit `0x1000` is set; in the latter case it first
+sets descriptor halfword `+0x02` to `1` if that field was zero. State `15`
+skips and clears descriptor halfword `+0x02` when actor state bit `0x1000` is
+set. Other inputs continue to the computed switch. This prelude gate is
+modeled and tested.
+The extracted host dispatch map preserves all 33 targets for IDs `6..38`;
+out-of-range IDs take the shared epilogue at `0x8004BFD0`. The table is tested
+against the original executable's entries. Several IDs alias the same block,
+and IDs `18`, `19`, and `22..28` target the epilogue directly.
+The handler-entry gate and each unique non-epilogue switch path now have
+tested host-side control-flow/state models in `bubsy_actor_update.c` and
+`test_player_model.c`. These are not yet a single reconstructed C body or a
+byte-matched function; called engine helpers remain outside these models.
+An instruction-store audit found no direct actor/descriptor coordinate or
+velocity writes in this handler. Its grounded-state dispatch is therefore
+mapped more completely, but grounded locomotion itself is not established.
+The bounded handler is now also an exact match through the explicitly
+assembly-backed mnemonic transcription in `bubsy_grounded_state_match.c`,
+verified at `0x8004B35C..0x8004BFF8` with pinned GCC 2.6.3/MASPSX and LLD. This
+earns byte-match credit only; it does not upgrade the control-flow models into
+recovered high-level C or establish a position/velocity integrator.
+
+Switch case `38` targets `0x8004B6C0`. Its descriptor byte `+0x11` changes from
+`2` to `4`, or from `1` to `0`; only the latter path calls `0x8002262C` with
+argument `0x11`. All three outcomes then call `0x80039158` with the actor and
+third argument. The byte transition and conditional argument are modeled and
+tested by `bubsy_grounded_case38_update_descriptor`; the called helpers'
+effects and the state's gameplay meaning remain unknown.
+
+Case `37` at `0x8004B66C` does nothing further when actor flags `+0x04` overlap
+`0x1100`. Otherwise descriptor byte `+0x11` value `0` changes to `1` and calls
+`0x80037B30(0)`; value `5` skips the remaining work; other values call
+`0x80039158(actor, third_argument)`. Cases `29` and `30` directly set
+descriptor byte `+0x10` to `1` and `0`, respectively. These observed branch
+decisions and writes are modeled and tested; helper effects remain unresolved.
+Case `13` sets actor byte `+0x01` to `2`. Cases `34` and `36` set that same
+actor byte to `2` and clear descriptor halfword `+0x00`. These direct writes
+are also modeled and covered by host tests.
+
+Case `21` (`0x8004B578`) computes a dot product of two normalized vectors. It
+then clears descriptor halfword `+0x02` on every path. The path calling
+`0x8002E7D8(actor)` and `0x80022650(actor, 8)` is selected only when actor state
+`+0x10` bit `0x1000` is set, actor flags `+0x04` bit `0x40` is clear, the
+companion's `+0x28` word is zero or the companion pointer is null, the signed
+dot result is less than `0xCCC`, and descriptor state `+0x02` is not `5`.
+Otherwise it calls `0x8002262C(actor, 0xC)`. This predicate and write are
+modeled and tested. The threshold path also reaches `0x800347EC(actor,
+third_argument, 1)`; helper effects remain unresolved.
+
+Case `12` (`0x8004B70C`) proceeds only when actor flags `+0x04` have a nonzero
+overlap with `0x818`, no overlap with `0x1104`, and actor state `+0x10` has no
+overlap with `0xA0084`. It writes `5` to descriptor halfword `+0x02`. Actor
+state bit `0x1000` additionally requests `0x8002262C(actor, 0xC)`; if actor
+byte `+0x01` is not already `1`, it sets it to `1` and calls
+`0x800347EC(actor, third_argument, 1)`. These gates, writes, and call requests
+are modeled and tested; helper semantics remain unknown.
+
+Case `17` (`0x8004B7F8`) clears descriptor byte `+0x14`, sets actor byte
+`+0x01` to `2`, and calls `0x8001C700(4, 3)`. If actor state `+0x10` overlaps
+`0x44`, it also clears actor byte `+0x00`, calls `0x80022650(actor, 2)`, and
+then calls `0x800347EC(actor, third_argument, 1)`. These writes and call gates
+are represented by the tested action model; callee effects are unresolved.
+Case `16` (`0x8004B77C`) initializes descriptor byte `+0x14` to `1` when it
+is zero and actor flags `+0x04` bit `0x02` is clear. It then requests
+`0x800347EC(actor, third_argument, 0)` only when actor flags do not overlap
+`0x1104`, actor state `+0x10` does not overlap `0xA9180`, and actor byte `+0x01`
+is not `1`. The gate and initialization are modeled and tested.
+Case `14` (`0x8004B838`) enters its sequence-selection path when actor state
+`+0x10` has no overlap with `0x010000C4`, actor flags `+0x04` overlap `0x818`
+but not `0x1104`, and descriptor byte `+0x11` is not `2`. That path clears
+actor state `+0x10` and linked-object word `+0x30`, then selects sequence
+`0x2BE`, asserts on a nonzero selection result, and calls `0x80052E18`.
+Eligibility and direct writes are modeled and tested; callback effects remain
+unknown.
+Case `31` (`0x8004BA34`) first rejects actor flag mask `0x1104`, actor-state
+mask `0xA0080`, or nonzero descriptor byte `+0x4C`. Actor flag `0x40` or
+actor-state mask `0x1044` selects a separate path. Otherwise it increments
+descriptor byte `+0x4D` modulo 256; the old value selects the below-11 branch
+or the sequence-key path. On the alternate path, actor state bit `0x1000`
+sets descriptor halfword `+0x02` to `2` only when that field is zero; otherwise
+state mask `0x44` calls `0x800358C8(actor, third_argument, 1)` when bit
+`0x10000` and actor flag `0x40` are clear. On the sequence-key path, a
+nonzero key additionally selects index `0`, calls `0x80052E18`, and calls
+`0x80022650(actor, 0x17)`; both zero and nonzero keys set linked word `+0x30`
+to `-0x11` and call `0x80022944(actor)`. Counter gates and followups are
+modeled and tested.
+Cases `8` and `10` share `0x8004BC48`. They return early for actor flag bit
+`0x04`, actor-state mask `0x82000`, or actor-flag mask `0x1100`. With actor
+state bit `0x1000` set, descriptor halfword `+0x02` changes from zero to `3`
+for case 8 or `4` for case 10 unless actor byte `+0x01` is `1`. Otherwise
+state mask `0x8104 == 4` dispatches shared helper `0x800358C8` in mode `3`
+(case 8) or `2` (case 10); bit `0x80` exits; remaining inputs continue into
+the counter path. That path exits when descriptor byte `+0x11` is `5`; otherwise
+it calls `0x8004FFEC` when `$gp+0x540` is nonzero, clears `$gp+0x540`, resets
+`$gp+0x53C` and writes the current case ID to `$gp+0x544` when that ID changes,
+then increments the signed halfword counter and caps values at `0x28`. It
+finally calls `0x80034EF8`. The selector and counter path are modeled and tested.
+Case `32` (`0x8004BB68`) returns without writes when actor state `+0x10` has
+bit `0x20000` or actor flags `+0x04` have bit `0x40`. State bit `0x1000`
+clears descriptor halfword `+0x02`. Otherwise state mask `0x44` calls
+`0x8002262C(actor, 0x17)`, clears descriptor byte `+0x4C`, and sets byte
+`+0x68` to `1`. With those gates clear, descriptor counter `+0x4D` below `11`
+and actor-state mask `0x01002000` clear selects calls
+`0x80022650(actor, 0x10)` and `0x800347EC(actor, third_argument, 1)`, clears
+linked word `+0x30`, sets actor byte `+0x01` to `2`, and clears the counter.
+Otherwise it calls `0x8002262C(actor, 0x17)` and `0x8003539C(actor, 1)`, then
+clears the counter. This whole switch block is modeled and tested; helper
+semantics remain unknown.
+Case `7` (`0x8004BE60`) sets actor byte `+0x01` to `2` and descriptor
+halfword `+0x02` to zero when actor state bit `0x1000` is set. Otherwise it
+calls `0x8002269C(actor, 0x0F)`, clears descriptor byte `+0x4C`, and sets
+descriptor byte `+0x68` to `1`.
+Cases `9` and `11` share the remainder of that block. State bit `0x1000` takes
+the same actor-byte `+0x01 = 2` and descriptor-halfword `+0x02 = 0` path.
+Otherwise sequence key `0x2BB` for case 9 or
+`0x2B8` for case 11 selects index `0x2B5` and calls `0x80052E18`. The path
+then clears actor state bits `0x100` and `0x400`. If the prior state had no
+overlap with `0x220`, or global halfword `$gp+0x53C` is zero, it also clears
+actor word `+0x14`, clears state bits `0x20` and `0x200`, and calls
+`0x8003539C(actor, 1)`. Otherwise it calls `0x80034EF8`; it first calls
+`0x8004FF50` only when `$gp+0x540` is zero. These branches are modeled and
+tested; helper meanings remain unresolved.
+Case `15` (`0x8004B8D8`) reads the current sequence key. Key `0x2BE` selects
+index `0x2C3`, calls `0x80052E18`, and submits the move request with arguments
+`(0xF, 4, -2, actor+0x0C)`. For other keys, a true result from
+`0x8005290C` calls `0x8002262C(actor, 7)` and `0x8003539C(actor, 1)`; a false
+result submits the same move request. This branch plan is modeled and tested;
+the request's gameplay purpose is not established.
+Case `6` (`0x8004B990`) proceeds only when actor flags `+0x04` do not overlap
+`0x1144` and actor state `+0x10` does not overlap `0x82000`. It sets descriptor
+byte `+0x4C` to `1`; actor-state mask `0x44` selects
+`0x800358C8(actor, third_argument, 0)`, otherwise a clear mask `0x01020080`
+selects `0x80035ACC(actor, third_argument)`. The gate and action selection are
+modeled and tested; the shared callees remain opaque.
+Case `20` (`0x8004B4D8`) returns early if descriptor byte `+0x0D` or actor
+state `+0x10` is nonzero, or actor flags `+0x04` overlap `0x1100`. Otherwise
+it calls `0x800516F8`, `0x80054AF0`, and `0x80022650(actor, 0xC)`. It selects
+sequence index `0x349` only when actor flag `0x80` is clear and the current
+sequence key is not already `0x349`. The gates and action plan are modeled and
+tested; the helper purposes are unknown.
+Cases `33` and `35` share `0x8004BDA4`. The successful path requires actor
+flags `+0x04` to have neither bit `0x04` nor any overlap with `0x1140`, actor
+state `+0x10` to equal zero, and actor byte `+0x01` not to equal `1` (the
+additional `0x01080000` mask is also clear). It writes descriptor halfword
+`+0x00` to `3` for case 33 or `2` for case 35 and clears linked word `+0x30`,
+then requests calls `0x80022650(actor, 0xF)`, `0x80022650(actor, 8)`, and
+`0x800347EC(actor, third_argument, 1)`. The gate and direct writes are tested.
 
 The grounded handler at `0x8004B35C` calls `func_800100A0` while combining two
 three-component Q20.12 vectors. Its C host model computes the signed dot
@@ -236,13 +385,17 @@ helper that selects a shift from the largest component magnitude. Its C model
 and threshold tests are in `player_vector_range.c`; the current 36.9% objdiff
 similarity is diagnostic only and earns no exact credit.
 
-The grounded handler calls `func_8005395C` to range-condition a 3-vector,
-transform it with an engine-provided matrix, and scale the resulting components
-by the transformed x value. A host C model with stubbed transform helpers is in
-`player_vector_transform.c` and passes zero/nonzero-result tests, but its GCC
-output is four bytes larger than the 136-byte target and it earns no exact
-credit. This is transform/pose processing evidence, not yet a proven update of
-Bubsy's world position or velocity.
+The grounded handler calls `func_8005395C`, which range-conditions a 3-vector
+with `func_80053D68`, obtains one scalar from `func_8005385C`, and scales each
+conditioned component by that scalar through `func_80053350`. The bounded
+`func_8005385C` body squares each nonzero Q20.12 component with
+`func_8001007C`, adds the three results, and passes the sum to the
+GTE-backed `func_8005359C` conversion. This is consistent with a fixed-point
+vector-length calculation, but its output's gameplay role is unknown. The C
+models and host tests are in `player_vector_transform.c` and
+`test_player_model.c`; neither helper is byte-matched or earns exact credit.
+This processing has not been shown to update Bubsy's world position or
+velocity.
 
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,

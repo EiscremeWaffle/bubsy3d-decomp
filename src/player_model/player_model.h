@@ -103,6 +103,7 @@ void level_get_player_model(const PlayerModelState *state, void **asset_out);
 void *level_get_player_model_global(void **asset_out);
 int32_t func_800100A0(const int32_t *left, const int32_t *right, int32_t *output);
 int32_t func_80053D68(const int32_t *input, int32_t *output);
+int32_t func_8005385C(const int32_t *input, int32_t *output);
 int32_t func_8005395C(const int32_t *input, int32_t *output);
 int32_t player_actor_set_flag_04(PlayerActorFlagByte *actor);
 int32_t player_actor_clear_flag_04(PlayerActorFlagByte *actor);

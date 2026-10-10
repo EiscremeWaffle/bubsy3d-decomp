@@ -32,6 +32,12 @@ See the [current code map](code-map.md) for module coverage, discovery criteria,
 and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
+The current validated snapshot maps 3,002,136 instruction bytes and credits
+18,404 exact code bytes across 93 functions (0.613030%), plus 196 exact data
+bytes. This includes the 3,228-byte grounded-state handler as an
+assembly-backed exact match; that transcription is not recovered high-level C
+and does not establish grounded position/velocity integration.
+
 Control flow is traced from known entry points and direct calls. Supported static
 callback slots, candidate jump tables, and corroborated address-taken prologues
 expand the roots. spimdisasm identifies bounded candidates; other traced code is
@@ -45,16 +51,13 @@ selected ranges for reporting; they do not preserve the original loaded layout,
 reconstruct relocations, or establish the original compiler. Those are prerequisites
 for future source-matching work, not achievements of this baseline.
 
-The shared player-model selector reconstruction is in `src/player_model/` and has
-a passing native harness. Two adjacent 16-byte C getters (character selection and
-model pointer) match the original L0 bytes exactly. The selector itself remains
-unmatched. These getters contribute 32 matched bytes across two functions to
-objdiff's exact counters (0.001071% of the mapped code). The report also records
-0.019916% fuzzy similarity from explicitly listed partial C candidates; that
-estimate is not byte-exact progress. The L0 state-target table contributes 196
-exact matched data bytes separately from code. This metric covers executable
-constants only; disc textures, models, audio, and movies are tracked by the disc
-inventory, not this objdiff C-data count. Whole-game completeness remains unknown.
+The player-model and grounded-state reconstructions are in `src/player_model/`
+and have a passing native harness. The report's 0.640884% fuzzy similarity is
+diagnostic only and is not byte-exact progress. The L0 state-target table
+contributes 196 exact matched data bytes separately from code. This metric
+covers executable constants only; disc textures, models, audio, and movies are
+tracked by the disc inventory, not this objdiff C-data count. Whole-game
+completeness remains unknown.
 Counts include
 duplicate routines across module images, and report function counts include
 fragment placeholders. Objdiff emits 100% for empty data denominators, which

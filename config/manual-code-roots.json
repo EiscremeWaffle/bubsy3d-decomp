@@ -19,6 +19,19 @@
         "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."
       },
       {
+        "address": "0x8004B35C",
+        "end": "0x8004BFF8",
+        "symbol": "bubsy_grounded_state_handler",
+        "evidence": "3228-byte routine with a 0x68-byte frame and shared jr-ra epilogue at 0x8004BFF0. Its only indirect exit is the computed switch at 0x8004B4D0; all 33 entries at 0x800139A8 target inside this range. Every instruction is reachable through the root and switch targets, and all direct branches/jumps stay inside the range. Label is provisional and does not imply recovered gameplay semantics.",
+        "computed_jump_tables": [
+          {
+            "site": "0x8004B4D0",
+            "table": "0x800139A8",
+            "count": 33
+          }
+        ]
+      },
+      {
         "address": "0x800358C8",
         "symbol": "shared_actor_state_dispatch",
         "evidence": "516-byte routine ending at 0x80035ACC with a 0x68-byte frame and matching return; eight direct callers pass actor, component/state pointer and modes 0/1/2. It derives a key from component halfword +0x0C, tests actor mask 0x1100, updates component fields +0x30/+0x34, and calls shared engine helpers. Shared actor semantics remain provisional."

@@ -103,6 +103,19 @@ class CodeAnalysisTests(unittest.TestCase):
                 self.assertEqual(symbol["kind"], "anchored_function")
                 self.assertTrue(root["evidence"])
 
+    def test_grounded_computed_switch_is_bounded_by_its_table(self):
+        roots = load_json(ROOT / "config" / "manual-code-roots.json")["modules"]["L0/L0.EXE"]
+        root = next(item for item in roots if item["address"] == "0x8004B35C")
+        module = next(item for item in self.document["modules"] if item["path"] == "L0/L0.EXE")
+        symbol = next(item for item in module["symbols"] if item.get("symbol") == root["symbol"])
+
+        self.assertEqual(symbol["start"], root["address"])
+        self.assertEqual(symbol["end"], root["end"])
+        self.assertEqual(symbol["kind"], "anchored_function")
+        self.assertEqual(root["computed_jump_tables"], [{
+            "site": "0x8004B4D0", "table": "0x800139A8", "count": 33,
+        }])
+
     def one_module(self):
         module = copy.deepcopy(self.document["modules"][0])
         manifest = {"executables": [entry for entry in self.manifest["executables"] if entry["filename"] == module["path"]]}

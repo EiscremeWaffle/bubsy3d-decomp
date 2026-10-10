@@ -1,16 +1,16 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 15,176 exact code bytes across 92
-functions (`0.507733%` of mapped code), including two Clang-built getters,
-eight original GCC C functions, one GCC assembly-backed function, 20
+The validated report currently contains 18,404 exact code bytes across 93
+functions (`0.613030%` of mapped code), including two Clang-built getters,
+eight original GCC C functions, two GCC assembly-backed functions, 20
 assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
 product, 22 C matrix-scaler copies, and 38 repeated actor-flag/cursor helper
 copies. The actor-event dispatcher remains
 fuzzy while its C reconstruction is refined; the experimental shared actor-
 state dispatcher is also not byte-matched or credited.
 Portable host models remain covered by native regression tests. The current report maps
-2,988,972 instruction bytes across all 22 recognized executables, including
+3,002,136 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully
 recovered high-level C, and the larger Bubsy actor updater remains incomplete.
