@@ -1294,6 +1294,7 @@ static void test_vector_range_scaling(void) {
 
 static void test_vector_length_q12(void) {
     const int32_t input[3] = {3 * 0x1000, 4 * 0x1000, 12 * 0x1000};
+    const int32_t sparse[3] = {3 * 0x1000, 0, 4 * 0x1000};
     const int32_t zero[3] = {0, 0, 0};
     int32_t output = 0;
 
@@ -1305,6 +1306,15 @@ static void test_vector_length_q12(void) {
     assert(vector_length_input == 169 * 0x1000);
     assert(output == 13 * 0x1000);
     assert(vector_square_call_count == 3 && vector_length_call_count == 1);
+
+    vector_length_result = 5 * 0x1000;
+    vector_length_input = 0;
+    vector_length_call_count = 0;
+    vector_square_call_count = 0;
+    assert(func_8005385C(sparse, &output) == 0);
+    assert(vector_length_input == 25 * 0x1000);
+    assert(output == 5 * 0x1000);
+    assert(vector_square_call_count == 2 && vector_length_call_count == 1);
 
     vector_length_result = 0;
     vector_length_call_count = 0;

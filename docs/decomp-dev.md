@@ -33,9 +33,10 @@ and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
 The current validated snapshot maps 3,002,136 instruction bytes and credits
-20,208 exact code bytes across 94 functions (0.673121%), plus 196 exact data
+20,376 exact code bytes across 95 functions (0.678717%), plus 196 exact data
 bytes. This includes the 3,228-byte grounded-state handler and the 1,804-byte
-`func_800347EC` helper as assembly-backed exact matches; those transcriptions
+`func_800347EC` helper as assembly-backed exact matches, plus the 168-byte
+C-built `func_8005385C` vector-length helper. The assembly transcriptions
 are not recovered high-level C and do not establish grounded position/velocity
 integration.
 

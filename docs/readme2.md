@@ -1,9 +1,10 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 20,208 exact code bytes across 94
-functions (`0.673121%` of mapped code), including two Clang-built getters,
-eight original GCC C functions, three GCC assembly-backed functions, 20
+The validated report currently contains 20,376 exact code bytes across 95
+functions (`0.678717%` of mapped code), including two Clang-built getters,
+eight original GCC C functions, three GCC assembly-backed functions, the
+C-built `func_8005385C` vector-length helper, 20
 assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
 product, 22 C matrix-scaler copies, and 38 repeated actor-flag/cursor helper
 copies. The actor-event dispatcher remains
