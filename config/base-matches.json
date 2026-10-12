@@ -87,6 +87,17 @@
           ],
           "headers": [],
           "symbols": ["bubsy_grounded_state_handler"]
+        },
+        {
+          "source": "src/player_model/func_800347EC_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_800347EC"]
         }
       ],
       "fuzzy_sources": [
@@ -198,6 +209,12 @@
           "start": "0x8004B35C",
           "end": "0x8004BFF8",
           "size": 3228
+        },
+        {
+          "name": "func_800347EC",
+          "start": "0x800347EC",
+          "end": "0x80034EF8",
+          "size": 1804
         }
       ]
     }

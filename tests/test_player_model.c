@@ -442,6 +442,298 @@ static void test_bubsy_actor_default_state_route(void) {
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
 }
 
+static void test_bubsy_actor_shared_update_entry(void) {
+    assert(bubsy_actor_shared_update_entry_action(0x4, 0) ==
+        BUBSY_ACTOR_SHARED_UPDATE_ENTRY_RETURN);
+    assert(bubsy_actor_shared_update_entry_action(0, 1) ==
+        BUBSY_ACTOR_SHARED_UPDATE_ENTRY_RETURN);
+    assert(bubsy_actor_shared_update_entry_action(0x100, 0) ==
+        BUBSY_ACTOR_SHARED_UPDATE_ENTRY_SET_PROPERTIES_2_6);
+    assert(bubsy_actor_shared_update_entry_action(0x1000, 0) ==
+        BUBSY_ACTOR_SHARED_UPDATE_ENTRY_SET_PROPERTIES_2_6);
+    assert(bubsy_actor_shared_update_entry_action(0, 0) ==
+        BUBSY_ACTOR_SHARED_UPDATE_ENTRY_CONTINUE);
+}
+
+static void test_bubsy_actor_347ec_mode_entry(void) {
+    uint8_t actor_state_00 = 0xA5;
+
+    assert(bubsy_actor_347ec_select_mode_entry(0, 0, &actor_state_00) ==
+        BUBSY_ACTOR_347EC_MODE_ZERO_PATH);
+    assert(actor_state_00 == 0xA5);
+    assert(bubsy_actor_347ec_select_mode_entry(1, 0x44, &actor_state_00) ==
+        BUBSY_ACTOR_347EC_NONZERO_ALTERNATE_PATH);
+    assert(actor_state_00 == 0xA5);
+    assert(bubsy_actor_347ec_select_mode_entry(1, 0, &actor_state_00) ==
+        BUBSY_ACTOR_347EC_CALL_2269C_01);
+    assert(actor_state_00 == 0);
+}
+
+static void test_bubsy_actor_347ec_argument_plan(void) {
+    BubsyActor347ECArgumentPlan plan = {0};
+
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x9000, 1, 0x5A, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_NONZERO_CALL_22C94 |
+        BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 |
+        BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 |
+        BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 |
+        BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04)) ==
+        (BUBSY_ACTOR_347EC_NONZERO_CALL_22C94 |
+            BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04));
+    assert(plan.argument_a1 == 0x29D && plan.stack_argument_10 == 0x2E3);
+    assert(plan.stack_argument_14 == 0x2EA && plan.stack_argument_18 == 0x2EF);
+    assert(plan.argument_a2 == 1 && plan.argument_a3 == 0);
+    assert(plan.set_global_37D == 0 && plan.update_properties_3_4 == 0 && plan.actor_state_44_path == 0);
+
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x10018, 0, 0x5A, &plan);
+    assert((plan.actions & BUBSY_ACTOR_347EC_NONZERO_PROPERTIES_3_4) != 0);
+    assert(plan.argument_a1 == 0x29D && plan.stack_argument_10 == 0x2F8);
+    assert(plan.stack_argument_14 == 0x2FF && plan.stack_argument_18 == 0x302);
+    assert(plan.set_global_37D == 1 && plan.update_properties_3_4 == 1 && plan.actor_state_44_path == 0);
+
+    bubsy_actor_347ec_build_nonzero_mode_plan(0, 0, 0x5A, &plan);
+    assert(plan.argument_a1 == 0x7D8 && plan.stack_argument_10 == 0x29B);
+    assert(plan.stack_argument_14 == 0x2A0 && plan.stack_argument_18 == 0x2A7);
+    assert(plan.set_global_37D == 0 && plan.update_properties_3_4 == 0 && plan.actor_state_44_path == 0);
+    bubsy_actor_347ec_build_nonzero_mode_plan(0, 1, 0x5A, &plan);
+    assert(plan.stack_argument_14 == 0x33A);
+
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x18, 0, 0x5A, &plan);
+    assert(plan.update_properties_3_4 == 1);
+    assert(plan.stack_argument_10 == 0x294);
+
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x44, 0, 7, &plan);
+    assert(plan.actor_state_44_path == 1 && plan.argument_a1 == 0);
+    assert(plan.argument_a2 == 0 && plan.argument_a3 == 7);
+    assert(plan.actions == BUBSY_ACTOR_347EC_NONZERO_CALL_22C94);
+    assert(plan.stack_argument_10 == 0 && plan.stack_argument_14 == 0x33A);
+    assert(plan.stack_argument_18 == 0x2A7 && plan.update_properties_3_4 == 0);
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x9044, 0, 3, &plan);
+    assert(plan.stack_argument_14 == 0x2EA && plan.stack_argument_18 == 0x2EF);
+    bubsy_actor_347ec_build_nonzero_mode_plan(0x10044, 0, 4, &plan);
+    assert(plan.stack_argument_14 == 0x2FF && plan.stack_argument_18 == 0x302);
+}
+
+static void test_bubsy_actor_347ec_mode_zero(void) {
+    uint8_t actor_state_00 = 0xA5;
+    uint8_t expected = BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_STATE_00 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_22C94 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_REQUEST_MOVE |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_2925C |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_26A0C;
+
+    assert(bubsy_actor_347ec_select_mode_zero_actions(0, &actor_state_00) == expected);
+    assert(actor_state_00 == 1);
+    actor_state_00 = 0xA5;
+    assert(bubsy_actor_347ec_select_mode_zero_actions(0x18, &actor_state_00) ==
+        (expected | BUBSY_ACTOR_347EC_MODE_ZERO_PROPERTIES_3_4));
+    assert(actor_state_00 == 1);
+    actor_state_00 = 0xA5;
+    assert(bubsy_actor_347ec_select_mode_zero_actions(0x4, &actor_state_00) ==
+        BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_00_AND_RETURN);
+    assert(actor_state_00 == 1);
+    actor_state_00 = 0xA5;
+    assert(bubsy_actor_347ec_select_mode_zero_actions(0x40, &actor_state_00) ==
+        BUBSY_ACTOR_347EC_MODE_ZERO_ALTERNATE);
+    assert(actor_state_00 == 0xA5);
+}
+
+static void test_bubsy_actor_347ec_mode_zero_call_plan(void) {
+    BubsyActor347ECModeZeroPlan plan = bubsy_actor_347ec_build_mode_zero_plan(0);
+
+    assert(plan.actions == (BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_STATE_00 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_22C94 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_REQUEST_MOVE |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_2925C |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_26A0C));
+    assert(plan.actor_state_00 == 1);
+    assert(plan.selection_a1 == 0x680 && plan.selection_a2 == 1 && plan.selection_a3 == 0);
+    assert(plan.selection_stack_10 == 0x29B && plan.selection_stack_14 == 0x33A);
+    assert(plan.selection_stack_18 == 0x2A7);
+    assert(plan.move_a0 == 0x27 && plan.move_a1 == 4);
+    assert(plan.property_a0 == 4 && plan.property_a1 == 3);
+    assert(plan.property_a2 == 1 && plan.property_a3 == -1);
+
+    plan = bubsy_actor_347ec_build_mode_zero_plan(0x18);
+    assert((plan.actions & BUBSY_ACTOR_347EC_MODE_ZERO_PROPERTIES_3_4) != 0);
+}
+
+static void test_bubsy_actor_347ec_mode_zero_bit40_plan(void) {
+    BubsyActor347ECModeZeroBit40Plan plan =
+        bubsy_actor_347ec_build_mode_zero_bit40_plan(0, 0x2, 1, 10, 41);
+
+    assert(plan.actions == (BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBALS_64C0_37C_37E |
+        BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_5_8_A |
+        BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_380 |
+        BUBSY_ACTOR_347EC_ZERO40_SET_ACTOR_STATE_01 |
+        BUBSY_ACTOR_347EC_ZERO40_REQUEST_MOVE_05 |
+        BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_37C |
+        BUBSY_ACTOR_347EC_ZERO40_CLEAR_ACTOR_FLAGS_03 |
+        BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6464 |
+        BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_64B8));
+    assert(plan.updated_global_380 == 41 && plan.actor_state_01 == 2);
+    assert(plan.actor_flags_04 == 0);
+
+    plan = bubsy_actor_347ec_build_mode_zero_bit40_plan(0x1000, 0, 1, 10, 40);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTY_C |
+        BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6452 |
+        BUBSY_ACTOR_347EC_ZERO40_CALL_2E7FC)) ==
+        (BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTY_C |
+            BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6452 |
+            BUBSY_ACTOR_347EC_ZERO40_CALL_2E7FC));
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO40_CALL_3539C_MODE_1) != 0);
+
+    plan = bubsy_actor_347ec_build_mode_zero_bit40_plan(0x18000, 0x2, 0, 10, 40);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_F_10) != 0);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6464 |
+        BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_64B8)) == 0);
+
+    plan = bubsy_actor_347ec_build_mode_zero_bit40_plan(0, 0x2, 0, 10, 40);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO40_ASSERT_BOUND) != 0);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO40_REQUEST_MOVE_05) == 0);
+    assert(plan.updated_global_380 == 10 && plan.actor_flags_04 == 0x2);
+    plan = bubsy_actor_347ec_build_mode_zero_bit40_plan(0, 0, 0, 10, 41);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6464) != 0);
+}
+
+static void test_bubsy_actor_347ec_mode_zero_alternate(void) {
+    BubsyActor347ECModeZeroAlternatePlan plan =
+        bubsy_actor_347ec_plan_mode_zero_alternate(0, 0, 0, 0xA5, 0, 0, 10, 40);
+
+    assert(plan.actions == (BUBSY_ACTOR_347EC_ZERO_ALT_CALL_22C94 |
+        BUBSY_ACTOR_347EC_ZERO_ALT_RESET_GLOBALS |
+        BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2944C));
+    assert(plan.argument_a1 == 0x88 && plan.argument_a2 == 0 && plan.argument_a3 == 0);
+    assert(plan.stack_argument_10 == 0 && plan.stack_argument_14 == 0x33A);
+    assert(plan.stack_argument_18 == 0x2A7 && plan.updated_global_380 == 10);
+    assert(plan.actor_state_00 == 0xA5 && plan.actor_state_01 == 2);
+
+    plan = bubsy_actor_347ec_plan_mode_zero_alternate(0, 0, 1, 0xA5, 0, 0, 10, 40);
+    assert(plan.actions == BUBSY_ACTOR_347EC_ZERO_ALT_CALL_22C94);
+    assert(plan.actor_state_00 == 0xA5 && plan.updated_global_380 == 10);
+
+    plan = bubsy_actor_347ec_plan_mode_zero_alternate(1, -1, 2, 0xA5, 0, 0, 10, 40);
+    assert(plan.argument_a1 == 0x108);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_ZERO_ALT_CLEAR_64BC |
+        BUBSY_ACTOR_347EC_ZERO_ALT_RESET_GLOBALS |
+        BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2944C)) ==
+        (BUBSY_ACTOR_347EC_ZERO_ALT_CLEAR_64BC |
+            BUBSY_ACTOR_347EC_ZERO_ALT_RESET_GLOBALS |
+            BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2944C));
+    assert(plan.actor_state_01 == 2 && plan.updated_global_380 == 10);
+
+    plan = bubsy_actor_347ec_plan_mode_zero_alternate(1, 0, 2, 0xA5, 1, 0x2, 10, 40);
+    assert(plan.argument_a1 == 0xC8);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO_ALT_ASSERT) != 0);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO_ALT_CALL_1B558_27_04) == 0);
+    assert(plan.actor_state_01 == 1 && plan.updated_global_380 == 10);
+
+    plan = bubsy_actor_347ec_plan_mode_zero_alternate(0, 0, 2, 0xA5, 1, 0x2, 10, 41);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_ZERO_ALT_CALL_1B558_27_04 |
+        BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2269C_01)) ==
+        (BUBSY_ACTOR_347EC_ZERO_ALT_CALL_1B558_27_04 |
+            BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2269C_01));
+    assert(plan.actor_state_01 == 2 && plan.updated_global_380 == 41);
+
+    plan = bubsy_actor_347ec_plan_mode_zero_alternate(0, 0, 2, 0xA5, 0, 0, 10, 41);
+    assert(plan.actor_state_01 == 2 && plan.updated_global_380 == 10);
+    assert((plan.actions & BUBSY_ACTOR_347EC_ZERO_ALT_ASSERT) == 0);
+    assert(plan.actor_state_00 == 0xA5);
+}
+
+static void test_bubsy_actor_347ec_followup_plan(void) {
+    BubsyActor347ECFollowupPlan plan = {0};
+
+    bubsy_actor_347ec_build_followup_plan(0, 0, 5, 1, 0xFF, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_ENTER_STATE_BIT4_CLEAR_BLOCK);
+
+    bubsy_actor_347ec_build_followup_plan(0x8004, 0x2EF, 5, 1, 0, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+    assert(plan.dispatch_mode == 0);
+    bubsy_actor_347ec_build_followup_plan(0x8004, 0x2EF, 5, 0, 0, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+    bubsy_actor_347ec_build_followup_plan(0x8004, 0x2EE, 2, 0, 0, &plan);
+    assert((plan.actions & BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED) != 0);
+    assert(plan.dispatch_mode == 2);
+    bubsy_actor_347ec_build_followup_plan(0x8004, 0x2EE, 0, 0, 0, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+
+    bubsy_actor_347ec_build_followup_plan(0x10004, 0x2FF, 0, 1, 0, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED |
+        BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_37D)) ==
+        (BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED | BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_37D));
+    assert(plan.dispatch_mode == 1);
+    bubsy_actor_347ec_build_followup_plan(0x10004, 0x2EA, 0, 1, 0, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+    bubsy_actor_347ec_build_followup_plan(0x10004, 0x2FF, 0, 0, 0, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+    bubsy_actor_347ec_build_followup_plan(0x1004, 0x2EA, 0, 0, 0, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_FOLLOWUP_TRANSFORM_CONTEXT |
+        BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_1000 |
+        BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_6452)) ==
+        (BUBSY_ACTOR_347EC_FOLLOWUP_TRANSFORM_CONTEXT |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_1000 |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_6452));
+
+    bubsy_actor_347ec_build_followup_plan(0x104, 0, 0, 0, 0xFD, &plan);
+    assert(plan.actions == BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST);
+    bubsy_actor_347ec_build_followup_plan(0x104, 0, 0, 0, 0xFE, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_FOLLOWUP_UPDATE_LINKED_4C |
+        BUBSY_ACTOR_347EC_FOLLOWUP_RESET_GLOBAL_64BA |
+        BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_100)) ==
+        (BUBSY_ACTOR_347EC_FOLLOWUP_UPDATE_LINKED_4C |
+            BUBSY_ACTOR_347EC_FOLLOWUP_RESET_GLOBAL_64BA |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_100));
+    assert(plan.linked_value_4C == -0x400);
+    bubsy_actor_347ec_build_followup_plan(0x104, 0, 0, 0, 0xFF, &plan);
+    assert(plan.linked_value_4C == 0x400);
+}
+
+static void test_bubsy_actor_347ec_state_bit4_clear_plan(void) {
+    BubsyActor347ECStateBit4ClearPlan plan;
+
+    bubsy_actor_347ec_build_state_bit4_clear_plan(0x40, 1, 0, 0, 10, 40, &plan);
+    assert(plan.actions == (BUBSY_ACTOR_347EC_STATE4_CLEAR_SELECT_2B0 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_00 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_ACTOR_FLAG_04 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_1C6BC));
+    assert(plan.actor_state_00 == 0 && plan.actor_flags_04 == 0x04);
+
+    bubsy_actor_347ec_build_state_bit4_clear_plan(0, 0, 0, 0x02, 10, 41, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_5_8_A |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_COUNTER |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_MOVE_05 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_GLOBAL_37C |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_FLAGS_03 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_6464_64B8)) ==
+        (BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_5_8_A |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_COUNTER |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_MOVE_05 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_GLOBAL_37C |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_FLAGS_03 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_6464_64B8));
+    assert(plan.global_380 == 41 && plan.actor_state_01 == 2 && plan.actor_flags_04 == 0);
+
+    bubsy_actor_347ec_build_state_bit4_clear_plan(0x1000, 0, 0, 0, 10, 40, &plan);
+    assert((plan.actions & (BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTY_C |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_GLOBAL_6452 |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_2E7FC |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_ACTOR_MODE_1)) ==
+        (BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTY_C |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_GLOBAL_6452 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_2E7FC |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_ACTOR_MODE_1));
+
+    bubsy_actor_347ec_build_state_bit4_clear_plan(0x18000, 0, 0, 0x02, 10, 40, &plan);
+    assert((plan.actions & BUBSY_ACTOR_347EC_STATE4_CLEAR_ASSERT_BOUND) != 0);
+    assert((plan.actions & BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_F_10) != 0);
+    assert((plan.actions & BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_6464_64B8) == 0);
+    assert(plan.global_380 == 10 && plan.actor_flags_04 == 0x02);
+}
+
 static void test_bubsy_grounded_case38_descriptor(void) {
     uint8_t descriptor_state = 2;
 
@@ -1259,6 +1551,15 @@ int main(void) {
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_default_state_route();
+    test_bubsy_actor_shared_update_entry();
+    test_bubsy_actor_347ec_mode_entry();
+    test_bubsy_actor_347ec_argument_plan();
+    test_bubsy_actor_347ec_mode_zero();
+    test_bubsy_actor_347ec_mode_zero_call_plan();
+    test_bubsy_actor_347ec_mode_zero_bit40_plan();
+    test_bubsy_actor_347ec_mode_zero_alternate();
+    test_bubsy_actor_347ec_followup_plan();
+    test_bubsy_actor_347ec_state_bit4_clear_plan();
     test_bubsy_grounded_dispatch_table();
     test_bubsy_grounded_handler_prelude();
     test_bubsy_grounded_case38_descriptor();

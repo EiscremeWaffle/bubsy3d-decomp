@@ -160,6 +160,164 @@ typedef enum BubsyGroundedCases9_11Actions {
     BUBSY_GROUNDED_CASE9_11_RESET_AND_CALL_3539C_1 = 32,
 } BubsyGroundedCases9_11Actions;
 
+typedef enum BubsyActorSharedUpdateEntryAction {
+    BUBSY_ACTOR_SHARED_UPDATE_ENTRY_RETURN = 0,
+    BUBSY_ACTOR_SHARED_UPDATE_ENTRY_SET_PROPERTIES_2_6 = 1,
+    BUBSY_ACTOR_SHARED_UPDATE_ENTRY_CONTINUE = 2,
+} BubsyActorSharedUpdateEntryAction;
+
+typedef enum BubsyActor347ECModeEntryAction {
+    BUBSY_ACTOR_347EC_MODE_ZERO_PATH = 0,
+    BUBSY_ACTOR_347EC_NONZERO_ALTERNATE_PATH = 1,
+    BUBSY_ACTOR_347EC_CALL_2269C_01 = 2,
+} BubsyActor347ECModeEntryAction;
+
+typedef enum BubsyActor347ECNonzeroActions {
+    BUBSY_ACTOR_347EC_NONZERO_CALL_22C94 = 1,
+    BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 = 2,
+    BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 = 4,
+    BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 = 8,
+    BUBSY_ACTOR_347EC_NONZERO_PROPERTIES_3_4 = 16,
+    BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04 = 32,
+} BubsyActor347ECNonzeroActions;
+
+typedef struct BubsyActor347ECArgumentPlan {
+    uint8_t actions;
+    int32_t argument_a1;
+    int32_t argument_a2;
+    int32_t argument_a3;
+    int32_t stack_argument_10;
+    int32_t stack_argument_14;
+    int32_t stack_argument_18;
+    uint8_t set_global_37D;
+    uint8_t update_properties_3_4;
+    uint8_t actor_state_44_path;
+} BubsyActor347ECArgumentPlan;
+
+typedef enum BubsyActor347ECModeZeroActions {
+    BUBSY_ACTOR_347EC_MODE_ZERO_ALTERNATE = 0,
+    BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_STATE_00 = 1,
+    BUBSY_ACTOR_347EC_MODE_ZERO_PROPERTIES_3_4 = 2,
+    BUBSY_ACTOR_347EC_MODE_ZERO_CALL_22C94 = 4,
+    BUBSY_ACTOR_347EC_MODE_ZERO_REQUEST_MOVE = 8,
+    BUBSY_ACTOR_347EC_MODE_ZERO_CALL_2925C = 16,
+    BUBSY_ACTOR_347EC_MODE_ZERO_CALL_26A0C = 32,
+    BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_00_AND_RETURN = 64,
+} BubsyActor347ECModeZeroActions;
+
+typedef enum BubsyActor347ECModeZeroBit40Actions {
+    BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBALS_64C0_37C_37E = 1,
+    BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_5_8_A = 2,
+    BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTY_C = 4,
+    BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6452 = 8,
+    BUBSY_ACTOR_347EC_ZERO40_CALL_2E7FC = 16,
+    BUBSY_ACTOR_347EC_ZERO40_ASSERT_BOUND = 32,
+    BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_380 = 64,
+    BUBSY_ACTOR_347EC_ZERO40_SET_ACTOR_STATE_01 = 128,
+    BUBSY_ACTOR_347EC_ZERO40_REQUEST_MOVE_05 = 256,
+    BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_37C = 512,
+    BUBSY_ACTOR_347EC_ZERO40_CLEAR_ACTOR_FLAGS_03 = 1024,
+    BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_F_10 = 4096,
+    BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6464 = 8192,
+    BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_64B8 = 16384,
+    BUBSY_ACTOR_347EC_ZERO40_CALL_3539C_MODE_1 = 32768,
+} BubsyActor347ECModeZeroBit40Actions;
+
+typedef struct BubsyActor347ECModeZeroBit40Plan {
+    uint32_t actions;
+    uint32_t updated_global_380;
+    uint8_t actor_state_01;
+    uint32_t actor_flags_04;
+} BubsyActor347ECModeZeroBit40Plan;
+
+typedef enum BubsyActor347ECFollowupActions {
+    BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST = 1,
+    BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED = 2,
+    BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_37D = 4,
+    BUBSY_ACTOR_347EC_FOLLOWUP_TRANSFORM_CONTEXT = 8,
+    BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_1000 = 16,
+    BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_6452 = 32,
+    BUBSY_ACTOR_347EC_FOLLOWUP_UPDATE_LINKED_4C = 64,
+    BUBSY_ACTOR_347EC_FOLLOWUP_RESET_GLOBAL_64BA = 128,
+    BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_100 = 256,
+    BUBSY_ACTOR_347EC_FOLLOWUP_ENTER_STATE_BIT4_CLEAR_BLOCK = 512,
+} BubsyActor347ECFollowupActions;
+
+typedef enum BubsyActor347ECModeZeroAlternateActions {
+    BUBSY_ACTOR_347EC_ZERO_ALT_CALL_22C94 = 1,
+    BUBSY_ACTOR_347EC_ZERO_ALT_CLEAR_64BC = 2,
+    BUBSY_ACTOR_347EC_ZERO_ALT_RESET_GLOBALS = 4,
+    BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2944C = 8,
+    BUBSY_ACTOR_347EC_ZERO_ALT_CALL_1B558_27_04 = 16,
+    BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2269C_01 = 32,
+    BUBSY_ACTOR_347EC_ZERO_ALT_ASSERT = 64,
+} BubsyActor347ECModeZeroAlternateActions;
+
+typedef struct BubsyActor347ECModeZeroAlternatePlan {
+    uint16_t actions;
+    uint16_t argument_a1;
+    uint16_t argument_a2;
+    uint16_t argument_a3;
+    int32_t stack_argument_10;
+    int32_t stack_argument_14;
+    int32_t stack_argument_18;
+    uint8_t actor_state_00;
+    uint8_t actor_state_01;
+    uint32_t updated_global_380;
+} BubsyActor347ECModeZeroAlternatePlan;
+
+typedef struct BubsyActor347ECModeZeroPlan {
+    uint8_t actions;
+    uint8_t actor_state_00;
+    uint16_t selection_a1;
+    uint16_t selection_a2;
+    uint16_t selection_a3;
+    int32_t selection_stack_10;
+    int32_t selection_stack_14;
+    int32_t selection_stack_18;
+    int32_t move_a0;
+    int32_t move_a1;
+    int32_t property_a0;
+    int32_t property_a1;
+    int32_t property_a2;
+    int32_t property_a3;
+} BubsyActor347ECModeZeroPlan;
+
+typedef struct BubsyActor347ECFollowupPlan {
+    uint16_t actions;
+    int16_t dispatch_mode;
+    int32_t linked_value_4C;
+} BubsyActor347ECFollowupPlan;
+
+typedef enum BubsyActor347ECStateBit4ClearActions {
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_SELECT_2B0 = 1,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_00 = 2,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_ACTOR_FLAG_04 = 4,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_1C6BC = 8,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_5_8_A = 16,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_GLOBALS = 32,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTY_C = 64,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_GLOBAL_6452 = 128,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_2E7FC = 256,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_ASSERT_BOUND = 1024,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_COUNTER = 2048,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_ACTOR_STATE_01 = 4096,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_MOVE_05 = 8192,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_GLOBAL_37C = 16384,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_FLAGS_03 = 32768,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_F_10 = 65536,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_6464_64B8 = 131072,
+    BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_ACTOR_MODE_1 = 262144,
+} BubsyActor347ECStateBit4ClearActions;
+
+typedef struct BubsyActor347ECStateBit4ClearPlan {
+    uint32_t actions;
+    uint8_t actor_state_00;
+    uint8_t actor_state_01;
+    uint8_t actor_flags_04;
+    uint32_t global_380;
+} BubsyActor347ECStateBit4ClearPlan;
+
 BubsyActorUpdateEntryResult bubsy_actor_update_entry_gate(
     BubsyActorUpdateActorView *actor,
     uint8_t update_mode,
@@ -174,6 +332,62 @@ BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
     uint8_t update_lock_6479,
     int16_t update_gate_6454,
     uint8_t runtime_mode
+);
+BubsyActorSharedUpdateEntryAction bubsy_actor_shared_update_entry_action(
+    uint32_t actor_flags_04,
+    uint8_t actor_update_lock_6479
+);
+BubsyActor347ECModeEntryAction bubsy_actor_347ec_select_mode_entry(
+    uint8_t mode,
+    uint32_t actor_state_10,
+    uint8_t *actor_state_00
+);
+void bubsy_actor_347ec_build_nonzero_mode_plan(
+    uint32_t actor_state_10,
+    uint8_t global_37C_nonzero,
+    uint8_t actor_state_00,
+    BubsyActor347ECArgumentPlan *plan
+);
+uint8_t bubsy_actor_347ec_select_mode_zero_actions(
+    uint32_t actor_state_10,
+    uint8_t *actor_state_00
+);
+BubsyActor347ECModeZeroPlan bubsy_actor_347ec_build_mode_zero_plan(
+    uint32_t actor_state_10
+);
+BubsyActor347ECModeZeroBit40Plan bubsy_actor_347ec_build_mode_zero_bit40_plan(
+    uint32_t actor_state_10,
+    uint32_t actor_flags_04,
+    uint8_t actor_state_01,
+    uint32_t global_380,
+    uint32_t object_limit
+);
+BubsyActor347ECModeZeroAlternatePlan bubsy_actor_347ec_plan_mode_zero_alternate(
+    int32_t global_64BC_nonzero,
+    int32_t global_6490,
+    uint8_t selection_result_low,
+    uint8_t actor_state_00,
+    int32_t global_6464_nonzero,
+    uint32_t actor_flags_04,
+    uint32_t global_380,
+    uint32_t object_limit
+);
+void bubsy_actor_347ec_build_followup_plan(
+    uint32_t actor_state_10,
+    int32_t selection_result,
+    int16_t global_state_6450,
+    uint8_t global_37D,
+    int16_t global_counter_64BA,
+    BubsyActor347ECFollowupPlan *plan
+);
+void bubsy_actor_347ec_build_state_bit4_clear_plan(
+    uint32_t actor_state_10,
+    uint8_t actor_state_00,
+    uint8_t actor_state_01,
+    uint8_t actor_flags_04,
+    uint32_t global_380,
+    uint32_t object_limit,
+    BubsyActor347ECStateBit4ClearPlan *plan
 );
 uint8_t bubsy_grounded_case38_update_descriptor(uint8_t *descriptor_state_11);
 uint32_t bubsy_grounded_handler_case_target(uint16_t state_id);

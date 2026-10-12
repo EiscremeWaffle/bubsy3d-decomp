@@ -8,7 +8,7 @@ This is the current decomp.dev report scope, not a certified whole-game function
 - Explicitly labeled reachable fragments: 1,167
 - Unclassified executable payload bytes: 12,816,616
 - Indirect sites requiring further review: 2,390
-- Exact source matches configured: 18404 bytes across 93 function(s) (0.613030%)
+- Exact source matches configured: 20208 bytes across 94 function(s) (0.673121%)
 
 - Exact executable C data matches configured: 196 bytes across 1 data symbol(s)
 - Other disc files: 621,466,361 bytes across 424 files (inventory only; not objdiff data coverage)

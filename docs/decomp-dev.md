@@ -33,10 +33,11 @@ and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
 The current validated snapshot maps 3,002,136 instruction bytes and credits
-18,404 exact code bytes across 93 functions (0.613030%), plus 196 exact data
-bytes. This includes the 3,228-byte grounded-state handler as an
-assembly-backed exact match; that transcription is not recovered high-level C
-and does not establish grounded position/velocity integration.
+20,208 exact code bytes across 94 functions (0.673121%), plus 196 exact data
+bytes. This includes the 3,228-byte grounded-state handler and the 1,804-byte
+`func_800347EC` helper as assembly-backed exact matches; those transcriptions
+are not recovered high-level C and do not establish grounded position/velocity
+integration.
 
 Control flow is traced from known entry points and direct calls. Supported static
 callback slots, candidate jump tables, and corroborated address-taken prologues
@@ -52,8 +53,8 @@ reconstruct relocations, or establish the original compiler. Those are prerequis
 for future source-matching work, not achievements of this baseline.
 
 The player-model and grounded-state reconstructions are in `src/player_model/`
-and have a passing native harness. The report's 0.640884% fuzzy similarity is
-diagnostic only and is not byte-exact progress. The L0 state-target table
+and have a passing native harness. Fuzzy similarity remains diagnostic only
+and is not byte-exact progress. The L0 state-target table
 contributes 196 exact matched data bytes separately from code. This metric
 covers executable constants only; disc textures, models, audio, and movies are
 tracked by the disc inventory, not this objdiff C-data count. Whole-game

@@ -544,6 +544,363 @@ BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
     return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
 }
 
+BubsyActorSharedUpdateEntryAction bubsy_actor_shared_update_entry_action(
+    uint32_t actor_flags_04,
+    uint8_t actor_update_lock_6479
+) {
+    if ((actor_flags_04 & 0x4u) != 0 || actor_update_lock_6479 != 0) {
+        return BUBSY_ACTOR_SHARED_UPDATE_ENTRY_RETURN;
+    }
+    if ((actor_flags_04 & 0x1100u) != 0) {
+        return BUBSY_ACTOR_SHARED_UPDATE_ENTRY_SET_PROPERTIES_2_6;
+    }
+    return BUBSY_ACTOR_SHARED_UPDATE_ENTRY_CONTINUE;
+}
+
+BubsyActor347ECModeEntryAction bubsy_actor_347ec_select_mode_entry(
+    uint8_t mode,
+    uint32_t actor_state_10,
+    uint8_t *actor_state_00
+) {
+    if (mode == 0) {
+        return BUBSY_ACTOR_347EC_MODE_ZERO_PATH;
+    }
+    if ((actor_state_10 & 0x44u) != 0) {
+        return BUBSY_ACTOR_347EC_NONZERO_ALTERNATE_PATH;
+    }
+    *actor_state_00 = 0;
+    return BUBSY_ACTOR_347EC_CALL_2269C_01;
+}
+
+void bubsy_actor_347ec_build_nonzero_mode_plan(
+    uint32_t actor_state_10,
+    uint8_t global_37C_nonzero,
+    uint8_t actor_state_00,
+    BubsyActor347ECArgumentPlan *plan
+) {
+    plan->actions = BUBSY_ACTOR_347EC_NONZERO_CALL_22C94;
+    plan->set_global_37D = 0;
+    plan->update_properties_3_4 = (actor_state_10 & 0x18u) != 0;
+    plan->actor_state_44_path = (actor_state_10 & 0x44u) != 0;
+    plan->stack_argument_10 = plan->update_properties_3_4 != 0 ? 0x294 : 0x29B;
+    plan->argument_a2 = plan->actor_state_44_path != 0 ? 0 : 1;
+    plan->argument_a3 = plan->actor_state_44_path != 0 ? actor_state_00 : 0;
+
+    if (plan->actor_state_44_path != 0) {
+        plan->argument_a1 = 0;
+        plan->stack_argument_10 = 0;
+        plan->update_properties_3_4 = 0;
+        if ((actor_state_10 & 0x9000u) != 0) {
+            plan->stack_argument_14 = 0x2EA;
+            plan->stack_argument_18 = 0x2EF;
+        } else if ((actor_state_10 & 0x10000u) != 0) {
+            plan->stack_argument_14 = 0x2FF;
+            plan->stack_argument_18 = 0x302;
+        } else {
+            plan->stack_argument_14 = 0x33A;
+            plan->stack_argument_18 = 0x2A7;
+        }
+    } else if ((actor_state_10 & 0x9000u) != 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04;
+        plan->argument_a1 = 0x29D;
+        plan->stack_argument_10 = 0x2E3;
+        plan->stack_argument_14 = 0x2EA;
+        plan->stack_argument_18 = 0x2EF;
+    } else if ((actor_state_10 & 0x10000u) != 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04;
+        plan->argument_a1 = 0x29D;
+        plan->stack_argument_10 = 0x2F8;
+        plan->stack_argument_14 = 0x2FF;
+        plan->stack_argument_18 = 0x302;
+        plan->set_global_37D = 1;
+    } else {
+        plan->actions |= BUBSY_ACTOR_347EC_NONZERO_CLEAR_ACTOR_00 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_2269C_01 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_54B20 |
+            BUBSY_ACTOR_347EC_NONZERO_CALL_1B558_27_04;
+        plan->argument_a1 = 0x7D8;
+        plan->stack_argument_14 = global_37C_nonzero != 0 ? 0x33A : 0x2A0;
+        plan->stack_argument_18 = 0x2A7;
+    }
+    if (plan->update_properties_3_4 != 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_NONZERO_PROPERTIES_3_4;
+    }
+}
+
+uint8_t bubsy_actor_347ec_select_mode_zero_actions(
+    uint32_t actor_state_10,
+    uint8_t *actor_state_00
+) {
+    uint8_t actions = BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_STATE_00 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_22C94 |
+        BUBSY_ACTOR_347EC_MODE_ZERO_REQUEST_MOVE |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_2925C |
+        BUBSY_ACTOR_347EC_MODE_ZERO_CALL_26A0C;
+
+    if ((actor_state_10 & 0x44u) != 0) {
+        if ((actor_state_10 & 0x40u) == 0) {
+            *actor_state_00 = 1;
+            return BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_00_AND_RETURN;
+        }
+        return BUBSY_ACTOR_347EC_MODE_ZERO_ALTERNATE;
+    }
+    *actor_state_00 = 1;
+    if ((actor_state_10 & 0x18u) != 0) {
+        actions |= BUBSY_ACTOR_347EC_MODE_ZERO_PROPERTIES_3_4;
+    }
+    return actions;
+}
+
+BubsyActor347ECModeZeroPlan bubsy_actor_347ec_build_mode_zero_plan(
+    uint32_t actor_state_10
+) {
+    BubsyActor347ECModeZeroPlan plan = {
+        .actions = BUBSY_ACTOR_347EC_MODE_ZERO_SET_ACTOR_STATE_00 |
+            BUBSY_ACTOR_347EC_MODE_ZERO_CALL_22C94 |
+            BUBSY_ACTOR_347EC_MODE_ZERO_REQUEST_MOVE |
+            BUBSY_ACTOR_347EC_MODE_ZERO_CALL_2925C |
+            BUBSY_ACTOR_347EC_MODE_ZERO_CALL_26A0C,
+        .actor_state_00 = 1,
+        .selection_a1 = 0x680,
+        .selection_a2 = 1,
+        .selection_a3 = 0,
+        .selection_stack_10 = 0x29B,
+        .selection_stack_14 = 0x33A,
+        .selection_stack_18 = 0x2A7,
+        .move_a0 = 0x27,
+        .move_a1 = 4,
+        .property_a0 = 4,
+        .property_a1 = 3,
+        .property_a2 = 1,
+        .property_a3 = -1,
+    };
+
+    if ((actor_state_10 & 0x18u) != 0) {
+        plan.actions |= BUBSY_ACTOR_347EC_MODE_ZERO_PROPERTIES_3_4;
+    }
+    return plan;
+}
+
+BubsyActor347ECModeZeroBit40Plan bubsy_actor_347ec_build_mode_zero_bit40_plan(
+    uint32_t actor_state_10,
+    uint32_t actor_flags_04,
+    uint8_t actor_state_01,
+    uint32_t global_380,
+    uint32_t object_limit
+) {
+    BubsyActor347ECModeZeroBit40Plan plan = {
+        .actions = BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBALS_64C0_37C_37E |
+            BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_5_8_A,
+        .updated_global_380 = global_380,
+        .actor_state_01 = actor_state_01,
+        .actor_flags_04 = actor_flags_04,
+    };
+
+    if ((actor_state_10 & 0x1000u) != 0) {
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTY_C |
+            BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6452 |
+            BUBSY_ACTOR_347EC_ZERO40_CALL_2E7FC;
+    }
+
+    if ((actor_flags_04 & 0x2u) != 0) {
+        if (global_380 + 0x1Eu >= object_limit) {
+            plan.actions |= BUBSY_ACTOR_347EC_ZERO40_ASSERT_BOUND;
+        } else {
+            plan.actions |= BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_380 |
+                BUBSY_ACTOR_347EC_ZERO40_SET_ACTOR_STATE_01 |
+                BUBSY_ACTOR_347EC_ZERO40_REQUEST_MOVE_05 |
+                BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_37C |
+                BUBSY_ACTOR_347EC_ZERO40_CLEAR_ACTOR_FLAGS_03;
+            plan.updated_global_380 = object_limit;
+            plan.actor_state_01 = 2;
+            plan.actor_flags_04 = actor_flags_04 & ~0x3u;
+        }
+    }
+
+    if ((actor_state_10 & 0x18000u) != 0) {
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO40_CALL_PROPERTIES_F_10;
+    } else {
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO40_CLEAR_GLOBAL_6464 |
+            BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_64B8;
+    }
+
+    if ((plan.actions & BUBSY_ACTOR_347EC_ZERO40_SET_GLOBAL_37C) == 0) {
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO40_CALL_3539C_MODE_1;
+    }
+    return plan;
+}
+
+BubsyActor347ECModeZeroAlternatePlan bubsy_actor_347ec_plan_mode_zero_alternate(
+    int32_t global_64BC_nonzero,
+    int32_t global_6490,
+    uint8_t selection_result_low,
+    uint8_t actor_state_00,
+    int32_t global_6464_nonzero,
+    uint32_t actor_flags_04,
+    uint32_t global_380,
+    uint32_t object_limit
+) {
+    BubsyActor347ECModeZeroAlternatePlan plan = {
+        .actions = BUBSY_ACTOR_347EC_ZERO_ALT_CALL_22C94,
+        .argument_a1 = 0x88,
+        .argument_a2 = 0,
+        .argument_a3 = 0,
+        .stack_argument_10 = 0,
+        .stack_argument_14 = 0x33A,
+        .stack_argument_18 = 0x2A7,
+        .actor_state_00 = actor_state_00,
+        .actor_state_01 = 0,
+        .updated_global_380 = global_380,
+    };
+
+    if (global_64BC_nonzero != 0) {
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO_ALT_CLEAR_64BC;
+        plan.argument_a1 += global_6490 < 0 ? 0x80 : 0x40;
+    }
+    if (selection_result_low == 1) {
+        return plan;
+    }
+
+    plan.actions |= BUBSY_ACTOR_347EC_ZERO_ALT_RESET_GLOBALS |
+        BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2944C;
+    plan.actor_state_01 = global_6464_nonzero != 0 ? 1 : 2;
+    if ((actor_flags_04 & 0x2u) == 0) {
+        return plan;
+    } else {
+        if (global_380 + 0x1Eu >= object_limit) {
+            plan.actions |= BUBSY_ACTOR_347EC_ZERO_ALT_ASSERT;
+            return plan;
+        }
+
+        plan.actions |= BUBSY_ACTOR_347EC_ZERO_ALT_CALL_1B558_27_04 |
+            BUBSY_ACTOR_347EC_ZERO_ALT_CALL_2269C_01;
+        plan.actor_state_01 = 2;
+        plan.updated_global_380 = object_limit;
+        return plan;
+    }
+
+    return plan;
+}
+
+void bubsy_actor_347ec_build_followup_plan(
+    uint32_t actor_state_10,
+    int32_t selection_result,
+    int16_t global_state_6450,
+    uint8_t global_37D,
+    int16_t global_counter_64BA,
+    BubsyActor347ECFollowupPlan *plan
+) {
+    uint32_t selection_gate;
+
+    plan->actions = BUBSY_ACTOR_347EC_FOLLOWUP_MOVE_REQUEST;
+    plan->dispatch_mode = 0;
+    plan->linked_value_4C = 0;
+    if ((actor_state_10 & 0x4u) == 0) {
+        plan->actions = BUBSY_ACTOR_347EC_FOLLOWUP_ENTER_STATE_BIT4_CLEAR_BLOCK;
+        return;
+    }
+
+    if ((actor_state_10 & 0x8000u) != 0) {
+        if (selection_result != 0x2EF && global_state_6450 != 0) {
+            plan->actions |= BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED;
+            plan->dispatch_mode = global_state_6450;
+        }
+        return;
+    }
+
+    if ((actor_state_10 & 0x10000u) != 0) {
+        if (selection_result == 0x2FF) {
+            if (global_37D != 0) {
+                plan->actions |= BUBSY_ACTOR_347EC_FOLLOWUP_DISPATCH_SHARED |
+                    BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_37D;
+                plan->dispatch_mode = 1;
+            }
+        }
+        return;
+    }
+
+    selection_gate = actor_state_10 & 0x1000u;
+
+    if (selection_gate != 0 && selection_result == 0x2EA) {
+        plan->actions |= BUBSY_ACTOR_347EC_FOLLOWUP_TRANSFORM_CONTEXT |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_1000 |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_GLOBAL_6452;
+        return;
+    }
+
+    if (selection_gate == 0 && (actor_state_10 & 0x100u) != 0 &&
+        global_counter_64BA >= 0xFE) {
+        plan->actions |= BUBSY_ACTOR_347EC_FOLLOWUP_UPDATE_LINKED_4C |
+            BUBSY_ACTOR_347EC_FOLLOWUP_RESET_GLOBAL_64BA |
+            BUBSY_ACTOR_347EC_FOLLOWUP_CLEAR_ACTOR_100;
+        plan->linked_value_4C = global_counter_64BA == 0xFF ? 0x400 : -0x400;
+    }
+}
+
+void bubsy_actor_347ec_build_state_bit4_clear_plan(
+    uint32_t actor_state_10,
+    uint8_t actor_state_00,
+    uint8_t actor_state_01,
+    uint8_t actor_flags_04,
+    uint32_t global_380,
+    uint32_t object_limit,
+    BubsyActor347ECStateBit4ClearPlan *plan
+) {
+    plan->actions = 0;
+    plan->actor_state_00 = actor_state_00;
+    plan->actor_state_01 = actor_state_01;
+    plan->actor_flags_04 = actor_flags_04;
+    plan->global_380 = global_380;
+
+    if ((actor_state_10 & 0x40u) != 0 && actor_state_00 == 1) {
+        plan->actions = BUBSY_ACTOR_347EC_STATE4_CLEAR_SELECT_2B0 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_00 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_ACTOR_FLAG_04 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_1C6BC;
+        plan->actor_state_00 = 0;
+        plan->actor_flags_04 |= 0x04u;
+        return;
+    }
+
+    plan->actions = BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_5_8_A |
+        BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_GLOBALS;
+    if ((actor_state_10 & 0x1000u) != 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTY_C |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_GLOBAL_6452 |
+            BUBSY_ACTOR_347EC_STATE4_CLEAR_CALL_2E7FC;
+    }
+
+    if ((actor_flags_04 & 0x02u) != 0) {
+        if (global_380 + 0x1Eu >= object_limit) {
+            plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_ASSERT_BOUND;
+        } else {
+            plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_COUNTER |
+                BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_ACTOR_STATE_01 |
+                BUBSY_ACTOR_347EC_STATE4_CLEAR_MOVE_05 |
+                BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_GLOBAL_37C |
+                BUBSY_ACTOR_347EC_STATE4_CLEAR_ACTOR_FLAGS_03;
+            plan->global_380 = object_limit;
+            plan->actor_state_01 = 2;
+            plan->actor_flags_04 &= (uint8_t)~0x03u;
+        }
+    }
+
+    if ((actor_state_10 & 0x18000u) != 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_PROPERTIES_F_10;
+    } else {
+        plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_RESET_6464_64B8;
+    }
+    if ((plan->actions & BUBSY_ACTOR_347EC_STATE4_CLEAR_SET_GLOBAL_37C) == 0) {
+        plan->actions |= BUBSY_ACTOR_347EC_STATE4_CLEAR_UPDATE_ACTOR_MODE_1;
+    }
+}
+
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
 #include "player_model.h"
 

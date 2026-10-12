@@ -41,16 +41,74 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 18,404 exact code bytes across 93
-functions, or `0.613030%` of mapped code. The total includes two Clang-built
-getters, eight original GCC C functions, the assembly-backed death and
-grounded-state handlers, 20 assembly-backed copies of `func_80010128`, the L0
-assembly-backed Q20.12 dot product `func_800100A0`, 22 C copies of
+The validated report currently credits 20,208 exact code bytes across 94
+functions, or `0.673121%` of mapped code. The total includes two Clang-built
+getters, eight original GCC C functions, the assembly-backed death,
+grounded-state, and `func_800347EC` handlers, 20 assembly-backed copies of
+`func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
+22 C copies of
 `func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
 actor-event dispatcher remains fuzzy; the target-only C draft for
 `shared_actor_state_dispatch` is also not exact and earns no progress credit.
 The progress site changes only after this snapshot is committed, pushed, and
 published by GitHub Actions.
+
+### Shared Actor Helper `func_800347EC`
+
+`func_800347EC` is a bounded 1,804-byte routine at `0x800347EC..0x80034EF8`
+with four direct callers. Its entry returns immediately when actor flag
+`+0x04` bit `0x04` is set or lock byte `0x80186479` is nonzero. Otherwise
+actor flags `+0x04` mask `0x1100` select property calls `2` and `6`; a clear
+mask continues into the caller-selected mode path. This entry gate is modeled
+and covered by host tests.
+
+The full 1,804-byte range has an exact match through the explicitly
+assembly-backed transcription in `func_800347EC_match.c`, built with pinned
+GCC 2.6.3/MASPSX and linked at its verified address. A separate readable C
+translation is in `bubsy_actor_347ec.c`; it expresses the observed control
+flow, arguments, and state/global writes, but is not the source used for exact
+credit and has not been byte-matched. The host-side planners and tests cover
+the branch decisions and data changes. Engine-call effects and gameplay
+meanings remain unresolved.
+
+In nonzero mode, state mask `0x44` clear selects the regular path: it clears
+actor byte `+0x00`, calls `0x8002269C(actor, 1)` and `0x80054B20`, optionally
+calls properties `3` and `4` for state mask `0x18`, then calls `0x80022C94`.
+The selector arguments depend on masks `0x9000` and `0x10000` and `$gp+0x37C`;
+the default first stack value is `0x29B`, changed to `0x294` when mask `0x18`
+also causes property calls `3` and `4`;
+the path then requests transition `0x8001B558(0x27, 4, ...)` and returns.
+With mask `0x44` set, the alternate selector uses stack values `0x2EA/0x2EF`
+for mask `0x9000`, `0x2FF/0x302` for mask `0x10000`, or `0x33A/0x2A7` by
+default. Its follow-up uses the saved component value: state mask `0x8000`
+may dispatch with global `0x80186450`; mask `0x10000` may dispatch mode `1`
+and clear `$gp+0x37D`; mask `0x1000` plus value `0x2EA` transforms companion
+context and clears state/global values; mask `0x100` with signed counter
+`0x801864BA >= 0xFE` writes linked word `+0x4C` to `-0x400` or `+0x400`,
+clears the counter, and clears state bit `0x100`.
+
+If that alternate path has actor state bit `0x04` clear, it enters a shared
+fallback. The fallback can take a special sequence-`0x2B0` path when state bit
+`0x40` is set and actor byte `+0x00` equals `1`; otherwise it calls properties
+`5`, `8`, and `0xA`, resets globals, and handles optional property `0xC`.
+Actor flag `+0x04` bit `0x02` gates the unsigned object bound: clear skips the
+bound check, a failed bound calls the assertion helper, and a successful bound
+updates `$gp+0x380`, actor byte `+0x01`, transition `0x8001B558(0x27, 5, ...)`,
+and actor flags. State mask `0x18000` selects properties `0xF` and `0x10`;
+otherwise globals `0x80186464/0x801864B8` are reset. `$gp+0x37C` controls the
+final call to `0x8003539C(actor, 1)`.
+
+In mode zero with state mask `0x44` clear, actor byte `+0x00` becomes `1`;
+mask `0x18` additionally calls properties `3` and `4`. The path then calls
+`0x80022C94`, requests transition `0x8001B558(0x27, 4, ...)`, and calls
+`0x8002925C` and `0x80026A0C` with observed arguments. With mask `0x44` set
+and bit `0x40` clear, it writes actor byte `+0x00 = 1` and returns. When bit
+`0x40` is set, selector result byte `1` returns without further writes; every
+other result resets globals, chooses actor byte `+0x01` from `0x80186464`, and calls
+`0x8002944C`. If actor flag bit `0x02` is set, an unsigned object-bound check
+either updates `$gp+0x380` and requests transition mode `4` plus
+`0x8002269C(actor, 1)`, or calls the assertion helper. These are observed
+transitions, not recovered gameplay meanings.
 
 ## Bubsy Actor Routine
 
