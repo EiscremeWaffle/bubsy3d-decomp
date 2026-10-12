@@ -33,6 +33,7 @@ int32_t func_8005385C(const int32_t *input, int32_t *output) {
 int32_t func_8005395C(const int32_t *input, int32_t *output) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
     register int32_t first_scale __asm__("$5");
+    register int32_t result __asm__("$2");
 #else
     int32_t first_scale;
 #endif
@@ -46,15 +47,32 @@ int32_t func_8005395C(const int32_t *input, int32_t *output) {
     func_8005385C((const int32_t *)scratch.ranged, (int32_t *)&scratch.transformed);
     first_scale = scratch.transformed;
     if (first_scale == 0) {
+    #ifdef BUBSY3D_MATCH_ORIGINAL_L0
+        result = 7;
+        __asm__ volatile(
+            "sw $zero,0(%0)\n\t"
+            "sw $zero,4(%0)\n\t"
+            "sw $zero,8(%0)\n\t"
+            :
+            : "r"(output)
+        );
+        return result;
+    #else
         output[0] = 0;
         output[1] = 0;
         output[2] = 0;
         return 7;
+#endif
     }
 
     func_80053350(scratch.ranged[0], first_scale, &output[0]);
     func_80053350(scratch.ranged[1], scratch.transformed, &output[1]);
     func_80053350(scratch.ranged[2], scratch.transformed, &output[2]);
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    result = 0;
+    return result;
+#else
     return 0;
+#endif
 }
 #endif

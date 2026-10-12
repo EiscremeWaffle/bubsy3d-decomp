@@ -89,6 +89,17 @@
           "symbols": ["func_8005385C"]
         },
         {
+          "source": "src/player_model/player_vector_transform.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C vector-transform wrapper with target-specific return-register and zero-store constraints, byte-matched with pinned GCC 2.6.3; caller semantics remain unknown.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005395C"]
+        },
+        {
           "source": "src/player_model/bubsy_grounded_state_match.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
@@ -123,10 +134,6 @@
         {
           "source": "src/player_model/player_vector_range.c",
           "symbols": ["func_80053D68"]
-        },
-        {
-          "source": "src/player_model/player_vector_transform.c",
-          "symbols": ["func_8005395C"]
         }
       ],
       "data_sources": [
@@ -220,6 +227,12 @@
           "start": "0x8005385C",
           "end": "0x80053904",
           "size": 168
+        },
+        {
+          "name": "func_8005395C",
+          "start": "0x8005395C",
+          "end": "0x800539E4",
+          "size": 136
         },
         {
           "name": "bubsy_grounded_state_handler",

@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,002,136 code bytes. Exact progress requires 15,011 bytes to reach 0.5%; the current report validates 20,376 exact code bytes across 95 functions (0.678717%) and 196 exact data bytes. New exact coverage includes the assembly-backed grounded state handler, the shared `func_800347EC` actor-state handler, the C-built `func_8005385C` vector-length helper, 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` and the `func_8005395C` vector-transform wrapper remain fuzzy candidates, not exact matches.
+The current validated scope maps 3,002,136 code bytes. Exact progress requires 15,011 bytes to reach 0.5%; the current report validates 20,512 exact code bytes across 96 functions (0.683247%) and 196 exact data bytes. New exact coverage includes the assembly-backed grounded state handler, the shared `func_800347EC` actor-state handler, the C-built `func_8005385C` vector-length helper, the `func_8005395C` vector-transform wrapper, 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
 
 ## Setup
 
