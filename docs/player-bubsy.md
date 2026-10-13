@@ -41,10 +41,11 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 20,824 exact code bytes across 97
-functions, or `0.693639%` of mapped code. The total includes two Clang-built
+The validated report currently credits 21,240 exact code bytes across 98
+functions, or `0.707496%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death,
-grounded-state, and `func_800347EC` handlers, 20 assembly-backed copies of
+grounded-state, `func_800347EC`, and `game_apply_queued_move_request` handlers,
+20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
@@ -437,9 +438,13 @@ then requests calls `0x80022650(actor, 0xF)`, `0x80022650(actor, 8)`, and
 The grounded handler at `0x8004B35C` calls `func_800100A0` while combining two
 three-component Q20.12 vectors. Its C host model computes the signed dot
 product; its target profile is assembly-backed and byte-exact for the single
-L0 copy. This confirms transform math on the grounded path, but does not by
-itself establish how the resulting value changes Bubsy's world position or
-velocity.
+L0 copy. The actual persistent transform write is in the generic move-request
+consumer `game_apply_queued_move_request` at `0x80024F2C`: it composes pending
+moveInfo vectors and applies the resulting translation through
+`func_80054C7C` to the object's component transform, then archives and clears the
+pending vectors. Bubsy-side actor callbacks enqueue their live object pointers
+through `game_enqueue_move_request`; this confirms the world-transform write
+path, but does not establish a separate velocity field or its units.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
 vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model
@@ -640,5 +645,14 @@ request-slot byte offset (`old_count * 4`). Six direct callers exist in L0.
 
 This queue is now represented by `game_enqueue_move_request` in
 `src/game/move_requests.c`, with tests for count 29 and overflow at 30. It is
-shared game infrastructure; no direct call from `bubsy_update_actor_state` has
-been established, so it is not yet labeled Bubsy-specific movement behavior.
+shared game infrastructure. Player actor callbacks enqueue their live object
+pointers through this API.
+
+The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
+`0x80024F2C`. Its exact L0 match is an assembly-backed transcription in
+`src/game/func_80024F2C_match.c`. The routine reads pending movement vectors
+from the object's `moveInfo`, composes the translation, and calls
+`func_80054C7C` to update the object's component transform; it then archives
+and clears the pending values. This establishes a persistent component-transform
+write, but not whether that transform is world-space or the units/semantics of
+any separate velocity field.

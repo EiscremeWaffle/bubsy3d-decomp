@@ -417,7 +417,7 @@
         {
           "start": "0x80024F2C",
           "end": "0x800250CC",
-          "symbol": "func_80024F2C",
+          "symbol": "game_apply_queued_move_request",
           "kind": "anchored_function"
         },
         {

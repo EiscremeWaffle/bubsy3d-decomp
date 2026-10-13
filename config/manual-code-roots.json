@@ -29,6 +29,11 @@
         "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
       },
       {
+        "address": "0x80024F2C",
+        "symbol": "game_apply_queued_move_request",
+        "evidence": "416-byte move-request consumer reads the object component transform and moveInfo, applies the composed three-component translation through func_80054C7C, archives the applied vector, and clears pending move vectors. This writes the object's persistent transform; velocity semantics are not established."
+      },
+      {
         "address": "0x8003539C",
         "symbol": "bubsy_update_actor_state",
         "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."

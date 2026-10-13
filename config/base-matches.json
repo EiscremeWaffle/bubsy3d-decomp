@@ -131,6 +131,17 @@
           ],
           "headers": [],
           "symbols": ["func_800347EC"]
+        },
+        {
+          "source": "src/game/func_80024F2C_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80024F2C"]
         }
       ],
       "fuzzy_sources": [
@@ -258,6 +269,12 @@
           "start": "0x800347EC",
           "end": "0x80034EF8",
           "size": 1804
+        },
+        {
+          "name": "func_80024F2C",
+          "start": "0x80024F2C",
+          "end": "0x800250CC",
+          "size": 416
         }
       ]
     }
