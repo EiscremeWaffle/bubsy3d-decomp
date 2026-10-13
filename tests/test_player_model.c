@@ -1270,29 +1270,29 @@ static void test_vector_range_scaling(void) {
     int32_t input[3] = {16, -32, 48};
     int32_t output[3] = {0};
 
-    assert(func_80053D68(input, output) == 0);
+    assert(vector_range_condition_q12(input, output) == 0);
     assert(output[0] == 0x1000 && output[1] == -0x2000 && output[2] == 0x3000);
 
     input[0] = 0x1001;
     input[1] = -2;
     input[2] = 3;
-    assert(func_80053D68(input, output) == 0);
+    assert(vector_range_condition_q12(input, output) == 0);
     assert(output[0] == 0x4004 && output[1] == -8 && output[2] == 12);
 
     input[0] = 0x40000;
     input[1] = -32;
     input[2] = 16;
-    assert(func_80053D68(input, output) == 0);
+    assert(vector_range_condition_q12(input, output) == 0);
     assert(output[0] == 0x100000 && output[1] == -128 && output[2] == 64);
 
     input[0] = 0x40001;
-    assert(func_80053D68(input, output) == 0);
+    assert(vector_range_condition_q12(input, output) == 0);
     assert(output[0] == 0x4000 && output[1] == -2 && output[2] == 1);
 
     input[0] = 0x01000001;
     input[1] = -0x1000;
     input[2] = 0x800;
-    assert(func_80053D68(input, output) == 0);
+    assert(vector_range_condition_q12(input, output) == 0);
     assert(output[0] == 0x2000 && output[1] == -2 && output[2] == 1);
 }
 
@@ -1306,7 +1306,7 @@ static void test_vector_length_q12(void) {
     vector_length_input = 0;
     vector_length_call_count = 0;
     vector_square_call_count = 0;
-    assert(func_8005385C(input, &output) == 0);
+    assert(vector_length_q12(input, &output) == 0);
     assert(vector_length_input == 169 * 0x1000);
     assert(output == 13 * 0x1000);
     assert(vector_square_call_count == 3 && vector_length_call_count == 1);
@@ -1315,7 +1315,7 @@ static void test_vector_length_q12(void) {
     vector_length_input = 0;
     vector_length_call_count = 0;
     vector_square_call_count = 0;
-    assert(func_8005385C(sparse, &output) == 0);
+    assert(vector_length_q12(sparse, &output) == 0);
     assert(vector_length_input == 25 * 0x1000);
     assert(output == 5 * 0x1000);
     assert(vector_square_call_count == 2 && vector_length_call_count == 1);
@@ -1323,7 +1323,7 @@ static void test_vector_length_q12(void) {
     vector_length_result = 0;
     vector_length_call_count = 0;
     vector_square_call_count = 0;
-    assert(func_8005385C(zero, &output) == 0);
+    assert(vector_length_q12(zero, &output) == 0);
     assert(vector_length_input == 0 && output == 0);
     assert(vector_square_call_count == 0 && vector_length_call_count == 1);
 }
@@ -1333,11 +1333,11 @@ static void test_grounded_vector_transform(void) {
     int32_t output[3] = {1, 2, 3};
 
     vector_length_result = 0;
-    assert(func_8005395C(input, output) == 7);
+    assert(vector_range_scale_q12(input, output) == 7);
     assert(output[0] == 0 && output[1] == 0 && output[2] == 0);
 
     vector_length_result = 0x1000;
-    assert(func_8005395C(input, output) == 0);
+    assert(vector_range_scale_q12(input, output) == 0);
     assert(output[0] == 0x1000 && output[1] == -0x2000 && output[2] == 0x3000);
     assert(vector_length_input == 14 * 0x1000);
 }

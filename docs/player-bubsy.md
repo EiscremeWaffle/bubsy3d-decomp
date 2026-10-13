@@ -46,8 +46,9 @@ functions, or `0.693639%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death,
 grounded-state, and `func_800347EC` handlers, 20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
-the C-built `func_8005385C` vector-length helper and `func_8005395C` wrapper,
-and the C-built `func_80053D68` vector range helper,
+the C-built `vector_length_q12`, `vector_range_scale_q12`, and
+`vector_range_condition_q12` functions (their exact-match linker labels remain
+`func_8005385C`, `func_8005395C`, and `func_80053D68`),
 22 C copies of
 `func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
 actor-event dispatcher remains fuzzy; the target-only C draft for
@@ -440,15 +441,15 @@ L0 copy. This confirms transform math on the grounded path, but does not by
 itself establish how the resulting value changes Bubsy's world position or
 velocity.
 
-The transform wrapper also calls `func_80053D68`, a vector range-conditioning
-helper that selects a shift from the largest component magnitude. Its C model
+The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
+vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model
 and threshold tests are in `player_vector_range.c`; the current 36.9% objdiff
 similarity is diagnostic only and earns no exact credit.
 
-The grounded handler calls `func_8005395C`, which range-conditions a 3-vector
-with `func_80053D68`, obtains one scalar from `func_8005385C`, and scales each
+The grounded handler calls `vector_range_scale_q12`, which range-conditions a 3-vector
+with `vector_range_condition_q12`, obtains one scalar from `vector_length_q12`, and scales each
 conditioned component by that scalar through `func_80053350`. The bounded
-`func_8005385C` body squares each nonzero Q20.12 component with
+`vector_length_q12` squares each nonzero Q20.12 component with
 `func_8001007C`, adds the three results, and passes the sum to the
 GTE-backed `func_8005359C` conversion. This is consistent with a fixed-point
 vector-length calculation, but its output's gameplay role is unknown. The C

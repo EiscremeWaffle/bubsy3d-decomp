@@ -36,8 +36,8 @@ The current validated snapshot maps 3,002,136 instruction bytes and credits
 20,824 exact code bytes across 97 functions (0.693639%), plus 196 exact data
 bytes. This includes the 3,228-byte grounded-state handler and the 1,804-byte
 `func_800347EC` helper as assembly-backed exact matches, plus the C-built
-`func_8005385C` vector-length helper, `func_8005395C` wrapper, and
-`func_80053D68` vector range helper. The assembly transcriptions
+`vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12`
+(`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`). The assembly transcriptions
 are not recovered high-level C and do not establish grounded position/velocity
 integration.
 

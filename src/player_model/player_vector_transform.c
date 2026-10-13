@@ -2,12 +2,13 @@
 
 extern int32_t func_8001007C(int32_t left, int32_t right, int32_t *output);
 extern int32_t func_8005359C(int32_t value, int32_t *output);
-extern int32_t func_80053D68(const int32_t *input, int32_t *output);
 extern int32_t func_80053350(int32_t value, int32_t scale, int32_t *output);
-extern int32_t func_8005385C(const int32_t *input, int32_t *output);
+extern int32_t vector_range_condition_q12(const int32_t *input, int32_t *output) __asm__("func_80053D68");
+extern int32_t vector_length_q12(const int32_t *input, int32_t *output) __asm__("func_8005385C");
+extern int32_t vector_range_scale_q12(const int32_t *input, int32_t *output) __asm__("func_8005395C");
 
 #if !defined(BUBSY3D_MATCH_ORIGINAL_L0) || defined(BUBSY3D_MATCH_FUNC_8005385C)
-int32_t func_8005385C(const int32_t *input, int32_t *output) {
+int32_t vector_length_q12(const int32_t *input, int32_t *output) {
     int32_t components[3];
     int32_t sum;
 
@@ -30,7 +31,7 @@ int32_t func_8005385C(const int32_t *input, int32_t *output) {
 #endif
 
 #ifndef BUBSY3D_MATCH_FUNC_8005385C
-int32_t func_8005395C(const int32_t *input, int32_t *output) {
+int32_t vector_range_scale_q12(const int32_t *input, int32_t *output) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
     register int32_t first_scale __asm__("$5");
     register int32_t result __asm__("$2");
@@ -43,8 +44,8 @@ int32_t func_8005395C(const int32_t *input, int32_t *output) {
         volatile int32_t transformed;
     } scratch;
 
-    func_80053D68(input, (int32_t *)scratch.ranged);
-    func_8005385C((const int32_t *)scratch.ranged, (int32_t *)&scratch.transformed);
+    vector_range_condition_q12(input, (int32_t *)scratch.ranged);
+    vector_length_q12((const int32_t *)scratch.ranged, (int32_t *)&scratch.transformed);
     first_scale = scratch.transformed;
     if (first_scale == 0) {
     #ifdef BUBSY3D_MATCH_ORIGINAL_L0

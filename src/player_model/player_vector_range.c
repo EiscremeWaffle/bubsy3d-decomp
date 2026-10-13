@@ -1,6 +1,8 @@
 #include <stdint.h>
 
-int32_t func_80053D68(const int32_t *input, int32_t *output) {
+int32_t vector_range_condition_q12(const int32_t *input, int32_t *output) __asm__("func_80053D68");
+
+int32_t vector_range_condition_q12(const int32_t *input, int32_t *output) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
     register int32_t x __asm__("$2");
     register int32_t z __asm__("$3");

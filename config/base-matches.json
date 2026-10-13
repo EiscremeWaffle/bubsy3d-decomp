@@ -80,7 +80,7 @@
         {
           "source": "src/player_model/player_vector_transform.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C translation of the L0 vector-length helper, byte-matched with pinned GCC 2.6.3; callers' gameplay meaning remains unknown.",
+          "compiler_profile": "C function vector_length_q12 uses the original func_8005385C linker label and byte-matches with pinned GCC 2.6.3; callers' gameplay meaning remains unknown.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_FUNC_8005385C"
@@ -91,7 +91,7 @@
         {
           "source": "src/player_model/player_vector_transform.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Readable C vector-transform wrapper with target-specific return-register and zero-store constraints, byte-matched with pinned GCC 2.6.3; caller semantics remain unknown.",
+          "compiler_profile": "C function vector_range_scale_q12 uses the original func_8005395C linker label and target-specific return/store constraints to byte-match with pinned GCC 2.6.3; caller semantics remain unknown.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -102,7 +102,7 @@
         {
           "source": "src/player_model/player_vector_range.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C translation of the L0 fixed-point vector range helper, byte-matched with pinned GCC 2.6.3; caller semantics remain unknown.",
+          "compiler_profile": "C function vector_range_condition_q12 uses the original func_80053D68 linker label and byte-matches with pinned GCC 2.6.3; caller semantics remain unknown.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
