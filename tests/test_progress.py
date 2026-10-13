@@ -67,6 +67,10 @@ class ProgressTests(unittest.TestCase):
                 declarations = matching_source_declarations(spec, reference, 0x80010000, mapped, root)
             self.assertEqual(len(declarations), 1)
             self.assertEqual((root / "matching/handler/handler.bin").read_bytes(), b"CODE")
+            mapped[0]["symbol"] = "readable_handler_name"
+            with patch("tools.gcc_match.build_gcc_symbol", return_value=b"CODE"):
+                declarations = matching_source_declarations(spec, reference, 0x80010000, mapped, root)
+            self.assertIn("readable_handler_name", declarations[0])
             with patch("tools.gcc_match.build_gcc_symbol", return_value=b"FAIL"):
                 with self.assertRaisesRegex(ValueError, "does not byte-match"):
                     matching_source_declarations(spec, reference, 0x80010000, mapped, root)
@@ -158,8 +162,13 @@ class ProgressTests(unittest.TestCase):
         spec = base_matches["l0/functions"]
         expected_symbols = spec["symbols"]
         report_unit = next(unit for unit in self.report["units"] if unit["name"] == "l0/functions")
+        target_unit = next(unit for unit in self.scope["units"] if unit["name"] == "l0/functions")
         for expected in expected_symbols:
-            function = next(function for function in report_unit["functions"] if function["name"] == expected["name"])
+            mapped = next(
+                symbol for symbol in unit_symbols(target_unit)
+                if symbol["start"] == expected["start"] and symbol["end"] == expected["end"]
+            )
+            function = next(function for function in report_unit["functions"] if function["name"] == mapped["symbol"])
             with self.subTest(symbol=expected["name"]):
                 self.assertEqual(int(function["size"]), expected["size"])
                 self.assertEqual(function["fuzzy_match_percent"], 100)

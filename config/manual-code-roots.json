@@ -4,6 +4,21 @@
   "modules": {
     "L0/L0.EXE": [
       {
+        "address": "0x8005385C",
+        "symbol": "vector_length_q12",
+        "evidence": "168-byte C helper squares the three nonzero Q20.12 components, sums them, and calls the scalar length conversion helper; independently byte-matched with the original linker label func_8005385C."
+      },
+      {
+        "address": "0x8005395C",
+        "symbol": "vector_range_scale_q12",
+        "evidence": "136-byte C wrapper range-conditions an input vector, obtains a scale from vector_length_q12, and scales each output component; independently byte-matched with the original linker label func_8005395C."
+      },
+      {
+        "address": "0x80053D68",
+        "symbol": "vector_range_condition_q12",
+        "evidence": "312-byte C helper selects a signed shift from the largest input component magnitude and applies it to the three components; independently byte-matched with the original linker label func_80053D68."
+      },
+      {
         "address": "0x80024EBC",
         "symbol": "game_enqueue_move_request",
         "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < MAX_MOVE_REQUEST_COUNT, stores request pointers in the 0x80185A6C array, increments the count, and returns the slot byte offset"

@@ -2103,7 +2103,7 @@
         {
           "start": "0x8005385C",
           "end": "0x80053904",
-          "symbol": "func_8005385C",
+          "symbol": "vector_length_q12",
           "kind": "anchored_function"
         },
         {
@@ -2115,7 +2115,7 @@
         {
           "start": "0x8005395C",
           "end": "0x800539E4",
-          "symbol": "func_8005395C",
+          "symbol": "vector_range_scale_q12",
           "kind": "anchored_function"
         },
         {
@@ -2151,7 +2151,7 @@
         {
           "start": "0x80053D68",
           "end": "0x80053EA0",
-          "symbol": "func_80053D68",
+          "symbol": "vector_range_condition_q12",
           "kind": "anchored_function"
         },
         {

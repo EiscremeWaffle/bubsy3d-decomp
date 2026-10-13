@@ -2165,7 +2165,7 @@
           "address": "109280"
         },
         {
-          "name": "func_8005385C",
+          "name": "vector_length_q12",
           "size": "168",
           "fuzzy_match_percent": 100.0,
           "metadata": {},
@@ -2178,7 +2178,7 @@
           "address": "109600"
         },
         {
-          "name": "func_8005395C",
+          "name": "vector_range_scale_q12",
           "size": "136",
           "fuzzy_match_percent": 100.0,
           "metadata": {},
@@ -2215,7 +2215,7 @@
           "address": "110136"
         },
         {
-          "name": "func_80053D68",
+          "name": "vector_range_condition_q12",
           "size": "312",
           "fuzzy_match_percent": 100.0,
           "metadata": {},

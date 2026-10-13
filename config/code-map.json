@@ -4829,7 +4829,8 @@
           "start": "0x8005385C",
           "end": "0x80053904",
           "size": 168,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "vector_length_q12"
         },
         {
           "start": "0x80053904",
@@ -4841,7 +4842,8 @@
           "start": "0x8005395C",
           "end": "0x800539E4",
           "size": 136,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "vector_range_scale_q12"
         },
         {
           "start": "0x800539E4",
@@ -4877,7 +4879,8 @@
           "start": "0x80053D68",
           "end": "0x80053EA0",
           "size": 312,
-          "kind": "anchored_function"
+          "kind": "anchored_function",
+          "symbol": "vector_range_condition_q12"
         },
         {
           "start": "0x80053F20",

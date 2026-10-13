@@ -436,10 +436,18 @@ def render_code_map(document):
 
 def write_code_maps(document):
     manifest = json.loads((ROOT / "config" / "executable-map.json").read_text(encoding="utf-8"))
+    manual_roots = json.loads((ROOT / "config" / "manual-code-roots.json").read_text(encoding="utf-8"))
     validate_discovery(document, manifest)
     modules = document["modules"]
     units = []
     for module in modules:
+        root_names = {
+            root["address"]: root["symbol"]
+            for root in manual_roots["modules"].get(module["path"], [])
+        }
+        for symbol in module["symbols"]:
+            if symbol["start"] in root_names:
+                symbol["symbol"] = root_names[symbol["start"]]
         load, end = int(module["load_start"], 16), int(module["load_end"], 16)
         cursor = load
         missing = []
@@ -455,7 +463,7 @@ def write_code_maps(document):
         module_name = "boot" if module["path"] == "SLUS_001.10" else "menu" if module["path"] == "MENU.EXE" else module["path"].split("/")[0].lower()
         for kind, group, prefix in (("anchored_function", "functions", "func"), ("reachable_fragment", "fragments", "fragment")):
             symbols = [
-                {"start": symbol["start"], "end": symbol["end"], "symbol": symbol.get("symbol", f"{prefix}_{int(symbol['start'], 16):08X}"), "kind": kind}
+                {"start": symbol["start"], "end": symbol["end"], "symbol": root_names.get(symbol["start"], symbol.get("symbol", f"{prefix}_{int(symbol['start'], 16):08X}")), "kind": kind}
                 for symbol in module["symbols"] if symbol["kind"] == kind
             ]
             if symbols:

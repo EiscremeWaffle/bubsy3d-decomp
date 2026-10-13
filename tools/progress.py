@@ -103,15 +103,16 @@ def matching_source_declarations(base_spec, data, load, symbols, directory):
     from tools.gcc_match import build_gcc_symbol
 
     exact = {symbol["name"]: symbol for symbol in base_spec["symbols"]}
-    mapped = {symbol["symbol"]: symbol for symbol in symbols}
+    mapped = {(symbol["start"], symbol["end"]): symbol for symbol in symbols}
     declarations = []
     included = set()
     for source in base_spec.get("matching_sources", []):
         for name in source["symbols"]:
-            if name not in exact or name not in mapped or name in included:
+            if name not in exact or name in included:
                 raise ValueError(f"Matching source {name} must have one mapped exact allowlist entry")
             spec = exact[name]
-            if spec["start"] != mapped[name]["start"] or spec["end"] != mapped[name]["end"]:
+            mapped_symbol = mapped.get((spec["start"], spec["end"]))
+            if mapped_symbol is None:
                 raise ValueError(f"Matching source {name} differs from the verified code map")
             output = directory / "matching" / name
             code = build_gcc_symbol(source, spec, output, ZIG)
@@ -122,10 +123,11 @@ def matching_source_declarations(base_spec, data, load, symbols, directory):
             output.mkdir(parents=True, exist_ok=True)
             blob = output / f"{name}.bin"
             blob.write_bytes(code)
+            report_name = mapped_symbol["symbol"]
             assembly = (
-                f'.pushsection .text.{name},"ax",@progbits\n.balign 4\n'
-                f'.global {name}\n.type {name},@function\n{name}:\n'
-                f'.incbin "{blob.as_posix()}"\n.size {name}, . - {name}\n.popsection\n'
+                f'.pushsection .text.{report_name},"ax",@progbits\n.balign 4\n'
+                f'.global {report_name}\n.type {report_name},@function\n{report_name}:\n'
+                f'.incbin "{blob.as_posix()}"\n.size {report_name}, . - {report_name}\n.popsection\n'
             )
             declarations.append(f"__asm__({json.dumps(assembly)});")
             included.add(name)
@@ -134,6 +136,13 @@ def matching_source_declarations(base_spec, data, load, symbols, directory):
 
 def validate_report(report, scope):
     symbols = {unit["name"]: {symbol["symbol"]: int(symbol["end"], 16) - int(symbol["start"], 16) for symbol in unit_symbols(unit)} for unit in scope["units"]}
+    symbols_by_bounds = {
+        unit["name"]: {
+            (symbol["start"], symbol["end"]): symbol
+            for symbol in unit_symbols(unit)
+        }
+        for unit in scope["units"]
+    }
     expected = {name: sum(sizes.values()) for name, sizes in symbols.items()}
     units = report.get("units", [])
     if len(units) != len(expected) or {unit["name"] for unit in units} != set(expected):
@@ -163,14 +172,21 @@ def validate_report(report, scope):
             raise ValueError("Report unit function/symbol and unit counts are inconsistent")
         matched_functions = {function["name"]: function for function in functions}
         expected_base = base_matches.get(unit["name"])
-        exact_symbols = {symbol["name"] for symbol in expected_base["symbols"]} if expected_base else set()
+        exact_symbol_pairs = []
+        if expected_base:
+            for symbol in expected_base["symbols"]:
+                mapped_symbol = symbols_by_bounds[unit["name"]].get((symbol["start"], symbol["end"]))
+                if mapped_symbol is None or int(mapped_symbol["end"], 16) - int(mapped_symbol["start"], 16) != symbol["size"]:
+                    raise ValueError(f"Expected byte-exact source {symbol['name']} has no mapped range")
+                exact_symbol_pairs.append((symbol, mapped_symbol))
+        exact_symbols = {mapped_symbol["symbol"] for _, mapped_symbol in exact_symbol_pairs}
         allowed_fuzzy_symbols = fuzzy_symbols.get(unit["name"], set())
         if exact_symbols & allowed_fuzzy_symbols:
             raise ValueError("A symbol cannot be both an exact match and a fuzzy candidate")
         if not allowed_fuzzy_symbols.issubset(actual_symbols):
             raise ValueError("A configured fuzzy candidate is missing from the target code map")
-        for symbol in (expected_base["symbols"] if expected_base else []):
-            function = matched_functions.get(symbol["name"])
+        for symbol, mapped_symbol in exact_symbol_pairs:
+            function = matched_functions.get(mapped_symbol["symbol"])
             if function is None or int(function["size"]) != symbol["size"] or float(function.get("fuzzy_match_percent", 0)) != 100:
                 raise ValueError(f"Expected byte-exact source match missing for {symbol['name']}")
         unit_measures = unit["measures"]
@@ -208,7 +224,10 @@ def validate_report(report, scope):
         if unit.get("metadata", {}).get("complete", False):
             raise ValueError("Target-only units must not be marked complete")
         base_spec = base_matches.get(unit["name"])
-        exact_symbols = {symbol["name"] for symbol in base_spec["symbols"]} if base_spec else set()
+        exact_symbols = {
+            symbols_by_bounds[unit["name"]][(symbol["start"], symbol["end"])]["symbol"]
+            for symbol in base_spec["symbols"]
+        } if base_spec else set()
         allowed_fuzzy_symbols = fuzzy_symbols.get(unit["name"], set())
         for function in unit.get("functions", []):
             fuzzy = float(function.get("fuzzy_match_percent", 0))
@@ -330,10 +349,10 @@ def build_report():
                 raise ValueError("Expected a little-endian MIPS ELF32 player base object")
             original_bytes = b"".join(pieces)
             for matched in base_spec["symbols"]:
-                matched_bytes = compiled_symbol_bytes(base_elf, matched["name"], "STT_FUNC")
-                expected_symbol = next((symbol for symbol in symbols if symbol["symbol"] == matched["name"]), None)
+                expected_symbol = next((symbol for symbol in symbols if symbol["start"] == matched["start"] and symbol["end"] == matched["end"]), None)
                 if expected_symbol is None:
-                    raise ValueError(f"Matched base symbol {matched['name']} is not in the target unit")
+                    raise ValueError(f"Matched base symbol {matched['name']} has no mapped address range")
+                matched_bytes = compiled_symbol_bytes(base_elf, expected_symbol["symbol"], "STT_FUNC")
                 expected_bytes = data[HEADER_SIZE + int(expected_symbol["start"], 16) - load:HEADER_SIZE + int(expected_symbol["end"], 16) - load]
                 if matched_bytes != expected_bytes or len(expected_bytes) != matched["size"]:
                     raise ValueError(f"Player base source does not byte-match original symbol {matched['name']}")
