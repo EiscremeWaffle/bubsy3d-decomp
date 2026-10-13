@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 import shutil
 import struct
-import subprocess
 
+from tools.command import CommandDeadline, run_command
 from tools.verify_original import HEADER_SIZE, ROOT, verify_executable
 
 
@@ -282,7 +282,7 @@ def build_report():
             encoding="utf-8",
         )
         target = directory / "target.o"
-        subprocess.run(
+        run_command(
             [str(ZIG), "cc", "-target", "mipsel-linux-musl", "-march=mips1", "-mabi=32", "-c", str(assembly), "-o", str(target)],
             cwd=ROOT, check=True, input=b"",
         )
@@ -321,7 +321,7 @@ def build_report():
                     "\n".join([*(f'#include "{source}"' for source in includes), *matching_declarations]) + "\n",
                     encoding="utf-8",
                 )
-            subprocess.run(
+            run_command(
                 [str(ZIG), "cc", *base_spec["flags"], "-I.", "-Isrc/player_model", "-c", str(source_to_compile), "-o", str(base_object)],
                 cwd=ROOT, check=True, input=b"",
             )
@@ -352,7 +352,7 @@ def build_report():
     }
     (ROOT / "objdiff.json").write_text(json.dumps(configuration, indent=2) + "\n", encoding="utf-8")
     output = ROOT / "build" / "code" / "report.json"
-    subprocess.run([str(OBJDIFF), "report", "generate", "-o", str(output)], cwd=ROOT, check=True, input=b"")
+    run_command([str(OBJDIFF), "report", "generate", "-o", str(output)], cwd=ROOT, check=True, input=b"")
     report = load_json(output)
     total_size = validate_report(report, scope)
     SNAPSHOT_PATH.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
@@ -378,9 +378,19 @@ def stage_report(output_path=ROOT / "build" / "progress" / "report.json"):
 def main():
     parser = argparse.ArgumentParser(description="Build or validate the explicitly scoped discovered-code progress baseline")
     parser.add_argument("command", choices=("build", "validate", "stage"))
+    parser.add_argument(
+        "--timeout-seconds",
+        type=int,
+        default=600,
+        help="overall subprocess deadline for build (default 600; maximum 900)",
+    )
     args = parser.parse_args()
     if args.command == "build":
-        build_report()
+        try:
+            with CommandDeadline(args.timeout_seconds):
+                build_report()
+        except ValueError as error:
+            parser.error(str(error))
     elif args.command == "stage":
         print(f"Staged validated report: {stage_report().relative_to(ROOT)}")
     else:

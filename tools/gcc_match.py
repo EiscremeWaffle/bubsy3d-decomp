@@ -4,15 +4,15 @@ import json
 import os
 from pathlib import Path
 import re
-import subprocess
 import sys
 
+from tools.command import run_command
 from tools.fetch_tools import GCC_COMPILERS, MASPSX_HASH, fetch_matching_tools
 from tools.verify_original import ROOT
 
 
 def run_tool(command, input_text=""):
-    result = subprocess.run(command, cwd=ROOT, input=input_text, capture_output=True, text=True, timeout=120)
+    result = run_command(command, cwd=ROOT, input=input_text, capture_output=True, text=True)
     if result.returncode:
         raise RuntimeError(f"Tool failed: {command[0]}\n{result.stdout}\n{result.stderr}")
     return result.stdout

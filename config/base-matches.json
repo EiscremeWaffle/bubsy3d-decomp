@@ -100,6 +100,17 @@
           "symbols": ["func_8005395C"]
         },
         {
+          "source": "src/player_model/player_vector_range.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C translation of the L0 fixed-point vector range helper, byte-matched with pinned GCC 2.6.3; caller semantics remain unknown.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80053D68"]
+        },
+        {
           "source": "src/player_model/bubsy_grounded_state_match.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
@@ -130,10 +141,6 @@
         {
           "source": "src/player_model/shared_actor_state_2.c",
           "symbols": ["shared_actor_state_2_handler"]
-        },
-        {
-          "source": "src/player_model/player_vector_range.c",
-          "symbols": ["func_80053D68"]
         }
       ],
       "data_sources": [
@@ -233,6 +240,12 @@
           "start": "0x8005395C",
           "end": "0x800539E4",
           "size": 136
+        },
+        {
+          "name": "func_80053D68",
+          "start": "0x80053D68",
+          "end": "0x80053EA0",
+          "size": 312
         },
         {
           "name": "bubsy_grounded_state_handler",

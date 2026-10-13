@@ -1279,11 +1279,15 @@ static void test_vector_range_scaling(void) {
     assert(func_80053D68(input, output) == 0);
     assert(output[0] == 0x4004 && output[1] == -8 && output[2] == 12);
 
-    input[0] = 0x4001;
+    input[0] = 0x40000;
     input[1] = -32;
     input[2] = 16;
     assert(func_80053D68(input, output) == 0);
-    assert(output[0] == 0x400 && output[1] == -2 && output[2] == 1);
+    assert(output[0] == 0x100000 && output[1] == -128 && output[2] == 64);
+
+    input[0] = 0x40001;
+    assert(func_80053D68(input, output) == 0);
+    assert(output[0] == 0x4000 && output[1] == -2 && output[2] == 1);
 
     input[0] = 0x01000001;
     input[1] = -0x1000;

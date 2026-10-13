@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,002,136 code bytes. Exact progress requires 15,011 bytes to reach 0.5%; the current report validates 20,512 exact code bytes across 96 functions (0.683247%) and 196 exact data bytes. New exact coverage includes the assembly-backed grounded state handler, the shared `func_800347EC` actor-state handler, the C-built `func_8005385C` vector-length helper, the `func_8005395C` vector-transform wrapper, 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
+The current validated scope maps 3,002,136 code bytes. Exact progress requires 15,011 bytes to reach 0.5%; the current report validates 20,824 exact code bytes across 97 functions (0.693639%) and 196 exact data bytes. New exact coverage includes the assembly-backed grounded state handler, the shared `func_800347EC` actor-state handler, the C-built `func_8005385C` vector-length helper, the `func_8005395C` vector-transform wrapper, and the C-built `func_80053D68` vector range helper; it also includes 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
 
 ## Setup
 
@@ -49,6 +49,8 @@ Typical report commands:
 .\.venv\Scripts\python.exe -m tools.progress stage
 .\.venv\Scripts\python.exe -S -m unittest discover -s tests -v
 ```
+
+`tools.progress build` has a 600-second overall subprocess deadline by default; set `--timeout-seconds` to adjust it, up to 900 seconds. Timed-out commands have their process tree terminated.
 
 The native C harness is separate from Python tests. CI's compile command is in `.github/workflows/checks.yml`; compile with `-std=c11 -Wall -Wextra -Werror`, then run the resulting binary.
 

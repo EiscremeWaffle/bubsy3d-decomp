@@ -2,12 +2,16 @@ import copy
 import hashlib
 import io
 from pathlib import Path
+import subprocess
+import sys
 import struct
 import tarfile
 import tempfile
+import time
 import unittest
 from unittest.mock import Mock, patch
 
+from tools.command import CommandDeadline, run_command
 from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
 from tools.gcc_match import helper_definitions, normalize_delay_slots
 from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, expand_base_matches, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
@@ -15,6 +19,23 @@ from tools.verify_original import HEADER_SIZE, ROOT
 
 
 class ProgressTests(unittest.TestCase):
+    def test_build_command_deadline_terminates_slow_process(self):
+        started = time.monotonic()
+        with CommandDeadline(1):
+            with self.assertRaises(subprocess.TimeoutExpired):
+                run_command(
+                    [sys.executable, "-c", "import time; time.sleep(30)"],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+        self.assertLess(time.monotonic() - started, 10)
+
+    def test_build_command_deadline_is_capped_at_15_minutes(self):
+        for seconds in (0, 901):
+            with self.subTest(seconds=seconds), self.assertRaisesRegex(ValueError, "900 seconds"):
+                CommandDeadline(seconds)
+
     def test_delay_slot_normalization_uses_compiler_reorder_modes(self):
         source = ".set reorder\nbne $2,$0,label\nsb $0,0($5)\n.set noreorder\njal func_8001A670\nmove $4,$16\n"
         converted = ".set noreorder\nbne $2,$0,label\nnop # DEBUG: branch/jump\nsb $0,0($5)\njal func_8001A670\nnop # DEBUG: branch/jump\nmove $4,$16\n"
