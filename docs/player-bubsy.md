@@ -662,26 +662,34 @@ different sequence paths in `0x80041218..0x80041D80`. The three larger callers
 contain indirect dispatches, and none of these call sites is in the current
 reachable-code map, so their extents and state meanings remain provisional.
 
-The readable C slice `game_enqueue_move_request_if_translation_pending` in
-`src/game/move_requests.c` models the tail of `func_80025A98`: enqueue the object
-if any of the three pending translation words is nonzero, then return `1` on
-either branch. Native tests cover the zero and nonzero cases; this is not yet a
-translation of the rest of `func_80025A98` or the other caller bodies.
+The full bounded control flow of `func_80025A98` is modeled by
+`game_prepare_move_request` in `src/game/move_requests.c`; its exact bytes remain
+in the separate assembly transcription. The host model covers descriptor and
+move-info guards, the control-table counter/index loop, component-vector updates,
+transform gates, and the final conditional enqueue. Opaque engine calls are
+injected through `GameMovePreparationOps.invoke`; this preserves call order and
+data flow without claiming their internal effects are understood. The smaller
+`game_enqueue_move_request_if_translation_pending` helper isolates and tests
+the final zero/nonzero vector gate. This model is host-side and not byte-matched.
 
 The enqueue guard at `0x80015EA0` is modeled by
 `game_enqueue_move_request_if_actor_state_bit_2` in the same module: it reads
-actor word `+0x10` and enqueues only when mask `0x04` is set. This translates
-only that branch; the bit's gameplay meaning and the surrounding indirect
-state-machine function remain unresolved.
+actor word `+0x10` and enqueues only when mask `0x04` is set. That helper covers
+only the final predicate. The wider switch-state-12 plan below also models the
+alternate bit-clear path, which calls `0x80052AEC`, `0x80052E18`, and
+`0x80022C94(actor, 0x380, ...)`, then enqueues through a local success flag.
 
-The remaining enqueue-site control flow has action plans in
-`src/game/move_requests.c`: `game_move_request_plan_3d5d8` records the positive
-helper-result and actor-byte `+0x01 == 2` gate plus the observed stores and two
-transition calls; `game_move_request_plan_3d718` records the actor-byte gate and
-the low-byte `func_80022674(actor, 0x0B) != 1` alternative; `game_move_request_plan_4193c`
-records the `func_80022604` zero/nonzero split before the unconditional enqueue;
-and `game_move_request_plan_41b08` records the sequence-key `0x15` skip/select
-and saved-`$s2` notification gate before enqueue. Native tests cover each plan.
+The enqueue-related control flow has action plans in `src/game/move_requests.c`.
+`game_move_request_plan_15a54_state_12` models both sides of the bit-`0x04`
+gate, the post-`0x22C94` state reread, and transition `(0x0C, 4)` after enqueue.
+`game_move_request_plan_3d5d8` models the positive-helper and actor-byte
+`+0x01 == 2` gate, pre-enqueue stores/transitions, and post-enqueue helper calls.
+`game_move_request_plan_3d718` preserves both actor-byte checks, the low-byte
+`func_80022674(actor, 0x0B)` result split, and the post-enqueue transition.
+`game_move_request_plan_4193c` records the optional `func_80022944`, unconditional
+enqueue, and transition `(6, 1)`. `game_move_request_plan_41b08` records the
+sequence-key `0x15` skip/select and saved-`$s2` notification gate, followed by
+enqueue and transition `(6, 4)`. Native tests cover each plan.
 These finish the six enqueue-site slices, not the four enclosing state-machine
 bodies; their indirect dispatches and opaque helper effects remain unresolved.
 
@@ -700,6 +708,16 @@ A readable host-side orchestration model for this routine is in
 callbacks preserve the observed helper order and pointer ranges without
 guessing the opaque helpers' internal math; native tests cover optional paths,
 translation application, archival, clearing, and the missing-info assertion.
+
+The full bounded caller `func_80025A98` has a readable host-side control-flow
+model in `game_prepare_move_request` in `src/game/move_requests.c`, alongside
+its exact assembly transcription. The model covers the sentinel-state return,
+control-table cursor/repeat updates, component-entry loop, transform stages,
+and final pending-translation enqueue gate. Calls whose engine effects are not
+recovered are injected through `GameMovePreparationOps`; host guards for invalid
+views are not claims about target behavior. The action-plan functions below
+cover only their named enqueue slices, not complete translations of the other
+three enclosing routines.
 
 The shared 348-byte helper `func_80054B20` at `0x80054B20..0x80054C7C` has 137
 direct L0 JAL call sites, including its recursive call. Its exact transcription
