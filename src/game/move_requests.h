@@ -33,6 +33,7 @@ enum {
     GAME_MOVE_CALLER_TRANSITION_6_1 = 1u << 23,
     GAME_MOVE_CALLER_TRANSITION_6_4 = 1u << 24,
     GAME_MOVE_CALLER_TRANSITION_0C_4 = 1u << 25,
+    GAME_MOVE_CALLER_TRANSITION_5_1 = 1u << 26,
 };
 
 uint32_t game_move_request_plan_15a54_state_12(
@@ -113,6 +114,80 @@ typedef struct GameMovePreparationOps {
     GameMovePreparationInvoke invoke;
     void *global_transform;
 } GameMovePreparationOps;
+
+typedef int32_t (*GameMoveCallerInvoke)(void *context, uint32_t function_address, const uintptr_t arguments[8]);
+
+typedef struct GameMoveState12View {
+    void *actor;
+    void *move_context;
+    uint32_t *actor_state_10;
+    uint8_t component_flags_04;
+    uint8_t *global_byte_14;
+    void *shared_691b8_context;
+} GameMoveState12View;
+
+typedef struct GameMoveState12Ops {
+    void *context;
+    GameMoveRequestAssertion assertion;
+    GameMoveCallerInvoke invoke;
+    int32_t (*continue_after_no_enqueue)(void *context, GameMoveState12View *state);
+} GameMoveState12Ops;
+
+typedef struct GameMoveRequestGlobalObject3D5D8View {
+    int32_t word_30;
+    int32_t word_88;
+    int32_t word_90;
+} GameMoveRequestGlobalObject3D5D8View;
+
+typedef struct GameMoveRequestState3D5D8View {
+    void *actor;
+    uint8_t *actor_byte_01;
+    int32_t *actor_word_14;
+    int32_t actor_frame_word_b8;
+    void *actor_context;
+    int32_t *linked_object_word_24;
+    uint32_t linked_state_value_24;
+    GameMoveRequestGlobalObject3D5D8View *global_object_3E8;
+    uint8_t *global_byte_3E4;
+    void **global_actor_3F8;
+    void *argument_509A4_1;
+} GameMoveRequestState3D5D8View;
+
+int32_t game_process_move_request_state_12(
+    GameMoveRequestQueue *queue,
+    GameMoveState12View *state,
+    const GameMoveState12Ops *ops
+);
+int32_t game_run_move_request_path_3d5d8(
+    GameMoveRequestQueue *queue,
+    GameMoveRequestState3D5D8View *state,
+    int32_t positive_check_result,
+    uint8_t comparison_actor_byte_01,
+    const GameMoveState12Ops *ops
+);
+int32_t game_run_move_request_path_3d718(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *actor_context,
+    uint8_t *actor_state_byte_01,
+    const GameMoveState12Ops *ops
+);
+int32_t game_run_move_request_path_4193c(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *actor_context,
+    int32_t helper_22604_result,
+    const GameMoveState12Ops *ops
+);
+int32_t game_run_move_request_path_41b08(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *move_context,
+    void *actor_context,
+    uint16_t current_sequence_key,
+    uint8_t saved_s2,
+    const GameMoveState12Ops *ops
+);
 
 int32_t game_prepare_move_request(
     GameMoveRequestQueue *queue,

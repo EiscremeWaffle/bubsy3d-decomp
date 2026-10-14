@@ -679,19 +679,17 @@ only the final predicate. The wider switch-state-12 plan below also models the
 alternate bit-clear path, which calls `0x80052AEC`, `0x80052E18`, and
 `0x80022C94(actor, 0x380, ...)`, then enqueues through a local success flag.
 
-The enqueue-related control flow has action plans in `src/game/move_requests.c`.
-`game_move_request_plan_15a54_state_12` models both sides of the bit-`0x04`
-gate, the post-`0x22C94` state reread, and transition `(0x0C, 4)` after enqueue.
-`game_move_request_plan_3d5d8` models the positive-helper and actor-byte
-`+0x01 == 2` gate, pre-enqueue stores/transitions, and post-enqueue helper calls.
-`game_move_request_plan_3d718` preserves both actor-byte checks, the low-byte
-`func_80022674(actor, 0x0B)` result split, and the post-enqueue transition.
-`game_move_request_plan_4193c` records the optional `func_80022944`, unconditional
-enqueue, and transition `(6, 1)`. `game_move_request_plan_41b08` records the
-sequence-key `0x15` skip/select and saved-`$s2` notification gate, followed by
-enqueue and transition `(6, 4)`. Native tests cover each plan.
-These finish the six enqueue-site slices, not the four enclosing state-machine
-bodies; their indirect dispatches and opaque helper effects remain unresolved.
+The enqueue-related control flow is modeled in `src/game/move_requests.c`.
+`game_process_move_request_state_12` executes both sides of the grounded
+state-12 bit-`0x04` gate, rereads state after `0x80022C94`, and performs
+transition `(0x0C, 4)` after enqueue. Runners `game_run_move_request_path_3d718`,
+`game_run_move_request_path_4193c`, and `game_run_move_request_path_41b08`
+execute their enqueue paths, callback order, and post-enqueue transitions.
+`game_move_request_plan_3d5d8` remains an action plan because its enqueue gate
+depends on preceding opaque math; it records the positive-result/state-byte
+predicate and observed stores/calls. Native tests cover each modeled path.
+This models the six enqueue paths, not the complete four enclosing state-machine
+bodies; their indirect dispatches and other helper effects remain unresolved.
 
 The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
 `0x80024F2C`. Its exact L0 match is an assembly-backed transcription in

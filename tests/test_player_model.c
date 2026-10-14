@@ -382,16 +382,23 @@ static void test_move_request_caller_plans(void) {
     assert(game_move_request_plan_3d5d8(0, 2) == 0);
     assert(game_move_request_plan_3d5d8(1, 1) == 0);
 
-    assert(game_move_request_plan_3d718(1, 0, 0) ==
-        (GAME_MOVE_CALLER_TRANSITION_1B_3 | GAME_MOVE_CALLER_CALL_8002205C));
+    assert(game_move_request_plan_3d718(1, 0, 1) ==
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_TRANSITION_2F_1 |
+            GAME_MOVE_CALLER_ENQUEUE));
+    assert(game_move_request_plan_3d718(1, 0, 2) ==
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_TRANSITION_2F_1 |
+            GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_TRANSITION_5_3));
     assert(game_move_request_plan_3d718(2, 1, 0) ==
-        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674 |
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_CALL_8001FD6C |
+            GAME_MOVE_CALLER_CALL_80022674 |
             GAME_MOVE_CALLER_TRANSITION_1B_3 | GAME_MOVE_CALLER_CALL_8002205C));
     assert(game_move_request_plan_3d718(2, 0, 1) ==
-        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674 |
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_CALL_8001FD6C |
+            GAME_MOVE_CALLER_CALL_80022674 |
             GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE));
     assert(game_move_request_plan_3d718(2, 0, 2) ==
-        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674 |
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_CALL_8001FD6C |
+            GAME_MOVE_CALLER_CALL_80022674 |
             GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE |
             GAME_MOVE_CALLER_TRANSITION_5_3));
     assert(game_move_request_plan_4193c(0) ==
@@ -411,10 +418,184 @@ static void test_move_request_caller_plans(void) {
             GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_TRANSITION_6_4));
 }
 
+typedef struct MoveCallerTestLog {
+    uint32_t calls[12];
+    uintptr_t arguments[12][8];
+    size_t call_count;
+    int32_t helper_22674_result;
+    int32_t helper_2205C_result;
+    int32_t transition_result;
+    uint8_t *actor_state_byte_01;
+    int mutate_actor_state_after_22674;
+} MoveCallerTestLog;
+
+static int32_t record_move_caller_invoke(void *context, uint32_t function_address, const uintptr_t arguments[8]) {
+    MoveCallerTestLog *log = context;
+    size_t index;
+
+    assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
+    log->calls[log->call_count] = function_address;
+    for (index = 0; index < 8; index++) {
+        log->arguments[log->call_count][index] = arguments[index];
+    }
+    log->call_count++;
+
+    if (function_address == 0x80022674) {
+        if (log->mutate_actor_state_after_22674) {
+            *log->actor_state_byte_01 = 1;
+        }
+        return log->helper_22674_result;
+    }
+    if (function_address == 0x8002205C) {
+        return log->helper_2205C_result;
+    }
+    if (function_address == 0x8001B558) {
+        return log->transition_result;
+    }
+    return 0;
+}
+
+static void test_game_run_remaining_move_request_paths(void) {
+    GameMoveRequestQueue queue = {0};
+    MoveCallerTestLog log = {0};
+    GameMoveState12Ops ops = {&log, record_move_limit_assertion, record_move_caller_invoke, NULL};
+    uint8_t actor_state_byte_01 = 1;
+    int actor;
+    int move_context;
+    void *entries[4] = {0};
+
+    queue.entries = entries;
+    log.actor_state_byte_01 = &actor_state_byte_01;
+    log.transition_result = 0x51;
+    log.helper_2205C_result = 0x60;
+
+    assert(game_run_move_request_path_3d718(
+        &queue, &actor, &move_context, &actor_state_byte_01, &ops
+    ) == 0);
+    assert(queue.count == 1 && entries[0] == &actor);
+    assert(log.call_count == 2);
+    assert(log.calls[0] == 0x80022944 && log.calls[1] == 0x8001B558);
+    assert(log.arguments[1][0] == 0x2F && log.arguments[1][1] == 1);
+
+    actor_state_byte_01 = 2;
+    queue.count = 0;
+    log.call_count = 0;
+    log.helper_22674_result = 0x101;
+    assert(game_run_move_request_path_3d718(
+        &queue, &actor, &move_context, &actor_state_byte_01, &ops
+    ) == 0x60);
+    assert(queue.count == 0);
+    assert(log.call_count == 5);
+    assert(log.calls[0] == 0x80022944 && log.calls[1] == 0x8001FD6C);
+    assert(log.calls[2] == 0x80022674 && log.calls[3] == 0x8001B558);
+    assert(log.calls[4] == 0x8002205C);
+    assert(log.arguments[3][0] == 0x1B && log.arguments[3][1] == 3);
+
+    log.call_count = 0;
+    log.helper_22674_result = 0;
+    log.transition_result = 0x52;
+    assert(game_run_move_request_path_3d718(
+        &queue, &actor, &move_context, &actor_state_byte_01, &ops
+    ) == 0x52);
+    assert(queue.count == 1 && entries[0] == &actor);
+    assert(log.call_count == 5 && log.calls[3] == 0x8001B558 && log.calls[4] == 0x8001B558);
+    assert(log.arguments[3][0] == 0x2F && log.arguments[3][1] == 1);
+    assert(log.arguments[4][0] == 5 && log.arguments[4][1] == 3);
+
+    actor_state_byte_01 = 1;
+    queue.count = 0;
+    log.call_count = 0;
+    log.helper_22674_result = 0;
+    log.transition_result = 0x61;
+    assert(game_run_move_request_path_4193c(
+        &queue, &actor, &move_context, 0, &ops
+    ) == 0x61);
+    assert(queue.count == 1 && entries[0] == &actor);
+    assert(log.call_count == 2 && log.calls[0] == 0x80022944 && log.calls[1] == 0x8001B558);
+    assert(log.arguments[1][0] == 6 && log.arguments[1][1] == 1);
+
+    queue.count = 0;
+    log.call_count = 0;
+    assert(game_run_move_request_path_41b08(
+        &queue, &actor, &move_context, &move_context, 0x15, 1, &ops
+    ) == 0x61);
+    assert(queue.count == 1 && log.call_count == 1 && log.calls[0] == 0x8001B558);
+    assert(log.arguments[0][0] == 6 && log.arguments[0][1] == 4);
+
+    queue.count = 0;
+    log.call_count = 0;
+    assert(game_run_move_request_path_41b08(
+        &queue, &actor, &move_context, &move_context, 0x14, 1, &ops
+    ) == 0x61);
+    assert(queue.count == 1 && log.call_count == 3);
+    assert(log.calls[0] == 0x80052AEC && log.calls[1] == 0x80022944 && log.calls[2] == 0x8001B558);
+}
+
+static void test_game_run_move_request_path_3d5d8(void) {
+    GameMoveRequestQueue queue = {0};
+    MoveCallerTestLog log = {0};
+    GameMoveState12Ops ops = {&log, record_move_limit_assertion, record_move_caller_invoke, NULL};
+    GameMoveRequestGlobalObject3D5D8View global_object = {0, 11, INT32_MIN};
+    uint8_t actor_byte_01 = 2;
+    int32_t actor_word_14 = 0;
+    uint8_t global_byte_3E4 = 1;
+    void *global_actor_3F8 = NULL;
+    int actor;
+    int actor_context;
+    int linked_object;
+    int global_509A4_argument;
+    void *entries[1] = {0};
+    GameMoveRequestState3D5D8View state = {
+        &actor,
+        &actor_byte_01,
+        &actor_word_14,
+        0x1234,
+        &actor_context,
+        &linked_object,
+        0x5678,
+        &global_object,
+        &global_byte_3E4,
+        &global_actor_3F8,
+        &global_509A4_argument,
+    };
+
+    queue.entries = entries;
+    log.transition_result = 0x77;
+    assert(game_run_move_request_path_3d5d8(&queue, &state, 0, 0, &ops) == 0);
+    assert(game_run_move_request_path_3d5d8(&queue, &state, 1, 2, &ops) == 0);
+    assert(queue.count == 0 && log.call_count == 0);
+
+    actor_byte_01 = 1;
+    assert(game_run_move_request_path_3d5d8(&queue, &state, 1, 0, &ops) == 0);
+    assert(queue.count == 0 && log.call_count == 0);
+
+    actor_byte_01 = 2;
+    assert(game_run_move_request_path_3d5d8(&queue, &state, 1, 1, &ops) == 0);
+    assert(queue.count == 1 && entries[0] == &actor);
+    assert(actor_byte_01 == 1 && actor_word_14 == 0x1234);
+    assert(global_object.word_30 == 0x60 && global_object.word_88 == -11);
+    assert(global_object.word_90 == INT32_MIN);
+    assert(linked_object == 0x5678);
+    assert(global_byte_3E4 == 0 && global_actor_3F8 == &actor);
+    assert(log.call_count == 5);
+    assert(log.calls[0] == 0x8001B558 && log.calls[1] == 0x8001B558);
+    assert(log.arguments[0][0] == 0x26 && log.arguments[0][1] == 4);
+    assert(log.arguments[0][2] == (uintptr_t)&actor_context && log.arguments[0][3] == 0);
+    assert(log.arguments[1][0] == 0x2F && log.arguments[1][1] == 1);
+    assert(log.arguments[1][2] == (uintptr_t)&actor_context);
+    assert(log.arguments[1][3] == (uintptr_t)&actor_context);
+    assert(log.calls[2] == 0x80028764 && log.arguments[2][0] == 0);
+    assert(log.calls[3] == 0x80053270 && log.arguments[3][0] == 0x20);
+    assert(log.calls[4] == 0x800509A4 && log.arguments[4][0] == 1);
+    assert(log.arguments[4][1] == (uintptr_t)&global_509A4_argument);
+    assert(log.arguments[4][2] == 1);
+}
+
 typedef struct MovePreparationTestLog {
     const GameMovePreparationTableEntry *table;
     unsigned int lookup_count;
     unsigned int notify_count;
+    unsigned int component_update_count;
     uint32_t calls[12];
     size_t call_count;
 } MovePreparationTestLog;
@@ -452,7 +633,8 @@ static int32_t record_move_preparation_call(
         return 0;
     }
     if (function_address == 0x80062D4C) {
-        *(int32_t *)argument_2 = 1;
+        log->component_update_count++;
+        *(int32_t *)argument_2 = log->component_update_count == 2 ? 1 : 0;
         return 0;
     }
     if (function_address == 0x80054B20 || function_address == 0x80054C7C || function_address == 0x800546F4 ||
@@ -512,10 +694,12 @@ static void test_game_prepare_move_request(void) {
 
     {
         static const uint32_t expected_calls[] = {
-            0x80028C18, 0x800286F8, 0x80054B20, 0x80062D4C,
+            0x80028C18,
+            0x800286F8, 0x80054B20, 0x80062D4C,
+            0x800286F8, 0x80054B20, 0x80062D4C,
             0x80054C7C, 0x800546F4, 0x800550A4, 0x8005541C, 0x80022944,
         };
-        static const int32_t movement_payload[4] = {2, -3, 4, 0xAA};
+        static const int32_t movement_payload[8] = {2, -3, 4, 0xAA, 5, 6, 7, 0xBB};
         static const GameMovePreparationTableEntry movement_table[] = {
             {0x0A, 1, 0, 2, movement_payload},
         };
@@ -525,7 +709,7 @@ static void test_game_prepare_move_request(void) {
 
         memset(&move_info, 0, sizeof(move_info));
         memset(&log, 0, sizeof(log));
-        move_info.words[0x38 / 4] = 7;
+        move_info.words[0x38 / 4] = 1;
         log.table = movement_table;
         object.component = &component;
         object.component_basis = &basis_marker;
@@ -534,16 +718,105 @@ static void test_game_prepare_move_request(void) {
 
         assert(game_prepare_move_request(&queue, &actor, &object, &basis_marker, 0, &completion_flag, &ops) == 1);
         assert(completion_flag == 0);
-        assert(move_info.words[0] == 0 && move_info.words[1] == 0);
+        assert(move_info.words[0] == 1 && move_info.words[1] == 0);
         assert(((uint8_t *)move_info.words)[0x1C] == 1);
-        assert(move_info.words[2] == 2 && move_info.words[3] == -3 && move_info.words[4] == 4);
+        assert(move_info.words[2] == 7 && move_info.words[3] == 3 && move_info.words[4] == 11);
         assert(move_info.words[0x30 / 4] == 2);
+        assert(log.component_update_count == 2);
         assert(log.call_count == sizeof(expected_calls) / sizeof(expected_calls[0]));
         for (call_index = 0; call_index < log.call_count; call_index++) {
             assert(log.calls[call_index] == expected_calls[call_index]);
         }
         assert(queue.count == 1 && entries[0] == &actor);
     }
+}
+
+typedef struct MoveState12TestLog {
+    uint32_t calls[8];
+    size_t call_count;
+    uint32_t *actor_state_10;
+    int clear_actor_state_after_22c94;
+    unsigned int continuation_count;
+} MoveState12TestLog;
+
+static int32_t record_move_state12_call(void *context, uint32_t function_address, const uintptr_t arguments[8]) {
+    MoveState12TestLog *log = context;
+
+    assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
+    log->calls[log->call_count++] = function_address;
+    if (function_address == 0x80052AEC || function_address == 0x80052E18) {
+        assert(arguments[0] != 0);
+        return 0;
+    }
+    if (function_address == 0x800691B8) {
+        assert(arguments[0] != 0 && arguments[1] == 0);
+        return 0;
+    }
+    if (function_address == 0x80022C94) {
+        assert(arguments[0] != 0);
+        if (arguments[1] == 0x380) {
+            assert(arguments[4] == 0x5A && arguments[5] == 0x61 && arguments[6] == 0x68);
+        } else {
+            assert(arguments[1] == 0 && arguments[4] == 0x5A);
+            if (log->clear_actor_state_after_22c94) {
+                *log->actor_state_10 = 0;
+            }
+        }
+        return 0;
+    }
+    if (function_address == 0x8001B558) {
+        assert(arguments[0] == 0x0C && arguments[1] == 4);
+        assert(arguments[2] != 0 && arguments[2] == arguments[3]);
+        return 0x42;
+    }
+    assert(0);
+    return 0;
+}
+
+static int32_t record_move_state12_continuation(void *context, GameMoveState12View *state) {
+    MoveState12TestLog *log = context;
+    assert(state->actor != NULL);
+    log->continuation_count++;
+    return 0x66;
+}
+
+static void test_game_process_move_request_state_12(void) {
+    int actor;
+    int move_context;
+    int shared_context;
+    uint32_t actor_state_10 = 0;
+    uint8_t global_byte_14 = 1;
+    void *entries[2] = {0};
+    GameMoveRequestQueue queue = {0, entries};
+    MoveState12TestLog log = {0};
+    GameMoveState12View state = {
+        &actor, &move_context, &actor_state_10, 1, &global_byte_14, &shared_context,
+    };
+    GameMoveState12Ops ops = {
+        &log, record_move_limit_assertion, record_move_state12_call,
+        record_move_state12_continuation,
+    };
+
+    log.actor_state_10 = &actor_state_10;
+    assert(game_process_move_request_state_12(&queue, &state, &ops) == 0x42);
+    assert(global_byte_14 == 0 && queue.count == 1 && entries[0] == &actor);
+    assert(log.call_count == 4);
+    assert(log.calls[0] == 0x80052AEC && log.calls[1] == 0x80052E18);
+    assert(log.calls[2] == 0x80022C94 && log.calls[3] == 0x8001B558);
+
+    actor_state_10 = 4;
+    log.call_count = 0;
+    assert(game_process_move_request_state_12(&queue, &state, &ops) == 0x42);
+    assert(queue.count == 2 && entries[1] == &actor);
+    assert(log.calls[0] == 0x800691B8 && log.calls[1] == 0x80022C94);
+    assert(log.calls[2] == 0x8001B558);
+
+    actor_state_10 = 4;
+    log.clear_actor_state_after_22c94 = 1;
+    log.call_count = 0;
+    assert(game_process_move_request_state_12(&queue, &state, &ops) == 0x66);
+    assert(queue.count == 2 && log.continuation_count == 1);
+    assert(log.call_count == 2 && log.calls[0] == 0x800691B8 && log.calls[1] == 0x80022C94);
 }
 
 enum {
@@ -2104,6 +2377,9 @@ int main(void) {
     test_move_request_enqueue_if_actor_state_bit_2();
     test_move_request_caller_plans();
     test_game_prepare_move_request();
+    test_game_process_move_request_state_12();
+    test_game_run_remaining_move_request_paths();
+    test_game_run_move_request_path_3d5d8();
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
     test_component_transform_read_translation();

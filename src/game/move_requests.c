@@ -178,67 +178,68 @@ int32_t game_prepare_move_request(
         return 0;
     }
 
-process_component_entry:
-    if (words[0x18 / sizeof(int32_t)] != 0) {
-        goto apply_global_transform;
-    }
-    if (object->component == NULL || table[index].payload_08 == NULL) {
-        return 0;
-    }
+    while (words[0x18 / sizeof(int32_t)] == 0) {
+        const int32_t *payload;
 
-    for (element = 0; element < 3; element++) {
-        words[0x08 / sizeof(int32_t) + element] = move_request_add_wrap(
-            words[0x08 / sizeof(int32_t) + element],
-            table[index].payload_08[element]
-        );
-    }
-
-    move_request_call(
-        ops,
-        0x800286F8,
-        (uintptr_t)object->move_context,
-        (uintptr_t)&selector,
-        0,
-        0
-    );
-    if (selector == 1) {
-        words[0x30 / sizeof(int32_t)] = (int32_t)table[index].selector * 2;
-    }
-
-    helper_result = move_request_call(
-        ops,
-        0x80054B20,
-        (uintptr_t)object->component,
-        0,
-        (uintptr_t)component_translation,
-        0
-    );
-    if (helper_result != 0) {
-        return 0;
-    }
-
-    helper_result = move_request_call(
-        ops,
-        0x80062D4C,
-        (uintptr_t)component_translation,
-        (uintptr_t)&words[0x08 / sizeof(int32_t)],
-        (uintptr_t)&words[0x18 / sizeof(int32_t)],
-        0
-    );
-    if (helper_result != 0) {
-        move_request_assert(ops, 0xDA7);
-    }
-
-    if (words[0x18 / sizeof(int32_t)] == 0) {
-        if (table[index].tag != 0x0A) {
-            move_request_assert(ops, 0xDAD);
-            goto apply_global_transform;
+        index = words[0x04 / sizeof(int32_t)];
+        counter = words[0];
+        if (object->component == NULL || table == NULL || index < 0 ||
+            (uint32_t)index >= table_limit || counter < 0 ||
+            table[index].payload_08 == NULL) {
+            return 0;
         }
-        words[0] = words[0] == 0 ? 1 : 0;
-        goto process_component_entry;
+        payload = table[index].payload_08 + (size_t)counter * 4;
+        for (element = 0; element < 3; element++) {
+            words[0x08 / sizeof(int32_t) + element] = move_request_add_wrap(
+                words[0x08 / sizeof(int32_t) + element], payload[element]
+            );
+        }
+
+        selector = 0;
+        move_request_call(
+            ops,
+            0x800286F8,
+            (uintptr_t)object->move_context,
+            (uintptr_t)&selector,
+            0,
+            0
+        );
+        if (selector == 1) {
+            words[0x30 / sizeof(int32_t)] = (int32_t)table[index].selector * 2;
+        }
+
+        helper_result = move_request_call(
+            ops,
+            0x80054B20,
+            (uintptr_t)object->component,
+            0,
+            (uintptr_t)component_translation,
+            0
+        );
+        if (helper_result != 0) {
+            return 0;
+        }
+
+        helper_result = move_request_call(
+            ops,
+            0x80062D4C,
+            (uintptr_t)component_translation,
+            (uintptr_t)&words[0x08 / sizeof(int32_t)],
+            (uintptr_t)&words[0x18 / sizeof(int32_t)],
+            0
+        );
+        if (helper_result != 0) {
+            move_request_assert(ops, 0xDA7);
+        }
+
+        if (words[0x18 / sizeof(int32_t)] == 0) {
+            if (table[index].tag != 0x0A) {
+                move_request_assert(ops, 0xDAD);
+            }
+            words[0] = words[0] == 0 ? 1 : 0;
+        }
     }
 
-apply_global_transform:
     helper_result = move_request_call(
         ops,
         0x80054C7C,
@@ -389,19 +390,220 @@ uint32_t game_move_request_plan_15a54_state_12(
     return actions | GAME_MOVE_CALLER_CONTINUE_POST_ENQUEUE;
 }
 
+static int32_t move_state12_call(
+    const GameMoveState12Ops *ops,
+    uint32_t function_address,
+    uintptr_t argument_0,
+    uintptr_t argument_1,
+    uintptr_t argument_2,
+    uintptr_t argument_3,
+    uintptr_t stack_0,
+    uintptr_t stack_1,
+    uintptr_t stack_2,
+    uintptr_t stack_3
+) {
+    const uintptr_t arguments[8] = {
+        argument_0, argument_1, argument_2, argument_3,
+        stack_0, stack_1, stack_2, stack_3,
+    };
+
+    return ops->invoke(ops->context, function_address, arguments);
+}
+
+static int32_t move_request_negate_wrap(int32_t value) {
+    const uint32_t bits = 0U - (uint32_t)value;
+    int32_t result;
+
+    memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
+int32_t game_run_move_request_path_3d5d8(
+    GameMoveRequestQueue *queue,
+    GameMoveRequestState3D5D8View *state,
+    int32_t positive_check_result,
+    uint8_t comparison_actor_byte_01,
+    const GameMoveState12Ops *ops
+) {
+    int32_t helper_result;
+    uintptr_t returned_object;
+
+    if (state == NULL || state->actor == NULL || state->actor_byte_01 == NULL ||
+        state->actor_word_14 == NULL || state->actor_context == NULL ||
+        state->linked_object_word_24 == NULL ||
+        state->global_object_3E8 == NULL || state->global_byte_3E4 == NULL ||
+        state->global_actor_3F8 == NULL || ops == NULL || ops->invoke == NULL ||
+        positive_check_result <= 0 || *state->actor_byte_01 == comparison_actor_byte_01 ||
+        *state->actor_byte_01 != 2) {
+        return 0;
+    }
+
+    *state->actor_byte_01 = 1;
+    *state->actor_word_14 = state->actor_frame_word_b8;
+    *state->linked_object_word_24 = (int32_t)state->linked_state_value_24;
+    state->global_object_3E8->word_30 = 0x60;
+    state->global_object_3E8->word_88 = move_request_negate_wrap(state->global_object_3E8->word_88);
+    state->global_object_3E8->word_90 = move_request_negate_wrap(state->global_object_3E8->word_90);
+    state->global_byte_3E4[0] = 0;
+    *state->global_actor_3F8 = state->actor;
+
+    move_state12_call(ops, 0x8001B558, 0x26, 4, (uintptr_t)state->actor_context, 0, 0, 0, 0, 0);
+    move_state12_call(
+        ops,
+        0x8001B558,
+        0x2F,
+        1,
+        (uintptr_t)state->actor_context,
+        (uintptr_t)state->actor_context,
+        0,
+        0,
+        0,
+        0
+    );
+    game_enqueue_move_request(queue, state->actor, ops->assertion);
+
+    returned_object = (uintptr_t)(uint32_t)move_state12_call(ops, 0x80028764, 0, 0, 0, 0, 0, 0, 0, 0);
+    move_state12_call(ops, 0x80053270, returned_object + 0x20, 0, 0, 0, 0, 0, 0, 0);
+    helper_result = move_state12_call(ops, 0x800509A4, 1, (uintptr_t)state->argument_509A4_1, 1, 0, 0, 0, 0, 0);
+    return helper_result;
+}
+
+int32_t game_process_move_request_state_12(
+    GameMoveRequestQueue *queue,
+    GameMoveState12View *state,
+    const GameMoveState12Ops *ops
+) {
+    int should_enqueue;
+
+    if (state == NULL || state->actor == NULL || state->move_context == NULL ||
+        state->actor_state_10 == NULL || state->global_byte_14 == NULL ||
+        ops == NULL || ops->invoke == NULL) {
+        return 0;
+    }
+
+    *state->global_byte_14 = 0;
+    if ((*state->actor_state_10 & 0x4u) == 0) {
+        move_state12_call(ops, 0x80052AEC, (uintptr_t)state->move_context, 0, 0, 0, 0, 0, 0, 0);
+        move_state12_call(ops, 0x80052E18, (uintptr_t)state->move_context, 0, 0, 0, 0, 0, 0, 0);
+        move_state12_call(ops, 0x80022C94, (uintptr_t)state->actor, 0x380, 0, 0, 0x5A, 0x61, 0x68, 0);
+        should_enqueue = 1;
+    } else {
+        if ((state->component_flags_04 & 0x3u) == 1) {
+            move_state12_call(ops, 0x800691B8, (uintptr_t)state->shared_691b8_context, 0, 0, 0, 0, 0, 0, 0);
+        }
+        move_state12_call(ops, 0x80022C94, (uintptr_t)state->actor, 0, 0, 0, 0x5A, 0x61, 0x68, 0);
+        should_enqueue = (int)((*state->actor_state_10 >> 2) & 1u);
+    }
+
+    if (!should_enqueue) {
+        return ops->continue_after_no_enqueue != NULL
+            ? ops->continue_after_no_enqueue(ops->context, state)
+            : 0;
+    }
+
+    game_enqueue_move_request(queue, state->actor, ops->assertion);
+    return move_state12_call(
+        ops,
+        0x8001B558,
+        0x0C,
+        4,
+        (uintptr_t)state->move_context,
+        (uintptr_t)state->move_context,
+        0,
+        0,
+        0,
+        0
+    );
+}
+
+int32_t game_run_move_request_path_3d718(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *actor_context,
+    uint8_t *actor_state_byte_01,
+    const GameMoveState12Ops *ops
+) {
+    int32_t helper_result = 0;
+    int32_t enqueue_result;
+    int byte_was_one;
+
+    if (actor == NULL || actor_context == NULL || actor_state_byte_01 == NULL ||
+        ops == NULL || ops->invoke == NULL) {
+        return 0;
+    }
+
+    move_state12_call(ops, 0x80022944, (uintptr_t)actor, 0, 0, 0, 0, 0, 0, 0);
+    byte_was_one = *actor_state_byte_01 == 1;
+    if (!byte_was_one) {
+        move_state12_call(ops, 0x8001FD6C, (uintptr_t)actor, 0, 0, 0, 0, 0, 0, 0);
+        helper_result = move_state12_call(ops, 0x80022674, (uintptr_t)actor, 0x0B, 0, 0, 0, 0, 0, 0);
+        if (((uint32_t)helper_result & 0xFFu) == 1) {
+            move_state12_call(ops, 0x8001B558, 0x1B, 3, 0, (uintptr_t)actor_context, 0, 0, 0, 0);
+            return move_state12_call(ops, 0x8002205C, (uintptr_t)actor, 0, 0, 0, 0, 0, 0, 0);
+        }
+    }
+
+    move_state12_call(ops, 0x8001B558, 0x2F, 1, (uintptr_t)actor_context, (uintptr_t)actor_context, 0, 0, 0, 0);
+    enqueue_result = game_enqueue_move_request(queue, actor, ops->assertion);
+    if (*actor_state_byte_01 != 1) {
+        return move_state12_call(ops, 0x8001B558, 5, 3, (uintptr_t)(intptr_t)-2, (uintptr_t)(intptr_t)-2, (uintptr_t)actor_context, 0, 0, 0);
+    }
+    return enqueue_result;
+}
+
+int32_t game_run_move_request_path_4193c(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *actor_context,
+    int32_t helper_22604_result,
+    const GameMoveState12Ops *ops
+) {
+    if (actor == NULL || actor_context == NULL || ops == NULL || ops->invoke == NULL) {
+        return 0;
+    }
+    if (((uint32_t)helper_22604_result & 0xFFu) == 0) {
+        move_state12_call(ops, 0x80022944, (uintptr_t)actor, 0, 0, 0, 0, 0, 0, 0);
+    }
+    game_enqueue_move_request(queue, actor, ops->assertion);
+    return move_state12_call(ops, 0x8001B558, 6, 1, (uintptr_t)actor_context, (uintptr_t)actor_context, 0, 0, 0, 0);
+}
+
+int32_t game_run_move_request_path_41b08(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    void *move_context,
+    void *actor_context,
+    uint16_t current_sequence_key,
+    uint8_t saved_s2,
+    const GameMoveState12Ops *ops
+) {
+    if (actor == NULL || move_context == NULL || actor_context == NULL || ops == NULL || ops->invoke == NULL) {
+        return 0;
+    }
+    if (current_sequence_key == 0x15) {
+        saved_s2 = 0;
+    } else {
+        move_state12_call(ops, 0x80052AEC, (uintptr_t)move_context, 0x15, 0, 0, 0, 0, 0, 0);
+    }
+    if (saved_s2 != 0) {
+        move_state12_call(ops, 0x80022944, (uintptr_t)actor, 0, 0, 0, 0, 0, 0, 0);
+    }
+    game_enqueue_move_request(queue, actor, ops->assertion);
+    return move_state12_call(ops, 0x8001B558, 6, 4, (uintptr_t)actor_context, (uintptr_t)actor_context, 0, 0, 0, 0);
+}
+
 uint32_t game_move_request_plan_3d718(
     uint8_t actor_state_byte_01_before,
     int32_t query_22674_result,
     uint8_t actor_state_byte_01_after
 ) {
-    uint32_t actions = 0;
+    uint32_t actions = GAME_MOVE_CALLER_CALL_80022944;
 
-    if (actor_state_byte_01_before == 1) {
-        return GAME_MOVE_CALLER_TRANSITION_1B_3 | GAME_MOVE_CALLER_CALL_8002205C;
-    }
-    actions = GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674;
-    if (((uint32_t)query_22674_result & 0xFFu) == 1) {
-        return actions | GAME_MOVE_CALLER_TRANSITION_1B_3 | GAME_MOVE_CALLER_CALL_8002205C;
+    if (actor_state_byte_01_before != 1) {
+        actions |= GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674;
+        if (((uint32_t)query_22674_result & 0xFFu) == 1) {
+            return actions | GAME_MOVE_CALLER_TRANSITION_1B_3 | GAME_MOVE_CALLER_CALL_8002205C;
+        }
     }
     actions |= GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE;
     if (actor_state_byte_01_after != 1) {
