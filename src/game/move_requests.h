@@ -41,7 +41,11 @@ uint32_t game_move_request_plan_15a54_state_12(
     uint32_t actor_state_after_22c94,
     uint8_t component_flags_04
 );
-uint32_t game_move_request_plan_3d5d8(int32_t positive_check_result, uint8_t actor_state_byte_01);
+uint32_t game_move_request_plan_3d5d8(
+    int32_t positive_check_result,
+    uint8_t actor_state_byte_01,
+    uint8_t comparison_actor_byte_01
+);
 uint32_t game_move_request_plan_3d718(
     uint8_t actor_state_byte_01_before,
     int32_t query_22674_result,

@@ -350,8 +350,13 @@ int32_t game_enqueue_move_request_if_translation_pending(
     return 1;
 }
 
-uint32_t game_move_request_plan_3d5d8(int32_t positive_check_result, uint8_t actor_state_byte_01) {
-    if (positive_check_result <= 0 || actor_state_byte_01 != 2) {
+uint32_t game_move_request_plan_3d5d8(
+    int32_t positive_check_result,
+    uint8_t actor_state_byte_01,
+    uint8_t comparison_actor_byte_01
+) {
+    if (positive_check_result <= 0 || actor_state_byte_01 == comparison_actor_byte_01 ||
+        actor_state_byte_01 != 2) {
         return 0;
     }
     return GAME_MOVE_CALLER_SET_ACTOR_BYTE_01 |

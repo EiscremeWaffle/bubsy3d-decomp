@@ -374,13 +374,14 @@ static void test_move_request_caller_plans(void) {
         (GAME_MOVE_CALLER_CLEAR_GP_14 | GAME_MOVE_CALLER_CALL_80022C94 |
             GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_TRANSITION_0C_4));
 
-    assert(game_move_request_plan_3d5d8(1, 2) ==
+    assert(game_move_request_plan_3d5d8(1, 2, 1) ==
         (GAME_MOVE_CALLER_SET_ACTOR_BYTE_01 | GAME_MOVE_CALLER_UPDATE_LINKED_STATE |
             GAME_MOVE_CALLER_TRANSITION_26_4 | GAME_MOVE_CALLER_TRANSITION_2F_1 |
             GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_CALL_80028764 |
             GAME_MOVE_CALLER_CALL_80053270 | GAME_MOVE_CALLER_CALL_800509A4));
-    assert(game_move_request_plan_3d5d8(0, 2) == 0);
-    assert(game_move_request_plan_3d5d8(1, 1) == 0);
+    assert(game_move_request_plan_3d5d8(0, 2, 1) == 0);
+    assert(game_move_request_plan_3d5d8(1, 1, 0) == 0);
+    assert(game_move_request_plan_3d5d8(1, 2, 2) == 0);
 
     assert(game_move_request_plan_3d718(1, 0, 1) ==
         (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_TRANSITION_2F_1 |

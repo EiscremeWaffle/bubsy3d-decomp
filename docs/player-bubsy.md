@@ -686,8 +686,9 @@ transition `(0x0C, 4)` after enqueue. Runners `game_run_move_request_path_3d718`
 `game_run_move_request_path_4193c`, and `game_run_move_request_path_41b08`
 execute their enqueue paths, callback order, and post-enqueue transitions.
 `game_move_request_plan_3d5d8` remains an action plan because its enqueue gate
-depends on preceding opaque math; it records the positive-result/state-byte
-predicate and observed stores/calls. Native tests cover each modeled path.
+depends on preceding opaque math; it records the positive-result test, actor
+byte `+0x01 == 2`, inequality against the saved comparison byte, and observed
+stores/calls. Native tests cover each modeled path.
 This models the six enqueue paths, not the complete four enclosing state-machine
 bodies; their indirect dispatches and other helper effects remain unresolved.
 
