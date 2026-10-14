@@ -124,7 +124,7 @@ int32_t game_prepare_move_request(
     if (completion_flag != NULL) {
         *completion_flag = 0;
     }
-    if (ops == NULL || ops->invoke == NULL) {
+    if (ops == NULL || ops->invoke == NULL || ops->vector_magnitude_ops == NULL) {
         return 0;
     }
 
@@ -234,25 +234,22 @@ int32_t game_prepare_move_request(
             words[0x30 / sizeof(int32_t)] = (int32_t)table[index].selector * 2;
         }
 
-        helper_result = move_request_call(
-            ops,
-            0x80054B20,
-            (uintptr_t)object->component,
-            0,
-            (uintptr_t)component_translation,
-            0
+        helper_result = game_component_transform_read_translation(
+            (const GameComponentTransformView *)object->component,
+            NULL,
+            NULL,
+            component_translation,
+            NULL
         );
         if (helper_result != 0) {
             return 0;
         }
 
-        helper_result = move_request_call(
-            ops,
-            0x80062D4C,
-            (uintptr_t)component_translation,
-            (uintptr_t)&words[0x08 / sizeof(int32_t)],
-            (uintptr_t)&words[0x18 / sizeof(int32_t)],
-            0
+        helper_result = game_component_vector_separation(
+            component_translation,
+            &words[0x08 / sizeof(int32_t)],
+            &words[0x18 / sizeof(int32_t)],
+            ops->vector_magnitude_ops
         );
         if (helper_result != 0) {
             move_request_assert(ops, 0xDA7);
@@ -266,13 +263,12 @@ int32_t game_prepare_move_request(
         }
     }
 
-    helper_result = move_request_call(
-        ops,
-        0x80054C7C,
-        (uintptr_t)ops->global_transform,
-        0,
-        (uintptr_t)&words[0x08 / sizeof(int32_t)],
-        0
+    helper_result = game_component_transform_set_translation(
+        (GameComponentTransformView *)ops->global_transform,
+        NULL,
+        NULL,
+        &words[0x08 / sizeof(int32_t)],
+        NULL
     );
     if (helper_result != 0) {
         return 0;
@@ -315,13 +311,9 @@ int32_t game_prepare_move_request(
     if ((operation_flags & 1u) == 0 && (operation_flags & 4u) == 0) {
         goto clear_transform_values;
     }
-    helper_result = move_request_call(
-        ops,
-        0x80054AF0,
-        (uintptr_t)object->component_basis,
-        (uintptr_t)transform_values,
-        0,
-        0
+    helper_result = game_component_transform_read_matrix_vector(
+        (const GameComponentTransformView *)object->component_basis,
+        transform_values
     );
     if (helper_result != 0) {
         return 0;

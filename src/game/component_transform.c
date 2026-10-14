@@ -19,6 +19,14 @@ static int32_t component_translation_negate(int32_t value) {
     return result;
 }
 
+static int32_t component_difference(int32_t left, int32_t right) {
+    const uint32_t bits = (uint32_t)left - (uint32_t)right;
+    int32_t result;
+
+    memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
 static void component_basis_normalize(
     GameComponentBasisView *output,
     const GameComponentBasisView *input
@@ -85,5 +93,42 @@ int32_t game_component_transform_read_translation(
     game_component_transform_read_translation(component, NULL, NULL, component_translation, NULL);
     component_basis_normalize(&normalized_basis, basis);
     ops->transform_point_to_basis(ops->context, &normalized_basis, component_translation, output);
+    return 0;
+}
+
+int32_t game_component_transform_read_matrix_vector(
+    const GameComponentTransformView *component,
+    int32_t output[3]
+) {
+    if (component == NULL || output == NULL) {
+        return 0x18;
+    }
+
+    output[0] = (int16_t)component->matrix_halfwords[2];
+    output[1] = component_translation_negate((int16_t)component->matrix_halfwords[5]);
+    output[2] = (int16_t)component->matrix_halfwords[8];
+    return 0;
+}
+
+int32_t game_component_vector_separation(
+    const int32_t left[3],
+    const int32_t right[3],
+    int32_t *magnitude_out,
+    const GameComponentVectorMagnitudeOps *ops
+) {
+    int32_t difference[3];
+    uint32_t squared_sum = 0;
+    size_t index;
+
+    if (left == NULL || right == NULL || magnitude_out == NULL || ops == NULL ||
+        ops->convert_squared_sum == NULL) {
+        return -1;
+    }
+
+    for (index = 0; index < 3; index++) {
+        difference[index] = component_difference(left[index], right[index]);
+        squared_sum += (uint32_t)((int64_t)difference[index] * difference[index]);
+    }
+    ops->convert_squared_sum(ops->context, squared_sum, magnitude_out);
     return 0;
 }

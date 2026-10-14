@@ -42,6 +42,17 @@ typedef struct GameComponentTransformOps {
     GameComponentPointToBasisTransform transform_point_to_basis;
 } GameComponentTransformOps;
 
+typedef void (*GameComponentMagnitudeFromSquaredSum)(
+    void *context,
+    uint32_t squared_sum,
+    int32_t *magnitude_out
+);
+
+typedef struct GameComponentVectorMagnitudeOps {
+    void *context;
+    GameComponentMagnitudeFromSquaredSum convert_squared_sum;
+} GameComponentVectorMagnitudeOps;
+
 int32_t game_component_transform_set_translation(
     GameComponentTransformView *component,
     const GameComponentBasisView *basis,
@@ -56,6 +67,18 @@ int32_t game_component_transform_read_translation(
     const GameComponentBasisView *global_basis,
     int32_t output[3],
     const GameComponentTransformOps *ops
+);
+
+int32_t game_component_transform_read_matrix_vector(
+    const GameComponentTransformView *component,
+    int32_t output[3]
+);
+
+int32_t game_component_vector_separation(
+    const int32_t left[3],
+    const int32_t right[3],
+    int32_t *magnitude_out,
+    const GameComponentVectorMagnitudeOps *ops
 );
 
 #endif

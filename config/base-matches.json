@@ -159,16 +159,17 @@
           }
         },
         {
-          "source": "src/game/func_80054B20_match.c",
+          "source": "src/game/func_80054B20.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_80054B20"],
           "globals": {
+            "g_global_basis": "0x800A42EC",
             "func_8005476C": "0x8005476C",
             "func_80064548": "0x80064548"
           }
@@ -216,6 +217,17 @@
           ],
           "headers": [],
           "symbols": ["func_80041218"]
+        },
+        {
+          "source": "src/game/func_80054AF0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80054AF0"]
         }
       ],
       "fuzzy_sources": [
@@ -361,6 +373,12 @@
           "start": "0x80054B20",
           "end": "0x80054C7C",
           "size": 348
+        },
+        {
+          "name": "func_80054AF0",
+          "start": "0x80054AF0",
+          "end": "0x80054B20",
+          "size": 48
         },
         {
           "name": "func_80015A54",

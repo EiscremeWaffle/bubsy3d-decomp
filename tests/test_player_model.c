@@ -595,9 +595,21 @@ static void test_game_run_move_request_path_3d5d8(void) {
 typedef struct MovePreparationTestLog {
     unsigned int notify_count;
     unsigned int component_update_count;
+    uint32_t squared_sums[2];
     uint32_t calls[12];
     size_t call_count;
 } MovePreparationTestLog;
+
+static void record_move_preparation_magnitude(void *context, uint32_t squared_sum, int32_t *magnitude_out) {
+    MovePreparationTestLog *log = context;
+
+    assert(log->component_update_count < sizeof(log->squared_sums) / sizeof(log->squared_sums[0]));
+    assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
+    log->squared_sums[log->component_update_count] = squared_sum;
+    log->calls[log->call_count++] = 0x800535CC;
+    log->component_update_count++;
+    *magnitude_out = log->component_update_count == 2 ? 1 : 0;
+}
 
 static int32_t record_move_preparation_call(
     void *context,
@@ -610,6 +622,7 @@ static int32_t record_move_preparation_call(
     MovePreparationTestLog *log = context;
 
     (void)argument_1;
+    (void)argument_2;
     (void)argument_3;
     assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
     log->calls[log->call_count++] = function_address;
@@ -618,13 +631,8 @@ static int32_t record_move_preparation_call(
         log->notify_count++;
         return 0;
     }
-    if (function_address == 0x80062D4C) {
-        log->component_update_count++;
-        *(int32_t *)argument_2 = log->component_update_count == 2 ? 1 : 0;
-        return 0;
-    }
-    if (function_address == 0x80054B20 || function_address == 0x80054C7C || function_address == 0x800546F4 ||
-        function_address == 0x800550A4 || function_address == 0x8005541C) {
+    if (function_address == 0x800546F4 || function_address == 0x800550A4 ||
+        function_address == 0x8005541C) {
         return 0;
     }
     assert(0);
@@ -635,8 +643,10 @@ static void test_game_prepare_move_request(void) {
     GameMoveInfoView move_info = {0};
     GameMovePreparationObjectView object = {0};
     GameMovePreparationOps ops = {0};
+    GameComponentVectorMagnitudeOps magnitude_ops = {0};
     MovePreparationTestLog log = {0};
     GameMoveRequestQueue queue = {0};
+    GameComponentTransformView global_transform = {0};
     void *entries[1] = {0};
     int actor;
     uint8_t completion_flag = 0xFF;
@@ -646,7 +656,10 @@ static void test_game_prepare_move_request(void) {
     ops.context = &log;
     ops.assertion = record_move_limit_assertion;
     ops.invoke = record_move_preparation_call;
-    ops.global_transform = &actor;
+    ops.global_transform = &global_transform;
+    magnitude_ops.context = &log;
+    magnitude_ops.convert_squared_sum = record_move_preparation_magnitude;
+    ops.vector_magnitude_ops = &magnitude_ops;
     ops.directory = &directory;
     object.move_context = (void *)(intptr_t)1;
     object.component = &actor;
@@ -680,9 +693,8 @@ static void test_game_prepare_move_request(void) {
 
     {
         static const uint32_t expected_calls[] = {
-            0x80054B20, 0x80062D4C,
-            0x80054B20, 0x80062D4C,
-            0x80054C7C, 0x800546F4, 0x800550A4, 0x8005541C, 0x80022944,
+            0x800535CC, 0x800535CC, 0x800546F4,
+            0x800550A4, 0x8005541C, 0x80022944,
         };
         static const int32_t movement_payload[8] = {2, -3, 4, 0xAA, 5, 6, 7, 0xBB};
         static const GameMovePreparationTableEntry movement_table[] = {
@@ -706,8 +718,12 @@ static void test_game_prepare_move_request(void) {
         assert(move_info.words[0] == 1 && move_info.words[1] == 0);
         assert(((uint8_t *)move_info.words)[0x1C] == 1);
         assert(move_info.words[2] == 7 && move_info.words[3] == 3 && move_info.words[4] == 11);
+        assert(global_transform.translation[0] == 7);
+        assert(global_transform.translation[1] == -3);
+        assert(global_transform.translation[2] == 11);
         assert(move_info.words[0x30 / 4] == 2);
         assert(log.component_update_count == 2);
+        assert(log.squared_sums[0] == 29 && log.squared_sums[1] == 179);
         assert(log.call_count == sizeof(expected_calls) / sizeof(expected_calls[0]));
         for (call_index = 0; call_index < log.call_count; call_index++) {
             assert(log.calls[call_index] == expected_calls[call_index]);
@@ -1146,6 +1162,43 @@ static void test_component_transform_read_translation(void) {
     assert(output[0] == -11 && output[1] == 22 && output[2] == -33);
 
     assert(game_component_transform_read_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
+}
+
+typedef struct ComponentMagnitudeTestLog {
+    uint32_t squared_sum;
+    unsigned int call_count;
+} ComponentMagnitudeTestLog;
+
+static void record_component_magnitude(
+    void *context,
+    uint32_t squared_sum,
+    int32_t *magnitude_out
+) {
+    ComponentMagnitudeTestLog *log = context;
+
+    log->squared_sum = squared_sum;
+    log->call_count++;
+    *magnitude_out = 15;
+}
+
+static void test_component_transform_helper_models(void) {
+    GameComponentTransformView component = {0};
+    int32_t matrix_vector[3] = {0};
+    int32_t left[3] = {10, -4, 8};
+    int32_t right[3] = {1, 2, -2};
+    int32_t magnitude = -1;
+    ComponentMagnitudeTestLog log = {0};
+    GameComponentVectorMagnitudeOps ops = {&log, record_component_magnitude};
+
+    component.matrix_halfwords[2] = (uint16_t)-12;
+    component.matrix_halfwords[5] = (uint16_t)-7;
+    component.matrix_halfwords[8] = 31;
+    assert(game_component_transform_read_matrix_vector(&component, matrix_vector) == 0);
+    assert(matrix_vector[0] == -12 && matrix_vector[1] == 7 && matrix_vector[2] == 31);
+
+    assert(game_component_vector_separation(left, right, &magnitude, &ops) == 0);
+    assert(log.call_count == 1 && log.squared_sum == 217);
+    assert(magnitude == 15);
 }
 
 typedef struct EventCallLog {
@@ -2394,6 +2447,7 @@ int main(void) {
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
     test_component_transform_read_translation();
+    test_component_transform_helper_models();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_update_level14_counter_path();

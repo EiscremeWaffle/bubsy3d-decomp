@@ -713,22 +713,32 @@ The full bounded caller `func_80025A98` has a readable host-side control-flow
 model in `game_prepare_move_request` in `src/game/move_requests.c`, alongside
 its exact assembly transcription. The model covers the sentinel-state return,
 control-table cursor/repeat updates, component-entry loop, transform stages,
-and final pending-translation enqueue gate. Calls whose engine effects are not
-recovered are injected through `GameMovePreparationOps`; host guards for invalid
-views are not claims about target behavior. The action-plan functions below
+and final pending-translation enqueue gate. Component translation reads and
+global-transform writes use the direct null-basis models of `func_80054B20`
+and `func_80054C7C`; calls whose engine effects are not recovered remain
+injected through `GameMovePreparationOps`. Host guards for invalid views are
+not claims about target behavior. The action-plan functions below
 cover only their named enqueue slices, not complete translations of the other
 three enclosing routines. Sequence-directory reads are modeled directly by
 `game_move_request_lookup_table` and `game_move_request_read_selector`, with
-native tests for their signed-index bounds and output writes.
+native tests for their signed-index bounds and output writes. The model also
+directly reads the component's signed matrix vector and computes the
+three-component difference and wrapped squared sum before delegating scalar
+conversion through `GameComponentVectorMagnitudeOps`. These helpers have
+focused native tests; scalar conversion and surrounding engine transforms
+remain opaque callbacks rather than guessed implementations.
+
+The 48-byte helper `func_80054AF0` at `0x80054AF0..0x80054B20` reads the signed
+matrix elements at `+0x04/+0x0A/+0x10`, negates Y, and returns zero. Its
+high-level C source in `src/game/func_80054AF0.c` byte-matches the original with
+the pinned GCC 2.6.3 PSX profile.
 
 The shared 348-byte helper `func_80054B20` at `0x80054B20..0x80054C7C` has 137
-direct L0 JAL call sites, including its recursive call. Its exact transcription
-is in `src/game/func_80054B20_match.c`. The null-basis path copies the component
-translation at `+0x14/+0x18/+0x1C` to the output vector and negates Y; this is
-the path used by the movement consumer. The readable model is
-`game_component_transform_read_translation` in
-`src/game/component_transform.c`; non-null, non-global basis conversion remains
-an injected callback.
+direct L0 JAL call sites, including its recursive call. Its high-level C source
+in `src/game/func_80054B20.c` is now byte-matched with the pinned GCC 2.6.3 PSX
+profile. The null-basis and global-basis paths copy the component translation
+at `+0x14/+0x18/+0x1C` to the output vector and negate Y; a differing basis is
+normalized and transformed through the observed helper calls.
 
 The shared 360-byte helper `func_80054C7C` at `0x80054C7C..0x80054DE4` has 92
 direct L0 JAL call sites, including its recursive call. Its assembly-backed

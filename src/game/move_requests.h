@@ -2,6 +2,8 @@
 #ifndef BUBSY3D_MOVE_REQUESTS_H
 #define BUBSY3D_MOVE_REQUESTS_H
 
+#include "component_transform.h"
+
 #include <stdint.h>
 
 enum { GAME_MAX_MOVE_REQUESTS = 30 };
@@ -143,6 +145,7 @@ typedef struct GameMovePreparationOps {
     GameMovePreparationInvoke invoke;
     void *global_transform;
     const GameMoveRequestDirectoryView *directory;
+    const GameComponentVectorMagnitudeOps *vector_magnitude_ops;
 } GameMovePreparationOps;
 
 typedef int32_t (*GameMoveCallerInvoke)(void *context, uint32_t function_address, const uintptr_t arguments[8]);
