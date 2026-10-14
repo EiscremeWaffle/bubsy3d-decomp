@@ -30,6 +30,17 @@ int32_t game_enqueue_move_request_if_translation_pending(
     return 1;
 }
 
+void game_enqueue_move_request_if_actor_state_bit_2(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    uint32_t actor_state_10,
+    GameMoveRequestAssertion assertion
+) {
+    if ((actor_state_10 & 0x4u) != 0) {
+        game_enqueue_move_request(queue, actor, assertion);
+    }
+}
+
 void game_apply_queued_move_request(
     GameMoveConsumerObjectView *object,
     const GameMoveConsumerOps *ops

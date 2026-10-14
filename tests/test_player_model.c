@@ -346,6 +346,22 @@ static void test_move_request_enqueue_if_translation_pending(void) {
     assert(queue.count == 1 && entries[0] == &request);
 }
 
+static void test_move_request_enqueue_if_actor_state_bit_2(void) {
+    int actor;
+    void *entries[1] = {0};
+    GameMoveRequestQueue queue = {0, entries};
+
+    game_enqueue_move_request_if_actor_state_bit_2(
+        &queue, &actor, 0x2u, record_move_limit_assertion
+    );
+    assert(queue.count == 0 && entries[0] == NULL);
+
+    game_enqueue_move_request_if_actor_state_bit_2(
+        &queue, &actor, 0x4u, record_move_limit_assertion
+    );
+    assert(queue.count == 1 && entries[0] == &actor);
+}
+
 enum {
     MOVE_CONSUMER_CALL_548A0 = 1,
     MOVE_CONSUMER_CALL_536F4 = 2,
@@ -1901,6 +1917,7 @@ int main(void) {
     test_actor_state_target_data();
     test_move_request_queue();
     test_move_request_enqueue_if_translation_pending();
+    test_move_request_enqueue_if_actor_state_bit_2();
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
     test_component_transform_read_translation();

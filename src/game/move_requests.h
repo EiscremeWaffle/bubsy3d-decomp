@@ -22,6 +22,13 @@ int32_t game_enqueue_move_request_if_translation_pending(
     GameMoveRequestAssertion assertion
 );
 
+void game_enqueue_move_request_if_actor_state_bit_2(
+    GameMoveRequestQueue *queue,
+    void *actor,
+    uint32_t actor_state_10,
+    GameMoveRequestAssertion assertion
+);
+
 enum {
     GAME_MOVE_INFO_BYTES = 0xA4,
     GAME_MOVE_INFO_WORDS = GAME_MOVE_INFO_BYTES / sizeof(int32_t),

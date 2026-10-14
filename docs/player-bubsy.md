@@ -666,6 +666,12 @@ if any of the three pending translation words is nonzero, then return `1` on
 either branch. Native tests cover the zero and nonzero cases; this is not yet a
 translation of the rest of `func_80025A98` or the other caller bodies.
 
+The enqueue guard at `0x80015EA0` is modeled by
+`game_enqueue_move_request_if_actor_state_bit_2` in the same module: it reads
+actor word `+0x10` and enqueues only when mask `0x04` is set. This translates
+only that branch; the bit's gameplay meaning and the surrounding indirect
+state-machine function remain unresolved.
+
 The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
 `0x80024F2C`. Its exact L0 match is an assembly-backed transcription in
 `src/game/func_80024F2C_match.c`. The routine reads pending movement vectors
