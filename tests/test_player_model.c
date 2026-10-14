@@ -328,6 +328,24 @@ static void test_move_request_queue(void) {
     assert(move_assertion_count == 1);
 }
 
+static void test_move_request_enqueue_if_translation_pending(void) {
+    int request;
+    void *entries[2] = {0};
+    int32_t translation[3] = {0, 0, 0};
+    GameMoveRequestQueue queue = {0, entries};
+
+    assert(game_enqueue_move_request_if_translation_pending(
+        &queue, &request, translation, record_move_limit_assertion
+    ) == 1);
+    assert(queue.count == 0 && entries[0] == NULL);
+
+    translation[2] = -1;
+    assert(game_enqueue_move_request_if_translation_pending(
+        &queue, &request, translation, record_move_limit_assertion
+    ) == 1);
+    assert(queue.count == 1 && entries[0] == &request);
+}
+
 enum {
     MOVE_CONSUMER_CALL_548A0 = 1,
     MOVE_CONSUMER_CALL_536F4 = 2,
@@ -1882,6 +1900,7 @@ int main(void) {
     test_actor_state23_event_17_gate();
     test_actor_state_target_data();
     test_move_request_queue();
+    test_move_request_enqueue_if_translation_pending();
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
     test_component_transform_read_translation();

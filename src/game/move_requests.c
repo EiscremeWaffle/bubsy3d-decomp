@@ -18,6 +18,18 @@ static int32_t move_vector_has_nonzero_component(const int32_t *vector) {
     return vector[0] != 0 || vector[1] != 0 || vector[2] != 0;
 }
 
+int32_t game_enqueue_move_request_if_translation_pending(
+    GameMoveRequestQueue *queue,
+    void *request,
+    const int32_t translation[3],
+    GameMoveRequestAssertion assertion
+) {
+    if (move_vector_has_nonzero_component(translation)) {
+        game_enqueue_move_request(queue, request, assertion);
+    }
+    return 1;
+}
+
 void game_apply_queued_move_request(
     GameMoveConsumerObjectView *object,
     const GameMoveConsumerOps *ops

@@ -281,12 +281,12 @@ conditions.
 
 The grounded handler starts with a `0x68`-byte frame and contains a 33-entry
 computed state switch at `0x8004B4D0`, backed by the table at `0x800139A8`.
-Every table target lies inside the handler body, but the L0 discovery map stops
-at the indirect jump, so this handler is not yet a verified bounded function.
-The inspected stores update actor state/flags, a companion object field, and
-global counters; no direct world-position or velocity write has been identified
-yet. Treat this as the grounded actor-state route, not a proven locomotion
-integrator.
+Every table target lies inside the handler body. Automatic L0 discovery stops
+at the indirect jump, but a manual root bounds the complete handler at
+`0x8004B35C..0x8004BFF8`, and its assembly transcription is byte-exact. The
+inspected stores update actor state/flags, a companion object field, and global
+counters; no direct world-position or velocity write has been identified yet.
+Treat this as the grounded actor-state route, not a proven locomotion integrator.
 Before the table dispatch, descriptor lookup value `3` enables special gates
 for states `14` and `15`. State `14` skips the switch when actor flags overlap
 `0x1100`, or when actor state bit `0x1000` is set; in the latter case it first
@@ -650,6 +650,21 @@ This queue is now represented by `game_enqueue_move_request` in
 `src/game/move_requests.c`, with tests for count 29 and overflow at 30. It is
 shared game infrastructure. Player actor callbacks enqueue their live object
 pointers through this API.
+
+The six L0 call sites group into four caller candidates: `0x80015EA0` in the
+`0x80015A54..0x80016270` frame is gated by actor word `+0x10` bit `0x04`;
+`0x80025FC4` in `0x80025A98..0x80025FFC` is gated by pending-vector words
+`+0x38/+0x3C/+0x40`; `0x8003D5D8` and `0x8003D718` are separate transition
+paths in `0x8003CC78..0x8003D8D8`; `0x8004193C` and `0x80041B08` occur in
+different sequence paths in `0x80041218..0x80041D80`. The three larger callers
+contain indirect dispatches, and none of these call sites is in the current
+reachable-code map, so their extents and state meanings remain provisional.
+
+The readable C slice `game_enqueue_move_request_if_translation_pending` in
+`src/game/move_requests.c` models the tail of `func_80025A98`: enqueue the object
+if any of the three pending translation words is nonzero, then return `1` on
+either branch. Native tests cover the zero and nonzero cases; this is not yet a
+translation of the rest of `func_80025A98` or the other caller bodies.
 
 The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
 `0x80024F2C`. Its exact L0 match is an assembly-backed transcription in

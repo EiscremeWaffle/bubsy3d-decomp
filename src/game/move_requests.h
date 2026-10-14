@@ -15,6 +15,13 @@ typedef void (*GameMoveRequestAssertion)(int32_t failed, const char *condition, 
 
 int32_t game_enqueue_move_request(GameMoveRequestQueue *queue, void *request, GameMoveRequestAssertion assertion);
 
+int32_t game_enqueue_move_request_if_translation_pending(
+    GameMoveRequestQueue *queue,
+    void *request,
+    const int32_t translation[3],
+    GameMoveRequestAssertion assertion
+);
+
 enum {
     GAME_MOVE_INFO_BYTES = 0xA4,
     GAME_MOVE_INFO_WORDS = GAME_MOVE_INFO_BYTES / sizeof(int32_t),
