@@ -656,3 +656,9 @@ from the object's `moveInfo`, composes the translation, and calls
 and clears the pending values. This establishes a persistent component-transform
 write, but not whether that transform is world-space or the units/semantics of
 any separate velocity field.
+
+A readable host-side orchestration model for this routine is in
+`game_apply_queued_move_request` in `src/game/move_requests.c`. Its injected
+callbacks preserve the observed helper order and pointer ranges without
+guessing the opaque helpers' internal math; native tests cover optional paths,
+translation application, archival, clearing, and the missing-info assertion.

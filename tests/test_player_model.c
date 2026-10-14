@@ -327,6 +327,202 @@ static void test_move_request_queue(void) {
     assert(move_assertion_count == 1);
 }
 
+enum {
+    MOVE_CONSUMER_CALL_548A0 = 1,
+    MOVE_CONSUMER_CALL_536F4 = 2,
+    MOVE_CONSUMER_CALL_10038 = 3,
+    MOVE_CONSUMER_CALL_54B20 = 4,
+    MOVE_CONSUMER_CALL_54C7C = 5,
+};
+
+typedef struct GameMoveConsumerTestLog {
+    GameMoveInfoView *move_info;
+    void *component_transform;
+    const int32_t *rotation_scratch;
+    int32_t calls[8];
+    size_t call_count;
+    unsigned int vector_combine_count;
+    unsigned int transform_apply_count;
+} GameMoveConsumerTestLog;
+
+static unsigned int move_info_assertion_count;
+
+static void log_move_consumer_call(GameMoveConsumerTestLog *log, int32_t call) {
+    assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
+    log->calls[log->call_count++] = call;
+}
+
+static void record_move_consumer_assertion(
+    int32_t condition_value,
+    const char *condition,
+    const char *source_path,
+    uint32_t source_line
+) {
+    assert(condition_value == 0);
+    assert(strcmp(condition, "mi") == 0);
+    assert(strcmp(source_path, "../f/game.c") == 0);
+    assert(source_line == 0xB12);
+    move_info_assertion_count++;
+}
+
+static void record_move_consumer_rotate(
+    void *context,
+    void *component_transform,
+    const int32_t *values_48
+) {
+    GameMoveConsumerTestLog *log = context;
+
+    assert(component_transform == log->component_transform);
+    assert(values_48 == log->move_info->words + 0x48 / 4);
+    log_move_consumer_call(log, MOVE_CONSUMER_CALL_548A0);
+}
+
+static void record_move_consumer_prepare(
+    void *context,
+    const int32_t *values_98,
+    int32_t *scratch
+) {
+    GameMoveConsumerTestLog *log = context;
+
+    assert(values_98 == log->move_info->words + 0x98 / 4);
+    log->rotation_scratch = scratch;
+    scratch[0] = 0xA0;
+    scratch[1] = 0xA1;
+    scratch[2] = 0xA2;
+    scratch[3] = 0xA3;
+    log_move_consumer_call(log, MOVE_CONSUMER_CALL_536F4);
+}
+
+static void record_move_consumer_combine(
+    void *context,
+    const int32_t *a0,
+    const int32_t *a1,
+    int32_t *a2
+) {
+    GameMoveConsumerTestLog *log = context;
+
+    log->vector_combine_count++;
+    log_move_consumer_call(log, MOVE_CONSUMER_CALL_10038);
+    if (log->vector_combine_count == 1) {
+        assert(a0 == log->move_info->words + 0x38 / 4);
+        assert(a1 == log->rotation_scratch);
+        assert(a2 == a0);
+        a2[0] = 5;
+        a2[1] = 6;
+        a2[2] = 7;
+    } else {
+        assert(a0 == log->move_info->words + 0x68 / 4);
+        assert(a1 == log->move_info->words + 0x38 / 4);
+        assert(a2 != a0 && a2 != a1);
+        a2[0] = 0xB0;
+        a2[1] = 0xB1;
+        a2[2] = 0xB2;
+        a2[3] = 0xB3;
+    }
+}
+
+static void record_move_consumer_update(
+    void *context,
+    void *component_transform,
+    int32_t mode,
+    const int32_t *values_68
+) {
+    GameMoveConsumerTestLog *log = context;
+
+    assert(component_transform == log->component_transform);
+    assert(mode == 0);
+    assert(values_68 == log->move_info->words + 0x68 / 4);
+    log_move_consumer_call(log, MOVE_CONSUMER_CALL_54B20);
+}
+
+static void record_move_consumer_apply(
+    void *context,
+    void *component_transform,
+    int32_t mode,
+    const int32_t *translation
+) {
+    GameMoveConsumerTestLog *log = context;
+
+    assert(component_transform == log->component_transform);
+    assert(mode == 0);
+    assert(translation[0] == 0xB0 && translation[1] == 0xB1);
+    assert(translation[2] == 0xB2 && translation[3] == 0xB3);
+    log->transform_apply_count++;
+    log_move_consumer_call(log, MOVE_CONSUMER_CALL_54C7C);
+}
+
+static void test_game_apply_queued_move_request(void) {
+    GameMoveInfoView move_info = {0};
+    int transform_marker;
+    GameMoveConsumerTestLog log = {0};
+    GameMoveConsumerObjectView object = {&transform_marker, &move_info};
+    GameMoveConsumerOps ops = {
+        &log,
+        record_move_consumer_assertion,
+        record_move_consumer_rotate,
+        record_move_consumer_prepare,
+        record_move_consumer_combine,
+        record_move_consumer_update,
+        record_move_consumer_apply,
+    };
+    static const int32_t expected_calls[] = {
+        MOVE_CONSUMER_CALL_548A0,
+        MOVE_CONSUMER_CALL_536F4,
+        MOVE_CONSUMER_CALL_10038,
+        MOVE_CONSUMER_CALL_54B20,
+        MOVE_CONSUMER_CALL_10038,
+        MOVE_CONSUMER_CALL_54C7C,
+    };
+    size_t index;
+
+    log.move_info = &move_info;
+    log.component_transform = &transform_marker;
+    move_info.words[0x38 / 4] = 3;
+    move_info.words[0x44 / 4] = 0x44;
+    move_info.words[0x48 / 4] = 1;
+    move_info.words[0x68 / 4] = 2;
+    move_info.words[0x98 / 4] = 4;
+
+    game_apply_queued_move_request(&object, &ops);
+
+    assert(log.call_count == sizeof(expected_calls) / sizeof(expected_calls[0]));
+    for (index = 0; index < log.call_count; index++) {
+        assert(log.calls[index] == expected_calls[index]);
+    }
+    assert(log.transform_apply_count == 1 && log.vector_combine_count == 2);
+    assert(move_info.words[0x78 / 4] == 5);
+    assert(move_info.words[0x7C / 4] == 6);
+    assert(move_info.words[0x80 / 4] == 7);
+    assert(move_info.words[0x84 / 4] == 0x44);
+    assert(move_info.words[0x38 / 4] == 0 && move_info.words[0x3C / 4] == 0);
+    assert(move_info.words[0x40 / 4] == 0 && move_info.words[0x44 / 4] == 0x44);
+    assert(move_info.words[0x48 / 4] == 0 && move_info.words[0x4C / 4] == 0);
+    assert(move_info.words[0x50 / 4] == 0 && move_info.words[0x98 / 4] == 0);
+
+    {
+        GameMoveInfoView empty_move_info = {0};
+
+        object.move_info = &empty_move_info;
+        log.move_info = &empty_move_info;
+        log.call_count = 0;
+        log.vector_combine_count = 0;
+        log.transform_apply_count = 0;
+        game_apply_queued_move_request(&object, &ops);
+        assert(log.call_count == 1);
+        assert(log.calls[0] == MOVE_CONSUMER_CALL_54B20);
+        assert(log.vector_combine_count == 0 && log.transform_apply_count == 0);
+    }
+
+    object.move_info = NULL;
+    log.call_count = 0;
+    log.vector_combine_count = 0;
+    log.transform_apply_count = 0;
+    move_info_assertion_count = 0;
+    game_apply_queued_move_request(&object, &ops);
+    assert(log.call_count == 0 && log.vector_combine_count == 0);
+    assert(move_info_assertion_count == 1);
+}
+
 typedef struct EventCallLog {
     unsigned int selected_count;
     unsigned int flag_count;
@@ -1562,8 +1758,10 @@ int main(void) {
     test_actor_state23_event_17_gate();
     test_actor_state_target_data();
     test_move_request_queue();
+    test_game_apply_queued_move_request();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
+    test_bubsy_actor_update_level14_counter_path();
     test_bubsy_actor_default_state_route();
     test_bubsy_actor_shared_update_entry();
     test_bubsy_actor_347ec_mode_entry();
@@ -1600,11 +1798,11 @@ int main(void) {
     test_vector_range_scaling();
     test_vector_length_q12();
     test_grounded_vector_transform();
+
     test_bubsy_actor_update_sequence_309_gate();
     test_bubsy_actor_update_local_state_for_sequence();
     test_bubsy_actor_update_mode1_sequence_boundary_gate();
     test_bubsy_actor_update_sequence_counter_reset();
-    test_bubsy_actor_update_level14_counter_path();
     test_bubsy_actor_update_sequence_index_for_local_state();
     test_bubsy_actor_update_sequence_mode_override();
     test_bubsy_death_state_progression();
