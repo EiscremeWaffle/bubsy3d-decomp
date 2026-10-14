@@ -30,6 +30,50 @@ int32_t game_enqueue_move_request_if_translation_pending(
     return 1;
 }
 
+uint32_t game_move_request_plan_3d5d8(int32_t positive_check_result, uint8_t actor_state_byte_01) {
+    if (positive_check_result <= 0 || actor_state_byte_01 != 2) {
+        return 0;
+    }
+    return GAME_MOVE_CALLER_SET_ACTOR_BYTE_01 |
+        GAME_MOVE_CALLER_UPDATE_LINKED_STATE |
+        GAME_MOVE_CALLER_TRANSITION_26_4 |
+        GAME_MOVE_CALLER_TRANSITION_2F_1 |
+        GAME_MOVE_CALLER_ENQUEUE;
+}
+
+uint32_t game_move_request_plan_3d718(uint8_t actor_state_byte_01, int32_t query_22674_result) {
+    uint32_t actions = 0;
+
+    if (actor_state_byte_01 != 1) {
+        actions = GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674;
+        if (((uint32_t)query_22674_result & 0xFFu) == 1) {
+            return actions;
+        }
+    }
+    return actions | GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE;
+}
+
+uint32_t game_move_request_plan_4193c(uint8_t helper_22604_result) {
+    if (helper_22604_result == 0) {
+        return GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_ENQUEUE;
+    }
+    return GAME_MOVE_CALLER_TRANSITION_RELATED | GAME_MOVE_CALLER_ENQUEUE;
+}
+
+uint32_t game_move_request_plan_41b08(uint16_t current_sequence_key, uint8_t saved_s2) {
+    uint32_t actions = GAME_MOVE_CALLER_ENQUEUE;
+
+    if (current_sequence_key == 0x15) {
+        return actions | GAME_MOVE_CALLER_CLEAR_SAVED_S2;
+    }
+
+    actions |= GAME_MOVE_CALLER_CALL_80052AEC;
+    if (saved_s2 != 0) {
+        actions |= GAME_MOVE_CALLER_CALL_80022944;
+    }
+    return actions;
+}
+
 void game_enqueue_move_request_if_actor_state_bit_2(
     GameMoveRequestQueue *queue,
     void *actor,

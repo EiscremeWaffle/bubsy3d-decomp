@@ -672,6 +672,17 @@ actor word `+0x10` and enqueues only when mask `0x04` is set. This translates
 only that branch; the bit's gameplay meaning and the surrounding indirect
 state-machine function remain unresolved.
 
+The remaining enqueue-site control flow has action plans in
+`src/game/move_requests.c`: `game_move_request_plan_3d5d8` records the positive
+helper-result and actor-byte `+0x01 == 2` gate plus the observed stores and two
+transition calls; `game_move_request_plan_3d718` records the actor-byte gate and
+the low-byte `func_80022674(actor, 0x0B) != 1` alternative; `game_move_request_plan_4193c`
+records the `func_80022604` zero/nonzero split before the unconditional enqueue;
+and `game_move_request_plan_41b08` records the sequence-key `0x15` skip/select
+and saved-`$s2` notification gate before enqueue. Native tests cover each plan.
+These finish the six enqueue-site slices, not the four enclosing state-machine
+bodies; their indirect dispatches and opaque helper effects remain unresolved.
+
 The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
 `0x80024F2C`. Its exact L0 match is an assembly-backed transcription in
 `src/game/func_80024F2C_match.c`. The routine reads pending movement vectors

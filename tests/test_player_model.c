@@ -362,6 +362,38 @@ static void test_move_request_enqueue_if_actor_state_bit_2(void) {
     assert(queue.count == 1 && entries[0] == &actor);
 }
 
+static void test_move_request_caller_plans(void) {
+    assert(game_move_request_plan_3d5d8(1, 2) ==
+        (GAME_MOVE_CALLER_SET_ACTOR_BYTE_01 | GAME_MOVE_CALLER_UPDATE_LINKED_STATE |
+            GAME_MOVE_CALLER_TRANSITION_26_4 | GAME_MOVE_CALLER_TRANSITION_2F_1 |
+            GAME_MOVE_CALLER_ENQUEUE));
+    assert(game_move_request_plan_3d5d8(0, 2) == 0);
+    assert(game_move_request_plan_3d5d8(1, 1) == 0);
+
+    assert(game_move_request_plan_3d718(1, 1) ==
+        (GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE));
+    assert(game_move_request_plan_3d718(2, 1) ==
+        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674));
+    assert(game_move_request_plan_3d718(2, 0x101) ==
+        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674));
+    assert(game_move_request_plan_3d718(2, 0) ==
+        (GAME_MOVE_CALLER_CALL_8001FD6C | GAME_MOVE_CALLER_CALL_80022674 |
+            GAME_MOVE_CALLER_TRANSITION_2F_1 | GAME_MOVE_CALLER_ENQUEUE));
+
+    assert(game_move_request_plan_4193c(0) ==
+        (GAME_MOVE_CALLER_CALL_80022944 | GAME_MOVE_CALLER_ENQUEUE));
+    assert(game_move_request_plan_4193c(1) ==
+        (GAME_MOVE_CALLER_TRANSITION_RELATED | GAME_MOVE_CALLER_ENQUEUE));
+
+    assert(game_move_request_plan_41b08(0x15, 1) ==
+        (GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_CLEAR_SAVED_S2));
+    assert(game_move_request_plan_41b08(0x14, 0) ==
+        (GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_CALL_80052AEC));
+    assert(game_move_request_plan_41b08(0x14, 1) ==
+        (GAME_MOVE_CALLER_ENQUEUE | GAME_MOVE_CALLER_CALL_80052AEC |
+            GAME_MOVE_CALLER_CALL_80022944));
+}
+
 enum {
     MOVE_CONSUMER_CALL_548A0 = 1,
     MOVE_CONSUMER_CALL_536F4 = 2,
@@ -1918,6 +1950,7 @@ int main(void) {
     test_move_request_queue();
     test_move_request_enqueue_if_translation_pending();
     test_move_request_enqueue_if_actor_state_bit_2();
+    test_move_request_caller_plans();
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
     test_component_transform_read_translation();

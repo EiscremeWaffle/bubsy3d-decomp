@@ -6,6 +6,25 @@
 
 enum { GAME_MAX_MOVE_REQUESTS = 30 };
 
+enum {
+    GAME_MOVE_CALLER_ENQUEUE = 1u << 0,
+    GAME_MOVE_CALLER_CALL_8001FD6C = 1u << 1,
+    GAME_MOVE_CALLER_CALL_80022674 = 1u << 2,
+    GAME_MOVE_CALLER_CALL_80022944 = 1u << 3,
+    GAME_MOVE_CALLER_SET_ACTOR_BYTE_01 = 1u << 4,
+    GAME_MOVE_CALLER_UPDATE_LINKED_STATE = 1u << 5,
+    GAME_MOVE_CALLER_TRANSITION_26_4 = 1u << 6,
+    GAME_MOVE_CALLER_TRANSITION_2F_1 = 1u << 7,
+    GAME_MOVE_CALLER_TRANSITION_RELATED = 1u << 8,
+    GAME_MOVE_CALLER_CALL_80052AEC = 1u << 9,
+    GAME_MOVE_CALLER_CLEAR_SAVED_S2 = 1u << 10,
+};
+
+uint32_t game_move_request_plan_3d5d8(int32_t positive_check_result, uint8_t actor_state_byte_01);
+uint32_t game_move_request_plan_3d718(uint8_t actor_state_byte_01, int32_t query_22674_result);
+uint32_t game_move_request_plan_4193c(uint8_t helper_22604_result);
+uint32_t game_move_request_plan_41b08(uint16_t current_sequence_key, uint8_t saved_s2);
+
 typedef struct GameMoveRequestQueue {
     uint16_t count;
     void **entries;
