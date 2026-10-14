@@ -26,6 +26,11 @@ whole-game decompilation. The current scoped report tracks exact and fuzzy
 matches separately; see the [code map](docs/code-map.md) for its denominator
 and limitations.
 
+| Region | Serial | Executable | SHA-1 |
+|---|---|---|---|
+| USA | SLUS-00110 | `SLUS_001.10` | `4eb2cc4cf6d84470bb97217108ac713302978b53` |
+
+
 ## Contributing
 
 Wanna help? Start with the [contribution guide](CONTRIBUTING.md). It
