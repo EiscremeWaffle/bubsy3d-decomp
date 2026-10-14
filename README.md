@@ -1,11 +1,24 @@
-# Bubsy 3D: Furbitten Planet (USA)
+<p align="center">
+  <img src="docs\assets\Bubsy3Decomp_banner.svg" alt="Bubsy 3D: Furbitten Planet Decompilation" width="880" >
+</p>
+
+# <p align="center">Bubsy 3D: Furbitten Planet (USA)</p>
+
+
+
+
+<p align="center"> 
+<img src="https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?w=512&h=256" width="512" height="256">
+</p>
 
 [![Code Progress]][progress]
-
-[<img src="https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?w=512&h=256" width="512" height="256">][progress]
+[![matched]][progress]
 
 [Code Progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?mode=shield&measure=code&label=Code
+
 [progress]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp
+
+[matched]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?mode=shield&label=Matched+Functions&measure=matched_functions
 
 An evidence-based decompilation research project for the USA executable
 `SLUS_001.10`. This is a work in progress, not a complete source rebuild or
@@ -15,7 +28,7 @@ and limitations.
 
 ## Contributing
 
-New to the project? Start with the [contribution guide](CONTRIBUTING.md). It
+Wanna help? Start with the [contribution guide](CONTRIBUTING.md). It
 covers setup, choosing a bounded task, evidence standards, testing, and how
 exact byte matches are counted.
 
