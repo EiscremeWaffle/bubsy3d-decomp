@@ -22,7 +22,7 @@ _Static_assert(offsetof(GameComponentBasisView, matrix_halfwords) + 8 * sizeof(u
 _Static_assert(offsetof(GameComponentBasisView, translation) == 0x14, "basis translation offset must match observed loads");
 _Static_assert(sizeof(GameComponentBasisView) == 0x20, "basis view size must match observed accesses");
 
-typedef void (*GameComponentVectorTransform)(
+typedef void (*GameComponentPointTransform)(
     void *context,
     const GameComponentBasisView *basis,
     const int32_t input[3],
@@ -38,7 +38,7 @@ typedef void (*GameComponentPointToBasisTransform)(
 
 typedef struct GameComponentTransformOps {
     void *context;
-    GameComponentVectorTransform transform_vector;
+    GameComponentPointTransform transform_point;
     GameComponentPointToBasisTransform transform_point_to_basis;
 } GameComponentTransformOps;
 

@@ -528,7 +528,7 @@ typedef struct ComponentTransformTestLog {
     unsigned int call_count;
 } ComponentTransformTestLog;
 
-static void record_component_vector_transform(
+static void record_component_point_transform(
     void *context,
     const GameComponentBasisView *basis,
     const int32_t input[3],
@@ -556,7 +556,7 @@ static void test_component_transform_set_translation(void) {
     GameComponentBasisView basis;
     int32_t translation[3] = {13, INT32_MIN, -27};
     ComponentTransformTestLog log = {0};
-    GameComponentTransformOps ops = {&log, record_component_vector_transform, NULL};
+    GameComponentTransformOps ops = {&log, record_component_point_transform, NULL};
 
     component.matrix_halfwords[0] = 0xA;
     component.matrix_halfwords[8] = 0xB;
@@ -589,7 +589,7 @@ static void test_component_transform_set_translation(void) {
     translation[2] = 10;
     assert(game_component_transform_set_translation(&component, &basis, &global_basis, translation, &ops) == 0);
     assert(log.call_count == 1);
-    assert(component.translation[0] == 0x121 && component.translation[1] == -0x242 && component.translation[2] == -0x303);
+    assert(component.translation[0] == 0x111 && component.translation[1] == -0x222 && component.translation[2] == -0x333);
 
     assert(game_component_transform_set_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
 }

@@ -686,10 +686,11 @@ Neighboring helper `func_80054414` copies nine matrix halfwords at
 `+0x14..+0x1C`, establishing the component view layout. If a supplied basis
 differs from the global matrix at `0x800A42EC`, `func_8005476C` copies and
 adjusts its matrix (negating halfwords at `+0x02`, `+0x06`, `+0x0A`, and
-`+0x0E`) and flips its translation Y. The GTE-backed matrix-vector path then
-transforms the input and adds the adjusted translation before the common final
-Y flip and stores. The host model `game_component_transform_set_translation`
-captures those data changes and branches in `src/game/component_transform.c`;
-its callback is limited to the GTE matrix-vector operation. This establishes a
+`+0x0E`) and flips its translation Y. The `func_80064528` path transforms the
+input through `func_80053FA4`, adds the adjusted translation with
+`func_80010038`, then performs the common final Y flip and stores. The host
+model `game_component_transform_set_translation` captures the normalization
+and branches in `src/game/component_transform.c`; its callback represents that
+complete transform result, including basis translation. This establishes a
 component-transform origin update, but not whether the component is local or
 world-space.

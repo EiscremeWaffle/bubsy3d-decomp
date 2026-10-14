@@ -19,14 +19,6 @@ static int32_t component_translation_negate(int32_t value) {
     return result;
 }
 
-static int32_t component_translation_add(int32_t left, int32_t right) {
-    const uint32_t bits = (uint32_t)left + (uint32_t)right;
-    int32_t result;
-
-    memcpy(&result, &bits, sizeof(result));
-    return result;
-}
-
 static void component_basis_normalize(
     GameComponentBasisView *output,
     const GameComponentBasisView *input
@@ -49,7 +41,6 @@ int32_t game_component_transform_set_translation(
 ) {
     GameComponentBasisView normalized_basis;
     int32_t converted_translation[3];
-    size_t index;
 
     if (component == NULL) {
         return 0x18;
@@ -61,13 +52,7 @@ int32_t game_component_transform_set_translation(
         converted_translation[2] = translation[2];
     } else {
         component_basis_normalize(&normalized_basis, basis);
-        ops->transform_vector(ops->context, &normalized_basis, translation, converted_translation);
-        for (index = 0; index < 3; index++) {
-            converted_translation[index] = component_translation_add(
-                converted_translation[index],
-                normalized_basis.translation[index]
-            );
-        }
+        ops->transform_point(ops->context, &normalized_basis, translation, converted_translation);
     }
 
     component->translation[0] = converted_translation[0];
