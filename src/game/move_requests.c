@@ -2,6 +2,41 @@
 
 #include <string.h>
 
+int32_t game_move_request_lookup_table(
+    int32_t directory_index,
+    const GameMoveRequestDirectoryView *directory,
+    const GameMovePreparationTableEntry **table_out,
+    uint32_t *table_limit_out
+) {
+    const GameMoveRequestDirectoryEntry *entry;
+
+    if (directory == NULL || directory->entries == NULL || table_out == NULL ||
+        table_limit_out == NULL || directory_index < 0 ||
+        directory_index >= directory->signed_count ||
+        (uint32_t)directory_index >= directory->entry_count) {
+        return 0;
+    }
+
+    entry = &directory->entries[directory_index];
+    *table_out = entry->table_10;
+    *table_limit_out = entry->table_limit_14;
+    return 1;
+}
+
+int32_t game_move_request_read_selector(
+    int32_t directory_index,
+    const GameMoveRequestDirectoryView *directory,
+    uint8_t *selector_out
+) {
+    if (directory == NULL || directory->entries == NULL || selector_out == NULL ||
+        directory_index < 0 || (uint32_t)directory_index >= directory->entry_count) {
+        return 0;
+    }
+
+    *selector_out = directory->entries[directory_index].selector_04;
+    return 1;
+}
+
 int32_t game_enqueue_move_request(GameMoveRequestQueue *queue, void *request, GameMoveRequestAssertion assertion) {
     const int16_t signed_count = (int16_t)queue->count;
     if (signed_count >= GAME_MAX_MOVE_REQUESTS) {
@@ -103,18 +138,12 @@ int32_t game_prepare_move_request(
     }
 
     if (words[0x18 / sizeof(int32_t)] <= 0) {
-        uintptr_t table_result = (uintptr_t)&table;
-        uintptr_t limit_result = (uintptr_t)&table_limit;
-
-        helper_result = move_request_call(
-            ops,
-            0x80028C18,
-            (uintptr_t)object->move_context,
-            limit_result,
-            table_result,
-            0
-        );
-        if (((uint32_t)helper_result & 0xFFu) != 1) {
+        if (game_move_request_lookup_table(
+            (int32_t)(intptr_t)object->move_context,
+            ops->directory,
+            &table,
+            &table_limit
+        ) != 1) {
             move_request_assert(ops, 0xD3A);
         }
         if (table == NULL || index < 0 || (uint32_t)index >= table_limit) {
@@ -196,13 +225,10 @@ int32_t game_prepare_move_request(
         }
 
         selector = 0;
-        move_request_call(
-            ops,
-            0x800286F8,
-            (uintptr_t)object->move_context,
-            (uintptr_t)&selector,
-            0,
-            0
+        game_move_request_read_selector(
+            (int32_t)(intptr_t)object->move_context,
+            ops->directory,
+            &selector
         );
         if (selector == 1) {
             words[0x30 / sizeof(int32_t)] = (int32_t)table[index].selector * 2;

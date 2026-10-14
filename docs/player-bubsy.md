@@ -717,7 +717,9 @@ and final pending-translation enqueue gate. Calls whose engine effects are not
 recovered are injected through `GameMovePreparationOps`; host guards for invalid
 views are not claims about target behavior. The action-plan functions below
 cover only their named enqueue slices, not complete translations of the other
-three enclosing routines.
+three enclosing routines. Sequence-directory reads are modeled directly by
+`game_move_request_lookup_table` and `game_move_request_read_selector`, with
+native tests for their signed-index bounds and output writes.
 
 The shared 348-byte helper `func_80054B20` at `0x80054B20..0x80054C7C` has 137
 direct L0 JAL call sites, including its recursive call. Its exact transcription

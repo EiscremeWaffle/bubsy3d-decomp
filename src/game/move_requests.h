@@ -103,6 +103,31 @@ typedef struct GameMovePreparationTableEntry {
     const int32_t *payload_08;
 } GameMovePreparationTableEntry;
 
+typedef struct GameMoveRequestDirectoryEntry {
+    uint8_t selector_04;
+    const GameMovePreparationTableEntry *table_10;
+    uint32_t table_limit_14;
+} GameMoveRequestDirectoryEntry;
+
+typedef struct GameMoveRequestDirectoryView {
+    int32_t signed_count;
+    uint32_t entry_count;
+    const GameMoveRequestDirectoryEntry *entries;
+} GameMoveRequestDirectoryView;
+
+int32_t game_move_request_lookup_table(
+    int32_t directory_index,
+    const GameMoveRequestDirectoryView *directory,
+    const GameMovePreparationTableEntry **table_out,
+    uint32_t *table_limit_out
+);
+
+int32_t game_move_request_read_selector(
+    int32_t directory_index,
+    const GameMoveRequestDirectoryView *directory,
+    uint8_t *selector_out
+);
+
 typedef int32_t (*GameMovePreparationInvoke)(
     void *context,
     uint32_t function_address,
@@ -117,6 +142,7 @@ typedef struct GameMovePreparationOps {
     GameMoveRequestAssertion assertion;
     GameMovePreparationInvoke invoke;
     void *global_transform;
+    const GameMoveRequestDirectoryView *directory;
 } GameMovePreparationOps;
 
 typedef int32_t (*GameMoveCallerInvoke)(void *context, uint32_t function_address, const uintptr_t arguments[8]);

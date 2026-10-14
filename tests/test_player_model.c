@@ -593,8 +593,6 @@ static void test_game_run_move_request_path_3d5d8(void) {
 }
 
 typedef struct MovePreparationTestLog {
-    const GameMovePreparationTableEntry *table;
-    unsigned int lookup_count;
     unsigned int notify_count;
     unsigned int component_update_count;
     uint32_t calls[12];
@@ -611,26 +609,13 @@ static int32_t record_move_preparation_call(
 ) {
     MovePreparationTestLog *log = context;
 
+    (void)argument_1;
     (void)argument_3;
     assert(log->call_count < sizeof(log->calls) / sizeof(log->calls[0]));
     log->calls[log->call_count++] = function_address;
-    if (function_address == 0x80028C18) {
-        uint32_t *table_limit = (uint32_t *)argument_1;
-        const GameMovePreparationTableEntry **table = (const GameMovePreparationTableEntry **)argument_2;
-
-        assert(argument_0 != 0);
-        *table_limit = 1;
-        *table = log->table;
-        log->lookup_count++;
-        return 1;
-    }
     if (function_address == 0x80022944) {
         assert(argument_0 != 0);
         log->notify_count++;
-        return 0;
-    }
-    if (function_address == 0x800286F8) {
-        *(uint8_t *)argument_1 = 1;
         return 0;
     }
     if (function_address == 0x80062D4C) {
@@ -655,24 +640,22 @@ static void test_game_prepare_move_request(void) {
     void *entries[1] = {0};
     int actor;
     uint8_t completion_flag = 0xFF;
-    static const int32_t payload[4] = {1, 2, 3, 4};
-    static const GameMovePreparationTableEntry table[] = {
-        {0, 0, 0, 100, payload},
-    };
+    GameMoveRequestDirectoryEntry directory_entries[2] = {0};
+    GameMoveRequestDirectoryView directory = {2, 2, directory_entries};
 
     ops.context = &log;
     ops.assertion = record_move_limit_assertion;
     ops.invoke = record_move_preparation_call;
     ops.global_transform = &actor;
-    object.move_context = &actor;
+    ops.directory = &directory;
+    object.move_context = (void *)(intptr_t)1;
     object.component = &actor;
     object.move_info = &move_info;
     queue.entries = entries;
-    log.table = table;
 
     move_info.words[0x04 / 4] = -2;
     assert(game_prepare_move_request(&queue, &actor, &object, NULL, 0, &completion_flag, &ops) == 1);
-    assert(completion_flag == 0 && log.lookup_count == 0 && log.notify_count == 0);
+    assert(completion_flag == 0 && log.notify_count == 0);
 
     move_info.words[0x04 / 4] = 0;
     move_info.words[0x18 / 4] = 1;
@@ -686,18 +669,19 @@ static void test_game_prepare_move_request(void) {
     move_info.words[0x18 / 4] = 0;
     move_info.words[0] = 0;
     move_info.words[0x04 / 4] = 0;
+    directory_entries[1].table_10 = NULL;
+    directory_entries[1].table_limit_14 = 0;
     object.component = NULL;
     queue.count = 0;
     entries[0] = NULL;
     assert(game_prepare_move_request(&queue, &actor, &object, NULL, 0, &completion_flag, &ops) == 0);
-    assert(log.lookup_count == 1 && move_info.words[0] == 1);
+    assert(move_info.words[0] == 0);
     assert(queue.count == 0 && entries[0] == NULL);
 
     {
         static const uint32_t expected_calls[] = {
-            0x80028C18,
-            0x800286F8, 0x80054B20, 0x80062D4C,
-            0x800286F8, 0x80054B20, 0x80062D4C,
+            0x80054B20, 0x80062D4C,
+            0x80054B20, 0x80062D4C,
             0x80054C7C, 0x800546F4, 0x800550A4, 0x8005541C, 0x80022944,
         };
         static const int32_t movement_payload[8] = {2, -3, 4, 0xAA, 5, 6, 7, 0xBB};
@@ -711,7 +695,7 @@ static void test_game_prepare_move_request(void) {
         memset(&move_info, 0, sizeof(move_info));
         memset(&log, 0, sizeof(log));
         move_info.words[0x38 / 4] = 1;
-        log.table = movement_table;
+        directory_entries[1] = (GameMoveRequestDirectoryEntry){1, movement_table, 1};
         object.component = &component;
         object.component_basis = &basis_marker;
         queue.count = 0;
@@ -730,6 +714,31 @@ static void test_game_prepare_move_request(void) {
         }
         assert(queue.count == 1 && entries[0] == &actor);
     }
+}
+
+static void test_move_request_directory_helpers(void) {
+    static const GameMovePreparationTableEntry table[] = {{0x0A, 3, 0, 12, NULL}};
+    const GameMoveRequestDirectoryEntry entries[] = {
+        {2, NULL, 0},
+        {7, table, 1},
+    };
+    const GameMoveRequestDirectoryView directory = {2, 2, entries};
+    const GameMovePreparationTableEntry *table_out = NULL;
+    uint32_t table_limit = 99;
+    uint8_t selector = 0;
+
+    assert(game_move_request_lookup_table(1, &directory, &table_out, &table_limit) == 1);
+    assert(table_out == table && table_limit == 1);
+    assert(game_move_request_read_selector(1, &directory, &selector) == 1);
+    assert(selector == 7);
+
+    table_out = NULL;
+    table_limit = 99;
+    assert(game_move_request_lookup_table(-1, &directory, &table_out, &table_limit) == 0);
+    assert(table_out == NULL && table_limit == 99);
+    assert(game_move_request_lookup_table(2, &directory, &table_out, &table_limit) == 0);
+    assert(game_move_request_read_selector(-1, &directory, &selector) == 0);
+    assert(game_move_request_read_selector(2, &directory, &selector) == 0);
 }
 
 typedef struct MoveState12TestLog {
@@ -2377,6 +2386,7 @@ int main(void) {
     test_move_request_enqueue_if_translation_pending();
     test_move_request_enqueue_if_actor_state_bit_2();
     test_move_request_caller_plans();
+    test_move_request_directory_helpers();
     test_game_prepare_move_request();
     test_game_process_move_request_state_12();
     test_game_run_remaining_move_request_paths();
