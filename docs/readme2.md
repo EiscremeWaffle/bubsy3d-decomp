@@ -1,9 +1,9 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 21,240 exact code bytes across 98
-functions (`0.707496%` of mapped code), including two Clang-built getters,
-eight original GCC C functions, four GCC assembly-backed functions, the
+The validated report currently contains 21,600 exact code bytes across 99
+functions (`0.719488%` of mapped code), including two Clang-built getters,
+eight original GCC C functions, five GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
 `vector_range_condition_q12` (`func_80053D68`), 20

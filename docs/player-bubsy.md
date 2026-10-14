@@ -41,10 +41,12 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 21,240 exact code bytes across 98
-functions, or `0.707496%` of mapped code. The total includes two Clang-built
-getters, eight original GCC C functions, the assembly-backed death,
-grounded-state, `func_800347EC`, and `game_apply_queued_move_request` handlers,
+The validated report currently credits 21,600 exact code bytes across 99
+functions, or `0.719488%` of mapped code. The total includes two Clang-built
+getters, eight original GCC C functions, the assembly-backed death and
+grounded-state handlers, `func_800347EC`, the movement consumer
+`game_apply_queued_move_request`, and the component-transform helper
+`func_80054C7C`,
 20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
@@ -662,3 +664,14 @@ A readable host-side orchestration model for this routine is in
 callbacks preserve the observed helper order and pointer ranges without
 guessing the opaque helpers' internal math; native tests cover optional paths,
 translation application, archival, clearing, and the missing-info assertion.
+
+The shared 360-byte helper `func_80054C7C` at `0x80054C7C..0x80054DE4` has 92
+direct L0 JAL call sites, including its recursive call. Its assembly-backed transcription is in
+`src/game/func_80054C7C_match.c`. The instructions show a null component pointer
+returns `0x18`; otherwise the helper writes translation values to component
+offsets `+0x14/+0x18/+0x1C`, negating Y. A non-null basis that differs from the
+observed global block at `0x800A42EC` is passed through `func_8005476C` and
+`func_80064528` before that same write. The readable host model is
+`game_component_transform_set_translation` in `src/game/component_transform.c`;
+it leaves that conversion as an injected callback. The evidence establishes a
+component-transform field write, not a world-space position or velocity field.

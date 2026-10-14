@@ -5,6 +5,7 @@
 #include "bubsy_actor_update.h"
 #include "bubsy_actor_events.h"
 #include "bubsy_death_state.h"
+#include "component_transform.h"
 #include "move_requests.h"
 #include "player_model.h"
 
@@ -521,6 +522,67 @@ static void test_game_apply_queued_move_request(void) {
     game_apply_queued_move_request(&object, &ops);
     assert(log.call_count == 0 && log.vector_combine_count == 0);
     assert(move_info_assertion_count == 1);
+}
+
+typedef struct ComponentTransformTestLog {
+    const GameComponentBasisView *expected_basis;
+    unsigned int call_count;
+} ComponentTransformTestLog;
+
+static void record_component_vector_transform(
+    void *context,
+    const GameComponentBasisView *basis,
+    const int32_t input[3],
+    int32_t output[3]
+) {
+    ComponentTransformTestLog *log = context;
+
+    assert(basis == log->expected_basis);
+    assert(input[0] == 8 && input[1] == -9 && input[2] == 10);
+    output[0] = 0x111;
+    output[1] = 0x222;
+    output[2] = -0x333;
+    log->call_count++;
+}
+
+static void test_component_transform_set_translation(void) {
+    GameComponentTransformView component = {{0}};
+    GameComponentBasisView global_basis = {{0}, 0, 0, {0}};
+    GameComponentBasisView basis;
+    int32_t translation[3] = {13, INT32_MIN, -27};
+    ComponentTransformTestLog log = {0};
+    GameComponentTransformOps ops = {&log, record_component_vector_transform};
+
+    component.words[0] = 0xA;
+    component.words[1] = 0xB;
+    component.words[2] = 0xC;
+    component.words[3] = 0xD;
+    component.words[4] = 0xE;
+    component.words[5] = 0xF;
+    component.words[6] = 0x10;
+    component.words[7] = 0x11;
+    assert(game_component_transform_set_translation(&component, NULL, NULL, translation, NULL) == 0);
+    assert(component.words[0] == 0xA && component.words[4] == 0xE);
+    assert(component.words[5] == 13 && component.words[6] == INT32_MIN && component.words[7] == -27);
+
+    basis = global_basis;
+    basis.ignored_halfword_12 = 0x1234;
+    translation[0] = 4;
+    translation[1] = -5;
+    translation[2] = 6;
+    assert(game_component_transform_set_translation(&component, &basis, &global_basis, translation, NULL) == 0);
+    assert(component.words[5] == 4 && component.words[6] == 5 && component.words[7] == 6);
+
+    basis.words_14_1c[1] = 1;
+    translation[0] = 8;
+    translation[1] = -9;
+    translation[2] = 10;
+    log.expected_basis = &basis;
+    assert(game_component_transform_set_translation(&component, &basis, &global_basis, translation, &ops) == 0);
+    assert(log.call_count == 1);
+    assert(component.words[5] == 0x111 && component.words[6] == -0x222 && component.words[7] == -0x333);
+
+    assert(game_component_transform_set_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
 }
 
 typedef struct EventCallLog {
@@ -1759,6 +1821,7 @@ int main(void) {
     test_actor_state_target_data();
     test_move_request_queue();
     test_game_apply_queued_move_request();
+    test_component_transform_set_translation();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_update_level14_counter_path();
