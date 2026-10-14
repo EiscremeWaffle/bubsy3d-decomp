@@ -1,5 +1,4 @@
 {
-  "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
   "modules": [
     {
       "path": "L0/L0.EXE",
@@ -7,7 +6,7 @@
       "load_start": "0x80010000",
       "load_end": "0x800BE800",
       "entry_point": "0x8004EB64",
-      "reachable_code_bytes": 256360,
+      "reachable_code_bytes": 293256,
       "function_entry_candidates": [
         "0x80010000",
         "0x80010038",
@@ -24,6 +23,12 @@
         "0x80010890",
         "0x80010C08",
         "0x800110B4",
+        "0x80015284",
+        "0x800153EC",
+        "0x800155C8",
+        "0x80015A54",
+        "0x80016814",
+        "0x800195AC",
         "0x800195DC",
         "0x800199A0",
         "0x80019A60",
@@ -35,6 +40,9 @@
         "0x8001A060",
         "0x8001A12C",
         "0x8001A39C",
+        "0x8001A420",
+        "0x8001A4D8",
+        "0x8001A548",
         "0x8001A670",
         "0x8001A6E0",
         "0x8001A9E8",
@@ -60,37 +68,57 @@
         "0x8001C624",
         "0x8001C6BC",
         "0x8001C700",
+        "0x8001C788",
         "0x8001C7C4",
         "0x8001C828",
         "0x8001C8A0",
         "0x8001C8DC",
         "0x8001DCE0",
+        "0x8001F8B4",
+        "0x8001F9D8",
+        "0x8001FD6C",
+        "0x800205AC",
+        "0x80020964",
         "0x80020DB4",
         "0x800211B8",
         "0x80021218",
         "0x80021548",
+        "0x8002205C",
         "0x800222E0",
         "0x800222EC",
         "0x80022484",
+        "0x80022604",
         "0x8002262C",
         "0x80022650",
         "0x80022674",
         "0x8002269C",
         "0x800226C0",
         "0x800226E4",
+        "0x80022744",
         "0x8002278C",
         "0x800227A4",
         "0x80022944",
         "0x80022B5C",
+        "0x80022BE0",
         "0x80022C94",
         "0x80024EBC",
         "0x80024F2C",
         "0x800250CC",
+        "0x80025A98",
+        "0x80025FFC",
+        "0x8002611C",
         "0x80026398",
         "0x80026648",
+        "0x80026658",
         "0x800267E8",
         "0x80026A0C",
         "0x80027114",
+        "0x80027240",
+        "0x800276C8",
+        "0x8002782C",
+        "0x80027934",
+        "0x800279D4",
+        "0x80027AB4",
         "0x80027E24",
         "0x80027F08",
         "0x80027F40",
@@ -100,12 +128,20 @@
         "0x800283E0",
         "0x80028430",
         "0x80028590",
+        "0x80028600",
+        "0x80028698",
+        "0x800286F8",
         "0x80028764",
+        "0x800287C8",
         "0x800288D8",
         "0x800289E8",
+        "0x80028B5C",
+        "0x80028C18",
         "0x80028C84",
         "0x80028CD4",
         "0x80028D48",
+        "0x80028D58",
+        "0x80028DBC",
         "0x80028E20",
         "0x80028E50",
         "0x80028EA8",
@@ -118,6 +154,7 @@
         "0x800296B4",
         "0x80029790",
         "0x800297A0",
+        "0x800297E0",
         "0x80029C00",
         "0x80029D2C",
         "0x8002A12C",
@@ -172,11 +209,15 @@
         "0x8002E7D8",
         "0x8002E7FC",
         "0x8002E858",
+        "0x8002E910",
         "0x8002E954",
+        "0x8002E9DC",
+        "0x8002EAE0",
         "0x80032C8C",
         "0x80032D7C",
         "0x80032DF4",
         "0x80032EFC",
+        "0x800333CC",
         "0x800334C4",
         "0x800339BC",
         "0x80033CF4",
@@ -193,6 +234,7 @@
         "0x80037350",
         "0x8003737C",
         "0x80037AFC",
+        "0x80037B14",
         "0x80037B30",
         "0x80037D14",
         "0x80038C0C",
@@ -204,13 +246,25 @@
         "0x8003ABE8",
         "0x8003AEB8",
         "0x8003CB14",
+        "0x8003CB88",
+        "0x8003CC78",
         "0x8003D8D8",
         "0x8003DC0C",
         "0x8003DE90",
         "0x80040634",
+        "0x80040910",
         "0x80040994",
+        "0x80040A74",
+        "0x80040B68",
+        "0x80040C18",
+        "0x80040CB0",
+        "0x80040F00",
         "0x80040FC0",
+        "0x8004100C",
         "0x800411A0",
+        "0x80041218",
+        "0x80041D80",
+        "0x80041E04",
         "0x80041E88",
         "0x80041F8C",
         "0x80042170",
@@ -231,6 +285,7 @@
         "0x80044458",
         "0x800444B0",
         "0x80044628",
+        "0x800448A4",
         "0x80044984",
         "0x800449E8",
         "0x80044A88",
@@ -238,11 +293,15 @@
         "0x80044C1C",
         "0x80044C34",
         "0x80044C64",
+        "0x80044D44",
+        "0x80044D78",
         "0x80044F5C",
         "0x80045094",
         "0x80045278",
         "0x80045398",
         "0x800453C8",
+        "0x80045468",
+        "0x800455C0",
         "0x800457DC",
         "0x80045D10",
         "0x80046134",
@@ -265,6 +324,8 @@
         "0x800486D0",
         "0x80048C48",
         "0x80049158",
+        "0x8004A128",
+        "0x8004A1C4",
         "0x8004A268",
         "0x8004A2C0",
         "0x8004B264",
@@ -335,6 +396,7 @@
         "0x80052094",
         "0x800520FC",
         "0x80052174",
+        "0x80052328",
         "0x80052418",
         "0x8005262C",
         "0x80052800",
@@ -344,6 +406,7 @@
         "0x800529F8",
         "0x80052A84",
         "0x80052ABC",
+        "0x80052AD4",
         "0x80052AEC",
         "0x80052B74",
         "0x80052BDC",
@@ -378,6 +441,7 @@
         "0x80053B70",
         "0x80053D00",
         "0x80053D68",
+        "0x80053EA0",
         "0x80053F20",
         "0x80053F58",
         "0x80053FA4",
@@ -414,6 +478,7 @@
         "0x80055018",
         "0x800550A4",
         "0x80055280",
+        "0x8005541C",
         "0x80055674",
         "0x80055680",
         "0x800556C4",
@@ -447,6 +512,7 @@
         "0x8005748C",
         "0x80058C74",
         "0x80058D5C",
+        "0x80058E7C",
         "0x80058F60",
         "0x8005A894",
         "0x8005AA44",
@@ -470,6 +536,7 @@
         "0x8005E7B8",
         "0x8005E8B8",
         "0x8005E9B8",
+        "0x8005EA28",
         "0x8005EA88",
         "0x8005EAC8",
         "0x8005EB94",
@@ -526,9 +593,14 @@
         "0x80062D88",
         "0x80062DC8",
         "0x80062E50",
+        "0x80062F9C",
+        "0x800630D0",
         "0x8006323C",
         "0x800632D4",
+        "0x80063308",
+        "0x800633BC",
         "0x80063488",
+        "0x8006367C",
         "0x80063740",
         "0x80063840",
         "0x80063AB4",
@@ -537,11 +609,20 @@
         "0x80064528",
         "0x80064548",
         "0x80064568",
+        "0x800646F8",
+        "0x80064A20",
         "0x80064AC8",
         "0x80064B40",
+        "0x80064CD0",
+        "0x80064DC8",
         "0x80064E2C",
+        "0x80064E90",
+        "0x80065578",
+        "0x800657C8",
+        "0x80065D20",
         "0x80066378",
         "0x80066D80",
+        "0x8006789C",
         "0x800678F8",
         "0x80067908",
         "0x80067A18",
@@ -550,6 +631,7 @@
         "0x80067DD4",
         "0x80067DE0",
         "0x80067DEC",
+        "0x80067F58",
         "0x80067FFC",
         "0x80068374",
         "0x80068B64",
@@ -802,6 +884,7 @@
         "0x80089FDC",
         "0x8008BDD0",
         "0x8008C228",
+        "0x8008C274",
         "0x8008C29C",
         "0x8008C438",
         "0x8008C45C",
@@ -874,6 +957,7 @@
         "0x80095F58",
         "0x80096058",
         "0x8009615C",
+        "0x80096224",
         "0x800963E0",
         "0x80096454",
         "0x80096768",
@@ -912,7 +996,15 @@
           "end": "0x800113C4"
         },
         {
-          "start": "0x800195DC",
+          "start": "0x80015284",
+          "end": "0x80016274"
+        },
+        {
+          "start": "0x8001630C",
+          "end": "0x800168D8"
+        },
+        {
+          "start": "0x800195AC",
           "end": "0x8001A0CC"
         },
         {
@@ -922,6 +1014,14 @@
         {
           "start": "0x8001A39C",
           "end": "0x8001A3C8"
+        },
+        {
+          "start": "0x8001A420",
+          "end": "0x8001A51C"
+        },
+        {
+          "start": "0x8001A524",
+          "end": "0x8001A618"
         },
         {
           "start": "0x8001A670",
@@ -952,12 +1052,16 @@
           "end": "0x8001C73C"
         },
         {
-          "start": "0x8001C7C4",
+          "start": "0x8001C788",
           "end": "0x8001CA5C"
         },
         {
           "start": "0x8001DCE0",
           "end": "0x8001DCEC"
+        },
+        {
+          "start": "0x8001F8B4",
+          "end": "0x80020990"
         },
         {
           "start": "0x80020DB4",
@@ -968,16 +1072,12 @@
           "end": "0x800218E0"
         },
         {
-          "start": "0x800222E0",
+          "start": "0x8002205C",
           "end": "0x80022544"
         },
         {
-          "start": "0x8002262C",
-          "end": "0x80022744"
-        },
-        {
-          "start": "0x8002278C",
-          "end": "0x80022BE0"
+          "start": "0x80022604",
+          "end": "0x80022C84"
         },
         {
           "start": "0x80022C94",
@@ -988,16 +1088,12 @@
           "end": "0x8002516C"
         },
         {
-          "start": "0x80026398",
+          "start": "0x80025A98",
           "end": "0x80026628"
         },
         {
           "start": "0x80026648",
-          "end": "0x80026658"
-        },
-        {
-          "start": "0x800267E8",
-          "end": "0x80027240"
+          "end": "0x80027D38"
         },
         {
           "start": "0x80027E24",
@@ -1016,23 +1112,19 @@
           "end": "0x800285F0"
         },
         {
+          "start": "0x80028600",
+          "end": "0x80028730"
+        },
+        {
           "start": "0x80028764",
-          "end": "0x800287C8"
+          "end": "0x80028BC8"
         },
         {
-          "start": "0x800288D8",
-          "end": "0x80028B5C"
-        },
-        {
-          "start": "0x80028C84",
+          "start": "0x80028C18",
           "end": "0x80028D38"
         },
         {
           "start": "0x80028D48",
-          "end": "0x80028D58"
-        },
-        {
-          "start": "0x80028E20",
           "end": "0x80028E80"
         },
         {
@@ -1041,10 +1133,6 @@
         },
         {
           "start": "0x80028FC8",
-          "end": "0x800297E0"
-        },
-        {
-          "start": "0x80029C00",
           "end": "0x8002A100"
         },
         {
@@ -1089,11 +1177,11 @@
         },
         {
           "start": "0x8002E858",
-          "end": "0x8002E910"
+          "end": "0x8002EA20"
         },
         {
-          "start": "0x8002E954",
-          "end": "0x8002E9DC"
+          "start": "0x8002EAE0",
+          "end": "0x8002EB3C"
         },
         {
           "start": "0x80032C8C",
@@ -1101,10 +1189,6 @@
         },
         {
           "start": "0x80032EFC",
-          "end": "0x800333CC"
-        },
-        {
-          "start": "0x800334C4",
           "end": "0x80036018"
         },
         {
@@ -1112,7 +1196,7 @@
           "end": "0x80037B08"
         },
         {
-          "start": "0x80037B30",
+          "start": "0x80037B14",
           "end": "0x80038368"
         },
         {
@@ -1133,30 +1217,14 @@
         },
         {
           "start": "0x8003CB14",
-          "end": "0x8003CB88"
-        },
-        {
-          "start": "0x8003D8D8",
           "end": "0x8003E868"
         },
         {
           "start": "0x80040634",
-          "end": "0x80040910"
+          "end": "0x80040E9C"
         },
         {
-          "start": "0x80040994",
-          "end": "0x80040A74"
-        },
-        {
-          "start": "0x80040FC0",
-          "end": "0x8004100C"
-        },
-        {
-          "start": "0x800411A0",
-          "end": "0x80041218"
-        },
-        {
-          "start": "0x80041E88",
+          "start": "0x80040F00",
           "end": "0x800426AC"
         },
         {
@@ -1165,7 +1233,7 @@
         },
         {
           "start": "0x80044458",
-          "end": "0x800448A4"
+          "end": "0x80044918"
         },
         {
           "start": "0x80044984",
@@ -1173,7 +1241,7 @@
         },
         {
           "start": "0x80044C1C",
-          "end": "0x80044D44"
+          "end": "0x80044F18"
         },
         {
           "start": "0x80044F5C",
@@ -1185,10 +1253,6 @@
         },
         {
           "start": "0x80045398",
-          "end": "0x80045468"
-        },
-        {
-          "start": "0x800457DC",
           "end": "0x8004753C"
         },
         {
@@ -1204,7 +1268,7 @@
           "end": "0x80049330"
         },
         {
-          "start": "0x8004A268",
+          "start": "0x8004A128",
           "end": "0x8004A35C"
         },
         {
@@ -1308,6 +1372,10 @@
           "end": "0x80052194"
         },
         {
+          "start": "0x80052328",
+          "end": "0x800523A0"
+        },
+        {
           "start": "0x80052418",
           "end": "0x800529E4"
         },
@@ -1317,10 +1385,6 @@
         },
         {
           "start": "0x80052ABC",
-          "end": "0x80052AD4"
-        },
-        {
-          "start": "0x80052AEC",
           "end": "0x800530A4"
         },
         {
@@ -1349,10 +1413,6 @@
         },
         {
           "start": "0x80053D00",
-          "end": "0x80053EA0"
-        },
-        {
-          "start": "0x80053F20",
           "end": "0x800541D8"
         },
         {
@@ -1372,7 +1432,7 @@
           "end": "0x8005536C"
         },
         {
-          "start": "0x80055674",
+          "start": "0x8005541C",
           "end": "0x80055DCC"
         },
         {
@@ -1405,10 +1465,6 @@
         },
         {
           "start": "0x80058C74",
-          "end": "0x80058E7C"
-        },
-        {
-          "start": "0x80058F60",
           "end": "0x800590B4"
         },
         {
@@ -1445,7 +1501,7 @@
         },
         {
           "start": "0x8005E8B8",
-          "end": "0x8005EA28"
+          "end": "0x8005EA64"
         },
         {
           "start": "0x8005EA88",
@@ -1496,19 +1552,31 @@
           "end": "0x80062EE4"
         },
         {
+          "start": "0x80062F9C",
+          "end": "0x80062FE8"
+        },
+        {
+          "start": "0x800630D0",
+          "end": "0x8006313C"
+        },
+        {
           "start": "0x8006323C",
           "end": "0x80063288"
         },
         {
           "start": "0x800632D4",
-          "end": "0x80063308"
+          "end": "0x80063370"
+        },
+        {
+          "start": "0x800633BC",
+          "end": "0x80063424"
         },
         {
           "start": "0x80063488",
           "end": "0x800635C4"
         },
         {
-          "start": "0x80063740",
+          "start": "0x8006367C",
           "end": "0x800638F4"
         },
         {
@@ -1520,23 +1588,27 @@
           "end": "0x80064588"
         },
         {
-          "start": "0x80064AC8",
-          "end": "0x80064CD0"
+          "start": "0x800646F8",
+          "end": "0x800648D8"
         },
         {
-          "start": "0x80064E2C",
-          "end": "0x80064E90"
+          "start": "0x80064A20",
+          "end": "0x80064D4C"
+        },
+        {
+          "start": "0x80064DC8",
+          "end": "0x80065EB8"
         },
         {
           "start": "0x80066378",
           "end": "0x80066E64"
         },
         {
-          "start": "0x800678F8",
-          "end": "0x80067F58"
+          "start": "0x8006789C",
+          "end": "0x800678E8"
         },
         {
-          "start": "0x80067FFC",
+          "start": "0x800678F8",
           "end": "0x80069948"
         },
         {
@@ -1989,10 +2061,6 @@
         },
         {
           "start": "0x8008C228",
-          "end": "0x8008C274"
-        },
-        {
-          "start": "0x8008C29C",
           "end": "0x8008C414"
         },
         {
@@ -2101,7 +2169,7 @@
         },
         {
           "start": "0x80095938",
-          "end": "0x80096224"
+          "end": "0x80096300"
         },
         {
           "start": "0x800963E0",
@@ -2125,6 +2193,10 @@
         }
       ],
       "unresolved": [
+        {
+          "address": "0x80015ABC",
+          "reason": "indirect_jump"
+        },
         {
           "address": "0x80019E14",
           "reason": "indirect_jump"
@@ -2167,6 +2239,18 @@
         },
         {
           "address": "0x8002BD78",
+          "reason": "indirect_jump"
+        },
+        {
+          "address": "0x8003CCD4",
+          "reason": "indirect_jump"
+        },
+        {
+          "address": "0x80040B88",
+          "reason": "indirect_jump"
+        },
+        {
+          "address": "0x800412A0",
           "reason": "indirect_jump"
         },
         {
@@ -2716,6 +2800,50 @@
           "kind": "reachable_fragment"
         },
         {
+          "start": "0x80015284",
+          "end": "0x800153EC",
+          "size": 360,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800153EC",
+          "end": "0x800155C8",
+          "size": 476,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800155C8",
+          "end": "0x80015A54",
+          "size": 1164,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80015A54",
+          "end": "0x80016274",
+          "size": 2080,
+          "kind": "anchored_function",
+          "symbol": "func_80015A54",
+          "evidence": "Prologue at 0x80015A54 and return at 0x8001626C with delay slot at 0x80016270. Its computed dispatch at 0x80015ABC indexes 42 entries at 0x800114F4; all targets are inside this 2,080-byte body. The function includes move enqueue site 0x80015EA0; semantic identity remains unresolved."
+        },
+        {
+          "start": "0x8001630C",
+          "end": "0x80016814",
+          "size": 1288,
+          "kind": "reachable_fragment"
+        },
+        {
+          "start": "0x80016814",
+          "end": "0x800168D8",
+          "size": 196,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800195AC",
+          "end": "0x800195DC",
+          "size": 48,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800195DC",
           "end": "0x800199A0",
           "size": 964,
@@ -2779,6 +2907,30 @@
           "start": "0x8001A39C",
           "end": "0x8001A3C8",
           "size": 44,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8001A420",
+          "end": "0x8001A4D8",
+          "size": 184,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8001A4D8",
+          "end": "0x8001A51C",
+          "size": 68,
+          "kind": "reachable_fragment"
+        },
+        {
+          "start": "0x8001A524",
+          "end": "0x8001A548",
+          "size": 36,
+          "kind": "reachable_fragment"
+        },
+        {
+          "start": "0x8001A548",
+          "end": "0x8001A618",
+          "size": 208,
           "kind": "anchored_function"
         },
         {
@@ -2932,6 +3084,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8001C788",
+          "end": "0x8001C7C4",
+          "size": 60,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8001C7C4",
           "end": "0x8001C828",
           "size": 100,
@@ -2962,6 +3120,36 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8001F8B4",
+          "end": "0x8001F9D8",
+          "size": 292,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8001F9D8",
+          "end": "0x8001FD6C",
+          "size": 916,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8001FD6C",
+          "end": "0x800205AC",
+          "size": 2112,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800205AC",
+          "end": "0x80020964",
+          "size": 952,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80020964",
+          "end": "0x80020990",
+          "size": 44,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80020DB4",
           "end": "0x80020F28",
           "size": 372,
@@ -2986,6 +3174,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8002205C",
+          "end": "0x800222E0",
+          "size": 644,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800222E0",
           "end": "0x800222EC",
           "size": 12,
@@ -3001,6 +3195,12 @@
           "start": "0x80022484",
           "end": "0x80022544",
           "size": 192,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80022604",
+          "end": "0x8002262C",
+          "size": 40,
           "kind": "anchored_function"
         },
         {
@@ -3040,6 +3240,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80022744",
+          "end": "0x8002278C",
+          "size": 72,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002278C",
           "end": "0x800227A4",
           "size": 24,
@@ -3064,6 +3270,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80022BE0",
+          "end": "0x80022C84",
+          "size": 164,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80022C94",
           "end": "0x800231C4",
           "size": 1328,
@@ -3082,12 +3294,33 @@
           "end": "0x800250CC",
           "size": 416,
           "kind": "anchored_function",
-          "symbol": "game_apply_queued_move_request"
+          "symbol": "game_apply_queued_move_request",
+          "evidence": "416-byte move-request consumer reads the object component transform and moveInfo, applies the composed three-component translation through func_80054C7C, archives the applied vector, and clears pending move vectors. This writes the object's persistent transform; velocity semantics are not established."
         },
         {
           "start": "0x800250CC",
           "end": "0x8002516C",
           "size": 160,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80025A98",
+          "end": "0x80025FFC",
+          "size": 1380,
+          "kind": "anchored_function",
+          "symbol": "func_80025A98",
+          "evidence": "1,380-byte bounded routine with prologue at 0x80025A98 and return at 0x80025FF4 plus delay slot. Contains move enqueue site 0x80025FC4; other state and transform helper meanings remain unresolved."
+        },
+        {
+          "start": "0x80025FFC",
+          "end": "0x8002611C",
+          "size": 288,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002611C",
+          "end": "0x80026398",
+          "size": 636,
           "kind": "anchored_function"
         },
         {
@@ -3102,6 +3335,12 @@
           "start": "0x80026648",
           "end": "0x80026658",
           "size": 16,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80026658",
+          "end": "0x800267E8",
+          "size": 400,
           "kind": "anchored_function"
         },
         {
@@ -3120,6 +3359,42 @@
           "start": "0x80027114",
           "end": "0x80027240",
           "size": 300,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80027240",
+          "end": "0x800276C8",
+          "size": 1160,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800276C8",
+          "end": "0x8002782C",
+          "size": 356,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002782C",
+          "end": "0x80027934",
+          "size": 264,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80027934",
+          "end": "0x800279D4",
+          "size": 160,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800279D4",
+          "end": "0x80027AB4",
+          "size": 224,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80027AB4",
+          "end": "0x80027D38",
+          "size": 644,
           "kind": "anchored_function"
         },
         {
@@ -3179,9 +3454,33 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80028600",
+          "end": "0x80028698",
+          "size": 152,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80028698",
+          "end": "0x800286F8",
+          "size": 96,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800286F8",
+          "end": "0x80028730",
+          "size": 56,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80028764",
           "end": "0x800287C8",
           "size": 100,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800287C8",
+          "end": "0x800288D8",
+          "size": 272,
           "kind": "anchored_function"
         },
         {
@@ -3194,6 +3493,18 @@
           "start": "0x800289E8",
           "end": "0x80028B5C",
           "size": 372,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80028B5C",
+          "end": "0x80028BC8",
+          "size": 108,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80028C18",
+          "end": "0x80028C84",
+          "size": 108,
           "kind": "anchored_function"
         },
         {
@@ -3212,6 +3523,18 @@
           "start": "0x80028D48",
           "end": "0x80028D58",
           "size": 16,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80028D58",
+          "end": "0x80028DBC",
+          "size": 100,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80028DBC",
+          "end": "0x80028E20",
+          "size": 100,
           "kind": "anchored_function"
         },
         {
@@ -3288,6 +3611,12 @@
           "start": "0x800297A0",
           "end": "0x800297E0",
           "size": 64,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800297E0",
+          "end": "0x80029C00",
+          "size": 1056,
           "kind": "anchored_function"
         },
         {
@@ -3617,9 +3946,27 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8002E910",
+          "end": "0x8002E954",
+          "size": 68,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002E954",
           "end": "0x8002E9DC",
           "size": 136,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002E9DC",
+          "end": "0x8002EA20",
+          "size": 68,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8002EAE0",
+          "end": "0x8002EB3C",
+          "size": 92,
           "kind": "anchored_function"
         },
         {
@@ -3644,6 +3991,12 @@
           "start": "0x80032EFC",
           "end": "0x800333CC",
           "size": 1232,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800333CC",
+          "end": "0x800334C4",
+          "size": 248,
           "kind": "anchored_function"
         },
         {
@@ -3753,6 +4106,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80037B14",
+          "end": "0x80037B30",
+          "size": 28,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80037B30",
           "end": "0x80037D14",
           "size": 484,
@@ -3821,6 +4180,20 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8003CB88",
+          "end": "0x8003CC78",
+          "size": 240,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8003CC78",
+          "end": "0x8003D8D8",
+          "size": 3168,
+          "kind": "anchored_function",
+          "symbol": "func_8003CC78",
+          "evidence": "Prologue at 0x8003CC78 and return at 0x8003D8D0 with delay slot at 0x8003D8D4. Its computed dispatch at 0x8003CCD4 indexes 47 entries at 0x800131F4; all targets are inside this 3,168-byte body. Contains enqueue sites 0x8003D5D8 and 0x8003D718; semantic identity remains unresolved."
+        },
+        {
           "start": "0x8003D8D8",
           "end": "0x8003DC0C",
           "size": 820,
@@ -3845,9 +4218,45 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80040910",
+          "end": "0x80040994",
+          "size": 132,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80040994",
           "end": "0x80040A74",
           "size": 224,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80040A74",
+          "end": "0x80040B68",
+          "size": 244,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80040B68",
+          "end": "0x80040C18",
+          "size": 176,
+          "kind": "reachable_fragment"
+        },
+        {
+          "start": "0x80040C18",
+          "end": "0x80040CB0",
+          "size": 152,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80040CB0",
+          "end": "0x80040E9C",
+          "size": 492,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80040F00",
+          "end": "0x80040FC0",
+          "size": 192,
           "kind": "anchored_function"
         },
         {
@@ -3857,9 +4266,35 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8004100C",
+          "end": "0x800411A0",
+          "size": 404,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800411A0",
           "end": "0x80041218",
           "size": 120,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80041218",
+          "end": "0x80041D80",
+          "size": 2920,
+          "kind": "anchored_function",
+          "symbol": "func_80041218",
+          "evidence": "Prologue at 0x80041218 and return at 0x80041D78 with delay slot at 0x80041D7C. Its computed dispatch at 0x800412A0 indexes 24 entries at 0x80013488; all targets are inside this 2,920-byte body. Contains enqueue sites 0x8004193C and 0x80041B08; semantic identity remains unresolved."
+        },
+        {
+          "start": "0x80041D80",
+          "end": "0x80041E04",
+          "size": 132,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80041E04",
+          "end": "0x80041E88",
+          "size": 132,
           "kind": "anchored_function"
         },
         {
@@ -3983,6 +4418,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800448A4",
+          "end": "0x80044918",
+          "size": 116,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80044984",
           "end": "0x800449E8",
           "size": 100,
@@ -4025,6 +4466,18 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80044D44",
+          "end": "0x80044D78",
+          "size": 52,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80044D78",
+          "end": "0x80044F18",
+          "size": 416,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80044F5C",
           "end": "0x80045094",
           "size": 312,
@@ -4052,6 +4505,18 @@
           "start": "0x800453C8",
           "end": "0x80045468",
           "size": 160,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80045468",
+          "end": "0x800455C0",
+          "size": 344,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800455C0",
+          "end": "0x800457DC",
+          "size": 540,
           "kind": "anchored_function"
         },
         {
@@ -4184,6 +4649,18 @@
           "start": "0x80049158",
           "end": "0x80049330",
           "size": 472,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8004A128",
+          "end": "0x8004A1C4",
+          "size": 156,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8004A1C4",
+          "end": "0x8004A268",
+          "size": 164,
           "kind": "anchored_function"
         },
         {
@@ -4609,6 +5086,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80052328",
+          "end": "0x800523A0",
+          "size": 120,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80052418",
           "end": "0x8005262C",
           "size": 532,
@@ -4669,6 +5152,12 @@
           "kind": "anchored_function",
           "symbol": "player_actor_write_previous_cursor_minus_two",
           "evidence": "24-byte helper has 31 direct callers, including Bubsy actor update at 0x80035408; it stores sign-extended actor halfword +0x0C minus 2 through the output pointer."
+        },
+        {
+          "start": "0x80052AD4",
+          "end": "0x80052AEC",
+          "size": 24,
+          "kind": "anchored_function"
         },
         {
           "start": "0x80052AEC",
@@ -4831,7 +5320,8 @@
           "end": "0x80053904",
           "size": 168,
           "kind": "anchored_function",
-          "symbol": "vector_length_q12"
+          "symbol": "vector_length_q12",
+          "evidence": "168-byte C helper squares the three nonzero Q20.12 components, sums them, and calls the scalar length conversion helper; independently byte-matched with the original linker label func_8005385C."
         },
         {
           "start": "0x80053904",
@@ -4844,7 +5334,8 @@
           "end": "0x800539E4",
           "size": 136,
           "kind": "anchored_function",
-          "symbol": "vector_range_scale_q12"
+          "symbol": "vector_range_scale_q12",
+          "evidence": "136-byte C wrapper range-conditions an input vector, obtains a scale from vector_length_q12, and scales each output component; independently byte-matched with the original linker label func_8005395C."
         },
         {
           "start": "0x800539E4",
@@ -4881,7 +5372,14 @@
           "end": "0x80053EA0",
           "size": 312,
           "kind": "anchored_function",
-          "symbol": "vector_range_condition_q12"
+          "symbol": "vector_range_condition_q12",
+          "evidence": "312-byte C helper selects a signed shift from the largest input component magnitude and applies it to the three components; independently byte-matched with the original linker label func_80053D68."
+        },
+        {
+          "start": "0x80053EA0",
+          "end": "0x80053F20",
+          "size": 128,
+          "kind": "anchored_function"
         },
         {
           "start": "0x80053F20",
@@ -5100,6 +5598,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8005541C",
+          "end": "0x80055674",
+          "size": 600,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80055674",
           "end": "0x80055680",
           "size": 12,
@@ -5298,6 +5802,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80058E7C",
+          "end": "0x80058F60",
+          "size": 228,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80058F60",
           "end": "0x800590B4",
           "size": 340,
@@ -5433,6 +5943,12 @@
           "start": "0x8005E9B8",
           "end": "0x8005EA28",
           "size": 112,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8005EA28",
+          "end": "0x8005EA64",
+          "size": 60,
           "kind": "anchored_function"
         },
         {
@@ -5772,6 +6288,18 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80062F9C",
+          "end": "0x80062FE8",
+          "size": 76,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800630D0",
+          "end": "0x8006313C",
+          "size": 108,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8006323C",
           "end": "0x80063288",
           "size": 76,
@@ -5784,9 +6312,27 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80063308",
+          "end": "0x80063370",
+          "size": 104,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800633BC",
+          "end": "0x80063424",
+          "size": 104,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80063488",
           "end": "0x800635C4",
           "size": 316,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8006367C",
+          "end": "0x80063740",
+          "size": 196,
           "kind": "anchored_function"
         },
         {
@@ -5838,6 +6384,18 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x800646F8",
+          "end": "0x800648D8",
+          "size": 480,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80064A20",
+          "end": "0x80064AC8",
+          "size": 168,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80064AC8",
           "end": "0x80064B40",
           "size": 120,
@@ -5850,9 +6408,45 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80064CD0",
+          "end": "0x80064D4C",
+          "size": 124,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80064DC8",
+          "end": "0x80064E2C",
+          "size": 100,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80064E2C",
           "end": "0x80064E90",
           "size": 100,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80064E90",
+          "end": "0x80065578",
+          "size": 1768,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80065578",
+          "end": "0x800657C8",
+          "size": 592,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x800657C8",
+          "end": "0x80065D20",
+          "size": 1368,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80065D20",
+          "end": "0x80065EB8",
+          "size": 408,
           "kind": "anchored_function"
         },
         {
@@ -5865,6 +6459,12 @@
           "start": "0x80066D80",
           "end": "0x80066E64",
           "size": 228,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x8006789C",
+          "end": "0x800678E8",
+          "size": 76,
           "kind": "anchored_function"
         },
         {
@@ -5913,6 +6513,12 @@
           "start": "0x80067DEC",
           "end": "0x80067F58",
           "size": 364,
+          "kind": "anchored_function"
+        },
+        {
+          "start": "0x80067F58",
+          "end": "0x80067FFC",
+          "size": 164,
           "kind": "anchored_function"
         },
         {
@@ -7524,6 +8130,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8008C274",
+          "end": "0x8008C29C",
+          "size": 40,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8008C29C",
           "end": "0x8008C414",
           "size": 376,
@@ -7956,6 +8568,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80096224",
+          "end": "0x80096300",
+          "size": 220,
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x800963E0",
           "end": "0x80096454",
           "size": 116,
@@ -8070,9 +8688,14 @@
           "kind": "anchored_function"
         }
       ],
-      "anchored_functions": 835,
-      "reachable_fragments": 64,
+      "anchored_functions": 918,
+      "reachable_fragments": 68,
       "indirect_references": [
+        {
+          "site": "0x80015ABC",
+          "reference": "0x800114F4",
+          "kind": "indirect_jump_reference"
+        },
         {
           "site": "0x80019E14",
           "reference": "0x80011DA8",
@@ -8111,6 +8734,21 @@
         {
           "site": "0x8002BD78",
           "reference": "0x80012798",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "reference": "0x800131F4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "reference": "0x80013470",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "reference": "0x80013488",
           "kind": "indirect_jump_reference"
         },
         {
@@ -8470,6 +9108,290 @@
           "target": "0x24808080"
         },
         {
+          "site": "0x8001537C",
+          "target": "0x8001522C"
+        },
+        {
+          "site": "0x80015384",
+          "target": "0x800BDD6C"
+        },
+        {
+          "site": "0x80015458",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80015460",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800154D4",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x800154DC",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x8001550C",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80015514",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015564",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x8001556C",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015690",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80015698",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015708",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80015710",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800157A0",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x800157A8",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800157CC",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x800157D4",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800158B0",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x800158B8",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800158F8",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80015900",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015984",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x8001598C",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800159D0",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x800159D8",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015AC8",
+          "target": "0x800A2670"
+        },
+        {
+          "site": "0x80015B00",
+          "target": "0x800A269C"
+        },
+        {
+          "site": "0x80015BDC",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80015BE4",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015C44",
+          "target": "0x800BE430"
+        },
+        {
+          "site": "0x80015C7C",
+          "target": "0x800A1FC8"
+        },
+        {
+          "site": "0x80015CAC",
+          "target": "0x80011418"
+        },
+        {
+          "site": "0x80015CB4",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015D00",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80015D08",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80015F00",
+          "target": "0x00808080"
+        },
+        {
+          "site": "0x8001619C",
+          "target": "0x80011434"
+        },
+        {
+          "site": "0x80016310",
+          "target": "0x800A27D0"
+        },
+        {
+          "site": "0x80016358",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80016360",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800163F8",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80016400",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016438",
+          "target": "0x800A1FC8"
+        },
+        {
+          "site": "0x80016468",
+          "target": "0x80011418"
+        },
+        {
+          "site": "0x80016470",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016548",
+          "target": "0x80011454"
+        },
+        {
+          "site": "0x80016550",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x8001658C",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x80016594",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800165C0",
+          "target": "0x800113E4"
+        },
+        {
+          "site": "0x800165C8",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800165E8",
+          "target": "0x8001146C"
+        },
+        {
+          "site": "0x800165F0",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016618",
+          "target": "0x8001147C"
+        },
+        {
+          "site": "0x80016620",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016650",
+          "target": "0x800114A0"
+        },
+        {
+          "site": "0x80016658",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800166B0",
+          "target": "0x800114C8"
+        },
+        {
+          "site": "0x800166B8",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016714",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x8001671C",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x8001674C",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80016754",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016780",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80016788",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x80016878",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x80016880",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800168A8",
+          "target": "0x80011400"
+        },
+        {
+          "site": "0x800168B0",
+          "target": "0x800113D8"
+        },
+        {
+          "site": "0x800195BC",
+          "target": "0x8009EA40"
+        },
+        {
           "site": "0x800195F4",
           "target": "0x800BF41C"
         },
@@ -8672,6 +9594,14 @@
         {
           "site": "0x8001A158",
           "target": "0x8009BF70"
+        },
+        {
+          "site": "0x8001A500",
+          "target": "0x00010400"
+        },
+        {
+          "site": "0x8001A5EC",
+          "target": "0x8009EAC4"
         },
         {
           "site": "0x8001A828",
@@ -8906,6 +9836,14 @@
           "target": "0x800BDEBC"
         },
         {
+          "site": "0x80020160",
+          "target": "0x80012024"
+        },
+        {
+          "site": "0x800207BC",
+          "target": "0x80012024"
+        },
+        {
           "site": "0x800211BC",
           "target": "0x8009EC80"
         },
@@ -8932,6 +9870,14 @@
         {
           "site": "0x800215D0",
           "target": "0x80000001"
+        },
+        {
+          "site": "0x8002212C",
+          "target": "0x8001200C"
+        },
+        {
+          "site": "0x80022134",
+          "target": "0x80011FD0"
         },
         {
           "site": "0x80022790",
@@ -9010,6 +9956,74 @@
           "target": "0x80185A6C"
         },
         {
+          "site": "0x80025AE8",
+          "target": "0x80012194"
+        },
+        {
+          "site": "0x80025AF0",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80025B08",
+          "target": "0x800BDEF4"
+        },
+        {
+          "site": "0x80025B10",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80025B68",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x80025B70",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80025DE8",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80025DF0",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80025E3C",
+          "target": "0x800121AC"
+        },
+        {
+          "site": "0x80025E44",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80026054",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x8002605C",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800260D0",
+          "target": "0x800BDEF0"
+        },
+        {
+          "site": "0x80026170",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x80026178",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80026274",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x8002627C",
+          "target": "0x800120AC"
+        },
+        {
           "site": "0x800263D4",
           "target": "0x8001214C"
         },
@@ -9020,6 +10034,14 @@
         {
           "site": "0x8002664C",
           "target": "0x801D5F70"
+        },
+        {
+          "site": "0x800266DC",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x800266E4",
+          "target": "0x800120AC"
         },
         {
           "site": "0x800267F0",
@@ -9158,6 +10180,214 @@
           "target": "0x800BDF98"
         },
         {
+          "site": "0x8002729C",
+          "target": "0x800121E8"
+        },
+        {
+          "site": "0x800272A4",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800272CC",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x800272D4",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027388",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027390",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800273B8",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800273C0",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800273E4",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800273EC",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027414",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x8002741C",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800274D4",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800274DC",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027500",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027508",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x8002756C",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027574",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027750",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x80027758",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027794",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x8002779C",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027880",
+          "target": "0x8001214C"
+        },
+        {
+          "site": "0x80027888",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800278B0",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800278B8",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800278E4",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800278EC",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x8002797C",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027984",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x800279A8",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x800279B0",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027A04",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027A0C",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027A30",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027A38",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027A7C",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027A84",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027B18",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027B20",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027B48",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027B50",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027B70",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027B78",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027BA0",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027BA8",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027BFC",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027C04",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027C80",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027C88",
+          "target": "0x800120AC"
+        },
+        {
+          "site": "0x80027D00",
+          "target": "0x80012094"
+        },
+        {
+          "site": "0x80027D08",
+          "target": "0x800120AC"
+        },
+        {
           "site": "0x80027ED0",
           "target": "0x800121F8"
         },
@@ -9208,6 +10438,10 @@
         {
           "site": "0x80028478",
           "target": "0x8009F120"
+        },
+        {
+          "site": "0x800287EC",
+          "target": "0x801D8994"
         },
         {
           "site": "0x800288FC",
@@ -9327,6 +10561,66 @@
         },
         {
           "site": "0x80029768",
+          "target": "0x8001239C"
+        },
+        {
+          "site": "0x80029824",
+          "target": "0x800123EC"
+        },
+        {
+          "site": "0x80029838",
+          "target": "0x800123FC"
+        },
+        {
+          "site": "0x80029840",
+          "target": "0x8001239C"
+        },
+        {
+          "site": "0x800298B4",
+          "target": "0x800123EC"
+        },
+        {
+          "site": "0x800298C8",
+          "target": "0x8001240C"
+        },
+        {
+          "site": "0x800298D0",
+          "target": "0x8001239C"
+        },
+        {
+          "site": "0x80029934",
+          "target": "0x800123EC"
+        },
+        {
+          "site": "0x80029948",
+          "target": "0x8001240C"
+        },
+        {
+          "site": "0x80029950",
+          "target": "0x8001239C"
+        },
+        {
+          "site": "0x80029A04",
+          "target": "0x80012424"
+        },
+        {
+          "site": "0x80029A54",
+          "target": "0x800123EC"
+        },
+        {
+          "site": "0x80029A68",
+          "target": "0x80012434"
+        },
+        {
+          "site": "0x80029A70",
+          "target": "0x8001239C"
+        },
+        {
+          "site": "0x80029AB4",
+          "target": "0x80012440"
+        },
+        {
+          "site": "0x80029ABC",
           "target": "0x8001239C"
         },
         {
@@ -9992,6 +11286,14 @@
         {
           "site": "0x80032DBC",
           "target": "0x80186154"
+        },
+        {
+          "site": "0x80033424",
+          "target": "0x80186178"
+        },
+        {
+          "site": "0x80033480",
+          "target": "0x80186190"
         },
         {
           "site": "0x80033920",
@@ -10706,6 +12008,110 @@
           "target": "0x800BE554"
         },
         {
+          "site": "0x8003CCE0",
+          "target": "0x800BE160"
+        },
+        {
+          "site": "0x8003CCF8",
+          "target": "0x800A1F9C"
+        },
+        {
+          "site": "0x8003CD50",
+          "target": "0x8001316C"
+        },
+        {
+          "site": "0x8003CD58",
+          "target": "0x80013184"
+        },
+        {
+          "site": "0x8003CDAC",
+          "target": "0x800BE148"
+        },
+        {
+          "site": "0x8003CE10",
+          "target": "0x00032000"
+        },
+        {
+          "site": "0x8003CE28",
+          "target": "0x00032000"
+        },
+        {
+          "site": "0x8003CE40",
+          "target": "0x00032000"
+        },
+        {
+          "site": "0x8003CE4C",
+          "target": "0x00014000"
+        },
+        {
+          "site": "0x8003CE58",
+          "target": "0x00032000"
+        },
+        {
+          "site": "0x8003CE64",
+          "target": "0x0001E000"
+        },
+        {
+          "site": "0x8003CE68",
+          "target": "0x00032000"
+        },
+        {
+          "site": "0x8003CE70",
+          "target": "0x00028000"
+        },
+        {
+          "site": "0x8003CE8C",
+          "target": "0x80013190"
+        },
+        {
+          "site": "0x8003CE94",
+          "target": "0x80013184"
+        },
+        {
+          "site": "0x8003CEA4",
+          "target": "0x80069BEC"
+        },
+        {
+          "site": "0x8003CECC",
+          "target": "0x800BE55C"
+        },
+        {
+          "site": "0x8003CF50",
+          "target": "0x800A1F28"
+        },
+        {
+          "site": "0x8003CF84",
+          "target": "0x800131B8"
+        },
+        {
+          "site": "0x8003CF8C",
+          "target": "0x80013184"
+        },
+        {
+          "site": "0x8003D0A4",
+          "target": "0x800131D4"
+        },
+        {
+          "site": "0x8003D0AC",
+          "target": "0x80013184"
+        },
+        {
+          "site": "0x8003D4C0",
+          "target": "0x40568000"
+        },
+        {
+          "site": "0x8003D520",
+          "target": "0x4062C000"
+        },
+        {
+          "site": "0x8003D80C",
+          "target": "0x800131D4"
+        },
+        {
+          "site": "0x8003D814",
+          "target": "0x80013184"
+        },
+        {
           "site": "0x8003D904",
           "target": "0x800A10E4"
         },
@@ -11130,8 +12536,88 @@
           "target": "0x8018911C"
         },
         {
+          "site": "0x80040D68",
+          "target": "0x801D0E8C"
+        },
+        {
+          "site": "0x80040DF8",
+          "target": "0x800133C0"
+        },
+        {
+          "site": "0x80040E54",
+          "target": "0x801D0E8C"
+        },
+        {
           "site": "0x80040FF0",
           "target": "0x801D0E8C"
+        },
+        {
+          "site": "0x80041018",
+          "target": "0x800BE190"
+        },
+        {
+          "site": "0x80041040",
+          "target": "0x800133D0"
+        },
+        {
+          "site": "0x80041048",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x80041058",
+          "target": "0x800BE194"
+        },
+        {
+          "site": "0x80041074",
+          "target": "0x800133D0"
+        },
+        {
+          "site": "0x8004107C",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x8004108C",
+          "target": "0x800BE198"
+        },
+        {
+          "site": "0x800410A8",
+          "target": "0x800133D0"
+        },
+        {
+          "site": "0x800410B0",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x800410C0",
+          "target": "0x800BE1A4"
+        },
+        {
+          "site": "0x800410E0",
+          "target": "0x800133D0"
+        },
+        {
+          "site": "0x800410E8",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x8004110C",
+          "target": "0x800BE19C"
+        },
+        {
+          "site": "0x80041134",
+          "target": "0x800BE1A0"
+        },
+        {
+          "site": "0x8004114C",
+          "target": "0x8018917F"
+        },
+        {
+          "site": "0x80041174",
+          "target": "0x800133D0"
+        },
+        {
+          "site": "0x8004117C",
+          "target": "0x800133EC"
         },
         {
           "site": "0x800411C0",
@@ -11144,6 +12630,122 @@
         {
           "site": "0x800411FC",
           "target": "0x800133EC"
+        },
+        {
+          "site": "0x80041270",
+          "target": "0x801D0E8C"
+        },
+        {
+          "site": "0x800412C0",
+          "target": "0x8018911B"
+        },
+        {
+          "site": "0x800412F8",
+          "target": "0x801D0EB4"
+        },
+        {
+          "site": "0x80041344",
+          "target": "0x800A1284"
+        },
+        {
+          "site": "0x80041358",
+          "target": "0x800A1340"
+        },
+        {
+          "site": "0x80041398",
+          "target": "0x800A1284"
+        },
+        {
+          "site": "0x800413B0",
+          "target": "0x800A1294"
+        },
+        {
+          "site": "0x800413D0",
+          "target": "0x800A1284"
+        },
+        {
+          "site": "0x80041400",
+          "target": "0x800A1284"
+        },
+        {
+          "site": "0x80041418",
+          "target": "0x800133FC"
+        },
+        {
+          "site": "0x80041420",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x80041448",
+          "target": "0x800A1264"
+        },
+        {
+          "site": "0x80041470",
+          "target": "0x8018911C"
+        },
+        {
+          "site": "0x80041494",
+          "target": "0x8001340C"
+        },
+        {
+          "site": "0x8004149C",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x800414AC",
+          "target": "0x8018911C"
+        },
+        {
+          "site": "0x800415D0",
+          "target": "0x80013424"
+        },
+        {
+          "site": "0x800415FC",
+          "target": "0x80013434"
+        },
+        {
+          "site": "0x80041628",
+          "target": "0x8006ABFC"
+        },
+        {
+          "site": "0x80041638",
+          "target": "0x80188BA4"
+        },
+        {
+          "site": "0x80041658",
+          "target": "0x800BE694"
+        },
+        {
+          "site": "0x80041768",
+          "target": "0x80013444"
+        },
+        {
+          "site": "0x80041770",
+          "target": "0x800133EC"
+        },
+        {
+          "site": "0x80041A24",
+          "target": "0x80013460"
+        },
+        {
+          "site": "0x80041CF8",
+          "target": "0x8018911C"
+        },
+        {
+          "site": "0x80041DA8",
+          "target": "0x9999999A"
+        },
+        {
+          "site": "0x80041DB0",
+          "target": "0x3FA99999"
+        },
+        {
+          "site": "0x80041E2C",
+          "target": "0x9999999A"
+        },
+        {
+          "site": "0x80041E34",
+          "target": "0x3FA99999"
         },
         {
           "site": "0x80041E9C",
@@ -11274,6 +12876,18 @@
           "target": "0x801D795C"
         },
         {
+          "site": "0x80044DC4",
+          "target": "0x8001350C"
+        },
+        {
+          "site": "0x80044E20",
+          "target": "0x80044D44"
+        },
+        {
+          "site": "0x80044E28",
+          "target": "0x800BE200"
+        },
+        {
           "site": "0x800450C8",
           "target": "0x801D795C"
         },
@@ -11284,6 +12898,58 @@
         {
           "site": "0x80045448",
           "target": "0x80189B40"
+        },
+        {
+          "site": "0x800454C4",
+          "target": "0x8001351C"
+        },
+        {
+          "site": "0x800454CC",
+          "target": "0x80013530"
+        },
+        {
+          "site": "0x80045504",
+          "target": "0x80189B38"
+        },
+        {
+          "site": "0x8004556C",
+          "target": "0x800455C0"
+        },
+        {
+          "site": "0x8004558C",
+          "target": "0x8001353C"
+        },
+        {
+          "site": "0x80045594",
+          "target": "0x80013530"
+        },
+        {
+          "site": "0x800455E4",
+          "target": "0x80189B38"
+        },
+        {
+          "site": "0x8004568C",
+          "target": "0x8001353C"
+        },
+        {
+          "site": "0x80045694",
+          "target": "0x80013530"
+        },
+        {
+          "site": "0x80045720",
+          "target": "0x8001353C"
+        },
+        {
+          "site": "0x80045728",
+          "target": "0x80013530"
+        },
+        {
+          "site": "0x80045784",
+          "target": "0x8001353C"
+        },
+        {
+          "site": "0x8004578C",
+          "target": "0x80013530"
         },
         {
           "site": "0x80045818",
@@ -11580,6 +13246,22 @@
         {
           "site": "0x800492B8",
           "target": "0x8018B950"
+        },
+        {
+          "site": "0x8004A130",
+          "target": "0x8018B9C8"
+        },
+        {
+          "site": "0x8004A1B0",
+          "target": "0x8018B9B8"
+        },
+        {
+          "site": "0x8004A204",
+          "target": "0x800137AC"
+        },
+        {
+          "site": "0x8004A20C",
+          "target": "0x800137C0"
         },
         {
           "site": "0x8004B51C",
@@ -11918,6 +13600,10 @@
           "target": "0x80013B74"
         },
         {
+          "site": "0x80052354",
+          "target": "0x00FFFFFF"
+        },
+        {
           "site": "0x80052640",
           "target": "0x80000001"
         },
@@ -12066,6 +13752,10 @@
           "target": "0x801CCE16"
         },
         {
+          "site": "0x8005EA40",
+          "target": "0x8005EA64"
+        },
+        {
           "site": "0x8005EB00",
           "target": "0x801CCE16"
         },
@@ -12210,6 +13900,10 @@
           "target": "0x7FFFFFFF"
         },
         {
+          "site": "0x800678D0",
+          "target": "0x00FFFFFF"
+        },
+        {
           "site": "0x80067948",
           "target": "0x801D7A34"
         },
@@ -12236,6 +13930,18 @@
         {
           "site": "0x80067E38",
           "target": "0x80013E30"
+        },
+        {
+          "site": "0x80067F94",
+          "target": "0x80013E40"
+        },
+        {
+          "site": "0x80067F9C",
+          "target": "0x80013E30"
+        },
+        {
+          "site": "0x80067FD8",
+          "target": "0x00FFFFFF"
         },
         {
           "site": "0x8006818C",
@@ -13754,6 +15460,10 @@
           "target": "0x801D7D44"
         },
         {
+          "site": "0x8008C27C",
+          "target": "0x801D7DC4"
+        },
+        {
           "site": "0x8008C300",
           "target": "0x801D7D44"
         },
@@ -14450,6 +16160,14 @@
           "target": "0xFFEFFFFF"
         },
         {
+          "site": "0x8009623C",
+          "target": "0x7FFFFFFF"
+        },
+        {
+          "site": "0x800962AC",
+          "target": "0x000FFFFF"
+        },
+        {
           "site": "0x8009645C",
           "target": "0x7FFFFFFF"
         },
@@ -14556,6 +16274,65 @@
       ],
       "manual_roots": [
         {
+          "address": "0x8005385C",
+          "symbol": "vector_length_q12",
+          "evidence": "168-byte C helper squares the three nonzero Q20.12 components, sums them, and calls the scalar length conversion helper; independently byte-matched with the original linker label func_8005385C."
+        },
+        {
+          "address": "0x8005395C",
+          "symbol": "vector_range_scale_q12",
+          "evidence": "136-byte C wrapper range-conditions an input vector, obtains a scale from vector_length_q12, and scales each output component; independently byte-matched with the original linker label func_8005395C."
+        },
+        {
+          "address": "0x80015A54",
+          "end": "0x80016274",
+          "symbol": "func_80015A54",
+          "evidence": "Prologue at 0x80015A54 and return at 0x8001626C with delay slot at 0x80016270. Its computed dispatch at 0x80015ABC indexes 42 entries at 0x800114F4; all targets are inside this 2,080-byte body. The function includes move enqueue site 0x80015EA0; semantic identity remains unresolved.",
+          "computed_jump_tables": [
+            {
+              "site": "0x80015ABC",
+              "table": "0x800114F4",
+              "count": 42
+            }
+          ]
+        },
+        {
+          "address": "0x80025A98",
+          "symbol": "func_80025A98",
+          "evidence": "1,380-byte bounded routine with prologue at 0x80025A98 and return at 0x80025FF4 plus delay slot. Contains move enqueue site 0x80025FC4; other state and transform helper meanings remain unresolved."
+        },
+        {
+          "address": "0x8003CC78",
+          "end": "0x8003D8D8",
+          "symbol": "func_8003CC78",
+          "evidence": "Prologue at 0x8003CC78 and return at 0x8003D8D0 with delay slot at 0x8003D8D4. Its computed dispatch at 0x8003CCD4 indexes 47 entries at 0x800131F4; all targets are inside this 3,168-byte body. Contains enqueue sites 0x8003D5D8 and 0x8003D718; semantic identity remains unresolved.",
+          "computed_jump_tables": [
+            {
+              "site": "0x8003CCD4",
+              "table": "0x800131F4",
+              "count": 47
+            }
+          ]
+        },
+        {
+          "address": "0x80041218",
+          "end": "0x80041D80",
+          "symbol": "func_80041218",
+          "evidence": "Prologue at 0x80041218 and return at 0x80041D78 with delay slot at 0x80041D7C. Its computed dispatch at 0x800412A0 indexes 24 entries at 0x80013488; all targets are inside this 2,920-byte body. Contains enqueue sites 0x8004193C and 0x80041B08; semantic identity remains unresolved.",
+          "computed_jump_tables": [
+            {
+              "site": "0x800412A0",
+              "table": "0x80013488",
+              "count": 24
+            }
+          ]
+        },
+        {
+          "address": "0x80053D68",
+          "symbol": "vector_range_condition_q12",
+          "evidence": "312-byte C helper selects a signed shift from the largest input component magnitude and applies it to the three components; independently byte-matched with the original linker label func_80053D68."
+        },
+        {
           "address": "0x80024EBC",
           "symbol": "game_enqueue_move_request",
           "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < MAX_MOVE_REQUEST_COUNT, stores request pointers in the 0x80185A6C array, increments the count, and returns the slot byte offset"
@@ -14564,6 +16341,11 @@
           "address": "0x80024EBC",
           "symbol": "game_enqueue_move_request",
           "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
+        },
+        {
+          "address": "0x80024F2C",
+          "symbol": "game_apply_queued_move_request",
+          "evidence": "416-byte move-request consumer reads the object component transform and moveInfo, applies the composed three-component translation through func_80054C7C, archives the applied vector, and clears pending move vectors. This writes the object's persistent transform; velocity semantics are not established."
         },
         {
           "address": "0x8003539C",
@@ -14670,6 +16452,510 @@
         }
       ],
       "static_pointer_evidence": [
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800114F4",
+          "target": "0x80015AC4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800114F8",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800114FC",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011500",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011504",
+          "target": "0x80016188",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011508",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001150C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011510",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011514",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011518",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001151C",
+          "target": "0x80015DCC",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011520",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011524",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011528",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001152C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011530",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011534",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011538",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001153C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011540",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011544",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011548",
+          "target": "0x80016070",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001154C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011550",
+          "target": "0x80015CC8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011554",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011558",
+          "target": "0x80015F84",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001155C",
+          "target": "0x800161D8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011560",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011564",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011568",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001156C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011570",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011574",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011578",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001157C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011580",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011584",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011588",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001158C",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011590",
+          "target": "0x80016254",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011594",
+          "target": "0x80015C74",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011598",
+          "target": "0x80015D6C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001159C",
+          "target": "0x8001630C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115A0",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115A4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115A8",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115AC",
+          "target": "0x80016500",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115B0",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115B4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115B8",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115BC",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115C0",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115C4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115C8",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115CC",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115D0",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115D4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115D8",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115DC",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115E0",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115E4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115E8",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115EC",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115F0",
+          "target": "0x800164A8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115F4",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115F8",
+          "target": "0x800167D0",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x800115FC",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011600",
+          "target": "0x80016484",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011604",
+          "target": "0x80016520",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011608",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001160C",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011610",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011614",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011618",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001161C",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011620",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011624",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011628",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001162C",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011630",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011634",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011638",
+          "target": "0x800167F8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x8001163C",
+          "target": "0x80016430",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80015ABC",
+          "slot": "0x80011640",
+          "target": "0x8001638C",
+          "kind": "indirect_jump_reference"
+        },
         {
           "site": "0x80019E14",
           "slot": "0x80011DA8",
@@ -15250,6 +17536,612 @@
           "site": "0x8002BD78",
           "slot": "0x800127DC",
           "target": "0x8002BDC0",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800131F4",
+          "target": "0x8003CCF4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800131F8",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800131FC",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013200",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013204",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013208",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001320C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013210",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013214",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013218",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001321C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013220",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013224",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013228",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001322C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013230",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013234",
+          "target": "0x8003D200",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013238",
+          "target": "0x8003D234",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001323C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013240",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013244",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013248",
+          "target": "0x8003D75C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001324C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013250",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013254",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013258",
+          "target": "0x8003CFA0",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001325C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013260",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013264",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013268",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001326C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013270",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013274",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013278",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001327C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013280",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013284",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013288",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001328C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013290",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013294",
+          "target": "0x8003CF48",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x80013298",
+          "target": "0x8003CF0C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x8001329C",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800132A0",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800132A4",
+          "target": "0x8003D8B4",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800132A8",
+          "target": "0x8003D384",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x8003CCD4",
+          "slot": "0x800132AC",
+          "target": "0x8003CCDC",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013470",
+          "target": "0x80040BA8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013474",
+          "target": "0x80040B9C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013478",
+          "target": "0x80040B90",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x8001347C",
+          "target": "0x80040B9C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013480",
+          "target": "0x80040BA8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013484",
+          "target": "0x80040BCC",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013488",
+          "target": "0x800412A8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x8001348C",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013490",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013494",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x80013498",
+          "target": "0x800417FC",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x8001349C",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134A0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134A4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134A8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134AC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134B0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134B4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134B8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134BC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134C0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134C4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134C8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134CC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134D0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134D4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134D8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134DC",
+          "target": "0x80041B34",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134E0",
+          "target": "0x800417E8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x80040B88",
+          "slot": "0x800134E4",
+          "target": "0x80041674",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x80013488",
+          "target": "0x800412A8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x8001348C",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x80013490",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x80013494",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x80013498",
+          "target": "0x800417FC",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x8001349C",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134A0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134A4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134A8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134AC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134B0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134B4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134B8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134BC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134C0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134C4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134C8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134CC",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134D0",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134D4",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134D8",
+          "target": "0x80041D4C",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134DC",
+          "target": "0x80041B34",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134E0",
+          "target": "0x800417E8",
+          "kind": "indirect_jump_reference"
+        },
+        {
+          "site": "0x800412A0",
+          "slot": "0x800134E4",
+          "target": "0x80041674",
           "kind": "indirect_jump_reference"
         },
         {
@@ -16260,6 +19152,11 @@
           "kind": "constructed_address_with_stack_frame"
         },
         {
+          "site": "0x8003CEA4",
+          "target": "0x80069BEC",
+          "kind": "constructed_address_with_stack_frame"
+        },
+        {
           "site": "0x8003E5D0",
           "target": "0x8006A654",
           "kind": "constructed_address_with_stack_frame"
@@ -16267,6 +19164,21 @@
         {
           "site": "0x8003E768",
           "target": "0x8006A654",
+          "kind": "constructed_address_with_stack_frame"
+        },
+        {
+          "site": "0x80041628",
+          "target": "0x8006ABFC",
+          "kind": "constructed_address_with_stack_frame"
+        },
+        {
+          "site": "0x80044E20",
+          "target": "0x80044D44",
+          "kind": "constructed_address_with_stack_frame"
+        },
+        {
+          "site": "0x8004556C",
+          "target": "0x800455C0",
           "kind": "constructed_address_with_stack_frame"
         },
         {
@@ -16376,7 +19288,15 @@
         },
         {
           "start": "0x800113C4",
-          "end": "0x800195DC"
+          "end": "0x80015284"
+        },
+        {
+          "start": "0x80016274",
+          "end": "0x8001630C"
+        },
+        {
+          "start": "0x800168D8",
+          "end": "0x800195AC"
         },
         {
           "start": "0x8001A0CC",
@@ -16388,6 +19308,14 @@
         },
         {
           "start": "0x8001A3C8",
+          "end": "0x8001A420"
+        },
+        {
+          "start": "0x8001A51C",
+          "end": "0x8001A524"
+        },
+        {
+          "start": "0x8001A618",
           "end": "0x8001A670"
         },
         {
@@ -16416,7 +19344,7 @@
         },
         {
           "start": "0x8001C73C",
-          "end": "0x8001C7C4"
+          "end": "0x8001C788"
         },
         {
           "start": "0x8001CA5C",
@@ -16424,6 +19352,10 @@
         },
         {
           "start": "0x8001DCEC",
+          "end": "0x8001F8B4"
+        },
+        {
+          "start": "0x80020990",
           "end": "0x80020DB4"
         },
         {
@@ -16432,18 +19364,14 @@
         },
         {
           "start": "0x800218E0",
-          "end": "0x800222E0"
+          "end": "0x8002205C"
         },
         {
           "start": "0x80022544",
-          "end": "0x8002262C"
+          "end": "0x80022604"
         },
         {
-          "start": "0x80022744",
-          "end": "0x8002278C"
-        },
-        {
-          "start": "0x80022BE0",
+          "start": "0x80022C84",
           "end": "0x80022C94"
         },
         {
@@ -16452,18 +19380,14 @@
         },
         {
           "start": "0x8002516C",
-          "end": "0x80026398"
+          "end": "0x80025A98"
         },
         {
           "start": "0x80026628",
           "end": "0x80026648"
         },
         {
-          "start": "0x80026658",
-          "end": "0x800267E8"
-        },
-        {
-          "start": "0x80027240",
+          "start": "0x80027D38",
           "end": "0x80027E24"
         },
         {
@@ -16480,23 +19404,19 @@
         },
         {
           "start": "0x800285F0",
+          "end": "0x80028600"
+        },
+        {
+          "start": "0x80028730",
           "end": "0x80028764"
         },
         {
-          "start": "0x800287C8",
-          "end": "0x800288D8"
-        },
-        {
-          "start": "0x80028B5C",
-          "end": "0x80028C84"
+          "start": "0x80028BC8",
+          "end": "0x80028C18"
         },
         {
           "start": "0x80028D38",
           "end": "0x80028D48"
-        },
-        {
-          "start": "0x80028D58",
-          "end": "0x80028E20"
         },
         {
           "start": "0x80028E80",
@@ -16505,10 +19425,6 @@
         {
           "start": "0x80028F24",
           "end": "0x80028FC8"
-        },
-        {
-          "start": "0x800297E0",
-          "end": "0x80029C00"
         },
         {
           "start": "0x8002A100",
@@ -16555,11 +19471,11 @@
           "end": "0x8002E858"
         },
         {
-          "start": "0x8002E910",
-          "end": "0x8002E954"
+          "start": "0x8002EA20",
+          "end": "0x8002EAE0"
         },
         {
-          "start": "0x8002E9DC",
+          "start": "0x8002EB3C",
           "end": "0x80032C8C"
         },
         {
@@ -16567,16 +19483,12 @@
           "end": "0x80032EFC"
         },
         {
-          "start": "0x800333CC",
-          "end": "0x800334C4"
-        },
-        {
           "start": "0x80036018",
           "end": "0x8003697C"
         },
         {
           "start": "0x80037B08",
-          "end": "0x80037B30"
+          "end": "0x80037B14"
         },
         {
           "start": "0x80038368",
@@ -16599,28 +19511,12 @@
           "end": "0x8003CB14"
         },
         {
-          "start": "0x8003CB88",
-          "end": "0x8003D8D8"
-        },
-        {
           "start": "0x8003E868",
           "end": "0x80040634"
         },
         {
-          "start": "0x80040910",
-          "end": "0x80040994"
-        },
-        {
-          "start": "0x80040A74",
-          "end": "0x80040FC0"
-        },
-        {
-          "start": "0x8004100C",
-          "end": "0x800411A0"
-        },
-        {
-          "start": "0x80041218",
-          "end": "0x80041E88"
+          "start": "0x80040E9C",
+          "end": "0x80040F00"
         },
         {
           "start": "0x800426AC",
@@ -16631,7 +19527,7 @@
           "end": "0x80044458"
         },
         {
-          "start": "0x800448A4",
+          "start": "0x80044918",
           "end": "0x80044984"
         },
         {
@@ -16639,7 +19535,7 @@
           "end": "0x80044C1C"
         },
         {
-          "start": "0x80044D44",
+          "start": "0x80044F18",
           "end": "0x80044F5C"
         },
         {
@@ -16649,10 +19545,6 @@
         {
           "start": "0x80045284",
           "end": "0x80045398"
-        },
-        {
-          "start": "0x80045468",
-          "end": "0x800457DC"
         },
         {
           "start": "0x8004753C",
@@ -16668,7 +19560,7 @@
         },
         {
           "start": "0x80049330",
-          "end": "0x8004A268"
+          "end": "0x8004A128"
         },
         {
           "start": "0x8004A35C",
@@ -16772,6 +19664,10 @@
         },
         {
           "start": "0x80052194",
+          "end": "0x80052328"
+        },
+        {
+          "start": "0x800523A0",
           "end": "0x80052418"
         },
         {
@@ -16781,10 +19677,6 @@
         {
           "start": "0x80052AA0",
           "end": "0x80052ABC"
-        },
-        {
-          "start": "0x80052AD4",
-          "end": "0x80052AEC"
         },
         {
           "start": "0x800530A4",
@@ -16815,10 +19707,6 @@
           "end": "0x80053D00"
         },
         {
-          "start": "0x80053EA0",
-          "end": "0x80053F20"
-        },
-        {
           "start": "0x800541D8",
           "end": "0x80054240"
         },
@@ -16836,7 +19724,7 @@
         },
         {
           "start": "0x8005536C",
-          "end": "0x80055674"
+          "end": "0x8005541C"
         },
         {
           "start": "0x80055DCC",
@@ -16869,10 +19757,6 @@
         {
           "start": "0x80057B10",
           "end": "0x80058C74"
-        },
-        {
-          "start": "0x80058E7C",
-          "end": "0x80058F60"
         },
         {
           "start": "0x800590B4",
@@ -16911,7 +19795,7 @@
           "end": "0x8005E8B8"
         },
         {
-          "start": "0x8005EA28",
+          "start": "0x8005EA64",
           "end": "0x8005EA88"
         },
         {
@@ -16960,6 +19844,14 @@
         },
         {
           "start": "0x80062EE4",
+          "end": "0x80062F9C"
+        },
+        {
+          "start": "0x80062FE8",
+          "end": "0x800630D0"
+        },
+        {
+          "start": "0x8006313C",
           "end": "0x8006323C"
         },
         {
@@ -16967,12 +19859,16 @@
           "end": "0x800632D4"
         },
         {
-          "start": "0x80063308",
+          "start": "0x80063370",
+          "end": "0x800633BC"
+        },
+        {
+          "start": "0x80063424",
           "end": "0x80063488"
         },
         {
           "start": "0x800635C4",
-          "end": "0x80063740"
+          "end": "0x8006367C"
         },
         {
           "start": "0x800638F4",
@@ -16984,23 +19880,27 @@
         },
         {
           "start": "0x80064588",
-          "end": "0x80064AC8"
+          "end": "0x800646F8"
         },
         {
-          "start": "0x80064CD0",
-          "end": "0x80064E2C"
+          "start": "0x800648D8",
+          "end": "0x80064A20"
         },
         {
-          "start": "0x80064E90",
+          "start": "0x80064D4C",
+          "end": "0x80064DC8"
+        },
+        {
+          "start": "0x80065EB8",
           "end": "0x80066378"
         },
         {
           "start": "0x80066E64",
-          "end": "0x800678F8"
+          "end": "0x8006789C"
         },
         {
-          "start": "0x80067F58",
-          "end": "0x80067FFC"
+          "start": "0x800678E8",
+          "end": "0x800678F8"
         },
         {
           "start": "0x80069948",
@@ -17455,10 +20355,6 @@
           "end": "0x8008C228"
         },
         {
-          "start": "0x8008C274",
-          "end": "0x8008C29C"
-        },
-        {
           "start": "0x8008C414",
           "end": "0x8008C438"
         },
@@ -17567,7 +20463,7 @@
           "end": "0x80095938"
         },
         {
-          "start": "0x80096224",
+          "start": "0x80096300",
           "end": "0x800963E0"
         },
         {
@@ -17591,7 +20487,7 @@
           "end": "0x800BE800"
         }
       ],
-      "unclassified_payload_bytes": 458392
+      "unclassified_payload_bytes": 421496
     },
     {
       "path": "L1/L1.EXE",
@@ -219695,7 +222591,8 @@
       "unclassified_payload_bytes": 356528
     }
   ],
-  "code_bytes": 3002136,
-  "bounded_function_count": 10409,
-  "fragment_count": 1167
+  "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
+  "code_bytes": 3039032,
+  "bounded_function_count": 10492,
+  "fragment_count": 1171
 }

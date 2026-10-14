@@ -41,12 +41,14 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 21,948 exact code bytes across 100
-functions, or `0.731079%` of mapped code. The total includes two Clang-built
+The validated report currently credits 31,496 exact code bytes across 104
+functions, or `1.036383%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
 `func_80054B20` and `func_80054C7C`,
+the four bounded move-request caller transcriptions `func_80015A54`,
+`func_80025A98`, `func_8003CC78`, and `func_80041218`,
 20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and

@@ -172,6 +172,50 @@
             "func_8005476C": "0x8005476C",
             "func_80064548": "0x80064548"
           }
+        },
+        {
+          "source": "src/game/func_80015A54_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcription of a manually bounded L0 routine; linked at its verified address and byte-compared against the fingerprinted executable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80015A54"]
+        },
+        {
+          "source": "src/game/func_80025A98_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcription of a manually bounded L0 routine; linked at its verified address and byte-compared against the fingerprinted executable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80025A98"]
+        },
+        {
+          "source": "src/game/func_8003CC78_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcription of a manually bounded L0 routine; linked at its verified address and byte-compared against the fingerprinted executable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_8003CC78"]
+        },
+        {
+          "source": "src/game/func_80041218_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcription of a manually bounded L0 routine; linked at its verified address and byte-compared against the fingerprinted executable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80041218"]
         }
       ],
       "fuzzy_sources": [
@@ -317,6 +361,30 @@
           "start": "0x80054B20",
           "end": "0x80054C7C",
           "size": 348
+        },
+        {
+          "name": "func_80015A54",
+          "start": "0x80015A54",
+          "end": "0x80016274",
+          "size": 2080
+        },
+        {
+          "name": "func_80025A98",
+          "start": "0x80025A98",
+          "end": "0x80025FFC",
+          "size": 1380
+        },
+        {
+          "name": "func_8003CC78",
+          "start": "0x8003CC78",
+          "end": "0x8003D8D8",
+          "size": 3168
+        },
+        {
+          "name": "func_80041218",
+          "start": "0x80041218",
+          "end": "0x80041D80",
+          "size": 2920
         }
       ]
     }

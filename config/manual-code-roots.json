@@ -14,6 +14,50 @@
         "evidence": "136-byte C wrapper range-conditions an input vector, obtains a scale from vector_length_q12, and scales each output component; independently byte-matched with the original linker label func_8005395C."
       },
       {
+        "address": "0x80015A54",
+        "end": "0x80016274",
+        "symbol": "func_80015A54",
+        "evidence": "Prologue at 0x80015A54 and return at 0x8001626C with delay slot at 0x80016270. Its computed dispatch at 0x80015ABC indexes 42 entries at 0x800114F4; all targets are inside this 2,080-byte body. The function includes move enqueue site 0x80015EA0; semantic identity remains unresolved.",
+        "computed_jump_tables": [
+          {
+            "site": "0x80015ABC",
+            "table": "0x800114F4",
+            "count": 42
+          }
+        ]
+      },
+      {
+        "address": "0x80025A98",
+        "symbol": "func_80025A98",
+        "evidence": "1,380-byte bounded routine with prologue at 0x80025A98 and return at 0x80025FF4 plus delay slot. Contains move enqueue site 0x80025FC4; other state and transform helper meanings remain unresolved."
+      },
+      {
+        "address": "0x8003CC78",
+        "end": "0x8003D8D8",
+        "symbol": "func_8003CC78",
+        "evidence": "Prologue at 0x8003CC78 and return at 0x8003D8D0 with delay slot at 0x8003D8D4. Its computed dispatch at 0x8003CCD4 indexes 47 entries at 0x800131F4; all targets are inside this 3,168-byte body. Contains enqueue sites 0x8003D5D8 and 0x8003D718; semantic identity remains unresolved.",
+        "computed_jump_tables": [
+          {
+            "site": "0x8003CCD4",
+            "table": "0x800131F4",
+            "count": 47
+          }
+        ]
+      },
+      {
+        "address": "0x80041218",
+        "end": "0x80041D80",
+        "symbol": "func_80041218",
+        "evidence": "Prologue at 0x80041218 and return at 0x80041D78 with delay slot at 0x80041D7C. Its computed dispatch at 0x800412A0 indexes 24 entries at 0x80013488; all targets are inside this 2,920-byte body. Contains enqueue sites 0x8004193C and 0x80041B08; semantic identity remains unresolved.",
+        "computed_jump_tables": [
+          {
+            "site": "0x800412A0",
+            "table": "0x80013488",
+            "count": 24
+          }
+        ]
+      },
+      {
         "address": "0x80053D68",
         "symbol": "vector_range_condition_q12",
         "evidence": "312-byte C helper selects a signed shift from the largest input component magnitude and applies it to the three components; independently byte-matched with the original linker label func_80053D68."

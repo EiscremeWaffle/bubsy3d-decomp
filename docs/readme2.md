@@ -1,19 +1,19 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 21,948 exact code bytes across 100
-functions (`0.731079%` of mapped code), including two Clang-built getters,
-eight original GCC C functions, six GCC assembly-backed functions, the
+The validated report currently contains 31,496 exact code bytes across 104
+functions (`1.036383%` of mapped code), including two Clang-built getters,
+eight original GCC C functions, ten GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
 `vector_range_condition_q12` (`func_80053D68`), 20
 assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
-product, 22 C matrix-scaler copies, and 38 repeated actor-flag/cursor helper
-copies. The actor-event dispatcher remains
+product, four newly matched bounded move-request callers, 22 C matrix-scaler
+copies, and 38 repeated actor-flag/cursor helper copies. The actor-event dispatcher remains
 fuzzy while its C reconstruction is refined; the experimental shared actor-
 state dispatcher is also not byte-matched or credited.
 Portable host models remain covered by native regression tests. The current report maps
-3,002,136 instruction bytes across all 22 recognized executables, including
+3,039,032 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully
 recovered high-level C, and the larger Bubsy actor updater remains incomplete.
