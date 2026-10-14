@@ -445,8 +445,9 @@ consumer `game_apply_queued_move_request` at `0x80024F2C`: it composes pending
 moveInfo vectors and applies the resulting translation through
 `func_80054C7C` to the object's component transform, then archives and clears the
 pending vectors. Bubsy-side actor callbacks enqueue their live object pointers
-through `game_enqueue_move_request`; this confirms the world-transform write
-path, but does not establish a separate velocity field or its units.
+through `game_enqueue_move_request`; this confirms an actor component-transform
+translation update, but does not establish world-space coordinates or a
+separate velocity field.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
 vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model
@@ -666,12 +667,19 @@ guessing the opaque helpers' internal math; native tests cover optional paths,
 translation application, archival, clearing, and the missing-info assertion.
 
 The shared 360-byte helper `func_80054C7C` at `0x80054C7C..0x80054DE4` has 92
-direct L0 JAL call sites, including its recursive call. Its assembly-backed transcription is in
-`src/game/func_80054C7C_match.c`. The instructions show a null component pointer
-returns `0x18`; otherwise the helper writes translation values to component
-offsets `+0x14/+0x18/+0x1C`, negating Y. A non-null basis that differs from the
-observed global block at `0x800A42EC` is passed through `func_8005476C` and
-`func_80064528` before that same write. The readable host model is
-`game_component_transform_set_translation` in `src/game/component_transform.c`;
-it leaves that conversion as an injected callback. The evidence establishes a
-component-transform field write, not a world-space position or velocity field.
+direct L0 JAL call sites, including its recursive call. Its assembly-backed
+transcription is in `src/game/func_80054C7C_match.c`. The instructions show a
+null component pointer returns `0x18`; otherwise it writes the three
+translation words at component offsets `+0x14/+0x18/+0x1C`, negating Y.
+Neighboring helper `func_80054414` copies nine matrix halfwords at
+`+0x00..+0x10`, a padding halfword at `+0x12`, and the translation words at
+`+0x14..+0x1C`, establishing the component view layout. If a supplied basis
+differs from the global matrix at `0x800A42EC`, `func_8005476C` copies and
+adjusts its matrix (negating halfwords at `+0x02`, `+0x06`, `+0x0A`, and
+`+0x0E`) and flips its translation Y. The GTE-backed matrix-vector path then
+transforms the input and adds the adjusted translation before the common final
+Y flip and stores. The host model `game_component_transform_set_translation`
+captures those data changes and branches in `src/game/component_transform.c`;
+its callback is limited to the GTE matrix-vector operation. This establishes a
+component-transform origin update, but not whether the component is local or
+world-space.

@@ -525,7 +525,6 @@ static void test_game_apply_queued_move_request(void) {
 }
 
 typedef struct ComponentTransformTestLog {
-    const GameComponentBasisView *expected_basis;
     unsigned int call_count;
 } ComponentTransformTestLog;
 
@@ -537,7 +536,13 @@ static void record_component_vector_transform(
 ) {
     ComponentTransformTestLog *log = context;
 
-    assert(basis == log->expected_basis);
+    assert(basis->matrix_halfwords[0] == 1);
+    assert(basis->matrix_halfwords[1] == (uint16_t)-2);
+    assert(basis->matrix_halfwords[2] == 3);
+    assert(basis->matrix_halfwords[3] == (uint16_t)-4);
+    assert(basis->translation[0] == 0x10);
+    assert(basis->translation[1] == 0x20);
+    assert(basis->translation[2] == 0x30);
     assert(input[0] == 8 && input[1] == -9 && input[2] == 10);
     output[0] = 0x111;
     output[1] = 0x222;
@@ -546,24 +551,23 @@ static void record_component_vector_transform(
 }
 
 static void test_component_transform_set_translation(void) {
-    GameComponentTransformView component = {{0}};
-    GameComponentBasisView global_basis = {{0}, 0, 0, {0}};
+    GameComponentTransformView component = {0};
+    GameComponentBasisView global_basis = {0};
     GameComponentBasisView basis;
     int32_t translation[3] = {13, INT32_MIN, -27};
     ComponentTransformTestLog log = {0};
     GameComponentTransformOps ops = {&log, record_component_vector_transform};
 
-    component.words[0] = 0xA;
-    component.words[1] = 0xB;
-    component.words[2] = 0xC;
-    component.words[3] = 0xD;
-    component.words[4] = 0xE;
-    component.words[5] = 0xF;
-    component.words[6] = 0x10;
-    component.words[7] = 0x11;
+    component.matrix_halfwords[0] = 0xA;
+    component.matrix_halfwords[8] = 0xB;
+    component.unused_halfword_12 = 0xC;
+    component.translation[0] = 0xD;
+    component.translation[1] = 0xE;
+    component.translation[2] = 0xF;
     assert(game_component_transform_set_translation(&component, NULL, NULL, translation, NULL) == 0);
-    assert(component.words[0] == 0xA && component.words[4] == 0xE);
-    assert(component.words[5] == 13 && component.words[6] == INT32_MIN && component.words[7] == -27);
+    assert(component.matrix_halfwords[0] == 0xA && component.matrix_halfwords[8] == 0xB);
+    assert(component.unused_halfword_12 == 0xC);
+    assert(component.translation[0] == 13 && component.translation[1] == INT32_MIN && component.translation[2] == -27);
 
     basis = global_basis;
     basis.ignored_halfword_12 = 0x1234;
@@ -571,16 +575,21 @@ static void test_component_transform_set_translation(void) {
     translation[1] = -5;
     translation[2] = 6;
     assert(game_component_transform_set_translation(&component, &basis, &global_basis, translation, NULL) == 0);
-    assert(component.words[5] == 4 && component.words[6] == 5 && component.words[7] == 6);
+    assert(component.translation[0] == 4 && component.translation[1] == 5 && component.translation[2] == 6);
 
-    basis.words_14_1c[1] = 1;
+    basis.matrix_halfwords[0] = 1;
+    basis.matrix_halfwords[1] = 2;
+    basis.matrix_halfwords[2] = 3;
+    basis.matrix_halfwords[3] = 4;
+    basis.translation[0] = 0x10;
+    basis.translation[1] = -0x20;
+    basis.translation[2] = 0x30;
     translation[0] = 8;
     translation[1] = -9;
     translation[2] = 10;
-    log.expected_basis = &basis;
     assert(game_component_transform_set_translation(&component, &basis, &global_basis, translation, &ops) == 0);
     assert(log.call_count == 1);
-    assert(component.words[5] == 0x111 && component.words[6] == -0x222 && component.words[7] == -0x333);
+    assert(component.translation[0] == 0x121 && component.translation[1] == -0x242 && component.translation[2] == -0x303);
 
     assert(game_component_transform_set_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
 }
