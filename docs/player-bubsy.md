@@ -41,12 +41,12 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 21,600 exact code bytes across 99
-functions, or `0.719488%` of mapped code. The total includes two Clang-built
+The validated report currently credits 21,948 exact code bytes across 100
+functions, or `0.731079%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
-`game_apply_queued_move_request`, and the component-transform helper
-`func_80054C7C`,
+`game_apply_queued_move_request`, and the component-transform helpers
+`func_80054B20` and `func_80054C7C`,
 20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
@@ -655,16 +655,26 @@ The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
 `0x80024F2C`. Its exact L0 match is an assembly-backed transcription in
 `src/game/func_80024F2C_match.c`. The routine reads pending movement vectors
 from the object's `moveInfo`, composes the translation, and calls
-`func_80054C7C` to update the object's component transform; it then archives
-and clears the pending values. This establishes a persistent component-transform
-write, but not whether that transform is world-space or the units/semantics of
-any separate velocity field.
+`func_80054B20` to read the current component translation, adds the queued
+translation with `func_80010038`, and calls `func_80054C7C` to store the result;
+it then archives and clears the pending values. This establishes a read-add-
+write update of the component translation, but not whether that coordinate is
+local or world-space or whether any separate velocity field is involved.
 
 A readable host-side orchestration model for this routine is in
 `game_apply_queued_move_request` in `src/game/move_requests.c`. Its injected
 callbacks preserve the observed helper order and pointer ranges without
 guessing the opaque helpers' internal math; native tests cover optional paths,
 translation application, archival, clearing, and the missing-info assertion.
+
+The shared 348-byte helper `func_80054B20` at `0x80054B20..0x80054C7C` has 137
+direct L0 JAL call sites, including its recursive call. Its exact transcription
+is in `src/game/func_80054B20_match.c`. The null-basis path copies the component
+translation at `+0x14/+0x18/+0x1C` to the output vector and negates Y; this is
+the path used by the movement consumer. The readable model is
+`game_component_transform_read_translation` in
+`src/game/component_transform.c`; non-null, non-global basis conversion remains
+an injected callback.
 
 The shared 360-byte helper `func_80054C7C` at `0x80054C7C..0x80054DE4` has 92
 direct L0 JAL call sites, including its recursive call. Its assembly-backed

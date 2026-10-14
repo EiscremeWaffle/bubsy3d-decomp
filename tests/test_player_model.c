@@ -556,7 +556,7 @@ static void test_component_transform_set_translation(void) {
     GameComponentBasisView basis;
     int32_t translation[3] = {13, INT32_MIN, -27};
     ComponentTransformTestLog log = {0};
-    GameComponentTransformOps ops = {&log, record_component_vector_transform};
+    GameComponentTransformOps ops = {&log, record_component_vector_transform, NULL};
 
     component.matrix_halfwords[0] = 0xA;
     component.matrix_halfwords[8] = 0xB;
@@ -592,6 +592,59 @@ static void test_component_transform_set_translation(void) {
     assert(component.translation[0] == 0x121 && component.translation[1] == -0x242 && component.translation[2] == -0x303);
 
     assert(game_component_transform_set_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
+}
+
+static void record_component_point_to_basis(
+    void *context,
+    const GameComponentBasisView *basis,
+    const int32_t input[3],
+    int32_t output[3]
+) {
+    ComponentTransformTestLog *log = context;
+
+    assert(basis->matrix_halfwords[1] == (uint16_t)-2);
+    assert(basis->matrix_halfwords[3] == (uint16_t)-4);
+    assert(basis->translation[0] == 0x10);
+    assert(basis->translation[1] == 0x20);
+    assert(basis->translation[2] == 0x30);
+    assert(input[0] == 100 && input[1] == -200 && input[2] == 300);
+    output[0] = -11;
+    output[1] = 22;
+    output[2] = -33;
+    log->call_count++;
+}
+
+static void test_component_transform_read_translation(void) {
+    GameComponentTransformView component = {0};
+    GameComponentBasisView global_basis = {0};
+    GameComponentBasisView basis;
+    ComponentTransformTestLog log = {0};
+    GameComponentTransformOps ops = {&log, NULL, record_component_point_to_basis};
+    int32_t output[3] = {0};
+
+    component.translation[0] = 100;
+    component.translation[1] = 200;
+    component.translation[2] = 300;
+    assert(game_component_transform_read_translation(&component, NULL, NULL, output, NULL) == 0);
+    assert(output[0] == 100 && output[1] == -200 && output[2] == 300);
+
+    basis = global_basis;
+    basis.ignored_halfword_12 = 0x1234;
+    assert(game_component_transform_read_translation(&component, &basis, &global_basis, output, NULL) == 0);
+    assert(output[0] == 100 && output[1] == -200 && output[2] == 300);
+
+    basis.matrix_halfwords[0] = 1;
+    basis.matrix_halfwords[1] = 2;
+    basis.matrix_halfwords[2] = 3;
+    basis.matrix_halfwords[3] = 4;
+    basis.translation[0] = 0x10;
+    basis.translation[1] = -0x20;
+    basis.translation[2] = 0x30;
+    assert(game_component_transform_read_translation(&component, &basis, &global_basis, output, &ops) == 0);
+    assert(log.call_count == 1);
+    assert(output[0] == -11 && output[1] == 22 && output[2] == -33);
+
+    assert(game_component_transform_read_translation(NULL, NULL, NULL, NULL, NULL) == 0x18);
 }
 
 typedef struct EventCallLog {
@@ -1831,6 +1884,7 @@ int main(void) {
     test_move_request_queue();
     test_game_apply_queued_move_request();
     test_component_transform_set_translation();
+    test_component_transform_read_translation();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
     test_bubsy_actor_update_level14_counter_path();

@@ -29,9 +29,17 @@ typedef void (*GameComponentVectorTransform)(
     int32_t output[3]
 );
 
+typedef void (*GameComponentPointToBasisTransform)(
+    void *context,
+    const GameComponentBasisView *basis,
+    const int32_t input[3],
+    int32_t output[3]
+);
+
 typedef struct GameComponentTransformOps {
     void *context;
     GameComponentVectorTransform transform_vector;
+    GameComponentPointToBasisTransform transform_point_to_basis;
 } GameComponentTransformOps;
 
 int32_t game_component_transform_set_translation(
@@ -39,6 +47,14 @@ int32_t game_component_transform_set_translation(
     const GameComponentBasisView *basis,
     const GameComponentBasisView *global_basis,
     const int32_t translation[3],
+    const GameComponentTransformOps *ops
+);
+
+int32_t game_component_transform_read_translation(
+    const GameComponentTransformView *component,
+    const GameComponentBasisView *basis,
+    const GameComponentBasisView *global_basis,
+    int32_t output[3],
     const GameComponentTransformOps *ops
 );
 
