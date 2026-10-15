@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.0766534,
+    "fuzzy_match_percent": 1.0935009,
     "total_code": "3039032",
-    "matched_code": "32080",
-    "matched_code_percent": 1.0555993,
+    "matched_code": "32592",
+    "matched_code_percent": 1.0724467,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 106,
-    "matched_functions_percent": 0.90885705,
+    "matched_functions": 109,
+    "matched_functions_percent": 0.93457943,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 7.6389923,
+        "fuzzy_match_percent": 7.8255596,
         "total_code": "274432",
-        "matched_code": "20324",
-        "matched_code_percent": 7.4058423,
+        "matched_code": "20836",
+        "matched_code_percent": 7.592409,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 28,
-        "matched_functions_percent": 3.050109,
+        "matched_functions": 31,
+        "matched_functions_percent": 3.3769064,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 7.6389923,
+          "fuzzy_match_percent": 7.8255596,
           "metadata": {}
         }
       ],
@@ -68,6 +68,7 @@
         {
           "name": "func_8001007C",
           "size": "36",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "124"
         },
@@ -539,6 +540,7 @@
         {
           "name": "func_800227A4",
           "size": "416",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "22508"
         },
@@ -3493,6 +3495,7 @@
         {
           "name": "func_80062D4C",
           "size": "60",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "173388"
         },

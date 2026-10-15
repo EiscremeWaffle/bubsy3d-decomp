@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 32,080 exact code bytes across 106
-functions, or `1.055599%` of mapped code. The total includes two Clang-built
+The validated report currently credits 32,592 exact code bytes across 109
+functions, or `1.072447%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -51,7 +51,8 @@ grounded-state handlers, `func_800347EC`, the movement consumer
 the four bounded move-request caller transcriptions `func_80015A54`,
 `func_80025A98`, `func_8003CC78`, and `func_80041218`,
 20 assembly-backed copies of
-`func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`,
+`func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`, and
+the C-built Q20.12 scalar multiply `func_8001007C`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -461,7 +462,8 @@ The grounded handler calls `vector_range_scale_q12`, which range-conditions a 3-
 with `vector_range_condition_q12`, obtains one scalar from `vector_length_q12`, and scales each
 conditioned component by that scalar through `func_80053350`. The bounded
 `vector_length_q12` squares each nonzero Q20.12 component with
-`func_8001007C`, adds the three results, and passes the sum to the
+`func_8001007C`, a 36-byte helper now byte-matched from C with narrow inline
+HI/LO extraction and C-side recombination. It adds the three results and passes the sum to the
 GTE-backed `func_8005359C` conversion. This is consistent with a fixed-point
 vector-length calculation, but its output's gameplay role is unknown. The C
 models and host tests are in `player_vector_transform.c` and
@@ -712,6 +714,21 @@ scales configured direction components into the pending vector at
 `+0x38/+0x3C/+0x40`. When those direction fields are zero, it derives a vector
 from the component matrix and accumulates it. This grounds the producer-to-
 consumer dataflow, but does not prove that the step field is physical velocity.
+
+Its special-state path calls the 416-byte helper `func_800227A4` at
+`0x800227A4`; `src/game/func_800227A4.c` now byte-matches that L0 routine in C.
+It reads the component translation, passes it with the move-info vector to
+`func_80062E50`, and uses the resulting `+0x18` scalar and step `+0x30` for
+threshold decisions. The selected paths either clear the remaining scalar and
+add a translation delta to `+0x38`, or derive and scale a vector into the same
+pending fields. This connects the special-state adjustment to the position
+consumer, but the scalar's gameplay meaning remains unknown.
+
+`func_800227A4` calls the 60-byte helper `func_80062D4C`, whose C source in
+`src/game/func_80062D4C.c` is also byte-matched. It subtracts the component and
+move-info vectors through `func_80010000`, then passes the difference and an
+output pointer to `func_80053904`. The helper boundary is exact, but the
+returned scalar's gameplay meaning remains unresolved.
 
 A readable host-side orchestration model for this routine is in
 `game_apply_queued_move_request` in `src/game/move_requests.c`. Its injected

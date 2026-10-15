@@ -148,6 +148,28 @@
           }
         },
         {
+          "source": "src/game/func_8001007C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with a narrow inline HI/LO extraction for target register scheduling.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8001007C"]
+        },
+        {
+          "source": "src/game/func_80062D4C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80062D4C"]
+        },
+        {
           "source": "src/game/func_80022944.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
@@ -160,6 +182,22 @@
           "globals": {
             "g_move_info_condition": "0x800BDEF4",
             "g_game_source_path": "0x800120AC"
+          }
+        },
+        {
+          "source": "src/game/func_800227A4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800227A4"],
+          "globals": {
+            "g_move_adjustment_condition": "0x80012094",
+            "g_game_source_path": "0x800120AC",
+            "g_move_adjustment_step_condition": "0x800120B8"
           }
         },
         {
@@ -347,6 +385,18 @@
           "size": 136
         },
         {
+          "name": "func_8001007C",
+          "start": "0x8001007C",
+          "end": "0x800100A0",
+          "size": 36
+        },
+        {
+          "name": "func_80062D4C",
+          "start": "0x80062D4C",
+          "end": "0x80062D88",
+          "size": 60
+        },
+        {
           "name": "func_8005385C",
           "start": "0x8005385C",
           "end": "0x80053904",
@@ -380,6 +430,12 @@
           "name": "func_80024F2C",
           "start": "0x80024F2C",
           "end": "0x800250CC",
+          "size": 416
+        },
+        {
+          "name": "func_800227A4",
+          "start": "0x800227A4",
+          "end": "0x80022944",
           "size": 416
         },
         {
