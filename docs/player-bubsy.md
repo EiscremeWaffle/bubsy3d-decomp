@@ -741,9 +741,9 @@ at `+0x14/+0x18/+0x1C` to the output vector and negate Y; a differing basis is
 normalized and transformed through the observed helper calls.
 
 The shared 360-byte helper `func_80054C7C` at `0x80054C7C..0x80054DE4` has 92
-direct L0 JAL call sites, including its recursive call. Its assembly-backed
-transcription is in `src/game/func_80054C7C_match.c`. The instructions show a
-null component pointer returns `0x18`; otherwise it writes the three
+direct L0 JAL call sites, including its recursive call. Its high-level C source
+in `src/game/func_80054C7C.c` byte-matches with pinned GCC 2.6.3 PSX. A null
+component pointer returns `0x18`; otherwise the null-basis path writes the three
 translation words at component offsets `+0x14/+0x18/+0x1C`, negating Y.
 Neighboring helper `func_80054414` copies nine matrix halfwords at
 `+0x00..+0x10`, a padding halfword at `+0x12`, and the translation words at

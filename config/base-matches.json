@@ -144,16 +144,17 @@
           "symbols": ["func_80024F2C"]
         },
         {
-          "source": "src/game/func_80054C7C_match.c",
+          "source": "src/game/func_80054C7C.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_80054C7C"],
           "globals": {
+            "g_global_basis": "0x800A42EC",
             "func_8005476C": "0x8005476C",
             "func_80064528": "0x80064528"
           }
