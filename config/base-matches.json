@@ -170,6 +170,39 @@
           "symbols": ["func_80062D4C"]
         },
         {
+          "source": "src/game/func_80062E50.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with constrained register operands for target instruction ordering.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80062E50"]
+        },
+        {
+          "source": "src/game/func_800539E4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C wrapper byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800539E4"]
+        },
+        {
+          "source": "src/game/func_80053A08_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the verified L0 helper, compiled and linked at the mapped address before byte comparison.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80053A08"]
+        },
+        {
           "source": "src/game/func_80022944.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
@@ -395,6 +428,24 @@
           "start": "0x80062D4C",
           "end": "0x80062D88",
           "size": 60
+        },
+        {
+          "name": "func_80062E50",
+          "start": "0x80062E50",
+          "end": "0x80062EE4",
+          "size": 148
+        },
+        {
+          "name": "func_800539E4",
+          "start": "0x800539E4",
+          "end": "0x80053A08",
+          "size": 36
+        },
+        {
+          "name": "func_80053A08",
+          "start": "0x80053A08",
+          "end": "0x80053A70",
+          "size": 104
         },
         {
           "name": "func_8005385C",

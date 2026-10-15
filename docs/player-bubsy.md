@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 32,592 exact code bytes across 109
-functions, or `1.072447%` of mapped code. The total includes two Clang-built
+The validated report currently credits 32,880 exact code bytes across 112
+functions, or `1.081923%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -52,7 +52,10 @@ the four bounded move-request caller transcriptions `func_80015A54`,
 `func_80025A98`, `func_8003CC78`, and `func_80041218`,
 20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`, and
-the C-built Q20.12 scalar multiply `func_8001007C`,
+the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
+`func_80062E50`, the C-built forwarding helper `func_800539E4`, and the
+assembly-backed transcription of the 104-byte vector-scale wrapper
+`func_80053A08`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -470,6 +473,10 @@ models and host tests are in `player_vector_transform.c` and
 `test_player_model.c`. Both functions match their bounded L0 bytes; the wrapper
 uses target-specific return-register and zero-store constraints. This
 processing has not been shown to update Bubsy's world position or velocity.
+The subsequent `func_80053A08` wrapper applies `func_8001007C` to each of three
+components using the same scale and adjacent output slots, then returns zero.
+Its 104-byte range matches through an explicit assembly transcription; the
+available high-level C draft has not been made byte-exact.
 
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
@@ -729,6 +736,13 @@ consumer, but the scalar's gameplay meaning remains unknown.
 move-info vectors through `func_80010000`, then passes the difference and an
 output pointer to `func_80053904`. The helper boundary is exact, but the
 returned scalar's gameplay meaning remains unresolved.
+
+`func_800227A4` also calls the 148-byte `func_80062E50`; its C source in
+`src/game/func_80062E50.c` byte-matches L0. It takes absolute differences on
+three components, orders the largest against the other two, and returns the
+largest plus one quarter of the other two summed. This is the approximation
+used for the remaining-distance threshold; its higher-level gameplay meaning
+is still unproven.
 
 A readable host-side orchestration model for this routine is in
 `game_apply_queued_move_request` in `src/game/move_requests.c`. Its injected

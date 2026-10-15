@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.0935009,
+    "fuzzy_match_percent": 1.1029775,
     "total_code": "3039032",
-    "matched_code": "32592",
-    "matched_code_percent": 1.0724467,
+    "matched_code": "32880",
+    "matched_code_percent": 1.0819235,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 109,
-    "matched_functions_percent": 0.93457943,
+    "matched_functions": 112,
+    "matched_functions_percent": 0.9603018,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 7.8255596,
+        "fuzzy_match_percent": 7.930504,
         "total_code": "274432",
-        "matched_code": "20836",
-        "matched_code_percent": 7.592409,
+        "matched_code": "21124",
+        "matched_code_percent": 7.697353,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 31,
-        "matched_functions_percent": 3.3769064,
+        "matched_functions": 34,
+        "matched_functions_percent": 3.7037036,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 7.8255596,
+          "fuzzy_match_percent": 7.930504,
           "metadata": {}
         }
       ],
@@ -2567,12 +2567,14 @@
         {
           "name": "func_800539E4",
           "size": "36",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "138040"
         },
         {
           "name": "func_80053A08",
           "size": "104",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "138076"
         },
@@ -3514,6 +3516,7 @@
         {
           "name": "func_80062E50",
           "size": "148",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "173648"
         },
