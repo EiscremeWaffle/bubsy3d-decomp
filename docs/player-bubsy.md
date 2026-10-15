@@ -41,12 +41,13 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 31,496 exact code bytes across 104
-functions, or `1.036383%` of mapped code. The total includes two Clang-built
+The validated report currently credits 32,080 exact code bytes across 106
+functions, or `1.055599%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
-`func_80054B20` and `func_80054C7C`,
+`func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
+`func_80022944`,
 the four bounded move-request caller transcriptions `func_80015A54`,
 `func_80025A98`, `func_8003CC78`, and `func_80041218`,
 20 assembly-backed copies of
@@ -694,14 +695,23 @@ This models the six enqueue paths, not the complete four enclosing state-machine
 bodies; their indirect dispatches and other helper effects remain unresolved.
 
 The queue consumer is the 416-byte routine `game_apply_queued_move_request` at
-`0x80024F2C`. Its exact L0 match is an assembly-backed transcription in
-`src/game/func_80024F2C_match.c`. The routine reads pending movement vectors
+`0x80024F2C`. Its high-level C source in `src/game/func_80024F2C.c` byte-matches
+the L0 routine with pinned GCC 2.6.3 PSX. It reads pending movement vectors
 from the object's `moveInfo`, composes the translation, and calls
 `func_80054B20` to read the current component translation, adds the queued
 translation with `func_80010038`, and calls `func_80054C7C` to store the result;
 it then archives and clears the pending values. This establishes a read-add-
 write update of the component translation, but not whether that coordinate is
 local or world-space or whether any separate velocity field is involved.
+
+Grounded case handling calls the 536-byte routine `func_80022944` at
+`0x80022944`. Its C source in `src/game/func_80022944.c` byte-matches L0 with
+the pinned GCC 2.6.3 PSX profile. It updates the Q20.12 step from move-info
+fields `+0x30/+0x34`, applies the observed actor-state and clamp gates, then
+scales configured direction components into the pending vector at
+`+0x38/+0x3C/+0x40`. When those direction fields are zero, it derives a vector
+from the component matrix and accumulates it. This grounds the producer-to-
+consumer dataflow, but does not prove that the step field is physical velocity.
 
 A readable host-side orchestration model for this routine is in
 `game_apply_queued_move_request` in `src/game/move_requests.c`. Its injected

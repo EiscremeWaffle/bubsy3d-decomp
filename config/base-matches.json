@@ -133,15 +133,34 @@
           "symbols": ["func_800347EC"]
         },
         {
-          "source": "src/game/func_80024F2C_match.c",
+          "source": "src/game/func_80024F2C.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["func_80024F2C"]
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80024F2C"],
+          "globals": {
+            "g_move_info_condition": "0x800BDEF4",
+            "g_game_source_path": "0x800120AC"
+          }
+        },
+        {
+          "source": "src/game/func_80022944.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80022944"],
+          "globals": {
+            "g_move_info_condition": "0x800BDEF4",
+            "g_game_source_path": "0x800120AC"
+          }
         },
         {
           "source": "src/game/func_80054C7C.c",
@@ -362,6 +381,12 @@
           "start": "0x80024F2C",
           "end": "0x800250CC",
           "size": 416
+        },
+        {
+          "name": "func_80022944",
+          "start": "0x80022944",
+          "end": "0x80022B5C",
+          "size": 536
         },
         {
           "name": "func_80054C7C",
