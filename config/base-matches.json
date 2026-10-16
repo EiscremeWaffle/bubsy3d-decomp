@@ -218,6 +218,39 @@
           }
         },
         {
+          "source": "src/game/func_800536F4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C signed vector conversion byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; native tests cover wrapping negation and in-place conversion.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800536F4"]
+        },
+        {
+          "source": "src/game/func_8002262C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C forwarding wrapper byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; selector gameplay meaning remains unproven.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8002262C"]
+        },
+        {
+          "source": "src/game/func_80022650.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C forwarding wrapper byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; selector gameplay meaning remains unproven.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80022650"]
+        },
+        {
           "source": "src/game/func_800227A4.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
@@ -452,6 +485,24 @@
           "start": "0x8005385C",
           "end": "0x80053904",
           "size": 168
+        },
+        {
+          "name": "func_800536F4",
+          "start": "0x800536F4",
+          "end": "0x80053774",
+          "size": 128
+        },
+        {
+          "name": "func_8002262C",
+          "start": "0x8002262C",
+          "end": "0x80022650",
+          "size": 36
+        },
+        {
+          "name": "func_80022650",
+          "start": "0x80022650",
+          "end": "0x80022674",
+          "size": 36
         },
         {
           "name": "func_8005395C",

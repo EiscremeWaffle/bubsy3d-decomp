@@ -9,6 +9,57 @@
 #include "move_requests.h"
 #include "player_model.h"
 
+extern int32_t func_800536F4(const int32_t *input, int32_t *output);
+extern int32_t func_8002262C(void *actor, uint8_t selector);
+extern int32_t func_80022650(void *actor, uint8_t selector);
+
+static uint32_t *grounded_property_state;
+static uint8_t grounded_property_selector;
+
+int32_t func_800566E8(uint32_t *state, uint8_t selector) {
+    grounded_property_state = state;
+    grounded_property_selector = selector;
+    return -7;
+}
+
+int32_t func_8005668C(uint32_t *state, uint8_t selector) {
+    grounded_property_state = state;
+    grounded_property_selector = selector;
+    return 13;
+}
+
+static void test_grounded_movement_helpers(void) {
+    static const int32_t inputs[] = {
+        0, 1, -1, 4095, -4095, 4096, -4096, 4097, -4097,
+        INT32_MAX, INT32_MIN
+    };
+    static const int32_t expected[] = {
+        0, 0, 0, 0, 0, 1, -1, 1, -1, 524287, 524288
+    };
+    uint32_t actor[8] = {0};
+    unsigned int index;
+
+    for (index = 0; index < sizeof(inputs) / sizeof(inputs[0]); index++) {
+        int32_t vector[3] = {inputs[index], inputs[index], inputs[index]};
+        int32_t output[4] = {42, 42, 42, 99};
+        assert(func_800536F4(vector, output) == 0);
+        assert(output[0] == expected[index]);
+        assert(output[1] == expected[index]);
+        assert(output[2] == expected[index]);
+        assert(output[3] == 99);
+        assert(func_800536F4(vector, vector) == 0);
+        assert(vector[0] == expected[index]);
+        assert(vector[1] == expected[index]);
+        assert(vector[2] == expected[index]);
+    }
+    assert(func_8002262C(actor, 0xFF) == -7);
+    assert(grounded_property_state == actor + 4);
+    assert(grounded_property_selector == 0xFF);
+    assert(func_80022650(actor, 0x0C) == 13);
+    assert(grounded_property_state == actor + 4);
+    assert(grounded_property_selector == 0x0C);
+}
+
 static const char *loaded_path;
 static void *loaded_asset;
 static int32_t loaded_previous_size;
@@ -2418,6 +2469,7 @@ static void test_bubsy_death_state_finalization(void) {
 }
 
 int main(void) {
+    test_grounded_movement_helpers();
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
 

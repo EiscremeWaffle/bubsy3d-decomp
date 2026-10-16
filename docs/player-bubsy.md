@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 32,880 exact code bytes across 112
-functions, or `1.081923%` of mapped code. The total includes two Clang-built
+The validated report currently credits 33,080 exact code bytes across 115
+functions, or `1.088504%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -56,6 +56,8 @@ the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
 `func_80062E50`, the C-built forwarding helper `func_800539E4`, and the
 assembly-backed transcription of the 104-byte vector-scale wrapper
 `func_80053A08`,
+the C-built pending-vector conversion `func_800536F4` and grounded-handler
+forwarding wrappers `func_8002262C` and `func_80022650`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -455,6 +457,21 @@ pending vectors. Bubsy-side actor callbacks enqueue their live object pointers
 through `game_enqueue_move_request`; this confirms an actor component-transform
 translation update, but does not establish world-space coordinates or a
 separate velocity field.
+
+The consumer's pending-vector conversion `func_800536F4` is now a 128-byte
+C match. Each component takes an arithmetic right shift by 12; negative
+components first undergo wrapping negation and are negated again after the
+shift. This truncates ordinary negative inputs toward zero, but `INT32_MIN`
+produces positive `524288` through the observed wrapping sequence. Native
+tests cover that exception, fractional boundaries, in-place conversion, and
+the three-word output extent.
+
+The grounded handler also directly calls the 36-byte wrappers
+`func_8002262C` and `func_80022650`, now exact C matches. Both pass actor
+offset `+0x10` and an eight-bit selector to `func_800566E8` and
+`func_8005668C`, respectively, preserving the helper return value. Native
+tests verify the forwarded pointer, selector, and return value; they do not
+model the downstream helper effects or establish selector gameplay names.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
 vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model

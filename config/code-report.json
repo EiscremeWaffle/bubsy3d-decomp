@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.1029775,
+    "fuzzy_match_percent": 1.1095586,
     "total_code": "3039032",
-    "matched_code": "32880",
-    "matched_code_percent": 1.0819235,
+    "matched_code": "33080",
+    "matched_code_percent": 1.0885046,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 112,
-    "matched_functions_percent": 0.9603018,
+    "matched_functions": 115,
+    "matched_functions_percent": 0.9860242,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 7.930504,
+        "fuzzy_match_percent": 8.003382,
         "total_code": "274432",
-        "matched_code": "21124",
-        "matched_code_percent": 7.697353,
+        "matched_code": "21324",
+        "matched_code_percent": 7.770231,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 34,
-        "matched_functions_percent": 3.7037036,
+        "matched_functions": 37,
+        "matched_functions_percent": 4.030501,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 7.930504,
+          "fuzzy_match_percent": 8.003382,
           "metadata": {}
         }
       ],
@@ -492,12 +492,14 @@
         {
           "name": "func_8002262C",
           "size": "36",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "22132"
         },
         {
           "name": "func_80022650",
           "size": "36",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "22168"
         },
@@ -2529,6 +2531,7 @@
         {
           "name": "func_800536F4",
           "size": "128",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "137288"
         },
