@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 33,080 exact code bytes across 115
-functions, or `1.088504%` of mapped code. The total includes two Clang-built
+The validated report currently credits 33,284 exact code bytes across 118
+functions, or `1.095217%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -58,6 +58,8 @@ assembly-backed transcription of the 104-byte vector-scale wrapper
 `func_80053A08`,
 the C-built pending-vector conversion `func_800536F4` and grounded-handler
 forwarding wrappers `func_8002262C` and `func_80022650`,
+their C-built bit-query/set/clear helpers `func_80056678`, `func_8005668C`,
+and `func_800566E8`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -470,8 +472,24 @@ The grounded handler also directly calls the 36-byte wrappers
 `func_8002262C` and `func_80022650`, now exact C matches. Both pass actor
 offset `+0x10` and an eight-bit selector to `func_800566E8` and
 `func_8005668C`, respectively, preserving the helper return value. Native
-tests verify the forwarded pointer, selector, and return value; they do not
-model the downstream helper effects or establish selector gameplay names.
+tests now exercise these wrappers against the real downstream helpers rather
+than forwarding mocks.
+
+Those helpers are exact C matches too: the 20-byte `func_80056678` queries
+one selected bit, the 92-byte `func_8005668C` sets it when absent, and the
+92-byte `func_800566E8` clears it when present. The mutators conditionally
+XOR the mask, leaving every other bit unchanged. Consequently,
+`func_80022650(actor, selector)` sets a bit in actor word `+0x10`, while
+`func_8002262C(actor, selector)` clears it. Individual bit gameplay names
+remain provisional.
+
+The observed return is not a uniform success code: a set no-op returns `1`,
+a clear no-op returns `0`, and a changed path returns the updated word's
+register bits. Selectors are reduced to their low five bits by MIPS variable
+shifts; the host C paths mask them explicitly, while the matching target
+profile relies on that hardware behavior. Native tests cover all 256 byte
+selectors over mixed bit patterns, repeated calls, large query selectors,
+returned register bits, and the wrappers' actor-word offset.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
 vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model

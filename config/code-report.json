@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.1095586,
+    "fuzzy_match_percent": 1.1162713,
     "total_code": "3039032",
-    "matched_code": "33080",
-    "matched_code_percent": 1.0885046,
+    "matched_code": "33284",
+    "matched_code_percent": 1.0952172,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 115,
-    "matched_functions_percent": 0.9860242,
+    "matched_functions": 118,
+    "matched_functions_percent": 1.0117465,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 8.003382,
+        "fuzzy_match_percent": 8.077717,
         "total_code": "274432",
-        "matched_code": "21324",
-        "matched_code_percent": 7.770231,
+        "matched_code": "21528",
+        "matched_code_percent": 7.8445663,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 37,
-        "matched_functions_percent": 4.030501,
+        "matched_functions": 40,
+        "matched_functions_percent": 4.3572984,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 8.003382,
+          "fuzzy_match_percent": 8.077717,
           "metadata": {}
         }
       ],
@@ -2984,18 +2984,21 @@
         {
           "name": "func_80056678",
           "size": "20",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "147300"
         },
         {
           "name": "func_8005668C",
           "size": "92",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "147320"
         },
         {
           "name": "func_800566E8",
           "size": "92",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "147412"
         },

@@ -12,21 +12,9 @@
 extern int32_t func_800536F4(const int32_t *input, int32_t *output);
 extern int32_t func_8002262C(void *actor, uint8_t selector);
 extern int32_t func_80022650(void *actor, uint8_t selector);
-
-static uint32_t *grounded_property_state;
-static uint8_t grounded_property_selector;
-
-int32_t func_800566E8(uint32_t *state, uint8_t selector) {
-    grounded_property_state = state;
-    grounded_property_selector = selector;
-    return -7;
-}
-
-int32_t func_8005668C(uint32_t *state, uint8_t selector) {
-    grounded_property_state = state;
-    grounded_property_selector = selector;
-    return 13;
-}
+extern uint32_t func_80056678(uint32_t value, uint32_t selector);
+extern int32_t func_8005668C(uint32_t *state, uint8_t selector);
+extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
 
 static void test_grounded_movement_helpers(void) {
     static const int32_t inputs[] = {
@@ -36,8 +24,10 @@ static void test_grounded_movement_helpers(void) {
     static const int32_t expected[] = {
         0, 0, 0, 0, 0, 1, -1, 1, -1, 524287, 524288
     };
+    static const uint32_t states[] = {0, UINT32_MAX, 0x55555555u, 0xAAAAAAAAu};
     uint32_t actor[8] = {0};
     unsigned int index;
+    unsigned int state_index;
 
     for (index = 0; index < sizeof(inputs) / sizeof(inputs[0]); index++) {
         int32_t vector[3] = {inputs[index], inputs[index], inputs[index]};
@@ -52,12 +42,41 @@ static void test_grounded_movement_helpers(void) {
         assert(vector[1] == expected[index]);
         assert(vector[2] == expected[index]);
     }
-    assert(func_8002262C(actor, 0xFF) == -7);
-    assert(grounded_property_state == actor + 4);
-    assert(grounded_property_selector == 0xFF);
-    assert(func_80022650(actor, 0x0C) == 13);
-    assert(grounded_property_state == actor + 4);
-    assert(grounded_property_selector == 0x0C);
+    for (index = 0; index < 256; index++) {
+        uint32_t mask = 1u << (index & 31u);
+        for (state_index = 0; state_index < sizeof(states) / sizeof(states[0]); state_index++) {
+            uint32_t original = states[state_index];
+            uint32_t present = (original & mask) != 0;
+            uint32_t state = original;
+            uint32_t set_result = present ? 1u : original | mask;
+            uint32_t clear_result = present ? original & ~mask : 0u;
+
+            assert(func_80056678(original, index) == present);
+            assert(func_80056678(original, index + 0x10000u) == present);
+            assert((uint32_t)func_8005668C(&state, (uint8_t)index) == set_result);
+            assert(state == (original | mask));
+            assert(func_8005668C(&state, (uint8_t)index) == 1);
+            assert(state == (original | mask));
+            state = original;
+            assert((uint32_t)func_800566E8(&state, (uint8_t)index) == clear_result);
+            assert(state == (original & ~mask));
+            assert(func_800566E8(&state, (uint8_t)index) == 0);
+            assert(state == (original & ~mask));
+
+            actor[4] = original;
+            assert((uint32_t)func_80022650(actor, (uint8_t)index) == set_result);
+            assert(actor[4] == (original | mask));
+            actor[4] = original;
+            assert((uint32_t)func_8002262C(actor, (uint8_t)index) == clear_result);
+            assert(actor[4] == (original & ~mask));
+        }
+    }
+    assert(func_80056678(0x80000000u, UINT32_MAX) == 1);
+    for (index = 0; index < sizeof(actor) / sizeof(actor[0]); index++) {
+        if (index != 4) {
+            assert(actor[index] == 0);
+        }
+    }
 }
 
 static const char *loaded_path;

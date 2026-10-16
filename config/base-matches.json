@@ -251,6 +251,39 @@
           "symbols": ["func_80022650"]
         },
         {
+          "source": "src/game/func_80056678.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C bit query byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30. The host path masks shift counts explicitly; the target uses MIPS variable-shift masking.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80056678"]
+        },
+        {
+          "source": "src/game/func_8005668C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C conditional bit set byte-matched with pinned GCC 2.6.3 PSX and MASPSX 2.30 using target register constraints; native tests cover selector wrapping and returned register bits.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005668C"]
+        },
+        {
+          "source": "src/game/func_800566E8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C conditional bit clear byte-matched with pinned GCC 2.6.3 PSX and MASPSX 2.30 using target register constraints; native tests cover selector wrapping and returned register bits.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800566E8"]
+        },
+        {
           "source": "src/game/func_800227A4.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
@@ -503,6 +536,24 @@
           "start": "0x80022650",
           "end": "0x80022674",
           "size": 36
+        },
+        {
+          "name": "func_80056678",
+          "start": "0x80056678",
+          "end": "0x8005668C",
+          "size": 20
+        },
+        {
+          "name": "func_8005668C",
+          "start": "0x8005668C",
+          "end": "0x800566E8",
+          "size": 92
+        },
+        {
+          "name": "func_800566E8",
+          "start": "0x800566E8",
+          "end": "0x80056744",
+          "size": 92
         },
         {
           "name": "func_8005395C",

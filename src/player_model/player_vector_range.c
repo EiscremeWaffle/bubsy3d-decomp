@@ -38,14 +38,14 @@ int32_t vector_range_condition_q12(const int32_t *input, int32_t *output) {
 
     if (largest < 0x1001) {
         shift = 8;
-        output[0] = ((const volatile int32_t *)input)[0] << shift;
-        output[1] = ((const volatile int32_t *)input)[1] << shift;
-        output[2] = ((const volatile int32_t *)input)[2] << shift;
+        output[0] = (int32_t)((uint32_t)((const volatile int32_t *)input)[0] << shift);
+        output[1] = (int32_t)((uint32_t)((const volatile int32_t *)input)[1] << shift);
+        output[2] = (int32_t)((uint32_t)((const volatile int32_t *)input)[2] << shift);
     } else if (largest <= 0x40000) {
         shift = 2;
-        output[0] = ((const volatile int32_t *)input)[0] << shift;
-        output[1] = ((const volatile int32_t *)input)[1] << shift;
-        output[2] = ((const volatile int32_t *)input)[2] << shift;
+        output[0] = (int32_t)((uint32_t)((const volatile int32_t *)input)[0] << shift);
+        output[1] = (int32_t)((uint32_t)((const volatile int32_t *)input)[1] << shift);
+        output[2] = (int32_t)((uint32_t)((const volatile int32_t *)input)[2] << shift);
     } else if (largest <= 0x01000000) {
         output[0] = ((const volatile int32_t *)input)[0] >> 4;
         output[1] = ((const volatile int32_t *)input)[1] >> 4;
