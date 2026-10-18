@@ -251,6 +251,50 @@
           "symbols": ["func_80022650"]
         },
         {
+          "source": "src/game/func_8002269C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C forwarding wrapper byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; clears the selected bit in actor word +0x04.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8002269C"]
+        },
+        {
+          "source": "src/game/func_8003AA1C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C pointer initializer byte-matched with checksum-pinned GCC 2.6.3 PSX using a tied register constraint for the observed ADDIU address construction.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8003AA1C"]
+        },
+        {
+          "source": "src/game/func_8001DCE0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C small-data accessor byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30 using a fixed `$gp` register variable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8001DCE0"]
+        },
+        {
+          "source": "src/game/func_800516F8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C small-data output accessor byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30 using a fixed `$gp` register variable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800516F8"]
+        },
+        {
           "source": "src/game/func_80056678.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "C bit query byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30. The host path masks shift counts explicitly; the target uses MIPS variable-shift masking.",
@@ -536,6 +580,30 @@
           "start": "0x80022650",
           "end": "0x80022674",
           "size": 36
+        },
+        {
+          "name": "func_8002269C",
+          "start": "0x8002269C",
+          "end": "0x800226C0",
+          "size": 36
+        },
+        {
+          "name": "func_8003AA1C",
+          "start": "0x8003AA1C",
+          "end": "0x8003AA30",
+          "size": 20
+        },
+        {
+          "name": "func_8001DCE0",
+          "start": "0x8001DCE0",
+          "end": "0x8001DCEC",
+          "size": 12
+        },
+        {
+          "name": "func_800516F8",
+          "start": "0x800516F8",
+          "end": "0x8005170C",
+          "size": 20
         },
         {
           "name": "func_80056678",

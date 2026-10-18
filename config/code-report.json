@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.1162713,
+    "fuzzy_match_percent": 1.1191669,
     "total_code": "3039032",
-    "matched_code": "33284",
-    "matched_code_percent": 1.0952172,
+    "matched_code": "33372",
+    "matched_code_percent": 1.0981128,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 118,
-    "matched_functions_percent": 1.0117465,
+    "matched_functions": 122,
+    "matched_functions_percent": 1.046043,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 8.077717,
+        "fuzzy_match_percent": 8.109783,
         "total_code": "274432",
-        "matched_code": "21528",
-        "matched_code_percent": 7.8445663,
+        "matched_code": "21616",
+        "matched_code_percent": 7.876632,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 40,
-        "matched_functions_percent": 4.3572984,
+        "matched_functions": 44,
+        "matched_functions_percent": 4.7930284,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 8.077717,
+          "fuzzy_match_percent": 8.109783,
           "metadata": {}
         }
       ],
@@ -402,6 +402,7 @@
         {
           "name": "func_8001DCE0",
           "size": "12",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "14304"
         },
@@ -512,6 +513,7 @@
         {
           "name": "func_8002269C",
           "size": "36",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "22244"
         },
@@ -1387,6 +1389,7 @@
         {
           "name": "func_8003AA1C",
           "size": "20",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "77748"
         },
@@ -2284,6 +2287,7 @@
         {
           "name": "func_800516F8",
           "size": "20",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "130084"
         },

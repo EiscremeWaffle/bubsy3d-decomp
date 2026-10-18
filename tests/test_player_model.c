@@ -11,7 +11,13 @@
 
 extern int32_t func_800536F4(const int32_t *input, int32_t *output);
 extern int32_t func_8002262C(void *actor, uint8_t selector);
+extern int32_t func_8002269C(void *actor, uint8_t selector);
 extern int32_t func_80022650(void *actor, uint8_t selector);
+extern int32_t func_8003AA1C(void **output);
+extern uint32_t func_8001DCE0(void);
+extern int32_t func_800516F8(void **output);
+uint32_t g_l0_gp_170;
+void *g_l0_gp_888;
 extern uint32_t func_80056678(uint32_t value, uint32_t selector);
 extern int32_t func_8005668C(uint32_t *state, uint8_t selector);
 extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
@@ -69,13 +75,29 @@ static void test_grounded_movement_helpers(void) {
             actor[4] = original;
             assert((uint32_t)func_8002262C(actor, (uint8_t)index) == clear_result);
             assert(actor[4] == (original & ~mask));
+            actor[1] = original;
+            assert((uint32_t)func_8002269C(actor, (uint8_t)index) == clear_result);
+            assert(actor[1] == (original & ~mask));
         }
     }
     assert(func_80056678(0x80000000u, UINT32_MAX) == 1);
     for (index = 0; index < sizeof(actor) / sizeof(actor[0]); index++) {
-        if (index != 4) {
+        if (index != 1 && index != 4) {
             assert(actor[index] == 0);
         }
+    }
+    {
+        void *output = NULL;
+        assert(func_8003AA1C(&output) == 1);
+        assert((uintptr_t)output == 0x80186450u);
+    }
+    g_l0_gp_170 = 0x13579BDFu;
+    assert(func_8001DCE0() == 0x13579BDFu);
+    g_l0_gp_888 = (void *)(uintptr_t)0x12345678u;
+    {
+        void *output = NULL;
+        assert(func_800516F8(&output) == 0);
+        assert(output == g_l0_gp_888);
     }
 }
 

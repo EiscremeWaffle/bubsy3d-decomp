@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 33,284 exact code bytes across 118
-functions, or `1.095217%` of mapped code. The total includes two Clang-built
+The validated report currently credits 33,372 exact code bytes across 122
+functions, or `1.098113%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -59,7 +59,9 @@ assembly-backed transcription of the 104-byte vector-scale wrapper
 the C-built pending-vector conversion `func_800536F4` and grounded-handler
 forwarding wrappers `func_8002262C` and `func_80022650`,
 their C-built bit-query/set/clear helpers `func_80056678`, `func_8005668C`,
-and `func_800566E8`,
+and `func_800566E8`, the actor `+0x04` clear-bit wrapper `func_8002269C`,
+the fixed-pointer initializer `func_8003AA1C`, and the GP-relative accessors
+`func_8001DCE0` and `func_800516F8`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -490,6 +492,19 @@ shifts; the host C paths mask them explicitly, while the matching target
 profile relies on that hardware behavior. Native tests cover all 256 byte
 selectors over mixed bit patterns, repeated calls, large query selectors,
 returned register bits, and the wrappers' actor-word offset.
+
+The grounded-handler prelude also calls `func_8002269C`, a byte-exact C
+wrapper that clears the selected bit in actor word `+0x04`. The 20-byte
+`func_8003AA1C` helper stores pointer `0x80186450` through its output argument
+and returns `1`; its downstream purpose is not established. Native tests cover
+the extra actor-word offset and exact pointer value.
+
+Two more grounded-handler helpers read small-data slots through `$gp`.
+`func_8001DCE0` returns the word at `$gp + 0x170`; `func_800516F8` copies the
+word at `$gp + 0x888` to its output pointer and returns zero. L0 initializes
+`$gp` to `0x800BDD5C`, so the observed slots are `0x800BDECC` and
+`0x800BE5E4`, respectively. The host tests model these slots as variables;
+their gameplay meanings remain unknown.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
 vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model
