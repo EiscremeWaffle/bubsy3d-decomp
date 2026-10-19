@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.1191669,
+    "fuzzy_match_percent": 1.1387784,
     "total_code": "3039032",
-    "matched_code": "33372",
-    "matched_code_percent": 1.0981128,
+    "matched_code": "33968",
+    "matched_code_percent": 1.1177244,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11663,
-    "matched_functions": 122,
-    "matched_functions_percent": 1.046043,
+    "matched_functions": 128,
+    "matched_functions_percent": 1.0974878,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 8.109783,
+        "fuzzy_match_percent": 8.326959,
         "total_code": "274432",
-        "matched_code": "21616",
-        "matched_code_percent": 7.876632,
+        "matched_code": "22212",
+        "matched_code_percent": 8.093808,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 918,
-        "matched_functions": 44,
-        "matched_functions_percent": 4.7930284,
+        "matched_functions": 50,
+        "matched_functions_percent": 5.4466233,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "274432",
-          "fuzzy_match_percent": 8.109783,
+          "fuzzy_match_percent": 8.326959,
           "metadata": {}
         }
       ],
@@ -2637,6 +2637,7 @@
         {
           "name": "func_8005406C",
           "size": "80",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "139228"
         },
@@ -2649,6 +2650,7 @@
         {
           "name": "func_80054120",
           "size": "116",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "139408"
         },
@@ -2679,12 +2681,14 @@
         {
           "name": "func_80054414",
           "size": "116",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "140032"
         },
         {
           "name": "func_80054488",
           "size": "72",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "140148"
         },
@@ -2715,12 +2719,14 @@
         {
           "name": "func_800546F4",
           "size": "120",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "140680"
         },
         {
           "name": "func_8005476C",
           "size": "92",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "140800"
         },

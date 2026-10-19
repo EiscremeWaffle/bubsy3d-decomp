@@ -27,6 +27,40 @@ static int32_t component_difference(int32_t left, int32_t right) {
     return result;
 }
 
+static int32_t component_wrap_int64(int64_t value) {
+    const uint32_t bits = (uint32_t)(uint64_t)value;
+    int32_t result;
+
+    memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
+static int32_t component_sign_extend_int16(int32_t value) {
+    const uint16_t bits = (uint16_t)value;
+
+    if ((bits & 0x8000u) != 0) {
+        return (int32_t)bits - 0x10000;
+    }
+    return bits;
+}
+
+static int32_t component_saturate_int16(int64_t value) {
+    if (value < INT16_MIN) {
+        return INT16_MIN;
+    }
+    if (value > INT16_MAX) {
+        return INT16_MAX;
+    }
+    return (int32_t)value;
+}
+
+static int64_t component_shift_right_12(int64_t value) {
+    if (value >= 0) {
+        return value / 0x1000;
+    }
+    return -((-value + 0xFFF) / 0x1000);
+}
+
 static void component_basis_normalize(
     GameComponentBasisView *output,
     const GameComponentBasisView *input
@@ -107,6 +141,71 @@ int32_t game_component_transform_read_matrix_vector(
     output[0] = (int16_t)component->matrix_halfwords[2];
     output[1] = component_translation_negate((int16_t)component->matrix_halfwords[5]);
     output[2] = (int16_t)component->matrix_halfwords[8];
+    return 0;
+}
+
+int32_t game_component_basis_transform_point_q12(
+    const GameComponentBasisView *basis,
+    const int32_t input[4],
+    int16_t gte_ir0,
+    int32_t output[4]
+) {
+    static const uint16_t identity[9] = {
+        0x1000, 0, 0,
+        0, 0x1000, 0,
+        0, 0, 0x1000,
+    };
+    int32_t high[3];
+    int32_t low[3];
+    unsigned int row;
+    unsigned int column;
+    int identity_matrix = 1;
+
+    if (basis == NULL || input == NULL || output == NULL) {
+        return -1;
+    }
+
+    for (row = 0; row < 9; row++) {
+        if (basis->matrix_halfwords[row] != identity[row]) {
+            identity_matrix = 0;
+            break;
+        }
+    }
+    if (identity_matrix) {
+        output[0] = input[0];
+        output[1] = input[1];
+        output[2] = input[2];
+        output[3] = input[3];
+        return 0;
+    }
+
+    for (column = 0; column < 3; column++) {
+        if (input[column] >= 0) {
+            high[column] = component_sign_extend_int16(input[column] / 0x8000);
+            low[column] = component_sign_extend_int16(input[column] & 0x7FFF);
+        } else {
+            const uint32_t magnitude = 0U - (uint32_t)input[column];
+            high[column] = component_sign_extend_int16(-(int32_t)(magnitude >> 15));
+            low[column] = component_sign_extend_int16(-(int32_t)(magnitude & 0x7FFF));
+        }
+    }
+
+    for (row = 0; row < 3; row++) {
+        int64_t high_accumulated = 0;
+        int64_t low_accumulated = 0;
+        int32_t high_result;
+        int32_t low_result;
+
+        for (column = 0; column < 3; column++) {
+            const int32_t coefficient = (int16_t)basis->matrix_halfwords[row * 3 + column];
+            high_accumulated += (int64_t)coefficient * high[column];
+            low_accumulated += (int64_t)coefficient * low[column];
+        }
+        high_result = component_wrap_int64(high_accumulated);
+        low_result = component_saturate_int16(component_shift_right_12(low_accumulated));
+        low_result = component_wrap_int64((int64_t)low_result * gte_ir0);
+        output[row] = component_wrap_int64((int64_t)high_result * 8 + low_result);
+    }
     return 0;
 }
 

@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 33,372 exact code bytes across 122
-functions, or `1.098113%` of mapped code. The total includes two Clang-built
+The validated report currently credits 33,968 exact code bytes across 128
+functions, or `1.117724%` of mapped code. The total includes two Clang-built
 getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the component-transform helpers
@@ -62,6 +62,10 @@ their C-built bit-query/set/clear helpers `func_80056678`, `func_8005668C`,
 and `func_800566E8`, the actor `+0x04` clear-bit wrapper `func_8002269C`,
 the fixed-pointer initializer `func_8003AA1C`, and the GP-relative accessors
 `func_8001DCE0` and `func_800516F8`,
+and the C-built component-basis matrix helpers `func_80054414` and
+`func_80054488`, plus basis normalization helpers `func_800546F4` and
+`func_8005476C`, and the inverse-basis wrappers `func_8005406C` and
+`func_80054120`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
@@ -836,16 +840,59 @@ direct L0 JAL call sites, including its recursive call. Its high-level C source
 in `src/game/func_80054C7C.c` byte-matches with pinned GCC 2.6.3 PSX. A null
 component pointer returns `0x18`; otherwise the null-basis path writes the three
 translation words at component offsets `+0x14/+0x18/+0x1C`, negating Y.
-Neighboring helper `func_80054414` copies nine matrix halfwords at
-`+0x00..+0x10`, a padding halfword at `+0x12`, and the translation words at
-`+0x14..+0x1C`, establishing the component view layout. If a supplied basis
-differs from the global matrix at `0x800A42EC`, `func_8005476C` copies and
-adjusts its matrix (negating halfwords at `+0x02`, `+0x06`, `+0x0A`, and
-`+0x0E`) and flips its translation Y. The `func_80064528` path transforms the
-input through `func_80053FA4`, adds the adjusted translation with
-`func_80010038`, then performs the common final Y flip and stores. The host
+Neighboring helper `func_80054414` transposes the nine matrix halfwords at
+`+0x00..+0x10` and copies the translation words at `+0x14..+0x1C`;
+`func_80054488` copies the nine matrix halfwords without transposing. Both are
+byte-matched C helpers; the former leaves the padding halfword at `+0x12`
+untouched. Together with the component setters, these operations establish the
+matrix layout and basis-conversion boundary. The 120-byte C helper
+`func_800546F4` copies the matrix, negates the four halfwords at `+0x02`,
+`+0x06`, `+0x0A`, and `+0x0E`, and zeros translation. The 92-byte C wrapper
+`func_8005476C` then restores the input translation while negating Y. In the
+3x3 matrix this negates the four coefficients coupling the Y axis to X and Z;
+it is a coordinate handedness/sign conversion, not evidence by itself that the
+result is world-space. The inverse-basis wrapper `func_8005406C` transposes
+the supplied matrix with `func_80054414`, then delegates the point operation
+to `func_80053FA4`; this 80-byte wrapper is an exact C match. That routine has
+an identity-basis path that copies its four input words unchanged, and a
+non-identity path that calls the GTE code fragment at `0x80077298`. The fragment
+loads the 3x3 matrix into GTE registers, performs fixed-point vector work, and
+stores three output words, but its owning function boundary and complete math
+are not yet byte-matched. The observed MVMVA commands select no translation
+vector; basis translation is handled separately by `func_80010038`. In the
+forward direction, the `func_80064528` path
+uses `func_80053FA4`, adds the adjusted basis translation with `func_80010038`,
+then performs the common final Y flip and stores. The 116-byte inverse helper
+`func_80054120` subtracts basis translation with `func_80010000`, then calls
+the exact transposing wrapper `func_8005406C`; its C source matches all bytes.
+The forward helper `func_800540BC` follows the corresponding transform-then-add
+sequence, but its current C draft does not yet match bytes. The host model
+`game_component_basis_transform_point_q12` in `component_transform.c` models
+the fragment's two-pass MVMVA: each signed input is split into high and low
+15-bit parts, sign-extended through the GTE's 16-bit IR registers, transformed
+with SF=0 and SF=1, then recombined as `high * 8 + GPF(IR, IR0)`. The fragment
+uses the ambient GTE IR0 register in its final GPF command; its runtime value is
+not established by the bounded callers, so the host model takes IR0 explicitly
+instead of assuming a value. An identity basis copies all four input words.
+Native tests cover identity, a quarter-turn matrix, IR0 scaling, negative
+fractional shifts, overflow-sensitive inputs, and the untouched fourth output
+word. This is a host semantic model, not an exact C
+replacement for the unbounded COP2 fragment. A separate C draft of
+`func_80053FA4` captures its identity-basis fast path and GTE dispatch, but the
+pinned compiler emits 208 bytes for its 200-byte target, so it is not included
+in exact credit. The host
 model `game_component_transform_set_translation` captures the normalization
 and branches in `src/game/component_transform.c`; its callback represents that
 complete transform result, including basis translation. This establishes a
 component-transform origin update, but not whether the component is local or
 world-space.
+
+For the grounded movement queue specifically, the exact consumer
+`func_80024F2C` passes a null basis (`0`) to both `func_80054B20` and
+`func_80054C7C`. Both therefore take their direct component-translation paths;
+the non-identity GTE basis conversion described above is not used by this
+consumer. The queued vector is added to the stored component translation, with
+Y negated on the read/write boundary. This narrows the grounded path to the
+component transform's coordinate convention, but without the parent-transform
+composition contract it still does not prove whether that component frame is
+local or world-space.

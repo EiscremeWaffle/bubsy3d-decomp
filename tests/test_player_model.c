@@ -16,11 +16,49 @@ extern int32_t func_80022650(void *actor, uint8_t selector);
 extern int32_t func_8003AA1C(void **output);
 extern uint32_t func_8001DCE0(void);
 extern int32_t func_800516F8(void **output);
+extern int32_t func_80054414(const GameComponentBasisView *input, GameComponentBasisView *output);
+extern int32_t func_80054488(const GameComponentBasisView *input, GameComponentBasisView *output);
+extern int32_t func_800546F4(const GameComponentBasisView *input, GameComponentBasisView *output);
+extern int32_t func_8005476C(const GameComponentBasisView *input, GameComponentBasisView *output);
+extern int32_t func_8005406C(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
+extern int32_t func_80054120(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
 uint32_t g_l0_gp_170;
 void *g_l0_gp_888;
 extern uint32_t func_80056678(uint32_t value, uint32_t selector);
 extern int32_t func_8005668C(uint32_t *state, uint8_t selector);
 extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
+
+static uint16_t g_inverse_basis_matrix[9];
+static int32_t g_inverse_basis_translation[3];
+static int32_t g_inverse_basis_input[4];
+static unsigned int g_inverse_basis_call_count;
+static unsigned int g_point_transform_word_count = 4;
+
+int32_t func_80010000(const int32_t left[3], const int32_t right[3], int32_t output[3]) {
+    unsigned int index;
+
+    for (index = 0; index < 3; index++) {
+        output[index] = left[index] - right[index];
+    }
+    return 0;
+}
+
+int32_t func_80053FA4(const int32_t input[4], const volatile GameComponentBasisView *basis, int32_t output[4]) {
+    unsigned int index;
+
+    for (index = 0; index < 9; index++) {
+        g_inverse_basis_matrix[index] = basis->matrix_halfwords[index];
+    }
+    for (index = 0; index < 3; index++) {
+        g_inverse_basis_translation[index] = basis->translation[index];
+    }
+    for (index = 0; index < g_point_transform_word_count; index++) {
+        g_inverse_basis_input[index] = input[index];
+        output[index] = input[index] + (int32_t)index;
+    }
+    g_inverse_basis_call_count++;
+    return -7;
+}
 
 static void test_grounded_movement_helpers(void) {
     static const int32_t inputs[] = {
@@ -99,6 +137,198 @@ static void test_grounded_movement_helpers(void) {
         assert(func_800516F8(&output) == 0);
         assert(output == g_l0_gp_888);
     }
+}
+
+static void test_component_basis_copy_helpers(void) {
+    static const uint16_t transposed[9] = {1, 4, 7, 2, 5, 8, 3, 6, 9};
+    GameComponentBasisView input = {
+        .matrix_halfwords = {1, 2, 3, 4, 5, 6, 7, 8, 9},
+        .ignored_halfword_12 = 0xBEEF,
+        .translation = {0x12345678, -0x234567, 0x3456789},
+    };
+    GameComponentBasisView output;
+    size_t index;
+
+    memset(&output, 0xA5, sizeof(output));
+    assert(func_80054414(&input, &output) == 0);
+    for (index = 0; index < 9; index++) {
+        assert(output.matrix_halfwords[index] == transposed[index]);
+    }
+    assert(output.ignored_halfword_12 == 0xA5A5);
+    assert(memcmp(output.translation, input.translation, sizeof(input.translation)) == 0);
+
+    memset(&output, 0x5A, sizeof(output));
+    assert(func_80054488(&input, &output) == 0);
+    assert(memcmp(output.matrix_halfwords, input.matrix_halfwords, sizeof(input.matrix_halfwords)) == 0);
+    assert(output.ignored_halfword_12 == 0x5A5A);
+    for (index = 0; index < sizeof(output.translation); index++) {
+        assert(((const uint8_t *)output.translation)[index] == 0x5A);
+    }
+}
+
+static void test_component_basis_normalization_helpers(void) {
+    static const uint16_t normalized[9] = {
+        0x1234, 0x7FFF, 0x2345, 0x7FFE, 0x3456,
+        0x7FFD, 0x4567, 0x7FFC, 0x5678
+    };
+    const GameComponentBasisView input = {
+        .matrix_halfwords = {
+            0x1234, 0x8001, 0x2345, 0x8002, 0x3456,
+            0x8003, 0x4567, 0x8004, 0x5678
+        },
+        .ignored_halfword_12 = 0xBEEF,
+        .translation = {123, -456, 789},
+    };
+    GameComponentBasisView output;
+    size_t index;
+
+    memset(&output, 0x5A, sizeof(output));
+    assert(func_800546F4(&input, &output) == 0);
+    assert(memcmp(output.matrix_halfwords, normalized, sizeof(normalized)) == 0);
+    assert(output.ignored_halfword_12 == 0x5A5A);
+    assert(output.translation[0] == 0);
+    assert(output.translation[1] == 0);
+    assert(output.translation[2] == 0);
+
+    memset(&output, 0xA5, sizeof(output));
+    assert(func_800546F4(NULL, &output) == 0x18);
+    for (index = 0; index < sizeof(output); index++) {
+        assert(((const uint8_t *)&output)[index] == 0xA5);
+    }
+
+    memset(&output, 0x5A, sizeof(output));
+    assert(func_8005476C(&input, &output) == 0);
+    assert(memcmp(output.matrix_halfwords, normalized, sizeof(normalized)) == 0);
+    assert(output.ignored_halfword_12 == 0x5A5A);
+    assert(output.translation[0] == input.translation[0]);
+    assert(output.translation[1] == 456);
+    assert(output.translation[2] == input.translation[2]);
+}
+
+static void test_component_inverse_basis_wrapper(void) {
+    static const uint16_t transposed[9] = {1, 4, 7, 2, 5, 8, 3, 6, 9};
+    GameComponentBasisView input = {
+        .matrix_halfwords = {1, 2, 3, 4, 5, 6, 7, 8, 9},
+        .ignored_halfword_12 = 0xABCD,
+        .translation = {101, -202, 303},
+    };
+    const int32_t point[4] = {11, 22, 33, 44};
+    int32_t output[4] = {0};
+    unsigned int index;
+
+    g_inverse_basis_call_count = 0;
+    assert(func_8005406C(point, &input, output) == 0);
+    assert(g_inverse_basis_call_count == 1);
+    assert(memcmp(g_inverse_basis_matrix, transposed, sizeof(transposed)) == 0);
+    assert(g_inverse_basis_translation[0] == input.translation[0]);
+    assert(g_inverse_basis_translation[1] == input.translation[1]);
+    assert(g_inverse_basis_translation[2] == input.translation[2]);
+    for (index = 0; index < 4; index++) {
+        assert(g_inverse_basis_input[index] == point[index]);
+        assert(output[index] == point[index] + (int32_t)index);
+    }
+
+    {
+        const int32_t point_to_convert[4] = {100, 200, 300, 400};
+        const int32_t expected_input[3] = {90, 220, 270};
+        int32_t converted[4] = {0, 0, 0, 0x5A5A5A5A};
+
+        input.translation[0] = 10;
+        input.translation[1] = -20;
+        input.translation[2] = 30;
+        g_point_transform_word_count = 3;
+        g_inverse_basis_call_count = 0;
+        assert(func_80054120(point_to_convert, &input, converted) == 0);
+        assert(g_inverse_basis_call_count == 1);
+        assert(memcmp(g_inverse_basis_input, expected_input, sizeof(expected_input)) == 0);
+        assert(converted[0] == 90);
+        assert(converted[1] == 221);
+        assert(converted[2] == 272);
+        assert(converted[3] == 0x5A5A5A5A);
+        g_point_transform_word_count = 4;
+    }
+}
+
+static void test_component_basis_transform_point_q12(void) {
+    GameComponentBasisView basis = {
+        .matrix_halfwords = {
+            0x1000, 0, 0,
+            0, 0x1000, 0,
+            0, 0, 0x1000,
+        },
+        .translation = {900, -800, 700},
+    };
+    const int32_t point[4] = {123, -456, 789, 0x11223344};
+    const int32_t sentinel = (int32_t)0xA5A5A5A5u;
+    int32_t output[4] = {0};
+
+    assert(game_component_basis_transform_point_q12(&basis, point, 1, output) == 0);
+    assert(memcmp(output, point, sizeof(point)) == 0);
+
+    basis.matrix_halfwords[0] = 0;
+    basis.matrix_halfwords[2] = 0x1000;
+    basis.matrix_halfwords[3] = 0;
+    basis.matrix_halfwords[8] = 0;
+    basis.matrix_halfwords[6] = 0xF000;
+    basis.matrix_halfwords[1] = 0;
+    basis.matrix_halfwords[4] = 0x1000;
+    {
+        const int32_t rotated_point[4] = {0x1000, 0x2000, -0x3000, 0x55667788};
+        output[3] = sentinel;
+        assert(game_component_basis_transform_point_q12(&basis, rotated_point, 1, output) == 0);
+        assert(output[0] == -0x3000);
+        assert(output[1] == 0x2000);
+        assert(output[2] == -0x1000);
+        assert(output[3] == sentinel);
+    }
+
+    basis.matrix_halfwords[0] = 0x0800;
+    basis.matrix_halfwords[1] = 0;
+    basis.matrix_halfwords[2] = 0;
+    basis.matrix_halfwords[3] = 0;
+    basis.matrix_halfwords[4] = 0x0800;
+    basis.matrix_halfwords[5] = 0;
+    basis.matrix_halfwords[6] = 0;
+    basis.matrix_halfwords[7] = 0;
+    basis.matrix_halfwords[8] = 0x0800;
+    {
+        const int32_t fractional_point[4] = {1, -1, -3, 4};
+        assert(game_component_basis_transform_point_q12(&basis, fractional_point, 1, output) == 0);
+        assert(output[0] == 0);
+        assert(output[1] == -1);
+        assert(output[2] == -2);
+        assert(output[3] == sentinel);
+    }
+
+    basis.matrix_halfwords[0] = 0xA04F;
+    basis.matrix_halfwords[1] = 0;
+    basis.matrix_halfwords[2] = 0;
+    basis.matrix_halfwords[3] = 0;
+    basis.matrix_halfwords[4] = 0x1000;
+    basis.matrix_halfwords[5] = 0;
+    basis.matrix_halfwords[6] = 0;
+    basis.matrix_halfwords[7] = 0;
+    basis.matrix_halfwords[8] = 0x1000;
+    {
+        const int32_t large_point[4] = {-1898136935, 0, 0, 4};
+        assert(game_component_basis_transform_point_q12(&basis, large_point, 1, output) == 0);
+        assert(output[0] == -1491344593);
+        assert(output[1] == 0);
+        assert(output[2] == 0);
+        assert(output[3] == sentinel);
+    }
+
+    {
+        const int32_t fractional_point[4] = {0, -1, -3, 4};
+        assert(game_component_basis_transform_point_q12(&basis, fractional_point, 0x0800, output) == 0);
+        assert(output[0] == 0);
+        assert(output[1] == -2048);
+        assert(output[2] == -6144);
+    }
+
+    assert(game_component_basis_transform_point_q12(NULL, point, 1, output) == -1);
+    assert(game_component_basis_transform_point_q12(&basis, NULL, 1, output) == -1);
+    assert(game_component_basis_transform_point_q12(&basis, point, 1, NULL) == -1);
 }
 
 static const char *loaded_path;
@@ -2511,6 +2741,10 @@ static void test_bubsy_death_state_finalization(void) {
 
 int main(void) {
     test_grounded_movement_helpers();
+    test_component_basis_copy_helpers();
+    test_component_basis_normalization_helpers();
+    test_component_inverse_basis_wrapper();
+    test_component_basis_transform_point_q12();
     PlayerModelState failed_state = {0};
     LevelModelConfig failed_config = {0};
 

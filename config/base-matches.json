@@ -295,6 +295,72 @@
           "symbols": ["func_800516F8"]
         },
         {
+          "source": "src/game/func_80054414.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C transpose/copy of a 3x3 component basis and translation, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30 using target register constraints.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80054414"]
+        },
+        {
+          "source": "src/game/func_80054488.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C copy of a 3x3 component basis matrix, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30 using target register constraints.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80054488"]
+        },
+        {
+          "source": "src/game/func_800546F4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C basis normalization using the exact matrix-copy helper, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800546F4"]
+        },
+        {
+          "source": "src/game/func_8005476C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C basis/translation normalization wrapper byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005476C"]
+        },
+        {
+          "source": "src/game/func_8005406C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C inverse-basis wrapper that transposes the basis before point transformation, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005406C"]
+        },
+        {
+          "source": "src/game/func_80054120.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C inverse point conversion that subtracts basis translation before the exact transposing wrapper, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80054120"]
+        },
+        {
           "source": "src/game/func_80056678.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "C bit query byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30. The host path masks shift counts explicitly; the target uses MIPS variable-shift masking.",
@@ -604,6 +670,42 @@
           "start": "0x800516F8",
           "end": "0x8005170C",
           "size": 20
+        },
+        {
+          "name": "func_80054414",
+          "start": "0x80054414",
+          "end": "0x80054488",
+          "size": 116
+        },
+        {
+          "name": "func_80054488",
+          "start": "0x80054488",
+          "end": "0x800544D0",
+          "size": 72
+        },
+        {
+          "name": "func_800546F4",
+          "start": "0x800546F4",
+          "end": "0x8005476C",
+          "size": 120
+        },
+        {
+          "name": "func_8005476C",
+          "start": "0x8005476C",
+          "end": "0x800547C8",
+          "size": 92
+        },
+        {
+          "name": "func_8005406C",
+          "start": "0x8005406C",
+          "end": "0x800540BC",
+          "size": 80
+        },
+        {
+          "name": "func_80054120",
+          "start": "0x80054120",
+          "end": "0x80054194",
+          "size": 116
         },
         {
           "name": "func_80056678",
