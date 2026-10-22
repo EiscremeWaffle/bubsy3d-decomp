@@ -361,6 +361,119 @@
           "symbols": ["func_80054120"]
         },
         {
+          "source": "src/game/func_8004EC20.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the camera slot position/rotation setter; readable C behavior is retained outside the matching profile.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004EC20"]
+        },
+        {
+          "source": "src/game/func_8004ECFC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the camera slot rotation clear; readable C behavior is retained outside the matching profile.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004ECFC"]
+        },
+        {
+          "source": "src/game/func_8004ED78.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the camera slot rotation setter; readable C behavior is retained outside the matching profile.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004ED78"]
+        },
+        {
+          "source": "src/game/func_80053FA4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C identity-basis shortcut and GTE dispatch, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; the COP2 routine remains a separate exact assembly transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80053FA4"],
+          "globals": {"g_gte_global_basis": "0x800A42CC"}
+        },
+        {
+          "source": "src/game/func_800540BC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C forward basis point transform and translation addition, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800540BC"]
+        },
+        {
+          "source": "src/game/func_80055280.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C component translation update through an optional basis, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80055280"],
+          "globals": {"g_component_identity_basis": "0x80013CC0"}
+        },
+        {
+          "source": "src/game/func_800550A4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C basis construction from a translation direction and a vertical reference, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800550A4"]
+        },
+        {
+          "source": "src/game/func_80072298.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C wrapper loading the rotation and translation records into the GTE, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80072298"]
+        },
+        {
+          "source": "src/game/func_800722C8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "C camera view-matrix copy and object composition wrapper, using a constrained address load to preserve the target schedule; byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800722C8"],
+          "globals": {"g_camera_view_transform": "0x801D34EC"}
+        },
+        {
+          "source": "src/game/func_80077298_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the bounded L0 GTE point-transform body; raw instruction words are linked at the mapped address and byte-compared against the verified executable. High-level behavior is modeled separately in C.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80077298"]
+        },
+        {
           "source": "src/game/func_80056678.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "C bit query byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30. The host path masks shift counts explicitly; the target uses MIPS variable-shift masking.",
@@ -706,6 +819,66 @@
           "start": "0x80054120",
           "end": "0x80054194",
           "size": 116
+        },
+        {
+          "name": "func_8004EC20",
+          "start": "0x8004EC20",
+          "end": "0x8004ECFC",
+          "size": 220
+        },
+        {
+          "name": "func_8004ECFC",
+          "start": "0x8004ECFC",
+          "end": "0x8004ED78",
+          "size": 124
+        },
+        {
+          "name": "func_8004ED78",
+          "start": "0x8004ED78",
+          "end": "0x8004EDEC",
+          "size": 116
+        },
+        {
+          "name": "func_80053FA4",
+          "start": "0x80053FA4",
+          "end": "0x8005406C",
+          "size": 200
+        },
+        {
+          "name": "func_800540BC",
+          "start": "0x800540BC",
+          "end": "0x80054120",
+          "size": 100
+        },
+        {
+          "name": "func_80055280",
+          "start": "0x80055280",
+          "end": "0x8005536C",
+          "size": 236
+        },
+        {
+          "name": "func_800550A4",
+          "start": "0x800550A4",
+          "end": "0x80055280",
+          "size": 476
+        },
+        {
+          "name": "func_80072298",
+          "start": "0x80072298",
+          "end": "0x800722C8",
+          "size": 48
+        },
+        {
+          "name": "func_800722C8",
+          "start": "0x800722C8",
+          "end": "0x80072364",
+          "size": 156
+        },
+        {
+          "name": "func_80077298",
+          "start": "0x80077298",
+          "end": "0x800773F8",
+          "size": 352
         },
         {
           "name": "func_80056678",

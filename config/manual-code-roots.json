@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "scope": "Analyst-confirmed player-model roots from the shared level source outside initial-entry reachability",
+  "scope": "Analyst-confirmed L0 game-code roots outside initial-entry reachability",
   "modules": {
     "L0/L0.EXE": [
       {
@@ -176,9 +176,35 @@
         "evidence": "136-byte sequence helper called by Bubsy update at 0x800354AC with index 0x309; returns 0x11 when index is at/above signed table length, 0x12 for a nonnegative entry, or updates actor sequence fields for a negative entry and returns zero."
       },
       {
+        "address": "0x80077298",
+        "symbol": "gte_basis_transform_point",
+        "evidence": "Directly called by func_80053FA4 and four graphics transform helpers. This 352-byte L0 GTE routine loads a 3x3 matrix, performs two MVMVA passes, recombines high- and low-pass MAC results, stores three result words, and returns at 0x800773F0 with a delay slot. Three otherwise unreachable signed-conversion branch arms are separately included as trace-only entries."
+      },
+      {
+        "address": "0x8004ECFC",
+        "symbol": "func_8004ECFC",
+        "evidence": "124-byte bounded camera-record operation validates slot index 0..2, zeros the slot's three rotation bytes, rebuilds the global view transform via func_80072798, clears that camera slot's status byte, and returns at 0x8004ED70 with a delay slot. Every direct branch and jump stays within this range."
+      },
+      {
         "address": "0x8002B138",
         "symbol": "level_reload_player_model",
         "evidence": "MIPS stack-frame prologue and matching epilogue at 0x8002B54C; calls model selector at 0x8002B1A4; source assertion references ../f/level.c line 0x809"
+      }
+    ]
+  },
+  "trace_entries": {
+    "L0/L0.EXE": [
+      {
+        "address": "0x800772EC",
+        "evidence": "Unreachable signed-conversion branch arm within the directly called GTE point-transform body at 0x80077298..0x800773F8."
+      },
+      {
+        "address": "0x80077314",
+        "evidence": "Unreachable signed-conversion branch arm within the directly called GTE point-transform body at 0x80077298..0x800773F8."
+      },
+      {
+        "address": "0x8007733C",
+        "evidence": "Unreachable signed-conversion branch arm within the directly called GTE point-transform body at 0x80077298..0x800773F8."
       }
     ]
   }

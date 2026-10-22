@@ -77,7 +77,6 @@ int32_t game_component_transform_read_matrix_vector(
 int32_t game_component_basis_transform_point_q12(
     const GameComponentBasisView *basis,
     const int32_t input[4],
-    int16_t gte_ir0,
     int32_t output[4]
 );
 

@@ -1939,6 +1939,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8004ECFC",
+          "end": "0x8004ED78",
+          "symbol": "func_8004ECFC",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8004ED78",
           "end": "0x8004EDEC",
           "symbol": "func_8004ED78",
@@ -4453,6 +4459,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80077298",
+          "end": "0x800773F8",
+          "symbol": "gte_basis_transform_point",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8007754C",
           "end": "0x800775EC",
           "symbol": "func_8007754C",
@@ -5669,30 +5681,6 @@
           "start": "0x80075B38",
           "end": "0x80075C70",
           "symbol": "fragment_80075B38",
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x80077298",
-          "end": "0x800772EC",
-          "symbol": "fragment_80077298",
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x800772F0",
-          "end": "0x80077314",
-          "symbol": "fragment_800772F0",
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x80077318",
-          "end": "0x8007733C",
-          "symbol": "fragment_80077318",
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x80077340",
-          "end": "0x800773F8",
-          "symbol": "fragment_80077340",
           "kind": "reachable_fragment"
         },
         {

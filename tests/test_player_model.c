@@ -262,7 +262,7 @@ static void test_component_basis_transform_point_q12(void) {
     const int32_t sentinel = (int32_t)0xA5A5A5A5u;
     int32_t output[4] = {0};
 
-    assert(game_component_basis_transform_point_q12(&basis, point, 1, output) == 0);
+    assert(game_component_basis_transform_point_q12(&basis, point, output) == 0);
     assert(memcmp(output, point, sizeof(point)) == 0);
 
     basis.matrix_halfwords[0] = 0;
@@ -275,7 +275,7 @@ static void test_component_basis_transform_point_q12(void) {
     {
         const int32_t rotated_point[4] = {0x1000, 0x2000, -0x3000, 0x55667788};
         output[3] = sentinel;
-        assert(game_component_basis_transform_point_q12(&basis, rotated_point, 1, output) == 0);
+        assert(game_component_basis_transform_point_q12(&basis, rotated_point, output) == 0);
         assert(output[0] == -0x3000);
         assert(output[1] == 0x2000);
         assert(output[2] == -0x1000);
@@ -293,7 +293,7 @@ static void test_component_basis_transform_point_q12(void) {
     basis.matrix_halfwords[8] = 0x0800;
     {
         const int32_t fractional_point[4] = {1, -1, -3, 4};
-        assert(game_component_basis_transform_point_q12(&basis, fractional_point, 1, output) == 0);
+        assert(game_component_basis_transform_point_q12(&basis, fractional_point, output) == 0);
         assert(output[0] == 0);
         assert(output[1] == -1);
         assert(output[2] == -2);
@@ -311,24 +311,37 @@ static void test_component_basis_transform_point_q12(void) {
     basis.matrix_halfwords[8] = 0x1000;
     {
         const int32_t large_point[4] = {-1898136935, 0, 0, 4};
-        assert(game_component_basis_transform_point_q12(&basis, large_point, 1, output) == 0);
-        assert(output[0] == -1491344593);
+        assert(game_component_basis_transform_point_q12(&basis, large_point, output) == 0);
+        assert(output[0] == -1491271101);
         assert(output[1] == 0);
         assert(output[2] == 0);
         assert(output[3] == sentinel);
     }
 
+    basis.matrix_halfwords[0] = 0x1001;
     {
-        const int32_t fractional_point[4] = {0, -1, -3, 4};
-        assert(game_component_basis_transform_point_q12(&basis, fractional_point, 0x0800, output) == 0);
-        assert(output[0] == 0);
-        assert(output[1] == -2048);
-        assert(output[2] == -6144);
+        const int32_t inputs[] = {
+            32767, 32768, -32768, -32769, INT32_MAX, INT32_MIN,
+        };
+        const int32_t expected[] = {
+            32774, 32776, -32776, -32778, -2, 0,
+        };
+        int index;
+
+        for (index = 0; index < (int)(sizeof(inputs) / sizeof(inputs[0])); index++) {
+            const int32_t boundary_point[4] = {inputs[index], 0, 0, 0x11223344};
+            output[3] = sentinel;
+            assert(game_component_basis_transform_point_q12(&basis, boundary_point, output) == 0);
+            assert(output[0] == expected[index]);
+            assert(output[1] == 0);
+            assert(output[2] == 0);
+            assert(output[3] == sentinel);
+        }
     }
 
-    assert(game_component_basis_transform_point_q12(NULL, point, 1, output) == -1);
-    assert(game_component_basis_transform_point_q12(&basis, NULL, 1, output) == -1);
-    assert(game_component_basis_transform_point_q12(&basis, point, 1, NULL) == -1);
+    assert(game_component_basis_transform_point_q12(NULL, point, output) == -1);
+    assert(game_component_basis_transform_point_q12(&basis, NULL, output) == -1);
+    assert(game_component_basis_transform_point_q12(&basis, point, NULL) == -1);
 }
 
 static const char *loaded_path;

@@ -44,16 +44,6 @@ static int32_t component_sign_extend_int16(int32_t value) {
     return bits;
 }
 
-static int32_t component_saturate_int16(int64_t value) {
-    if (value < INT16_MIN) {
-        return INT16_MIN;
-    }
-    if (value > INT16_MAX) {
-        return INT16_MAX;
-    }
-    return (int32_t)value;
-}
-
 static int64_t component_shift_right_12(int64_t value) {
     if (value >= 0) {
         return value / 0x1000;
@@ -147,7 +137,6 @@ int32_t game_component_transform_read_matrix_vector(
 int32_t game_component_basis_transform_point_q12(
     const GameComponentBasisView *basis,
     const int32_t input[4],
-    int16_t gte_ir0,
     int32_t output[4]
 ) {
     static const uint16_t identity[9] = {
@@ -202,8 +191,7 @@ int32_t game_component_basis_transform_point_q12(
             low_accumulated += (int64_t)coefficient * low[column];
         }
         high_result = component_wrap_int64(high_accumulated);
-        low_result = component_saturate_int16(component_shift_right_12(low_accumulated));
-        low_result = component_wrap_int64((int64_t)low_result * gte_ir0);
+        low_result = component_wrap_int64(component_shift_right_12(low_accumulated));
         output[row] = component_wrap_int64((int64_t)high_result * 8 + low_result);
     }
     return 0;

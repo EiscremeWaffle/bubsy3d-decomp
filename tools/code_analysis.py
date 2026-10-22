@@ -17,6 +17,13 @@ def contiguous_ranges(addresses):
     return ranges
 
 
+def manual_trace_entries(config, module_path):
+    return {
+        int(entry["address"], 16)
+        for entry in config.get("trace_entries", {}).get(module_path, [])
+    }
+
+
 def trace_reachable(data, expected, extra_entries=(), extra_functions=(), instruction_factory=None):
     if instruction_factory is None:
         import rabbitizer
@@ -285,8 +292,9 @@ def promote_manual_switch_roots(data, expected, discovery):
 def discover_module(data, expected):
     manual_roots = json.loads((ROOT / "config" / "manual-code-roots.json").read_text(encoding="utf-8"))
     named_roots = manual_roots["modules"].get(expected["filename"], [])
-    entries = {int(root["address"], 16) for root in named_roots}
-    functions = set(entries)
+    function_entries = {int(root["address"], 16) for root in named_roots}
+    entries = function_entries | manual_trace_entries(manual_roots, expected["filename"])
+    functions = set(function_entries)
     for iteration in range(32):
         result = analyze_functions(data, expected, trace_reachable(data, expected, entries, functions))
         for symbol in result["symbols"]:

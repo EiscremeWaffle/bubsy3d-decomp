@@ -1,7 +1,7 @@
 import copy
 import unittest
 
-from tools.code_analysis import contiguous_ranges, render_code_map, trace_reachable, validate_discovery
+from tools.code_analysis import contiguous_ranges, manual_trace_entries, render_code_map, trace_reachable, validate_discovery
 from tools.progress import ROOT, load_json
 from tools.verify_original import HEADER_SIZE
 
@@ -48,11 +48,11 @@ class CodeAnalysisTests(unittest.TestCase):
         cls.document = load_json(ROOT / "config" / "code-map.json")
         cls.manifest = load_json(ROOT / "config" / "executable-map.json")
 
-    def trace_fixture(self, instructions, size=24):
+    def trace_fixture(self, instructions, size=24, extra_entries=()):
         load = 0x80010000
         expected = {"filename": "fixture.EXE", "sha256": "fixture", "load_address": hex(load), "entry_point": hex(load), "payload_size": hex(size)}
         factory = lambda word, address: instructions.get(address - load, FixtureInstruction())
-        return trace_reachable(bytes(HEADER_SIZE + size), expected, instruction_factory=factory)
+        return trace_reachable(bytes(HEADER_SIZE + size), expected, extra_entries=extra_entries, instruction_factory=factory)
 
     def test_call_and_return_delay_slots_are_counted_once(self):
         result = self.trace_fixture({0: FixtureInstruction("call", 0x80010010), 8: FixtureInstruction("return"), 16: FixtureInstruction("return")})
@@ -77,6 +77,15 @@ class CodeAnalysisTests(unittest.TestCase):
 
     def test_range_coalescing_does_not_fill_unvisited_gaps(self):
         self.assertEqual(contiguous_ranges({0x1000, 0x1004, 0x1010}), [[0x1000, 0x1008], [0x1010, 0x1014]])
+
+    def test_manual_trace_entries_do_not_create_function_candidates(self):
+        load = 0x80010000
+        config = {"trace_entries": {"fixture.EXE": [{"address": hex(load + 8)}]}}
+        extra_entries = manual_trace_entries(config, "fixture.EXE")
+        result = self.trace_fixture({0: FixtureInstruction("return"), 8: FixtureInstruction("return")}, size=16, extra_entries=extra_entries)
+        self.assertEqual(extra_entries, {load + 8})
+        self.assertEqual(result["reachable_code_bytes"], 16)
+        self.assertEqual(result["function_entry_candidates"], [hex(load)])
 
     def test_real_discovery_partitions_traced_code_for_every_module(self):
         total = validate_discovery(self.document, self.manifest)

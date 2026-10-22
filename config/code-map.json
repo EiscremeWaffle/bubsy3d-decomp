@@ -6,7 +6,7 @@
       "load_start": "0x80010000",
       "load_end": "0x800BE800",
       "entry_point": "0x8004EB64",
-      "reachable_code_bytes": 293256,
+      "reachable_code_bytes": 293392,
       "function_entry_candidates": [
         "0x80010000",
         "0x80010038",
@@ -343,6 +343,7 @@
         "0x8004EB5C",
         "0x8004EB64",
         "0x8004EC20",
+        "0x8004ECFC",
         "0x8004ED78",
         "0x8004EE60",
         "0x8004EF10",
@@ -1297,10 +1298,6 @@
         },
         {
           "start": "0x8004EC20",
-          "end": "0x8004ECFC"
-        },
-        {
-          "start": "0x8004ED78",
           "end": "0x8004EDEC"
         },
         {
@@ -1801,18 +1798,6 @@
         },
         {
           "start": "0x80077298",
-          "end": "0x800772EC"
-        },
-        {
-          "start": "0x800772F0",
-          "end": "0x80077314"
-        },
-        {
-          "start": "0x80077318",
-          "end": "0x8007733C"
-        },
-        {
-          "start": "0x80077340",
           "end": "0x800773F8"
         },
         {
@@ -4768,6 +4753,14 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8004ECFC",
+          "end": "0x8004ED78",
+          "size": 124,
+          "kind": "anchored_function",
+          "symbol": "func_8004ECFC",
+          "evidence": "124-byte bounded camera-record operation validates slot index 0..2, zeros the slot's three rotation bytes, rebuilds the global view transform via func_80072798, clears that camera slot's status byte, and returns at 0x8004ED70 with a delay slot. Every direct branch and jump stays within this range."
+        },
+        {
           "start": "0x8004ED78",
           "end": "0x8004EDEC",
           "size": 116,
@@ -7369,27 +7362,11 @@
         },
         {
           "start": "0x80077298",
-          "end": "0x800772EC",
-          "size": 84,
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x800772F0",
-          "end": "0x80077314",
-          "size": 36,
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x80077318",
-          "end": "0x8007733C",
-          "size": 36,
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x80077340",
           "end": "0x800773F8",
-          "size": 184,
-          "kind": "reachable_fragment"
+          "size": 352,
+          "kind": "anchored_function",
+          "symbol": "gte_basis_transform_point",
+          "evidence": "Directly called by func_80053FA4 and four graphics transform helpers. This 352-byte L0 GTE routine loads a 3x3 matrix, performs two MVMVA passes, recombines high- and low-pass MAC results, stores three result words, and returns at 0x800773F0 with a delay slot. Three otherwise unreachable signed-conversion branch arms are separately included as trace-only entries."
         },
         {
           "start": "0x8007754C",
@@ -8688,8 +8665,8 @@
           "kind": "anchored_function"
         }
       ],
-      "anchored_functions": 918,
-      "reachable_fragments": 68,
+      "anchored_functions": 920,
+      "reachable_fragments": 64,
       "indirect_references": [
         {
           "site": "0x80015ABC",
@@ -13380,6 +13357,10 @@
           "target": "0x8018CA0C"
         },
         {
+          "site": "0x8004ED1C",
+          "target": "0x8018CA0C"
+        },
+        {
           "site": "0x8004EDC4",
           "target": "0x8018CA0C"
         },
@@ -16444,6 +16425,16 @@
           "address": "0x80052AEC",
           "symbol": "player_actor_select_sequence_state",
           "evidence": "136-byte sequence helper called by Bubsy update at 0x800354AC with index 0x309; returns 0x11 when index is at/above signed table length, 0x12 for a nonnegative entry, or updates actor sequence fields for a negative entry and returns zero."
+        },
+        {
+          "address": "0x80077298",
+          "symbol": "gte_basis_transform_point",
+          "evidence": "Directly called by func_80053FA4 and four graphics transform helpers. This 352-byte L0 GTE routine loads a 3x3 matrix, performs two MVMVA passes, recombines high- and low-pass MAC results, stores three result words, and returns at 0x800773F0 with a delay slot. Three otherwise unreachable signed-conversion branch arms are separately included as trace-only entries."
+        },
+        {
+          "address": "0x8004ECFC",
+          "symbol": "func_8004ECFC",
+          "evidence": "124-byte bounded camera-record operation validates slot index 0..2, zeros the slot's three rotation bytes, rebuilds the global view transform via func_80072798, clears that camera slot's status byte, and returns at 0x8004ED70 with a delay slot. Every direct branch and jump stays within this range."
         },
         {
           "address": "0x8002B138",
@@ -19591,10 +19582,6 @@
           "end": "0x8004EC20"
         },
         {
-          "start": "0x8004ECFC",
-          "end": "0x8004ED78"
-        },
-        {
           "start": "0x8004EDEC",
           "end": "0x8004EE60"
         },
@@ -20095,18 +20082,6 @@
           "end": "0x80077298"
         },
         {
-          "start": "0x800772EC",
-          "end": "0x800772F0"
-        },
-        {
-          "start": "0x80077314",
-          "end": "0x80077318"
-        },
-        {
-          "start": "0x8007733C",
-          "end": "0x80077340"
-        },
-        {
           "start": "0x800773F8",
           "end": "0x8007754C"
         },
@@ -20487,7 +20462,7 @@
           "end": "0x800BE800"
         }
       ],
-      "unclassified_payload_bytes": 421496
+      "unclassified_payload_bytes": 421360
     },
     {
       "path": "L1/L1.EXE",
@@ -222592,7 +222567,7 @@
     }
   ],
   "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
-  "code_bytes": 3039032,
-  "bounded_function_count": 10492,
-  "fragment_count": 1171
+  "code_bytes": 3039168,
+  "bounded_function_count": 10494,
+  "fragment_count": 1167
 }

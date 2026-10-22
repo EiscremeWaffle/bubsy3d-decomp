@@ -855,44 +855,77 @@ result is world-space. The inverse-basis wrapper `func_8005406C` transposes
 the supplied matrix with `func_80054414`, then delegates the point operation
 to `func_80053FA4`; this 80-byte wrapper is an exact C match. That routine has
 an identity-basis path that copies its four input words unchanged, and a
-non-identity path that calls the GTE code fragment at `0x80077298`. The fragment
-loads the 3x3 matrix into GTE registers, performs fixed-point vector work, and
-stores three output words, but its owning function boundary and complete math
-are not yet byte-matched. The observed MVMVA commands select no translation
-vector; basis translation is handled separately by `func_80010038`. In the
+non-identity path that calls the GTE routine at `0x80077298`. Its 352-byte
+boundary and raw instruction transcription are byte-exact. A separate
+high-level C behavioral model covers the routine's observable three-word
+result; the exact source still uses COP2 instructions, so its byte-exact source
+remains the assembly transcription. The routine loads the 3x3 matrix into GTE registers, performs fixed-point vector work, and stores three output words.
+The observed MVMVA commands select no translation vector; basis translation
+is handled separately by `func_80010038`. In the
 forward direction, the `func_80064528` path
 uses `func_80053FA4`, adds the adjusted basis translation with `func_80010038`,
 then performs the common final Y flip and stores. The 116-byte inverse helper
 `func_80054120` subtracts basis translation with `func_80010000`, then calls
 the exact transposing wrapper `func_8005406C`; its C source matches all bytes.
-The forward helper `func_800540BC` follows the corresponding transform-then-add
-sequence, but its current C draft does not yet match bytes. The host model
+The 100-byte forward helper `func_800540BC` follows the corresponding
+transform-then-add sequence and is a byte-exact high-level C match. The host model
 `game_component_basis_transform_point_q12` in `component_transform.c` models
-the fragment's two-pass MVMVA: each signed input is split into high and low
-15-bit parts, sign-extended through the GTE's 16-bit IR registers, transformed
-with SF=0 and SF=1, then recombined as `high * 8 + GPF(IR, IR0)`. The fragment
-uses the ambient GTE IR0 register in its final GPF command; its runtime value is
-not established by the bounded callers, so the host model takes IR0 explicitly
-instead of assuming a value. An identity basis copies all four input words.
-Native tests cover identity, a quarter-turn matrix, IR0 scaling, negative
-fractional shifts, overflow-sensitive inputs, and the untouched fourth output
-word. This is a host semantic model, not an exact C
-replacement for the unbounded COP2 fragment. A separate C draft of
-`func_80053FA4` captures its identity-basis fast path and GTE dispatch, but the
-pinned compiler emits 208 bytes for its 200-byte target, so it is not included
-in exact credit. The host
+the bounded GTE routine's two-pass MVMVA: each signed input is split into high
+and low 15-bit parts, sign-extended through the GTE's 16-bit IR registers,
+transformed with SF=0 and SF=1, then recombined as `high * 8 + low`. An identity
+basis copies all four input words. Native tests cover identity, a quarter-turn
+matrix, negative fractional shifts, overflow-sensitive inputs, signed 15-bit
+split boundaries, and the untouched fourth output word. The C model emulates
+the observable outputs rather than GTE control/flag side effects.
+The 352-byte body is bounded in
+the code map as `func_80077298_gte_basis_transform_point`; all three signed
+conversion paths and its return are accounted for. The 200-byte
+`func_80053FA4` identity-basis fast path and GTE dispatch is also a byte-exact
+high-level C match. The host
 model `game_component_transform_set_translation` captures the normalization
 and branches in `src/game/component_transform.c`; its callback represents that
-complete transform result, including basis translation. This establishes a
-component-transform origin update, but not whether the component is local or
-world-space.
+complete transform result, including basis translation. The adjacent L0 helper
+`func_80055280` is now a high-level C exact match for its 236-byte body. It reads
+the component translation in the optional basis, adds the requested delta,
+writes the translated origin through that basis into a temporary identity
+transform, then rebuilds the component orientation with `func_800550A4`. This
+476-byte helper is also high-level C and byte-exact: it derives a direction
+from the difference between the component and reference origins, conditions
+and normalizes it, then forms two cross-product axes against a vertical
+reference and copies the resulting matrix into the component. This is a
+direction-based orientation update, not a parent-transform link. All nine
+direct L0 callers of `func_80055280` pass null; its internal reference at
+`0x80013CC0` is the 3x3 Q12 identity matrix. The observed update paths therefore
+provide no evidence of parent-relative composition and operate through the
+identity/global basis. This narrows the grounded component path toward
+engine-global coordinates. The global basis template at `0x800A42EC` is the
+Q12 identity matrix with zero translation, and `func_80054624` copies this
+template into allocated basis objects. The getter/setter contract therefore
+establishes that component translation fields are world/global-space values,
+not parent-local coordinates; a non-null basis is a conversion frame used at
+the API boundary. Rendering may subsequently convert those world coordinates
+into camera/view space, which is a separate stage.
 
 For the grounded movement queue specifically, the exact consumer
 `func_80024F2C` passes a null basis (`0`) to both `func_80054B20` and
 `func_80054C7C`. Both therefore take their direct component-translation paths;
 the non-identity GTE basis conversion described above is not used by this
 consumer. The queued vector is added to the stored component translation, with
-Y negated on the read/write boundary. This narrows the grounded path to the
-component transform's coordinate convention, but without the parent-transform
-composition contract it still does not prove whether that component frame is
-local or world-space.
+Y negated on the read/write boundary. The paired basis paths establish the
+coordinate contract: writing through a non-null basis transforms the point by
+its matrix and adds its translation; reading into a basis subtracts that
+translation and applies the transposed matrix, after the observed Y-sign
+normalization. Null basis is treated as the identity global basis, so the
+grounded queue delta is expressed in the engine-global basis rather than in a
+caller-supplied local basis. Thus the grounded queue updates world/global
+translation directly; the Y sign conversion is separate from the basis frame.
+
+The renderer camera path uses a global view transform at `0x801D34EC`. The
+three-slot camera records contain a 3D position and three rotation bytes;
+`func_8004EC20` updates a record and calls `func_80072798` to rebuild that
+global matrix. `func_800722C8` copies the view transform, composes its rotation
+with an object transform while saving/restoring GTE control state, and loads
+the result as the GTE light matrix. The exact C helper `func_80072298` loads an
+RT rotation matrix and translation into the GTE. This confirms that the
+component global/world frame feeds renderer GTE setup; the full packet-building
+and RTPT/RTPS submission path remains to be recovered as high-level C.
