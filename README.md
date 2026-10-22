@@ -29,7 +29,10 @@ and limitations.
 | Region | Serial | Executable | SHA-1 |
 |---|---|---|---|
 | USA | SLUS-00110 | `SLUS_001.10` | `4eb2cc4cf6d84470bb97217108ac713302978b53` |
+## Why do this..?
 
+I'm not planning to make a port of this game
+this project is just to understand how to game works under the hood and what makes it such a mess
 
 ## Contributing
 
