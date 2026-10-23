@@ -44,7 +44,7 @@
           }
         ]
       },
-      {
+        {
         "address": "0x80041218",
         "end": "0x80041D80",
         "symbol": "func_80041218",
@@ -63,19 +63,44 @@
         "evidence": "312-byte C helper selects a signed shift from the largest input component magnitude and applies it to the three components; independently byte-matched with the original linker label func_80053D68."
       },
       {
+        "address": "0x80053904",
+        "symbol": "func_80053904",
+        "evidence": "88-byte high-level C helper takes the low 32 bits of each component's self-product, sums them with wraparound, and passes the squared length to func_800535CC; the GTE/table helper yields zero for zero input and one for nonzero input, making this a squared-difference nonzero test. Exact C byte match."
+      },
+      {
+        "address": "0x8002E7D8",
+        "symbol": "func_8002E7D8",
+        "evidence": "36-byte helper clears the global byte at $gp+0x2C4; exact assembly-backed match, with the C write model in src/game/func_8002E7D8.c."
+      },
+      {
+        "address": "0x8002E7FC",
+        "symbol": "func_8002E7FC",
+        "evidence": "40-byte helper sets the global byte at $gp+0x2C4 to one; exact assembly-backed match, with the C write model in src/game/func_8002E7D8.c."
+      },
+      {
         "address": "0x80024EBC",
         "symbol": "game_enqueue_move_request",
         "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < MAX_MOVE_REQUEST_COUNT, stores request pointers in the 0x80185A6C array, increments the count, and returns the slot byte offset"
       },
       {
-        "address": "0x80024EBC",
-        "symbol": "game_enqueue_move_request",
-        "evidence": "112-byte game.c routine at line 0xB01 checks gMoveRequestCount < 30, stores the request pointer in the 0x80185A6C array, increments the count, and returns the entry byte offset"
-      },
-      {
         "address": "0x80024F2C",
         "symbol": "game_apply_queued_move_request",
         "evidence": "416-byte move-request consumer reads the object component transform and moveInfo, applies the composed three-component translation through func_80054C7C, archives the applied vector, and clears pending move vectors. This writes the object's persistent transform; velocity semantics are not established."
+      },
+      {
+        "address": "0x800250CC",
+        "symbol": "func_800250CC",
+        "evidence": "160-byte queue drain skips applying entries when the component sequence key is 0x31F but still clears the count; otherwise it applies each queued object through 0x80024F2C while rereading the live count, then clears the count. Exact assembly transcription and readable C candidate are in src/game/func_800250CC_match.c and src/game/func_800250CC.c"
+      },
+      {
+        "address": "0x8004FF50",
+        "symbol": "func_8004FF50",
+        "evidence": "156-byte helper rejects null inputs with result 1, marks $gp+0x860 busy, allocates a 16-byte record, returns 3 and clears busy on null/-1 allocation, or links actor/value/value/old-head at $gp+0x85C, writes the output pointer, clears busy, and returns zero. Exact assembly transcription and readable C candidate are in src/game/func_8004FF50_match.c and src/game/func_8004FF50.c."
+      },
+      {
+        "address": "0x8004FFEC",
+        "symbol": "func_8004FFEC",
+        "evidence": "164-byte helper searches the event list at $gp+0x85C, unlinks the matching record, frees it through func_80082EFC, clears $gp+0x860, and returns 0; null/not-found returns 1. Exact assembly transcription and readable C candidate are in src/game/func_8004FFEC_match.c and src/game/func_8004FFEC.c."
       },
       {
         "address": "0x8003539C",

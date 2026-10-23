@@ -518,6 +518,215 @@ BubsyGroundedCases33_35Actions bubsy_grounded_cases33_35_prepare(
         BUBSY_GROUNDED_CASE33_35_CALL_347EC_1;
 }
 
+void bubsy_grounded_handler_build_model_plan(
+    BubsyGroundedHandlerModelState *state,
+    BubsyGroundedHandlerModelPlan *plan
+) {
+    plan->state_id = state->state_id;
+    plan->target_address = bubsy_grounded_handler_case_target(state->state_id);
+    plan->actions_primary = 0;
+    plan->actions_secondary = 0;
+    plan->switch_dispatched = 0;
+
+    if (!bubsy_grounded_handler_should_dispatch_switch(
+        state->state_id,
+        state->descriptor_lookup_word_04,
+        state->actor_flags_04,
+        state->actor_state_10,
+        &state->descriptor_state_02
+    )) {
+        plan->target_address = 0x8004BFD0;
+        return;
+    }
+    plan->switch_dispatched = 1;
+
+    switch (state->state_id) {
+    case 6:
+        plan->actions_primary = bubsy_grounded_case6_select_action(
+            state->actor_flags_04,
+            state->actor_state_10,
+            &state->descriptor_state_4C
+        );
+        break;
+    case 7:
+        plan->actions_primary = bubsy_grounded_case7_update_state(
+            state->actor_state_10,
+            &state->actor_state_01,
+            &state->descriptor_state_4C,
+            &state->descriptor_state_68,
+            &state->descriptor_state_02
+        );
+        break;
+    case 8:
+    case 10:
+        plan->actions_primary = bubsy_grounded_cases8_10_select_action(
+            state->state_id,
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->actor_state_01,
+            &state->descriptor_state_02
+        );
+        if (plan->actions_primary == BUBSY_GROUNDED_CASE8_10_CONTINUE_COUNTER_PATH) {
+            plan->actions_secondary = bubsy_grounded_cases8_10_update_counter_path(
+                state->state_id,
+                state->actor_state_10,
+                state->descriptor_state_11,
+                &state->global_gate_540,
+                &state->global_state_544,
+                &state->global_counter_53C
+            );
+        }
+        break;
+    case 9:
+    case 11:
+        plan->actions_primary = bubsy_grounded_cases9_11_update_state(
+            state->state_id,
+            state->current_sequence_key,
+            &state->actor_state_10,
+            &state->actor_state_14,
+            &state->actor_state_01,
+            &state->descriptor_state_02,
+            state->global_gate_540 != 0,
+            state->global_counter_53C != 0
+        );
+        break;
+    case 12:
+        plan->actions_primary = bubsy_grounded_case12_update_state(
+            state->actor_flags_04,
+            state->actor_state_10,
+            &state->actor_state_01,
+            &state->descriptor_state_02
+        );
+        break;
+    case 13:
+    case 34:
+    case 36:
+        plan->actions_primary = (uint32_t)bubsy_grounded_cases13_34_36_update_state(
+            state->state_id,
+            &state->actor_state_01,
+            &state->descriptor_state_00
+        );
+        break;
+    case 14: {
+        uint32_t linked_state = (uint32_t)state->linked_state_30;
+
+        plan->actions_primary = bubsy_grounded_case14_prepare(
+            state->actor_flags_04,
+            &state->actor_state_10,
+            state->descriptor_state_11,
+            &linked_state
+        );
+        state->linked_state_30 = (int32_t)linked_state;
+        break;
+    }
+    case 15:
+        plan->actions_primary = bubsy_grounded_case15_select_actions(
+            state->current_sequence_key,
+            state->sequence_boundary_reached
+        );
+        break;
+    case 16:
+        plan->actions_primary = (uint32_t)bubsy_grounded_case16_should_dispatch(
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->actor_state_01,
+            &state->descriptor_state_14
+        );
+        break;
+    case 17:
+        plan->actions_primary = bubsy_grounded_case17_update_state(
+            state->actor_state_10,
+            &state->actor_state_00,
+            &state->actor_state_01,
+            &state->descriptor_state_14
+        );
+        break;
+    case 20:
+        plan->actions_primary = bubsy_grounded_case20_select_actions(
+            state->descriptor_state_0D,
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->current_sequence_key
+        );
+        break;
+    case 21:
+        plan->actions_primary = bubsy_grounded_case21_select_action(
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->companion_state_28,
+            state->normalized_dot,
+            &state->descriptor_state_02
+        );
+        break;
+    case 29:
+    case 30:
+        plan->actions_primary = (uint32_t)bubsy_grounded_cases29_30_update_descriptor(
+            state->state_id,
+            &state->descriptor_state_10
+        );
+        break;
+    case 31: {
+        BubsyGroundedCase31Path path = bubsy_grounded_case31_advance_counter(
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->descriptor_state_4C,
+            &state->descriptor_counter_4D
+        );
+
+        plan->actions_primary = (uint32_t)path;
+        if (path == BUBSY_GROUNDED_CASE31_ALTERNATE) {
+            plan->actions_secondary = bubsy_grounded_case31_select_alternate_action(
+                state->actor_flags_04,
+                state->actor_state_10,
+                &state->descriptor_state_02
+            );
+        } else if (path == BUBSY_GROUNDED_CASE31_COUNTER_SEQUENCE_PATH) {
+            plan->actions_secondary = bubsy_grounded_case31_select_sequence_actions(
+                state->current_sequence_key,
+                &state->linked_state_30
+            );
+        }
+        break;
+    }
+    case 32:
+        plan->actions_primary = bubsy_grounded_case32_update_state(
+            state->actor_flags_04,
+            state->actor_state_10,
+            &state->actor_state_01,
+            &state->descriptor_counter_4D,
+            &state->descriptor_state_4C,
+            &state->descriptor_state_68,
+            &state->descriptor_state_02,
+            &state->linked_state_30
+        );
+        break;
+    case 33:
+    case 35:
+        plan->actions_primary = bubsy_grounded_cases33_35_prepare(
+            state->state_id,
+            state->actor_flags_04,
+            state->actor_state_10,
+            state->actor_state_01,
+            &state->descriptor_state_00,
+            &state->linked_state_30
+        );
+        break;
+    case 37:
+        plan->actions_primary = bubsy_grounded_case37_select_action(
+            state->actor_flags_04,
+            &state->descriptor_state_11
+        );
+        break;
+    case 38:
+        plan->actions_primary = bubsy_grounded_case38_update_descriptor(
+            &state->descriptor_state_11
+        );
+        break;
+    default:
+        break;
+    }
+}
+
 BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
     const BubsyActorUpdateActorView *actor,
     uint16_t handler_state_id,

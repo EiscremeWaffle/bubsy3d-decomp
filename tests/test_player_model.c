@@ -1980,6 +1980,38 @@ static void test_bubsy_grounded_dispatch_table(void) {
     assert(bubsy_grounded_handler_case_target(39) == 0x8004BFD0);
 }
 
+static void test_bubsy_grounded_handler_model(void) {
+    BubsyGroundedHandlerModelState state = {0};
+    BubsyGroundedHandlerModelPlan plan;
+
+    state.state_id = 14;
+    state.descriptor_lookup_word_04 = 3;
+    state.actor_state_10 = 0x1000;
+    bubsy_grounded_handler_build_model_plan(&state, &plan);
+    assert(plan.state_id == 14);
+    assert(plan.switch_dispatched == 0);
+    assert(plan.target_address == 0x8004BFD0);
+    assert(state.descriptor_state_02 == 1);
+
+    state = (BubsyGroundedHandlerModelState){0};
+    state.state_id = 37;
+    bubsy_grounded_handler_build_model_plan(&state, &plan);
+    assert(plan.switch_dispatched == 1);
+    assert(plan.target_address == 0x8004B66C);
+    assert(plan.actions_primary == BUBSY_GROUNDED_CASE37_INITIALIZE);
+    assert(state.descriptor_state_11 == 1);
+
+    state = (BubsyGroundedHandlerModelState){0};
+    state.state_id = 31;
+    state.descriptor_counter_4D = 11;
+    state.current_sequence_key = 0x2B8;
+    bubsy_grounded_handler_build_model_plan(&state, &plan);
+    assert(plan.target_address == 0x8004BA34);
+    assert(plan.actions_primary == BUBSY_GROUNDED_CASE31_COUNTER_SEQUENCE_PATH);
+    assert((plan.actions_secondary & BUBSY_GROUNDED_CASE31_CALL_22944) != 0);
+    assert(state.descriptor_counter_4D == 12 && state.linked_state_30 == -0x11);
+}
+
 static void test_bubsy_grounded_handler_prelude(void) {
     int16_t descriptor_state = 0;
 
@@ -2802,6 +2834,7 @@ int main(void) {
     test_bubsy_actor_347ec_followup_plan();
     test_bubsy_actor_347ec_state_bit4_clear_plan();
     test_bubsy_grounded_dispatch_table();
+    test_bubsy_grounded_handler_model();
     test_bubsy_grounded_handler_prelude();
     test_bubsy_grounded_case38_descriptor();
     test_bubsy_grounded_case37();

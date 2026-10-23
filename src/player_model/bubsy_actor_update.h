@@ -144,6 +144,41 @@ typedef enum BubsyGroundedCases33_35Actions {
     BUBSY_GROUNDED_CASE33_35_CALL_347EC_1 = 4,
 } BubsyGroundedCases33_35Actions;
 
+typedef struct BubsyGroundedHandlerModelState {
+    uint16_t state_id;
+    int32_t descriptor_lookup_word_04;
+    uint32_t actor_flags_04;
+    uint32_t actor_state_10;
+    uint32_t actor_state_14;
+    int32_t companion_state_28;
+    int32_t linked_state_30;
+    uint8_t actor_state_00;
+    uint8_t actor_state_01;
+    uint8_t descriptor_state_0D;
+    uint8_t descriptor_state_10;
+    uint8_t descriptor_state_11;
+    uint8_t descriptor_state_14;
+    uint8_t descriptor_state_4C;
+    uint8_t descriptor_counter_4D;
+    uint8_t descriptor_state_68;
+    uint16_t descriptor_state_00;
+    int16_t descriptor_state_02;
+    int32_t current_sequence_key;
+    int32_t normalized_dot;
+    uint8_t sequence_boundary_reached;
+    int32_t global_gate_540;
+    uint32_t global_state_544;
+    int16_t global_counter_53C;
+} BubsyGroundedHandlerModelState;
+
+typedef struct BubsyGroundedHandlerModelPlan {
+    uint16_t state_id;
+    uint32_t target_address;
+    uint32_t actions_primary;
+    uint32_t actions_secondary;
+    uint8_t switch_dispatched;
+} BubsyGroundedHandlerModelPlan;
+
 typedef enum BubsyGroundedCase7Actions {
     BUBSY_GROUNDED_CASE7_NO_ACTION = 0,
     BUBSY_GROUNDED_CASE7_SET_ACTOR_STATE = 1,
@@ -417,6 +452,10 @@ BubsyGroundedCase21Action bubsy_grounded_case21_select_action(
     int32_t companion_state_28,
     int32_t normalized_dot,
     int16_t *descriptor_state_02
+);
+void bubsy_grounded_handler_build_model_plan(
+    BubsyGroundedHandlerModelState *state,
+    BubsyGroundedHandlerModelPlan *plan
 );
 uint8_t bubsy_grounded_case12_update_state(
     uint32_t actor_flags_04,

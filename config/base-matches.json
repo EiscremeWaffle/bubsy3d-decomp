@@ -148,6 +148,84 @@
           }
         },
         {
+          "source": "src/game/func_80024EBC_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the shared move-request enqueue primitive; the host C semantic model remains in move_requests.c.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["game_enqueue_move_request"]
+        },
+        {
+          "source": "src/game/func_800250CC_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the L0 move-request queue drain; readable control flow is in func_800250CC.c.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_800250CC"]
+        },
+        {
+          "source": "src/game/func_80053904.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation of wrapped three-component sum-of-squares byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_80053904"],
+          "globals": {"func_800535CC": "0x800535CC"}
+        },
+        {
+          "source": "src/game/func_8002E7D8_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcriptions of two grounded-case global-byte helpers; readable C candidates are in func_8002E7D8.c.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_8002E7D8", "func_8002E7FC"]
+        },
+        {
+          "source": "src/game/func_8004FF50_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the grounded event-record allocator; readable control flow is in func_8004FF50.c.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_8004FF50"]
+        },
+        {
+          "source": "src/game/func_8004FFEC_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the grounded event-record remover; readable control flow is in func_8004FFEC.c.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_8004FFEC"]
+        },
+        {
+          "source": "src/game/func_80037B30_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed exact transcription of the 484-byte grounded case-37 initializer; control flow remains under investigation.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
+          "symbols": ["func_80037B30"]
+        },
+        {
           "source": "src/game/func_8001007C.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with a narrow inline HI/LO extraction for target register scheduling.",
@@ -743,6 +821,42 @@
           "size": 168
         },
         {
+          "name": "func_80053904",
+          "start": "0x80053904",
+          "end": "0x8005395C",
+          "size": 88
+        },
+        {
+          "name": "func_8002E7D8",
+          "start": "0x8002E7D8",
+          "end": "0x8002E7FC",
+          "size": 36
+        },
+        {
+          "name": "func_8002E7FC",
+          "start": "0x8002E7FC",
+          "end": "0x8002E824",
+          "size": 40
+        },
+        {
+          "name": "func_8004FF50",
+          "start": "0x8004FF50",
+          "end": "0x8004FFEC",
+          "size": 156
+        },
+        {
+          "name": "func_8004FFEC",
+          "start": "0x8004FFEC",
+          "end": "0x80050090",
+          "size": 164
+        },
+        {
+          "name": "func_80037B30",
+          "start": "0x80037B30",
+          "end": "0x80037D14",
+          "size": 484
+        },
+        {
           "name": "func_800536F4",
           "start": "0x800536F4",
           "end": "0x80053774",
@@ -927,6 +1041,18 @@
           "start": "0x80024F2C",
           "end": "0x800250CC",
           "size": 416
+        },
+        {
+          "name": "game_enqueue_move_request",
+          "start": "0x80024EBC",
+          "end": "0x80024F2C",
+          "size": 112
+        },
+        {
+          "name": "func_800250CC",
+          "start": "0x800250CC",
+          "end": "0x8002516C",
+          "size": 160
         },
         {
           "name": "func_800227A4",
