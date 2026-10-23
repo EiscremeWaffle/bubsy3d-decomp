@@ -226,6 +226,36 @@
           "symbols": ["func_80037B30"]
         },
         {
+          "source": "src/game/func_8001C700.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation normalizes two signed halfword arguments, reads the indexed sequence value, and returns the helper's zero-result predicate; byte-matched with pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8001C700"],
+          "globals": {
+            "func_8005E7B8": "0x8005E7B8",
+            "g_case17_sequence_values": "0x80182F64"
+          }
+        },
+        {
+          "source": "src/game/func_8005E7B8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C wrapper sign-extends two arguments, calls func_8005D5A8, conditionally calls func_8008E1DC on zero, and preserves nonzero results; byte-matched with pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005E7B8"],
+          "globals": {
+            "func_8005D5A8": "0x8005D5A8",
+            "func_8008E1DC": "0x8008E1DC"
+          }
+        },
+        {
           "source": "src/game/func_8001007C.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with a narrow inline HI/LO extraction for target register scheduling.",
@@ -849,6 +879,18 @@
           "start": "0x8004FFEC",
           "end": "0x80050090",
           "size": 164
+        },
+        {
+          "name": "func_8001C700",
+          "start": "0x8001C700",
+          "end": "0x8001C73C",
+          "size": 60
+        },
+        {
+          "name": "func_8005E7B8",
+          "start": "0x8005E7B8",
+          "end": "0x8005E810",
+          "size": 88
         },
         {
           "name": "func_80037B30",

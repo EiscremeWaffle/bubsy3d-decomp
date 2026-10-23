@@ -1983,7 +1983,17 @@ static void test_bubsy_grounded_dispatch_table(void) {
 static void test_bubsy_grounded_handler_model(void) {
     BubsyGroundedHandlerModelState state = {0};
     BubsyGroundedHandlerModelPlan plan;
+    uint16_t state_id;
 
+    for (state_id = 6; state_id <= 38; state_id++) {
+        state = (BubsyGroundedHandlerModelState){0};
+        state.state_id = state_id;
+        bubsy_grounded_handler_build_model_plan(&state, &plan);
+        assert(plan.switch_dispatched == 1);
+        assert(plan.target_address == bubsy_grounded_handler_case_target(state_id));
+    }
+
+    state = (BubsyGroundedHandlerModelState){0};
     state.state_id = 14;
     state.descriptor_lookup_word_04 = 3;
     state.actor_state_10 = 0x1000;

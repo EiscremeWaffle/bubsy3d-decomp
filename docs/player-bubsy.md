@@ -41,14 +41,15 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 37,236 exact code bytes across 146
-functions, or `1.225204%` of mapped code. The total includes two Clang-built
+The validated report currently credits 37,384 exact code bytes across 148
+functions, or `1.230073%` of mapped code. The total includes two Clang-built
  getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
 `game_enqueue_move_request` and `func_800250CC`, the event-record helper
 `func_8004FF50` and its remover `func_8004FFEC`, the exact case-37 initializer
-`func_80037B30`, plus the component-transform helpers
+`func_80037B30`, the exact case-17 helpers `func_8001C700` and `func_8005E7B8`,
+plus the component-transform helpers
 `func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
 `func_80022944`,
 the four bounded move-request caller transcriptions `func_80015A54`,
@@ -58,7 +59,7 @@ the four bounded move-request caller transcriptions `func_80015A54`,
 the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
 `func_80062E50`, the exact C squared-difference nonzero test
 `move_vector_has_nonzero_squared_length` (linker label `func_80053904`), the
-C-built forwarding helper `func_800539E4`, the assembly-backed grounded-case
+C-built forwarding helper `func_800539E4`, and the assembly-backed grounded-case
 global-byte helpers `func_8002E7D8` and `func_8002E7FC`, and the
 assembly-backed transcription of the 104-byte vector-scale wrapper
 `func_80053A08`,
@@ -385,7 +386,24 @@ Case `17` (`0x8004B7F8`) clears descriptor byte `+0x14`, sets actor byte
 `+0x01` to `2`, and calls `0x8001C700(4, 3)`. If actor state `+0x10` overlaps
 `0x44`, it also clears actor byte `+0x00`, calls `0x80022650(actor, 2)`, and
 then calls `0x800347EC(actor, third_argument, 1)`. These writes and call gates
-are represented by the tested action model; callee effects are unresolved.
+are represented by the tested action model. The 60-byte C implementation of
+`func_8001C700` indexes the signed halfword at `0x80182F64` with the signed
+first argument, passes that value and the narrowed second argument to
+`func_8005E7B8`, and returns one when that helper returns zero. The 88-byte
+C wrapper narrows both inputs to signed halfwords, calls `func_8005D5A8`, and
+preserves its nonzero result; when it returns zero, the wrapper calls
+`func_8008E1DC` and returns zero. `func_8005D5A8` bypasses its table lookup with
+result `0x1B` when `$gp+0x624` is nonzero; otherwise it scans `$gp+0x62C`
+signed key/limit entries at `0x801CCE14` with a 72-byte stride. An unmatched
+key returns `1`; a match returns true only when the signed value is below both
+the row limit and zero. Its C candidate is not byte-matched.
+`func_8008E1DC` sign-extends both inputs to halfwords and delegates to
+`func_8008E044`; its current C source also remains non-exact. That initializer
+selects a 44-byte state row from the character table at `0x801D7D44`, changes
+four adjacent row flag words, calls `func_80094108`, resets and copies state
+fields, initializes 16 per-entry slots, and returns `0x7F`. The notifier's
+effects remain unknown. These helper observations do not change case 17's
+return convention: `func_8005E7B8` returns zero after invoking the initializer.
 Case `16` (`0x8004B77C`) initializes descriptor byte `+0x14` to `1` when it
 is zero and actor flags `+0x04` bit `0x02` is clear. It then requests
 `0x800347EC(actor, third_argument, 0)` only when actor flags do not overlap

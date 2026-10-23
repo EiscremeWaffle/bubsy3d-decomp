@@ -103,6 +103,16 @@
         "evidence": "164-byte helper searches the event list at $gp+0x85C, unlinks the matching record, frees it through func_80082EFC, clears $gp+0x860, and returns 0; null/not-found returns 1. Exact assembly transcription and readable C candidate are in src/game/func_8004FFEC_match.c and src/game/func_8004FFEC.c."
       },
       {
+        "address": "0x8001C700",
+        "symbol": "func_8001C700",
+        "evidence": "60-byte high-level C helper sign-extends its index and value inputs, loads a signed halfword from 0x80182F64 indexed by the first input, calls func_8005E7B8, and returns one when that result is zero; exact C byte match."
+      },
+      {
+        "address": "0x8005E7B8",
+        "symbol": "func_8005E7B8",
+        "evidence": "88-byte high-level C wrapper narrows two arguments to signed halfwords, preserves a nonzero func_8005D5A8 result, otherwise calls func_8008E1DC and returns zero; exact C byte match."
+      },
+      {
         "address": "0x8003539C",
         "symbol": "bubsy_update_actor_state",
         "evidence": "Bounded routine 0x8003539C..0x800358C8; reads actor fields at offsets 0x04, 0x10, 0x1C, 0x2B and source assertions reference ../f/bubsy.c lines 0x41A and 0x495. Semantic function name remains provisional."
