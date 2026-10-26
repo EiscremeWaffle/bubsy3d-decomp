@@ -20,19 +20,17 @@
 
 [matched]: https://decomp.dev/EiscremeWaffle/bubsy3d-decomp.svg?mode=shield&label=Matched+Functions&measure=matched_functions
 
-An evidence-based decompilation research project for the USA executable
-`SLUS_001.10`. This is a work in progress, not a complete source rebuild or
-whole-game decompilation. The current scoped report tracks exact and fuzzy
-matches separately; see the [code map](docs/code-map.md) for its denominator
-and limitations.
+A decompilation project of Bubsy 3D USA executable `SLUS_001.10`. 
+This is a W.I.P., not nearly a complete source rebuild or whole-game decomp. 
+The current scoped report tracks exact and fuzzy matches separately; see the [code map](docs/code-map.md).
 
 | Region | Serial | Executable | SHA-1 |
 |---|---|---|---|
 | USA | SLUS-00110 | `SLUS_001.10` | `4eb2cc4cf6d84470bb97217108ac713302978b53` |
 ## Why do this..?
 
-I'm not planning to make a port of this game
-this project is just to understand how to game works under the hood and what makes it such a mess
+Mostly just to figure out what makes the game such a mess under the hood 
+I'm not planning on any kinda port or 'fix' of the game is just wanna take it apart out of my own curiosity!
 
 ## Contributing
 
@@ -49,5 +47,9 @@ exact byte matches are counted.
 - [Detailed decompilation and byte-matching workflow](docs/contributor-decompilation-guide.md)
 - [GitHub and decomp.dev publication](docs/decomp-dev.md)
 
-The project investigates how this early 3D platformer was built while keeping
-observed behavior separate from guesses about gameplay meaning or toolchain.
+
+# LLM Usage
+Due to how LLMs currently used to screw over Indie developers and make vibe coded ports of retro games...
+I feel i gotta say that even tho I do use AI for alot of the decompiling process I dont let it vibe code this and just make guesses
+Everything will end up being a exact byte for byte matche of the original source code in C 
+accuracy is the highest priority
