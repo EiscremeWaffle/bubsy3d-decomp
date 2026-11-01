@@ -716,6 +716,21 @@
           ],
           "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_80054AF0"]
+        },
+        {
+          "source": "src/player_model/shared_actor_state_dispatch.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; requires -fno-cse-follow-jumps so CSE does not rewrite the mode-zero progress store through the mode register. The flag is a reproduction profile, not a toolchain claim.",
+          "flags": [
+            "-O2", "-fno-cse-follow-jumps", "-G8", "-msoft-float", "-fno-pic",
+            "-fomit-frame-pointer", "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/player_model.h",
+            "tools/gcc_include/stdint.h",
+            "tools/gcc_include/stddef.h"
+          ],
+          "symbols": ["shared_actor_state_dispatch"]
         }
       ],
       "fuzzy_sources": [
@@ -726,10 +741,6 @@
         {
           "source": "src/player_model/shared_actor_state_2.c",
           "symbols": ["shared_actor_state_2_handler"]
-        },
-        {
-          "source": "src/player_model/shared_actor_state_dispatch.c",
-          "symbols": ["shared_actor_state_dispatch"]
         }
       ],
       "data_sources": [
@@ -746,6 +757,12 @@
         }
       ],
       "symbols": [
+        {
+          "name": "shared_actor_state_dispatch",
+          "start": "0x800358C8",
+          "end": "0x80035ACC",
+          "size": 516
+        },
         {
           "name": "level_get_player_model_mode",
           "start": "0x800283E0",

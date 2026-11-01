@@ -48,19 +48,17 @@ void shared_actor_state_dispatch(
     }
 
     saved_progress_34 = shared->progress_34;
-    if (mode_value == 1) {
+    switch (mode_value) {
+    case 0:
+        goto mode_zero;
+    case 1:
         goto mode_one;
-    }
-    if (mode_value < 2) {
-        if (mode_value == 0) {
-            goto mode_zero;
-        }
+    case 2:
+    case 3:
+        goto mode_two_or_three;
+    default:
         goto epilogue;
     }
-    if (mode_value >= 4) {
-        goto epilogue;
-    }
-    goto mode_two_or_three;
 
 mode_zero:
     if ((actor_value->state_10 & 0x18000u) != 0) {
