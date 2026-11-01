@@ -401,7 +401,7 @@ def main():
         "--timeout-seconds",
         type=int,
         default=600,
-        help="overall subprocess deadline for build (default 600; maximum 900)",
+        help="overall subprocess deadline for build (default 600; maximum 2700)",
     )
     args = parser.parse_args()
     if args.command == "build":

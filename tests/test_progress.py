@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 from tools.command import CommandDeadline, run_command
 from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
-from tools.gcc_match import helper_definitions, normalize_delay_slots
+from tools.gcc_match import helper_definitions, normalize_delay_slots, small_data_declarations, small_data_layout
 from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, expand_base_matches, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
@@ -31,9 +31,11 @@ class ProgressTests(unittest.TestCase):
                 )
         self.assertLess(time.monotonic() - started, 10)
 
-    def test_build_command_deadline_is_capped_at_15_minutes(self):
-        for seconds in (0, 901):
-            with self.subTest(seconds=seconds), self.assertRaisesRegex(ValueError, "900 seconds"):
+    def test_build_command_deadline_is_capped_at_45_minutes(self):
+        with CommandDeadline(2700):
+            pass
+        for seconds in (0, 2701):
+            with self.subTest(seconds=seconds), self.assertRaisesRegex(ValueError, "2700 seconds"):
                 CommandDeadline(seconds)
 
     def test_delay_slot_normalization_uses_compiler_reorder_modes(self):
@@ -43,6 +45,65 @@ class ProgressTests(unittest.TestCase):
         self.assertEqual(normalize_delay_slots(converted, source), expected)
         with self.assertRaisesRegex(ValueError, "branches differ"):
             normalize_delay_slots(".set noreorder\n", source)
+
+    def test_small_data_layout_validates_gp_window(self):
+        globals = {"near": "0x800BE548", "far": "0x80186450"}
+        self.assertIsNone(small_data_layout({"globals": globals}))
+        spec = {"globals": globals, "small_data": {"gp": "0x800BDD5C", "symbols": ["near"]}}
+        self.assertEqual(small_data_layout(spec), (0x800BDD5C, ["near"]))
+        self.assertEqual(small_data_declarations(["near"]), ["\t.sdata", "\t.size\tnear,1"])
+        with self.assertRaisesRegex(ValueError, "outside the gp window"):
+            small_data_layout({"globals": globals, "small_data": {"gp": "0x800BDD5C", "symbols": ["far"]}})
+        for invalid in (
+            [],
+            False,
+            {"gp": "0x800BDD5C", "symbols": ["missing"]},
+            {"gp": "0x800BDD5C", "symbols": ["near", "near"]},
+            {"gp": "0x800BDD5C", "symbols": []},
+            {"gp": "0x800BDD5C", "symbols": [{}]},
+            {"gp": "0x800BDD5C", "symbols": [["near"]]},
+            {"gp": "0x800BDD5C", "symbols": ["near"], "extra": 1},
+        ):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "Invalid small-data"):
+                small_data_layout({"globals": globals, "small_data": invalid})
+
+    def test_small_data_layout_accepts_signed_16_bit_boundaries(self):
+        gp = 0x800BDD5C
+        for offset in (-0x8001, -0x8000, 0x7FFF, 0x8000):
+            spec = {
+                "globals": {"value": f"0x{gp + offset:08X}"},
+                "small_data": {"gp": f"0x{gp:08X}", "symbols": ["value"]},
+            }
+            with self.subTest(offset=offset):
+                if -0x8000 <= offset <= 0x7FFF:
+                    self.assertEqual(small_data_layout(spec), (gp, ["value"]))
+                else:
+                    with self.assertRaisesRegex(ValueError, "outside the gp window"):
+                        small_data_layout(spec)
+
+    def test_delay_slot_normalization_preserves_expanded_divisions(self):
+        call = "jal func_8001A670\nmove $4,$16\n"
+        converted_call = call.replace("\nmove", "\nnop # DEBUG: branch/jump\nmove")
+        return_sequence = "j $31\nnop # DEBUG: branch/jump\n.end helper\n"
+        for instruction in ("div", "divu"):
+            expansion = (
+                f"# EXPAND_{instruction.upper()} START\n"
+                ".set noat\n"
+                f"{instruction} $zero,$2,$16\n"
+                "bnez $16,.L_nonzero\nnop\nbreak 0x7\n.L_nonzero:\n"
+            )
+            if instruction == "div":
+                expansion += (
+                    "addiu $at,$zero,-1\n"
+                    "bne $16,$at,.L_positive\nlui $at,0x8000\n"
+                    "bne $2,$at,.L_positive\nnop\nbreak 0x6\n.L_positive:\n"
+                )
+            expansion += f"mflo $5\n.set at\n# EXPAND_{instruction.upper()} END\n"
+            source = f".set noreorder\n{call}{instruction} $5,$2,$16\n{call}j $31\n.end helper\n"
+            converted = f".set noreorder\n{converted_call}{expansion}{converted_call}{return_sequence}"
+            expected = f".set noreorder\n{call}{expansion}{call}{return_sequence}"
+            with self.subTest(instruction=instruction):
+                self.assertEqual(normalize_delay_slots(converted, source), expected)
 
     def test_matching_tools_reject_unknown_compiler(self):
         with self.assertRaisesRegex(ValueError, "Unsupported matching compiler"):

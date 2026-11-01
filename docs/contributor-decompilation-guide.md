@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,039,168 code bytes; the current report validates 37,900 exact code bytes across 149 functions (1.247052%) and 196 exact data bytes. New exact coverage includes four bounded move-request callers (`func_80015A54`, `func_80025A98`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, as well as the grounded handler, movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. It also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. The shared actor-state dispatcher `shared_actor_state_dispatch` is byte-matched from high-level C using a documented per-function `-fno-cse-follow-jumps` reproduction profile. `bubsy_process_actor_event` remains a fuzzy candidate, not an exact match.
+The current validated scope maps 3,039,168 code bytes; the current report validates 40,416 exact code bytes across 151 functions (1.329838%) and 196 exact data bytes. New exact coverage includes four bounded move-request callers (`func_80015A54`, `func_80025A98`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, as well as the grounded handler, movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. It also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` is an exact assembly-backed transcription without a byte-matched high-level C reconstruction.
 
 ## Setup
 
@@ -50,7 +50,7 @@ Typical report commands:
 .\.venv\Scripts\python.exe -S -m unittest discover -s tests -v
 ```
 
-`tools.progress build` has a 600-second overall subprocess deadline by default; set `--timeout-seconds` to adjust it, up to 900 seconds. Timed-out commands have their process tree terminated.
+`tools.progress build` has a 600-second overall subprocess deadline by default; set `--timeout-seconds` to adjust it, up to 2700 seconds (45 minutes). For a full rebuild on slower Windows/WSL setups, use `python -m tools.progress build --timeout-seconds 2700`. Timed-out commands have their process tree terminated.
 
 The native C harness is separate from Python tests. CI's compile command is in `.github/workflows/checks.yml`; compile with `-std=c11 -Wall -Wextra -Werror`, then run the resulting binary.
 
@@ -66,9 +66,33 @@ The native C harness is separate from Python tests. CI's compile command is in `
 
 ## Current Work Queue
 
-The seven actor sequence helpers, model-resource selector, and assembly-backed death handler match under checksum-pinned GCC 2.6.3/MASPSX; this establishes a useful matching profile, not the original game's compiler. GCC 2.7.2 differed on the remainder helper's multiply-high register selection. The event dispatcher remains fuzzy: both tested GCC versions currently emit 324 bytes against its 316-byte mapped range. `shared_actor_state_dispatch` is the active related reconstruction. Its host-testable models cover the opening key/mask clear, mode-1 numeric update, and mode-0 clamp. The target-only C draft now models the observed `0x10000` mode-2/3 callback gate, callback-plan offsets, and temporary `progress_34` behavior. GCC 2.6.3 emits 516 bytes against the 516-byte mapped function, but several branch destinations and one store instruction still differ. Do not add either dispatcher to exact progress until linked bytes match the full mapped range.
+The seven actor sequence helpers, model-resource selector, and assembly-backed death handler match under checksum-pinned GCC 2.6.3/MASPSX; this establishes a useful matching profile, not the original game's compiler. GCC 2.7.2 differed on the remainder helper's multiply-high register selection. `bubsy_process_actor_event` now has a byte-exact assembly-backed transcription at its verified 316-byte range; its C candidate remains a semantic model, not a recovered high-level match source. `shared_actor_state_2_handler` matches all 2,200 bytes from high-level C; the per-source `maspsx_flags` (`--expand-div`) and `small_data` (gp base plus symbol list) options in `tools/gcc_match.py` reproduce the original divide trap checks and `$gp`-relative small-data accesses. `shared_actor_state_dispatch` matches all 516 bytes from high-level C under its per-function `-fno-cse-follow-jumps` profile. Its gameplay semantics remain provisional; the host-testable models cover the opening key/mask clear, mode-1 numeric update, and mode-0 clamp, while its target-only C candidate models the observed mode-2/3 callback gate and temporary progress behavior.
 
 When aiming for a progress threshold, calculate required **exact bytes** from the current report denominator and prioritize functions with clear boundaries and tractable control flow. A large function is useful only if it can be finished and byte verified; its fuzzy percentage does not advance exact progress.
+
+### Converting Existing Byte Matches to C
+
+The readable-C conversion pass has started with `func_8002E7D8`,
+`func_8002E7FC`, and `func_80053A08`: 180 bytes previously supplied by assembly
+transcriptions now compile byte-exactly from plain C. The first two require
+`-fno-omit-frame-pointer` and a mapped gp-relative small-data byte. The vector
+wrapper matches using natural register allocation after removing the old
+volatile pointer and register pins. All three have native behavior tests.
+
+The allowlist now contains 112 C-based function matches (16,416 bytes) and
+39 assembly-backed matches (24,000 bytes), including repeated module copies.
+C-based is not synonymous with pure C: some other target sources retain
+explicit instruction snippets as well as register constraints. Those still
+need attention in the readable-C pass. The overall exact total remains
+40,416 bytes across 151 matches; converting an already matched function to C
+does not increase that total.
+
+For each remaining conversion, retain the assembly-backed profile until the
+C build passes the complete linked-byte comparison. Then switch the profile,
+remove the superseded assembly source, and update its behavior tests and
+documentation. The event dispatcher, larger actor handlers, move-request
+callers, and repeated vector-helper transcriptions remain conversion work,
+not completed readable-C decompilation.
 
 ## Safe Repository Hygiene
 

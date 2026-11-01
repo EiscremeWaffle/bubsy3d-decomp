@@ -182,14 +182,19 @@
           "globals": {"func_800535CC": "0x800535CC"}
         },
         {
-          "source": "src/game/func_8002E7D8_match.c",
+          "source": "src/game/func_8002E7D8.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed transcriptions of two grounded-case global-byte helpers; readable C candidates are in func_8002E7D8.c.",
+          "compiler_profile": "Plain C implementations of the two grounded-case event-byte helpers, byte-matched with pinned GCC 2.6.3/MASPSX. Retaining the frame pointer reproduces the original leaf-function frames; the event byte is a declared gp-relative small-data extern.",
           "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fno-omit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "globals": {"g_grounded_case_event": "0x800BE020"},
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_grounded_case_event"]
+          },
           "symbols": ["func_8002E7D8", "func_8002E7FC"]
         },
         {
@@ -300,14 +305,14 @@
           "symbols": ["func_800539E4"]
         },
         {
-          "source": "src/game/func_80053A08_match.c",
+          "source": "src/game/func_80053A08.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the verified L0 helper, compiled and linked at the mapped address before byte comparison.",
+          "compiler_profile": "Plain C implementation of the three-component scalar-vector wrapper, byte-matched with pinned GCC 2.6.3/MASPSX using natural register allocation. No instruction snippets or register constraints.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_80053A08"]
         },
         {
@@ -731,15 +736,59 @@
             "tools/gcc_include/stddef.h"
           ],
           "symbols": ["shared_actor_state_dispatch"]
-        }
-      ],
-      "fuzzy_sources": [
+        },
         {
-          "source": "src/player_model/bubsy_actor_events.c",
+          "source": "src/player_model/bubsy_actor_events_match.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Assembly-backed transcription of the bounded L0 actor-event dispatcher, linked at its verified address and byte-compared against the fingerprinted executable.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [],
           "symbols": ["bubsy_process_actor_event"]
         },
         {
           "source": "src/player_model/shared_actor_state_2.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30 using --expand-div for the original divide trap checks. Runtime mode, player-ready, and mode-one handle are gp-relative small-data externs (L0 gp 0x800BDD5C). One register pin and empty asm barrier keep &g_actor_handles in s4.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "maspsx_flags": ["--expand-div"],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_level_config": "0x800BE698",
+            "g_player_control": "0x80186450",
+            "g_game_phase": "0x801D36F0",
+            "g_actor_handles": "0x800BE68C",
+            "g_extra_model_handle": "0x800BE0C4",
+            "g_effect_handles": "0x800BE550",
+            "g_mode_one_handle": "0x800BE558",
+            "g_runtime_mode": "0x800BE548",
+            "g_player_ready": "0x800BE0C8",
+            "g_render_slots": "0x80186294",
+            "g_mode_one_render_slot": "0x801863E4",
+            "g_renderer": "0x8006ABFC",
+            "g_mode_zero_resource_a": "0x8009F98C",
+            "g_mode_zero_resource_b": "0x8009F90C",
+            "g_mode_other_resource_a": "0x800A091C",
+            "g_mode_other_resource_b": "0x8009F950",
+            "g_shared_model_resource": "0x800A10C4",
+            "g_mode_one_model_resource": "0x800A1010",
+            "g_state2_zero_vector": "0x800129B8",
+            "g_state2_render_offset": "0x800129C8",
+            "g_state2_mode_one_offset": "0x80012A10",
+            "g_bubsy_error_none": "0x80012974",
+            "g_bubsy_source_path": "0x8001298C",
+            "g_bubsy_bool_true": "0x800129D8",
+            "g_bubsy_bool_error_none": "0x800129F4"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_runtime_mode", "g_player_ready", "g_mode_one_handle"]
+          },
           "symbols": ["shared_actor_state_2_handler"]
         }
       ],
@@ -757,6 +806,18 @@
         }
       ],
       "symbols": [
+        {
+          "name": "shared_actor_state_2_handler",
+          "start": "0x8003697C",
+          "end": "0x80037214",
+          "size": 2200
+        },
+        {
+          "name": "bubsy_process_actor_event",
+          "start": "0x80037214",
+          "end": "0x80037350",
+          "size": 316
+        },
         {
           "name": "shared_actor_state_dispatch",
           "start": "0x800358C8",

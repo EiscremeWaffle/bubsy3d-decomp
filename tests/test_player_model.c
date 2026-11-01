@@ -24,6 +24,10 @@ extern int32_t func_8005406C(const int32_t input[4], const GameComponentBasisVie
 extern int32_t func_80054120(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
 extern int32_t func_8008E044(int32_t character_index, int32_t state_index);
 extern int32_t func_8005D5A8(int16_t requested_key, int16_t value);
+extern void func_8002E7D8(void);
+extern void func_8002E7FC(void);
+extern int32_t func_80053A08(const int32_t *input, int32_t scale, int32_t *output);
+volatile uint8_t g_grounded_case_event;
 uint32_t g_l0_gp_170;
 void *g_l0_gp_888;
 volatile uintptr_t g_character_state_table[8];
@@ -464,6 +468,46 @@ int32_t func_8001007C(int32_t left, int32_t right, int32_t *output) {
     *output = (int32_t)(((long long)left * right) >> 12);
     vector_square_call_count++;
     return 0;
+}
+
+static void test_grounded_case_event_helpers(void) {
+    g_grounded_case_event = 0xA5;
+    func_8002E7D8();
+    assert(g_grounded_case_event == 0);
+    func_8002E7D8();
+    assert(g_grounded_case_event == 0);
+    func_8002E7FC();
+    assert(g_grounded_case_event == 1);
+    func_8002E7FC();
+    assert(g_grounded_case_event == 1);
+    func_8002E7D8();
+    assert(g_grounded_case_event == 0);
+}
+
+static void test_scalar_vector_wrapper(void) {
+    const int32_t input[3] = {0x1001, -0x1001, 0};
+    int32_t output[4] = {1, 2, 3, 0x12345678};
+    int32_t in_place[3] = {0x1000, -0x2000, 0x3000};
+    int32_t overlapping[4] = {0x1000, 0x2000, 0x3000, 0};
+
+    vector_square_call_count = 0;
+    assert(func_80053A08(input, 0x800, output) == 0);
+    assert(vector_square_call_count == 3);
+    assert(output[0] == 0x800);
+    assert(output[1] == -0x801);
+    assert(output[2] == 0);
+    assert(output[3] == 0x12345678);
+    assert(input[0] == 0x1001 && input[1] == -0x1001 && input[2] == 0);
+
+    assert(func_80053A08(input, 0, output) == 0);
+    assert(output[0] == 0 && output[1] == 0 && output[2] == 0);
+    assert(func_80053A08(in_place, -0x1000, in_place) == 0);
+    assert(in_place[0] == -0x1000 && in_place[1] == 0x2000 && in_place[2] == -0x3000);
+
+    assert(func_80053A08(overlapping, 0x2000, overlapping + 1) == 0);
+    assert(overlapping[0] == 0x1000 && overlapping[1] == 0x2000);
+    assert(overlapping[2] == 0x4000 && overlapping[3] == 0x8000);
+    assert(vector_square_call_count == 12);
 }
 
 int32_t func_8005359C(int32_t value, int32_t *output) {
@@ -2897,6 +2941,8 @@ static void test_bubsy_death_state_finalization(void) {
 }
 
 int main(void) {
+    test_grounded_case_event_helpers();
+    test_scalar_vector_wrapper();
     test_func_8008E044();
     test_func_8005D5A8();
     test_grounded_movement_helpers();

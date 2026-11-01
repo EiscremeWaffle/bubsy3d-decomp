@@ -10,8 +10,8 @@ _deadline = contextvars.ContextVar("command_deadline", default=None)
 
 class CommandDeadline:
     def __init__(self, seconds):
-        if not 0 < seconds <= 900:
-            raise ValueError("Command deadline must be between 1 and 900 seconds")
+        if not 0 < seconds <= 2700:
+            raise ValueError("Command deadline must be between 1 and 2700 seconds")
         self._seconds = seconds
 
     def __enter__(self):

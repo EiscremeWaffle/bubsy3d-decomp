@@ -10,6 +10,34 @@ from tools.command import run_command
 from tools.fetch_tools import GCC_COMPILERS, MASPSX_HASH, fetch_matching_tools
 from tools.verify_original import ROOT
 
+MASPSX_OPTIONAL_FLAGS = {"--expand-div"}
+
+
+def small_data_layout(source_spec):
+    """Validate optional gp-relative small-data externs defined outside the matched TU."""
+    small_data = source_spec.get("small_data")
+    if small_data is None:
+        return None
+    globals = source_spec.get("globals", {})
+    symbols = small_data.get("symbols") if isinstance(small_data, dict) else None
+    if (
+        not isinstance(symbols, list) or not symbols
+        or not all(isinstance(name, str) and name in globals for name in symbols)
+        or len(set(symbols)) != len(symbols)
+        or set(small_data) != {"gp", "symbols"}
+    ):
+        raise ValueError("Invalid small-data symbols in matching source")
+    gp = int(small_data["gp"], 16)
+    for name in symbols:
+        if not -0x8000 <= int(globals[name], 16) - gp <= 0x7FFF:
+            raise ValueError(f"Small-data symbol is outside the gp window: {name}")
+    return gp, symbols
+
+
+def small_data_declarations(symbols):
+    # Maspsx only gp-relativizes symbols it saw in .sdata; these lines are stripped after conversion.
+    return ["\t.sdata", *(f"\t.size\t{name},1" for name in symbols)]
+
 
 def run_tool(command, input_text=""):
     result = run_command(command, cwd=ROOT, input=input_text, capture_output=True, text=True)
@@ -67,15 +95,21 @@ def normalize_delay_slots(assembly, compiler_assembly=None):
                 source_modes.append(source_noreorder)
     branch_index = 0
     explicit_slot = False
+    expanded_division = False
     for index, line in enumerate(lines):
         stripped = line.strip()
+        if re.fullmatch(r"# EXPAND_DIVU? START", stripped):
+            expanded_division = True
+        elif re.fullmatch(r"# EXPAND_DIVU? END", stripped):
+            expanded_division = False
         if re.fullmatch(r"\.set\s+noreorder", stripped):
             noreorder = True
         elif re.fullmatch(r"\.set\s+reorder", stripped):
             noreorder = False
             if compiler_assembly is not None:
                 line = ".set noreorder"
-        if compiler_assembly is not None and branch_pattern.match(stripped):
+        # MASPSX division trap expansions carry their own explicit delay slots.
+        if compiler_assembly is not None and branch_pattern.match(stripped) and not expanded_division:
             if branch_index >= len(source_modes):
                 raise ValueError("Unsupported branch expansion in assembler conversion")
             explicit_slot = source_modes[branch_index]
@@ -99,6 +133,9 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
 
     if source_spec["compiler"] not in GCC_COMPILERS:
         raise ValueError("Unsupported matching compiler profile")
+    maspsx_flags = source_spec.get("maspsx_flags", [])
+    if not isinstance(maspsx_flags, list) or not set(maspsx_flags) <= MASPSX_OPTIONAL_FLAGS:
+        raise ValueError("Unsupported MASPSX flags in matching source")
     directory.mkdir(parents=True, exist_ok=True)
     gcc_directory, maspsx_directory = fetch_matching_tools(source_spec["compiler"])
     name = symbol_spec["name"]
@@ -122,10 +159,25 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     finally:
         run_tool(linux_command(["rm", "-r", "--", workspace]))
     compiler_assembly = assembly.read_text(encoding="ascii")
+    small_data = small_data_layout(source_spec)
+    maspsx_input = compiler_assembly
+    gp_flags = []
+    if small_data is not None:
+        declarations = small_data_declarations(small_data[1])
+        maspsx_input = "\n".join(declarations) + "\n" + compiler_assembly
+        gp_flags = ["-G8"]
     converted = run_tool([
         sys.executable, str(maspsx_directory / "maspsx.py"),
-        "--aspsx-version", "2.30", "--force-stdin",
-    ], compiler_assembly)
+        "--aspsx-version", "2.30", "--force-stdin", *gp_flags, *maspsx_flags,
+    ], maspsx_input)
+    if small_data is not None:
+        lines = converted.split("\n")
+        file_index = next((index for index, line in enumerate(lines) if line.startswith(".file")), None)
+        prefix = [line.strip() for line in lines[:file_index or 0] if line.strip()]
+        expected = [".section .sdata", *(f".size\t{name},1" for name in small_data[1])]
+        if file_index is None or prefix != expected:
+            raise ValueError("MASPSX did not preserve the small-data declarations")
+        converted = "\n".join(lines[file_index:])
     converted_assembly = directory / f"{name}.maspsx.s"
     converted_assembly.write_text(normalize_delay_slots(converted, compiler_assembly), encoding="ascii")
     object_path = directory / f"{name}.o"
@@ -153,6 +205,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         "ld.lld", "-m", "elf32ltsmip", "-T", linux_path(linker_script),
         f"--entry={name}", linux_path(object_path), "-o", linux_path(linked_path),
         *helper_definitions(undefined, source_spec.get("globals")),
+        *([f"--defsym=_gp=0x{small_data[0]:08X}"] if small_data is not None else []),
     ]))
     linked = ELFFile(io.BytesIO(linked_path.read_bytes()))
     linked_symbol = linked.get_section_by_name(".symtab").get_symbol_by_name(name)[0]
@@ -166,6 +219,8 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         "symbol": name, "address": symbol_spec["start"], "size": len(code),
         "source": source_spec["source"], "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
         "compiler": source_spec["compiler"], "flags": source_spec["flags"],
+        **({"maspsx_flags": maspsx_flags} if maspsx_flags else {}),
+        **({"small_data": source_spec["small_data"]} if small_data is not None else {}),
         "globals": source_spec.get("globals", {}),
         "gcc_archive_sha256": GCC_COMPILERS[source_spec["compiler"]][1], "maspsx_archive_sha256": MASPSX_HASH,
         "linker": linker_version, "compiled_sha256": hashlib.sha256(code).hexdigest(),

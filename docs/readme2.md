@@ -1,18 +1,27 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 37,900 exact code bytes across 149
-functions (`1.247052%` of mapped code), including two Clang-built getters,
+The validated report currently contains 40,416 exact code bytes across 151
+functions (`1.329838%` of mapped code), including two Clang-built getters,
 eight original GCC C functions, ten GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
 `vector_range_condition_q12` (`func_80053D68`), 20
 assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
 product, four newly matched bounded move-request callers, 22 C matrix-scaler
-copies, and 38 repeated actor-flag/cursor helper copies. The actor-event dispatcher remains
-fuzzy while its C reconstruction is refined; the shared actor-state dispatcher
-is now byte-matched from high-level C under a documented per-function
-`-fno-cse-follow-jumps` reproduction profile.
+copies, and 38 repeated actor-flag/cursor helper copies. The actor-event
+dispatcher now has an assembly-backed exact transcription; its separate C
+candidate remains a semantic model. The shared actor-state dispatcher is
+byte-matched from high-level C under a documented per-function
+`-fno-cse-follow-jumps` reproduction profile, and the 2,200-byte shared
+actor state-2 handler is byte-matched from high-level C using MASPSX
+`--expand-div` and gp-relative small-data externs.
+The readable-C conversion pass has also replaced the assembly-backed event-byte
+helpers `func_8002E7D8`/`func_8002E7FC` and vector-scale wrapper `func_80053A08`
+with byte-exact plain C. Current exact coverage contains 112 C-based matches
+and 39 assembly-backed matches; some C-based target sources still use inline
+instruction snippets. These counts include repeated module copies, and the
+remaining assembly-backed matches are unfinished for readable-C decompilation.
 Portable host models remain covered by native regression tests. The current report maps
 3,039,168 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete

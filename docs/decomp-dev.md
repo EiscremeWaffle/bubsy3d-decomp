@@ -33,7 +33,7 @@ and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
 The current validated snapshot maps 3,039,168 instruction bytes and credits
-37,900 exact code bytes across 149 functions (1.247052%), plus 196 exact data
+40,416 exact code bytes across 151 functions (1.329838%), plus 196 exact data
 bytes. This includes the 3,228-byte grounded-state handler, the 1,804-byte
 `func_800347EC` helper, the `game_apply_queued_move_request` movement consumer,
 and the `func_80054B20`/`func_80054C7C` component-transform helpers as

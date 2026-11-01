@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 37,900 exact code bytes across 149
-functions, or `1.247052%` of mapped code. The total includes two Clang-built
+The validated report currently credits 40,416 exact code bytes across 151
+functions, or `1.329838%` of mapped code. The total includes two Clang-built
  getters, eight original GCC C functions, the assembly-backed death and
 grounded-state handlers, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
@@ -59,9 +59,9 @@ the four bounded move-request caller transcriptions `func_80015A54`,
 the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
 `func_80062E50`, the exact C squared-difference nonzero test
 `move_vector_has_nonzero_squared_length` (linker label `func_80053904`), the
-C-built forwarding helper `func_800539E4`, and the assembly-backed grounded-case
+C-built forwarding helper `func_800539E4`, and the C-built grounded-case
 global-byte helpers `func_8002E7D8` and `func_8002E7FC`, and the
-assembly-backed transcription of the 104-byte vector-scale wrapper
+C-built 104-byte vector-scale wrapper
 `func_80053A08`,
 the C-built pending-vector conversion `func_800536F4` and grounded-handler
 forwarding wrappers `func_8002262C` and `func_80022650`,
@@ -77,9 +77,11 @@ the C-built `vector_length_q12`, `vector_range_scale_q12`, and
  `vector_range_condition_q12` functions (their exact-match linker labels remain
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
 22 C copies of
-`func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers. The
-actor-event dispatcher remains fuzzy; the target-only C draft for
-`shared_actor_state_dispatch` is also not exact and earns no progress credit.
+`func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers.
+`bubsy_process_actor_event` has an exact assembly-backed transcription in
+`src/player_model/bubsy_actor_events_match.c`; its separate target C candidate
+remains a readable semantic model. `shared_actor_state_2_handler` is now
+byte-matched from high-level C in `src/player_model/shared_actor_state_2.c`.
 The progress site changes only after this snapshot is committed, pushed, and
  published by GitHub Actions.
 
@@ -263,6 +265,11 @@ State `2` calls a separate `shared_actor_state_2_handler` at `0x8003697C`,
 which returns at `0x80037214`. It has its own `0xE8`-byte frame and no other
 direct callers were found. It reads player model-mode/configuration data and
 calls shared actor/model helpers; its gameplay purpose is still unresolved.
+The bounded 2,200-byte range is byte-matched from high-level C in
+`src/player_model/shared_actor_state_2.c` (GCC 2.6.3 PSX, MASPSX
+`--expand-div`, with runtime mode, player-ready, and the mode-one handle as
+gp-relative small-data externs). One register pin and an empty asm barrier
+keep `&g_actor_handles` in `s4`; gameplay meanings remain provisional.
 
 State `23` reaches `shared_actor_state_23_handler` at `0x80037D14`, which
 returns at `0x80038364` after the `jr` delay slot. It has one direct caller.
@@ -375,7 +382,11 @@ then clears descriptor halfword `+0x02` on every path. The path calling
 companion's `+0x28` word is zero or the companion pointer is null, the signed
 dot result is less than `0xCCC`, and descriptor state `+0x02` is not `5`.
 `func_8002E7D8` clears the global byte at `$gp+0x2C4`; its adjacent helper
-`func_8002E7FC` sets that byte to one. Otherwise case 21 calls
+`func_8002E7FC` sets that byte to one. Both now match from plain C in
+`src/game/func_8002E7D8.c`, with `g_grounded_case_event` mapped to `0x800BE020`.
+The profile keeps the original leaf-function frame pointers and declares
+the byte as gp-relative small data; the source needs no inline assembly.
+Otherwise case 21 calls
 `0x8002262C(actor, 0xC)`. The predicate and descriptor write are modeled and
 tested. The threshold path also reaches `0x800347EC(actor, third_argument, 1)`;
 that helper's effects remain unresolved.
@@ -589,8 +600,11 @@ uses target-specific return-register and zero-store constraints. This
 processing has not been shown to update Bubsy's world position or velocity.
 The subsequent `func_80053A08` wrapper applies `func_8001007C` to each of three
 components using the same scale and adjacent output slots, then returns zero.
-Its 104-byte range matches through an explicit assembly transcription; the
-available high-level C draft has not been made byte-exact.
+Its 104-byte range now matches from plain C in `src/game/func_80053A08.c`,
+with natural GCC register allocation and no inline assembly or register pins.
+The calls read and write components sequentially, preserving the original
+behavior for in-place and partially overlapping buffers. Native tests cover
+zero, negative, and fractional scales, call count, and output bounds.
 
 The same update calls `0x8005290C` with the actor's component pointer and an
 output byte. Its bounded code reads actor offsets `0x04`, `0x05`, `0x07`, `0x08`,
@@ -641,10 +655,10 @@ runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
 
 The portable C model in `bubsy_actor_events.c` keeps event/property IDs and
 engine operations explicit through callbacks. The target C version uses the
-original two-argument ABI and follows the observed branches, but still differs
-from the original 316-byte body. It remains a fuzzy candidate until compiled C
-matches every byte. Gameplay meanings and engine callback implementations are
-still unknown.
+original two-argument ABI and follows the observed branches, but is not the
+exact source profile. The exact 316-byte range is independently represented by
+the assembly-backed transcription in `bubsy_actor_events_match.c`. Gameplay
+meanings and engine callback implementations are still unknown.
 
 ## Death-State Routine
 
