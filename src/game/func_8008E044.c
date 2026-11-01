@@ -3,7 +3,7 @@
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
 #define FUNC_8008E044_CHARACTER_TABLE ((volatile uint32_t *)0x801D7D44)
 #else
-extern volatile uint32_t g_character_state_table[];
+extern volatile uintptr_t g_character_state_table[];
 #define FUNC_8008E044_CHARACTER_TABLE g_character_state_table
 #endif
 

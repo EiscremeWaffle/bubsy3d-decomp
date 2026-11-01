@@ -726,6 +726,10 @@
         {
           "source": "src/player_model/shared_actor_state_2.c",
           "symbols": ["shared_actor_state_2_handler"]
+        },
+        {
+          "source": "src/player_model/shared_actor_state_dispatch.c",
+          "symbols": ["shared_actor_state_dispatch"]
         }
       ],
       "data_sources": [

@@ -220,8 +220,12 @@ callers and takes an actor pointer, a pointer to a halfword state ID, and a
 mode; observed callers use modes `0`, `1`, and `2`, so it is not Bubsy-only.
 It derives a key from component halfword `+0x0C`, tests actor mask `0x1100`,
 updates component fields `+0x30/+0x34`, and calls shared engine helpers. Its
-gameplay role remains unresolved; the complete function is not translated or
-byte-matched. Its initial branch is translated in
+gameplay role remains unresolved. A readable target C candidate now lives in
+`src/player_model/shared_actor_state_dispatch.c`; the pinned compiler emits the
+correct 516-byte size but differs at one instruction word, so it receives no
+exact-match credit. The target stores literal zero where the candidate stores
+the mode register, which is zero on that path; the behavior appears equivalent,
+but remains unverified at whole-function level. Its initial branch is translated in
 `player_actor_shared_state_clear_progress`: key `0x2A7` or any overlap with
 actor mask `0x1100` clears component words `+0x30` and `+0x34`.
 In mode `1`, actor state mask `0x8000` bypasses the numeric update; otherwise

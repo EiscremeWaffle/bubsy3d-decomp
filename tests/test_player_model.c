@@ -22,17 +22,119 @@ extern int32_t func_800546F4(const GameComponentBasisView *input, GameComponentB
 extern int32_t func_8005476C(const GameComponentBasisView *input, GameComponentBasisView *output);
 extern int32_t func_8005406C(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
 extern int32_t func_80054120(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
+extern int32_t func_8008E044(int32_t character_index, int32_t state_index);
+extern int32_t func_8005D5A8(int16_t requested_key, int16_t value);
 uint32_t g_l0_gp_170;
 void *g_l0_gp_888;
+volatile uintptr_t g_character_state_table[8];
+_Alignas(uint32_t) static uint8_t g_character_state_fixture[512];
+typedef struct SequenceLimitEntry {
+    int16_t key;
+    int16_t limit;
+    uint8_t padding[68];
+} SequenceLimitEntry;
+_Alignas(int16_t) volatile uint8_t g_l0_runtime_globals[0x630];
+volatile SequenceLimitEntry g_sequence_limit_entries[4];
+static uint32_t g_character_state_notification;
+static unsigned int g_character_state_notification_count;
 extern uint32_t func_80056678(uint32_t value, uint32_t selector);
 extern int32_t func_8005668C(uint32_t *state, uint8_t selector);
 extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
+
+int32_t func_80094108(uint32_t selection) {
+    g_character_state_notification = selection;
+    g_character_state_notification_count++;
+    return -1;
+}
 
 static uint16_t g_inverse_basis_matrix[9];
 static int32_t g_inverse_basis_translation[3];
 static int32_t g_inverse_basis_input[4];
 static unsigned int g_inverse_basis_call_count;
 static unsigned int g_point_transform_word_count = 4;
+
+static void test_func_8008E044(void) {
+    const size_t row_offset = 3u * 44u;
+    uint32_t source_word;
+    uint16_t source_halfword;
+    unsigned int index;
+
+    memset(g_character_state_fixture, 0xA5, sizeof(g_character_state_fixture));
+    g_character_state_table[4] = (uintptr_t)g_character_state_fixture;
+    g_character_state_notification = 0;
+    g_character_state_notification_count = 0;
+
+    *(uint32_t *)(g_character_state_fixture + row_offset + 0x90) = UINT32_MAX;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 44 + 0x90) = UINT32_MAX;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 88 + 0x90) = UINT32_MAX;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 132 + 0x90) = UINT32_MAX & ~0x04u;
+    source_word = 0x12345678u;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 0x7C) = source_word;
+    source_word = 0x89ABCDEFu;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 0x84) = source_word;
+    source_word = 0x76543210u;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 0x08) = source_word;
+    source_halfword = 0xBEEFu;
+    *(uint16_t *)(g_character_state_fixture + row_offset + 0x72) = source_halfword;
+
+    assert(func_8008E044(0x10004, 0x10003) == 0x7F);
+    assert(g_character_state_notification_count == 1);
+    assert(g_character_state_notification == 0x304);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x90) == (UINT32_MAX & ~0x02u));
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 44 + 0x90) == (UINT32_MAX & ~0x04u));
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 88 + 0x90) == (UINT32_MAX & ~0x08u));
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 132 + 0x90) == UINT32_MAX);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x80) == 0);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x88) == 0x12345678u);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x8C) == 0x89ABCDEFu);
+    assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x48) == 0);
+    assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x70) == 0xBEEFu);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x04) == 0x76543210u);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x0C) == 0x76543210u);
+    assert(g_character_state_fixture[row_offset + 0x10] == 0);
+    assert(g_character_state_fixture[row_offset + 0x11] == 0);
+    assert(g_character_state_fixture[row_offset + 0x12] == 0);
+    assert(g_character_state_fixture[row_offset + 0x13] == 0);
+    assert(g_character_state_fixture[row_offset + 0x14] == 0);
+    assert(g_character_state_fixture[row_offset + 0x15] == 0);
+    assert(g_character_state_fixture[row_offset + 0x16] == 0);
+    assert(g_character_state_fixture[row_offset + 0x27] == 0);
+    assert(g_character_state_fixture[row_offset + 0x28] == 0);
+    assert(g_character_state_fixture[row_offset + 0x29] == 0);
+    assert(g_character_state_fixture[row_offset + 0x2A] == 0);
+    assert(g_character_state_fixture[row_offset + 0x2B] == 0);
+
+    for (index = 0; index < 16; index++) {
+        assert(g_character_state_fixture[row_offset + 0x2C + index] == 0);
+        assert(g_character_state_fixture[row_offset + 0x17 + index] == 0x40);
+        assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x4E + index * 2) == 0x7F);
+    }
+    assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x78) == 0x7F);
+    assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x7A) == 0x7F);
+}
+
+static void test_func_8005D5A8(void) {
+    unsigned int index;
+
+    for (index = 0; index < sizeof(g_l0_runtime_globals); index++) {
+        g_l0_runtime_globals[index] = 0;
+    }
+    for (index = 0; index < 4; index++) {
+        g_sequence_limit_entries[index].key = (int16_t)(100 + index);
+        g_sequence_limit_entries[index].limit = 0;
+    }
+    *(volatile int16_t *)(g_l0_runtime_globals + 0x62C) = 3;
+    g_sequence_limit_entries[1].key = 7;
+    g_sequence_limit_entries[1].limit = -3;
+
+    g_l0_runtime_globals[0x624] = 1;
+    assert(func_8005D5A8(7, -4) == 0x1B);
+    g_l0_runtime_globals[0x624] = 0;
+    assert(func_8005D5A8(7, -4) == 1);
+    assert(func_8005D5A8(7, -2) == 0);
+    assert(func_8005D5A8(7, 0) == 0);
+    assert(func_8005D5A8(99, -4) == 1);
+}
 
 int32_t func_80010000(const int32_t left[3], const int32_t right[3], int32_t output[3]) {
     unsigned int index;
@@ -2795,6 +2897,8 @@ static void test_bubsy_death_state_finalization(void) {
 }
 
 int main(void) {
+    test_func_8008E044();
+    test_func_8005D5A8();
     test_grounded_movement_helpers();
     test_component_basis_copy_helpers();
     test_component_basis_normalization_helpers();
