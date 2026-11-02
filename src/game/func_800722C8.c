@@ -11,11 +11,22 @@ extern void *func_80076890(GteTransformMatrix *view_matrix, const void *object_t
 extern void func_80076CCC(const GteTransformMatrix *light_matrix);
 
 void func_800722C8(const void *object_transform) {
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
     register const volatile GteTransformMatrix *source_matrix __asm__("$5");
-    volatile GteTransformMatrix view_matrix;
     register GteTransformMatrix *view_matrix_value __asm__("$16");
+#else
+    const volatile GteTransformMatrix *source_matrix;
+    GteTransformMatrix *view_matrix_value;
+#endif
+    volatile GteTransformMatrix view_matrix;
 
-    __asm__ volatile ("la %0, g_camera_view_transform" : "=r" (source_matrix));
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    __asm__ volatile ("" : : : "memory");
+#endif
+    source_matrix = &g_camera_view_transform;
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    __asm__ volatile ("" : "=r" (source_matrix) : "0" (source_matrix));
+#endif
     {
         uint32_t matrix_word_0 = source_matrix->words[0];
         uint32_t matrix_word_1 = source_matrix->words[1];

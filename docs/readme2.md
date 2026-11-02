@@ -29,9 +29,14 @@ getter, not an identified controller input.
 The complementary 968-byte deceleration producer `func_80038844` now matches
 from plain C with natural register allocation and no inline assembly. Its
 native tests cover 1,310,720 boundary combinations plus helper mutations.
-Current exact coverage contains 117 C-based matches
-and 36 assembly-backed matches; some C-based target sources still use inline
-instruction snippets. These counts include repeated module copies, and the
+The readable-C pass has additionally converted nine old assembly-backed
+functions (1,852 bytes), and removed instruction snippets from seven existing
+C matches without changing any matched bytes.
+Current exact coverage contains 126 C-based matches
+and 27 assembly-backed matches. One C-based source still contains instruction
+snippets (`func_8001007C`); the other 125 matches contain
+readable C with at most symbol aliases, register constraints, and empty barriers.
+These counts include repeated module copies, and the
 remaining assembly-backed matches are unfinished for readable-C decompilation.
 Portable host models remain covered by native regression tests. The current report maps
 3,040,136 instruction bytes across all 22 recognized executables, including

@@ -95,17 +95,17 @@
       {
         "address": "0x800250CC",
         "symbol": "func_800250CC",
-        "evidence": "160-byte queue drain skips applying entries when the component sequence key is 0x31F but still clears the count; otherwise it applies each queued object through 0x80024F2C while rereading the live count, then clears the count. Exact assembly transcription and readable C candidate are in src/game/func_800250CC_match.c and src/game/func_800250CC.c"
+        "evidence": "160-byte queue drain skips applying entries when the component sequence key is 0x31F but still clears the count; otherwise it applies each queued object through 0x80024F2C while rereading the live signed halfword count, then clears the count. All bytes match plain C in src/game/func_800250CC.c."
       },
       {
         "address": "0x8004FF50",
         "symbol": "func_8004FF50",
-        "evidence": "156-byte helper rejects null inputs with result 1, marks $gp+0x860 busy, allocates a 16-byte record, returns 3 and clears busy on null/-1 allocation, or links actor/value/value/old-head at $gp+0x85C, writes the output pointer, clears busy, and returns zero. Exact assembly transcription and readable C candidate are in src/game/func_8004FF50_match.c and src/game/func_8004FF50.c."
+        "evidence": "156-byte helper rejects null inputs with result 1, marks $gp+0x860 busy, allocates a 16-byte record, returns 3 and clears busy on null/-1 allocation, or links actor/value/value/old-head at $gp+0x85C, writes the output pointer, clears busy, and returns zero. All bytes match plain C in src/game/func_8004FF50.c."
       },
       {
         "address": "0x8004FFEC",
         "symbol": "func_8004FFEC",
-        "evidence": "164-byte helper searches the event list at $gp+0x85C, unlinks the matching record, frees it through func_80082EFC, clears $gp+0x860, and returns 0; null/not-found returns 1. Exact assembly transcription and readable C candidate are in src/game/func_8004FFEC_match.c and src/game/func_8004FFEC.c."
+        "evidence": "164-byte helper searches the event list at $gp+0x85C, unlinks the matching record, frees it through func_80082EFC, clears $gp+0x860, and returns 0; null/not-found returns 1. All bytes match plain C in src/game/func_8004FFEC.c."
       },
       {
         "address": "0x8001C700",

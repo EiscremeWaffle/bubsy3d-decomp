@@ -34,7 +34,6 @@ int32_t bubsy_process_actor_event(int32_t update_mode, void *actor) {
         if (event_value != expected_event) {
             goto mode_zero_swim;
         }
-        __asm__ volatile("" : "=r"(expected_event) : "0"(expected_event));
         expected_event = 3;
         __asm__ volatile("" : : : "memory");
         state_base = 0x80180000u;
@@ -70,12 +69,12 @@ mode_zero_swim:
     __asm__ volatile("" : : : "$8", "memory");
     return func_800532CC(*(void * volatile *)((uint8_t *)actor_value + 0x1C), 1, 0, 0, 0);
 mode_one:
+    property_id = BUBSY_EVENT_PROPERTY_KIND_157;
     if (bubsy_runtime_globals[0x7EC] == 0) {
         component_value = *(void * volatile *)((uint8_t *)actor_value + 0x1C);
         property_id = BUBSY_EVENT_PROPERTY_KIND_3E0;
     } else {
         component_value = *(void * volatile *)((uint8_t *)actor_value + 0x1C);
-        property_id = BUBSY_EVENT_PROPERTY_KIND_157;
     }
 mode_one_select:
     func_80052AEC(component_value, property_id);

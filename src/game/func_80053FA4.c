@@ -9,6 +9,10 @@ typedef struct ComponentBasisView {
 
 extern int32_t func_80077298(const volatile ComponentBasisView *basis, const int32_t input[4], int32_t output[4]);
 extern const volatile ComponentBasisView g_gte_global_basis;
+extern const volatile uint32_t g_gte_global_basis_word_0;
+extern const volatile uint32_t g_gte_global_basis_word_1;
+extern const volatile uint32_t g_gte_global_basis_word_2;
+extern const volatile uint32_t g_gte_global_basis_word_3;
 
 int32_t func_80053FA4(const int32_t input[4], const volatile ComponentBasisView *basis, int32_t output[4]) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
@@ -29,19 +33,20 @@ int32_t func_80053FA4(const int32_t input[4], const volatile ComponentBasisView 
 
  #ifdef BUBSY3D_MATCH_ORIGINAL_L0
     basis_word = basis->matrix_words[0];
-    __asm__ volatile("lui %0,0x800A\n\tlw %0,0x42CC(%0)" : "=r"(global_word) : : "memory");
+    __asm__ volatile("" : "=r"(basis_word) : "0"(basis_word) : "$2", "memory");
+    global_word = g_gte_global_basis_word_0;
     if (basis_word != global_word) goto transform;
     __asm__ volatile("" : : : "memory");
     basis_word = basis->matrix_words[1];
-    __asm__ volatile("lui %0,0x800A\n\tlw %0,0x42D0(%0)" : "=r"(global_word) : : "memory");
+    global_word = g_gte_global_basis_word_1;
     if (basis_word != global_word) goto transform;
     __asm__ volatile("" : : : "memory");
     basis_word = basis->matrix_words[2];
-    __asm__ volatile("lui %0,0x800A\n\tlw %0,0x42D4(%0)" : "=r"(global_word) : : "memory");
+    global_word = g_gte_global_basis_word_2;
     if (basis_word != global_word) goto transform;
     __asm__ volatile("" : : : "memory");
     basis_word = basis->matrix_words[3];
-    __asm__ volatile("lui %0,0x800A\n\tlw %0,0x42D8(%0)" : "=r"(global_word) : : "memory");
+    global_word = g_gte_global_basis_word_3;
     if (basis_word != global_word) goto transform;
 #else
     if (basis->matrix_words[0] != g_gte_global_basis.matrix_words[0]) goto transform;
@@ -50,11 +55,8 @@ int32_t func_80053FA4(const int32_t input[4], const volatile ComponentBasisView 
     if (basis->matrix_words[3] != g_gte_global_basis.matrix_words[3]) goto transform;
 #endif
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
-    __asm__ volatile("lh %0, 0x10(%1)" : "=r"(basis_matrix_last) : "r"(basis));
-    __asm__ volatile(
-        "lui %0, 0x800A\n\tlh %0, 0x42DC(%0)"
-        : "=&r"(global_matrix_last)
-    );
+    basis_matrix_last = ((const ComponentBasisView *)basis)->matrix_last;
+    global_matrix_last = ((const ComponentBasisView *)&g_gte_global_basis)->matrix_last;
     if (basis_matrix_last != global_matrix_last) goto transform;
 #else
     if (basis->matrix_last != g_gte_global_basis.matrix_last) goto transform;

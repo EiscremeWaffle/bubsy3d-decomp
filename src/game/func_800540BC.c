@@ -39,21 +39,10 @@ int32_t func_800540BC(const int32_t input[4], const ComponentBasisView *basis, i
     translation_argument = translated;
     __asm__ volatile("" : "=r"(translation_argument) : "0"(translation_argument));
 #endif
-#ifdef BUBSY3D_MATCH_ORIGINAL_L0
-    __asm__ volatile(
-        ".set noreorder\n\t"
-        "lw $2,0x1C(%0)\n\t"
-                "addu $6,%3,$zero\n\t"
-        "jal func_80010038\n\t"
-        "sw $2,0x28($sp)\n\t"
-        ".set reorder"
-        :
-        : "r"(basis_value), "r"(transformed_argument),
-                    "r"(translation_argument), "r"(output_value)
-                : "$2", "$6", "$31", "memory"
-    );
-#else
     translated[2] = basis_value->translation[2];
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    func_80010038(transformed_argument, translation_argument, output_value);
+#else
     func_80010038(transformed, translated, output_value);
 #endif
     return 0;

@@ -50,13 +50,10 @@ int32_t vector_range_scale_q12(const int32_t *input, int32_t *output) {
     if (first_scale == 0) {
     #ifdef BUBSY3D_MATCH_ORIGINAL_L0
         result = 7;
-        __asm__ volatile(
-            "sw $zero,0(%0)\n\t"
-            "sw $zero,4(%0)\n\t"
-            "sw $zero,8(%0)\n\t"
-            :
-            : "r"(output)
-        );
+        __asm__ volatile("" : : : "$5", "memory");
+        output[0] = 0;
+        output[1] = 0;
+        output[2] = 0;
         return result;
     #else
         output[0] = 0;

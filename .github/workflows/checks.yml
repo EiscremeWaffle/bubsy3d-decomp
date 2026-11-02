@@ -40,3 +40,15 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_deceleration.c tests/test_bubsy_grounded_deceleration.c -o /tmp/test_bubsy_grounded_deceleration
           /tmp/test_bubsy_grounded_deceleration
+      - name: Compile and test converted readable matches
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80024EBC.c src/game/func_800250CC.c src/game/func_8004FF50.c src/game/func_8004FFEC.c src/game/func_8004EC20.c src/game/func_8004ECFC.c src/game/func_8004ED78.c src/game/func_80037B30.c src/game/func_80062E50.c tests/test_readable_matches.c -o /tmp/test_readable_matches
+          /tmp/test_readable_matches
+      - name: Compile and test readable transform wrappers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80053FA4.c src/game/func_800540BC.c src/game/func_800722C8.c tests/test_readable_transforms.c -o /tmp/test_readable_transforms
+          /tmp/test_readable_transforms
+      - name: Compile and test movement step production
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80022944.c tests/test_move_step.c -o /tmp/test_move_step
+          /tmp/test_move_step

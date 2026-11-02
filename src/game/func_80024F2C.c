@@ -40,7 +40,9 @@ void func_80024F2C(const MoveConsumerObjectView *object) {
 
     if (move_info == 0) {
         register int32_t failed __asm__("$4");
-        __asm__ volatile("addu $4,$zero,$zero" : "=r"(failed));
+        __asm__ volatile("" : : : "$17");
+        failed = 0;
+        __asm__ volatile("" : "=r"(failed) : "0"(failed));
         func_800556D0(failed, g_move_info_condition, g_game_source_path, 0xB12);
         return;
     }

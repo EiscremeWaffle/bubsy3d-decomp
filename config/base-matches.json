@@ -91,7 +91,7 @@
         {
           "source": "src/player_model/player_vector_transform.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "C function vector_range_scale_q12 uses the original func_8005395C linker label and target-specific return/store constraints to byte-match with pinned GCC 2.6.3; caller semantics remain unknown.",
+          "compiler_profile": "Readable C vector_range_scale_q12 uses the original func_8005395C linker label and byte-matches with pinned GCC 2.6.3. Register constraints and an empty clobber barrier preserve the zero stores; no instruction snippets. Caller semantics remain unknown.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -211,26 +211,38 @@
           }
         },
         {
-          "source": "src/game/func_80024EBC_match.c",
+          "source": "src/game/func_80024EBC.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the shared move-request enqueue primitive; the host C semantic model remains in move_requests.c.",
+          "compiler_profile": "Readable C queue enqueue with signed capacity check, assertion continuation and wrapped halfword count; exact with pinned GCC/MASPSX. One register pin and empty barrier preserve the unsigned reload; no instruction snippets.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["game_enqueue_move_request"]
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["game_enqueue_move_request"],
+          "globals": {
+            "g_move_request_count": "0x800BDED8",
+            "g_move_request_entries": "0x80185A6C",
+            "g_move_request_count_condition": "0x80012168",
+            "g_game_source_path": "0x800120AC"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_move_request_count"]}
         },
         {
-          "source": "src/game/func_800250CC_match.c",
+          "source": "src/game/func_800250CC.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the L0 move-request queue drain; readable control flow is in func_800250CC.c.",
+          "compiler_profile": "Plain C queue drain; all 160 bytes match with natural register allocation. Preserves signed halfword iteration and live count reads across callbacks; no assembly, register pins or barriers.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["func_800250CC"]
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_800250CC"],
+          "globals": {
+            "g_move_request_count": "0x800BDED8",
+            "g_move_request_entries": "0x80185A6C"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_move_request_count"]}
         },
         {
           "source": "src/game/func_80053904.c",
@@ -261,37 +273,55 @@
           "symbols": ["func_8002E7D8", "func_8002E7FC"]
         },
         {
-          "source": "src/game/func_8004FF50_match.c",
+          "source": "src/game/func_8004FF50.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the grounded event-record allocator; readable control flow is in func_8004FF50.c.",
+          "compiler_profile": "Plain C event-record allocator; all 156 bytes match with natural register allocation and gp-relative list/busy externs. Preserves null/-1 allocation failure and list publication order; no instruction snippets.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["func_8004FF50"]
+          "headers": ["src/game/grounded_event_records.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004FF50"],
+          "globals": {
+            "g_grounded_event_records": "0x800BE5B8",
+            "g_grounded_event_busy": "0x800BE5BC"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_grounded_event_records", "g_grounded_event_busy"]}
         },
         {
-          "source": "src/game/func_8004FFEC_match.c",
+          "source": "src/game/func_8004FFEC.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the grounded event-record remover; readable control flow is in func_8004FFEC.c.",
+          "compiler_profile": "Plain C event-record list removal; all 164 bytes match with natural register allocation and gp-relative list/busy externs. Preserves missing-record and deallocation call order; no instruction snippets.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["func_8004FFEC"]
+          "headers": ["src/game/grounded_event_records.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004FFEC"],
+          "globals": {
+            "g_grounded_event_records": "0x800BE5B8",
+            "g_grounded_event_busy": "0x800BE5BC"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_grounded_event_records", "g_grounded_event_busy"]}
         },
         {
-          "source": "src/game/func_80037B30_match.c",
+          "source": "src/game/func_80037B30.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the 484-byte grounded case-37 initializer; control flow remains under investigation.",
+          "compiler_profile": "Readable C case-37 initializer; all 484 bytes match pinned GCC/MASPSX. Three short-lived pointer register constraints preserve reset sampling; no instruction snippets. Globals and actor/component pointers are reread after helpers as in the original.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
-          "symbols": ["func_80037B30"]
+          "headers": ["src/game/grounded_case37.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_80037B30"],
+          "globals": {
+            "g_grounded_case37_counter": "0x800BE0BE",
+            "g_grounded_case37_object": "0x800BE104",
+            "g_runtime_state_61": "0x80186461",
+            "g_level_value_801E8994": "0x801D8994",
+            "g_level_pointer_801E89A4": "0x801D89A4"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_grounded_case37_counter", "g_grounded_case37_object"]}
         },
         {
           "source": "src/game/func_8001C700.c",
@@ -326,7 +356,7 @@
         {
           "source": "src/game/func_8001007C.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with a narrow inline HI/LO extraction for target register scheduling.",
+          "compiler_profile": "Instruction-assisted C byte-matched with pinned GCC 2.6.3/MASPSX. Explicit mult/mfhi/mflo instructions still provide multiply and HI/LO extraction; this is not yet a complete readable-C conversion.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -348,7 +378,7 @@
         {
           "source": "src/game/func_80062E50.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, with constrained register operands for target instruction ordering.",
+          "compiler_profile": "Readable C wrapped approximate distance, byte-matched with pinned GCC 2.6.3/MASPSX using register constraints but no instruction snippets. Unsigned intermediate arithmetic preserves target wrapping for all signed inputs.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -381,12 +411,12 @@
         {
           "source": "src/game/func_80022944.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "compiler_profile": "Readable C byte-matched with pinned GCC 2.6.3/MASPSX. Register constraints and empty barriers retain the original allocation; the clamped-step self-subtract is expressed in C, and arithmetic uses wrapping unsigned intermediates.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/move_step.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_80022944"],
           "globals": {
             "g_move_info_condition": "0x800BDEF4",
@@ -539,47 +569,64 @@
         {
           "source": "src/game/func_8004EC20.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the camera slot position/rotation setter; readable C behavior is retained outside the matching profile.",
+          "compiler_profile": "Readable C camera slot position/rotation setter; all 220 bytes match using -fno-cse-follow-jumps, two scalar register constraints and empty barriers. No instruction snippets; mode is sampled after the transform callback.",
           "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-O2", "-fno-cse-follow-jumps", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
-          "symbols": ["func_8004EC20"]
+          "headers": ["src/game/camera_slots.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004EC20"],
+          "globals": {
+            "g_camera_transforms": "0x8018CA0C",
+            "g_camera_slot_status": "0x800BE2F4",
+            "g_camera_mode": "0x800BE2F0"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_camera_mode"]}
         },
         {
           "source": "src/game/func_8004ECFC.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the camera slot rotation clear; readable C behavior is retained outside the matching profile.",
+          "compiler_profile": "Plain C camera slot rotation clear; all 124 bytes match with natural register allocation and no instruction snippets, pins or barriers.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
-          "symbols": ["func_8004ECFC"]
+          "headers": ["src/game/camera_slots.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004ECFC"],
+          "globals": {
+            "g_camera_transforms": "0x8018CA0C",
+            "g_camera_slot_status": "0x800BE2F4"
+          }
         },
         {
           "source": "src/game/func_8004ED78.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed exact transcription of the camera slot rotation setter; readable C behavior is retained outside the matching profile.",
+          "compiler_profile": "Plain C camera slot rotation setter; all 116 bytes match with natural register allocation and no instruction snippets, pins or barriers.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
-          "symbols": ["func_8004ED78"]
+          "headers": ["src/game/camera_slots.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8004ED78"],
+          "globals": {"g_camera_transforms": "0x8018CA0C"}
         },
         {
           "source": "src/game/func_80053FA4.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "High-level C identity-basis shortcut and GTE dispatch, byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; the COP2 routine remains a separate exact assembly transcription.",
+          "compiler_profile": "Readable C identity-basis shortcut and GTE dispatch; all 200 bytes match without instruction snippets. Scalar aliases for the four global matrix words prevent address CSE; register constraints and empty barriers preserve sampling. The separate COP2 callee remains assembly-backed.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "headers": ["tools/gcc_include/stdint.h"],
           "symbols": ["func_80053FA4"],
-          "globals": {"g_gte_global_basis": "0x800A42CC"}
+          "globals": {
+            "g_gte_global_basis": "0x800A42CC",
+            "g_gte_global_basis_word_0": "0x800A42CC",
+            "g_gte_global_basis_word_1": "0x800A42D0",
+            "g_gte_global_basis_word_2": "0x800A42D4",
+            "g_gte_global_basis_word_3": "0x800A42D8"
+          }
         },
         {
           "source": "src/game/func_800540BC.c",
@@ -629,7 +676,7 @@
         {
           "source": "src/game/func_800722C8.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "C camera view-matrix copy and object composition wrapper, using a constrained address load to preserve the target schedule; byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30.",
+          "compiler_profile": "Readable C camera view-matrix copy and object composition wrapper; all 156 bytes match pinned GCC 2.6.3/MASPSX. Pointer register constraints and empty barriers preserve the address/load schedule; no instruction snippets.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
@@ -811,14 +858,14 @@
           "symbols": ["shared_actor_state_dispatch"]
         },
         {
-          "source": "src/player_model/bubsy_actor_events_match.c",
+          "source": "src/player_model/bubsy_actor_events.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed transcription of the bounded L0 actor-event dispatcher, linked at its verified address and byte-compared against the fingerprinted executable.",
+          "compiler_profile": "Readable C actor-event dispatcher; all 316 bytes match using register constraints and empty compiler barriers, without instruction snippets. Preserves sampled mode/event values and component reloads after helpers.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["src/player_model/bubsy_actor_events.h", "tools/gcc_include/stdint.h", "tools/gcc_include/stddef.h"],
           "symbols": ["bubsy_process_actor_event"]
         },
         {

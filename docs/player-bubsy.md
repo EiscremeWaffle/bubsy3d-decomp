@@ -78,9 +78,9 @@ the C-built `vector_length_q12`, `vector_range_scale_q12`, and
 `func_8005385C`, `func_8005395C`, and `func_80053D68`),
 22 C copies of
 `func_80072F4C`, and 38 repeated copies of two actor-flag/cursor helpers.
-`bubsy_process_actor_event` has an exact assembly-backed transcription in
-`src/player_model/bubsy_actor_events_match.c`; its separate target C candidate
-remains a readable semantic model. `shared_actor_state_2_handler` is now
+`bubsy_process_actor_event` matches all 316 bytes from readable C in
+`src/player_model/bubsy_actor_events.c`, using register constraints and empty
+barriers but no instruction snippets. `shared_actor_state_2_handler` is now
 byte-matched from high-level C in `src/player_model/shared_actor_state_2.c`.
 The progress site changes only after this snapshot is committed, pushed, and
  published by GitHub Actions.
@@ -99,7 +99,10 @@ assembly-backed transcription in `func_800347EC_match.c`, built with pinned
 GCC 2.6.3/MASPSX and linked at its verified address. A separate readable C
  translation is in `bubsy_actor_347ec.c`; it expresses the observed control
 flow, arguments, and state/global writes, but is not the source used for exact
-credit and has not been byte-matched. The host-side planners and tests cover
+credit and has not been byte-matched. It now emits the same 1,804-byte size,
+with differences restricted to the entry saved-register store ordering and
+the final transition-index store ordering. The registered transcription is
+unchanged. The host-side planners and tests cover
 the branch decisions and data changes. Engine-call effects and gameplay
 meanings remain unresolved.
 
@@ -373,14 +376,15 @@ Case `37` at `0x8004B66C` does nothing further when actor flags `+0x04` overlap
 `0x80037B30(0)`; value `5` skips the remaining work; other values call
 `0x80039158(actor, third_argument)`. Cases `29` and `30` directly set
 descriptor byte `+0x10` to `1` and `0`, respectively. These observed branch
-decisions and writes are modeled and tested. The exact 484-byte transcription
+decisions and writes are modeled and tested. The exact 484-byte C reconstruction
 of `func_80037B30` gates on runtime mode, a shared counter, actor state, and
 actor flags; its eligible branch reads both component transforms, calls
 shared actor-state processing, updates actor and descriptor fields, adjusts
 the counter, and requests transition `(0x17, 5)`. The instruction flow is
 exact, but its helper semantics and gameplay meaning remain provisional. A
-readable control-flow candidate is in `src/game/func_80037B30.c`; it preserves
-the observed offsets and calls, but is not byte-matched.
+readable C implementation is in `src/game/func_80037B30.c`; it preserves
+the observed offsets, calls, and live global-pointer reloads. Its native tests
+also cover replacement of the selected object during a helper call.
 Case `13` sets actor byte `+0x01` to `2`. Cases `34` and `36` set that same
 actor byte to `2` and clear descriptor halfword `+0x00`. These direct writes
 are also modeled and covered by host tests.
@@ -498,12 +502,13 @@ tested. `func_8004FF50` rejects null actor/value inputs with result `1`, sets
 `$gp+0x860` busy, and allocates a 16-byte record through `func_80082EEC`.
 Null or `-1` allocation clears busy and returns `3`; success stores actor,
 value, value, and old list head, installs the new head at `$gp+0x85C`, writes
-the output pointer, clears busy, and returns zero. Its exact assembly match is
-in `func_8004FF50_match.c`; `func_8004FF50.c` is readable but not byte-matched.
+the output pointer, clears busy, and returns zero. All 156 bytes now match
+plain C in `src/game/func_8004FF50.c`.
 The adjacent `func_8004FFEC` searches that list, unlinks the matching record,
 frees it through `func_80082EFC`, and returns zero; null or not-found records
-return one after clearing busy where applicable. It is exactly transcribed in
-`func_8004FFEC_match.c`; the C candidate is readable but not byte-matched.
+return one after clearing busy where applicable. All 164 bytes now match
+plain C in `src/game/func_8004FFEC.c`. Native tests cover allocation failure,
+head/middle/tail removal, missing records, and helper mutations.
 The larger `func_80034EF8` effects in this path remain unresolved.
 Case `15` (`0x8004B8D8`) reads the current sequence key. Key `0x2BE` selects
 index `0x2C3`, calls `0x80052E18`, and submits the move request with arguments
@@ -547,9 +552,8 @@ That path skips applying entries but still clears the queue count. For other
 keys, it repeatedly applies queued object pointers through `func_80024F2C` and
 rereads the signed count after each application, so entries appended during
 draining are included in that pass; it clears the count after the loop.
-Its exact match is the assembly-backed transcription in
-`func_800250CC_match.c`; the readable control flow in `func_800250CC.c` is not
-byte-matched C.
+All 160 bytes match plain C in `src/game/func_800250CC.c`, using a signed
+halfword loop index and a live count reload across each helper call.
 
 The consumer's pending-vector conversion `func_800536F4` is now a 128-byte
 C match. Each component takes an arithmetic right shift by 12; negative
@@ -669,9 +673,9 @@ runtime mode plus L0 state byte `0x80186463`. Verified branch outcomes include:
 
 The portable C model in `bubsy_actor_events.c` keeps event/property IDs and
 engine operations explicit through callbacks. The target C version uses the
-original two-argument ABI and follows the observed branches, but is not the
-exact source profile. The exact 316-byte range is independently represented by
-the assembly-backed transcription in `bubsy_actor_events_match.c`. Gameplay
+original two-argument ABI and now matches all 316 original bytes. Its register
+constraints and empty barriers emit no instructions themselves; the superseded
+assembly transcription has been removed. Gameplay
 meanings and engine callback implementations are still unknown.
 
 ## Death-State Routine
@@ -808,11 +812,12 @@ pointers through this API.
 The 160-byte routine at `0x800250CC` drains the request array after a sequence-
 key query. When the key is `0x31F`, it skips applying entries but still clears
 the count. Otherwise it applies each queued pointer through `0x80024F2C`,
-checks the live count again, and clears the count after the loop. The bounded instructions are an exact
-assembly-backed match in `src/game/func_800250CC_match.c`. The readable C
-control-flow candidate is `src/game/func_800250CC.c`; GCC's pointer induction
-and global-access scheduling differ from the target, so that C source is not
-credited as an exact match.
+checks the live count again, and clears the count after the loop. The complete
+160 bytes now match plain C in `src/game/func_800250CC.c`; the halfword loop
+index reproduces the original sign-extension and indexed addressing.
+The enqueue primitive also matches all 112 bytes from readable C in
+`src/game/func_80024EBC.c`, including assertion continuation and a count reload
+after the assertion callback.
 
 The six L0 call sites group into four caller candidates: `0x80015EA0` in the
 `0x80015A54..0x80016270` frame is gated by actor word `+0x10` bit `0x04`;
@@ -906,6 +911,13 @@ transform's third basis vector, then accumulates the scaled result. The request
 preparation path initializes `+0x30` to twice a table selector in its selector
 mode. This grounds the stride-to-translation dataflow without identifying the
 stride as physical velocity.
+
+The matched source now contains no instruction snippets: the clamped-step
+self-subtraction is expressed in C, with register constraints and empty
+barriers retained for matching. Wrapping arithmetic is explicit, including
+the original signed-minimum delta behavior. A native harness executes this
+same implementation over 73,695 boundary combinations and callback mutations;
+it also checks transformed pending-vector accumulation and the live Y gate.
 
 ### Grounded Stride Producer and Upstream Boundary
 
@@ -1205,3 +1217,14 @@ the result as the GTE light matrix. The exact C helper `func_80072298` loads an
 RT rotation matrix and translation into the GTE. This confirms that the
 component global/world frame feeds renderer GTE setup; the full packet-building
 and RTPT/RTPS submission path remains to be recovered as high-level C.
+
+The three camera-slot routines now match all 460 bytes from readable C:
+`func_8004EC20` (220), `func_8004ECFC` (124), and `func_8004ED78` (116).
+The clear and rotation-only setters need no register constraints or barriers.
+The full setter samples the mode byte after its transform callback and writes
+the slot status afterward. Native tests verify invalid indices, unaffected
+neighboring slots, and callback mutations. Instruction snippets have also been
+removed from the exact C basis shortcut `func_80053FA4`, forward wrapper
+`func_800540BC`, view-matrix copy `func_800722C8`, approximate distance helper
+`func_80062E50`, vector zero-result stores, and the move consumer assertion.
+The distance harness covers 262,144 signed/wrapping boundary combinations.
