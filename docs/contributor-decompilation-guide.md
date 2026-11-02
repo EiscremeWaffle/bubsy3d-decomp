@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,039,168 code bytes; the current report validates 41,720 exact code bytes across 152 functions (1.372744%) and 196 exact data bytes. New exact coverage includes the readable-C grounded stride producer `func_80035ACC`, three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, plus the readable-C movement preparer `func_80025A98`, the movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. The complete grounded handler now matches from readable C. Coverage also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` is an exact assembly-backed transcription without a byte-matched high-level C reconstruction.
+The current validated scope maps 3,040,136 code bytes; the current report validates 42,688 exact code bytes across 153 functions (1.404148%) and 196 exact data bytes. New exact coverage includes the readable-C grounded stride producers `func_80035ACC` and `func_80038844`, three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, plus the readable-C movement preparer `func_80025A98`, the movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. The complete grounded handler now matches from readable C. Coverage also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` is an exact assembly-backed transcription without a byte-matched high-level C reconstruction.
 
 ## Setup
 
@@ -102,14 +102,21 @@ independently sampled final cap-mode read; there are no instruction snippets.
 The native harness checks 9,216 boundary combinations, helper order, wrapping
 delta updates, assertion continuation, and pointer/mode/stride mutations.
 
-The allowlist now contains 116 C-based function matches (22,528 bytes) and
+The complementary deceleration producer `func_80038844` matches all 968 bytes
+from plain C under the standard profile, with natural register allocation and
+no assembly, barriers, or register pins. Its native harness checks 1,310,720
+boundary combinations and helper mutations, including the independent stopped-
+mode sample, unconditional nonnegative-increment flag reset, saved state bit,
+wrapped decrement and negation, pending X/Z gates, and prospective stride bounds.
+
+The allowlist now contains 117 C-based function matches (23,496 bytes) and
 36 assembly-backed matches (19,192 bytes), including repeated module copies.
 This classification counts the 200-byte `func_80053FA4` wrapper as C-based,
 despite its profile also mentioning a separate assembly-backed COP2 helper.
 C-based is not synonymous with pure C: some other target sources retain
 explicit instruction snippets as well as register constraints. Those still
 need attention in the readable-C pass. The overall exact total remains
-41,720 bytes across 152 matches. The new stride producer adds exact coverage;
+42,688 bytes across 153 matches. The new stride producers add exact coverage;
 converting an already matched function to C does not increase that total.
 
 For each remaining conversion, retain the assembly-backed profile until the

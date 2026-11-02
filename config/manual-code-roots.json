@@ -4,6 +4,11 @@
   "modules": {
     "L0/L0.EXE": [
       {
+        "address": "0x80038844",
+        "symbol": "func_80038844",
+        "evidence": "968-byte grounded deceleration producer with 0x48-byte frame at 0x80038844 and jr-ra at 0x80038C04 plus delay slot at 0x80038C08. Direct caller 0x8003619C is gated by byte 0x801864B8. All branch/jump targets stay inside this range; all 968 function bytes independently match plain C. State-dependent increment updates and prospective-stride bounds feed func_80022944; raw controller/physics semantics remain unproven."
+      },
+      {
         "address": "0x8005385C",
         "symbol": "vector_length_q12",
         "evidence": "168-byte C helper squares the three nonzero Q20.12 components, sums them, and calls the scalar length conversion helper; independently byte-matched with the original linker label func_8005385C."

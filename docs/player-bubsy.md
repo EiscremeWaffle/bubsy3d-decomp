@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 41,720 exact code bytes across 152
-functions, or `1.372744%` of mapped code. The total includes two Clang-built
+The validated report currently credits 42,688 exact code bytes across 153
+functions, or `1.404148%` of mapped code. The total includes two Clang-built
  getters, eight original GCC C functions, the assembly-backed death handler,
 the readable-C grounded-state handler, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
@@ -51,7 +51,7 @@ the readable-C grounded-state handler, `func_800347EC`, the movement consumer
 `func_80037B30`, the exact case-17 helpers `func_8001C700` and `func_8005E7B8`,
 plus the component-transform helpers
 `func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
-`func_80022944`, the readable-C stride producer `func_80035ACC`,
+`func_80022944`, the readable-C stride producers `func_80035ACC` and `func_80038844`,
 the readable-C movement preparer `func_80025A98` and the three bounded
 move-request caller transcriptions `func_80015A54`, `func_8003CC78`, and `func_80041218`,
  20 assembly-backed copies of
@@ -963,15 +963,86 @@ modes, all override classes, signed increment wrap, saved move-info pointers,
 and component replacement before the animation-flag read.
 
 This establishes **state/animation -> stride/increment -> pending translation**,
-not the complete controller -> heading path. The next complementary bounded
-producer is `func_80038844` (`0x80038844..0x80038C0C`, 968 bytes), called at
-`0x8003619C` when byte `0x801864B8` is nonzero. Its original instructions
-decrease `+0x34` through several state-dependent paths, constrain the
-prospective stride, and conditionally call `func_80022944`; it is not yet a
-registered readable-C match. Its gate has writers in `func_800347EC`, including
-`0x80034CBC` and `0x80034E28`. Those state transitions and the still-unresolved
-transform/direction writers remain the upstream work, rather than relabeling
-the model-mode byte as controller input.
+not the complete controller -> heading path. The complementary deceleration
+producer below completes another bounded stride path. Its gate has writers in
+`func_800347EC`, including `0x80034CBC` and `0x80034E28`. Those state transitions
+and the still-unresolved transform/direction writers remain the upstream work,
+rather than relabeling the model-mode byte as controller input.
+
+### Complementary Grounded Deceleration Producer
+
+The complete 968-byte `func_80038844` (`0x80038844..0x80038C0C`) now
+byte-matches from plain C in
+[bubsy_grounded_deceleration.c](../src/player_model/bubsy_grounded_deceleration.c).
+It is called at `0x8003619C` when byte `0x801864B8` is nonzero.
+The standard pinned GCC 2.6.3 PSX/MASPSX profile suffices: natural register
+allocation, no inline assembly, no register pins, and no compiler barriers.
+Its analyst-confirmed root adds these 968 previously unclassified bytes to the
+discovered map, bringing the denominator to 3,040,136 bytes. This is newly
+mapped and matched code, not a reclassification of a previous exact match.
+The first stopped-mode read is independent of the later mode-1 test, matching
+the original two global samples.
+
+For starting stride `+0x30 <= 0`, it clears both stride and increment `+0x34`,
+then clears actor state bit `11`. It then:
+
+- In model mode `0`, calls `func_8003539C(actor, 1)` only if state mask `0x44`
+  is clear; this path does **not** clear actor state bit `6`.
+- In model mode `1`, clears state bit `6` and calls that helper only if byte
+  `0x80186464` is zero.
+- In all cases clears active byte `0x801864B8` and returns without producing
+  pending movement. The clear is after any reset helper mutation.
+
+For positive starting stride, a nonnegative increment first captures state
+bit `3` (`0x08`). In model mode `0`, if state bit `9` is clear and state mask
+`0x18` is nonzero, it selects sequence `0x318` and restarts the component.
+If state bit `4` (`0x10`) was set, this is preceded by reading the component's
+`+0x14` transform translation and emitting transition `26`, property `4`,
+with value `14` and pointers to its three coordinates. Sequence-selection
+failure asserts at source line `0xBC5`, then still restarts.
+
+For **every nonnegative increment**, even when that sequence-change gate is
+false, it clears actor state bits `3` and `4`, sets bit `11`, and zeroes the
+increment. Negative starting increments skip the entire sequence/flag-reset
+block and do not capture bit `3`.
+
+The following decrement uses state and mode reread after those helpers:
+
+| Condition, in priority order | Increment update |
+| --- | --- |
+| Saved pre-reset state bit `3` was set | Replace with signed `0xFFFF0088` (`-65,400`) |
+| Model mode `0` and either state bit `2` or byte `0x80186464` nonzero | If nonnegative, first set to `-0x199`; then subtract `0x332` when word `0x801864C0` is nonzero, otherwise subtract `0x199` |
+| Otherwise state bit `9` set | Subtract `0x51` |
+| Otherwise | Subtract `0x51C` |
+
+These are wrapping 32-bit increment operations. The large saved-bit value is
+not `-0x88`, and a nonnegative increment is normally zeroed before this table.
+Helper changes to component, mode, state, pending vector, or stop byte are
+visible where the original rereads them; the move-info pointer itself is saved.
+
+It next caps current stride at `35`. Nonzero byte `0x8018649C` clears the
+active marker and returns. Otherwise nonzero pending **X or Z**
+(`+0x38/+0x40`) skips the prospective-stride calculation and vector producer,
+without clearing the active marker. Pending Y alone does not block movement.
+
+When X/Z are zero, it predicts the result of the downstream Q12 step. A result
+above `35` rewrites starting stride so the next step lands on `35`; a result
+below zero similarly lands on zero, but only if current stride is nonnegative.
+It then calls `func_80022944` exactly once. The conversion retains the MIPS
+wrapping negation before arithmetic right shift: `INT_MIN` produces a positive
+`524,288` step here, unlike mathematical signed division. The C uses unsigned
+wrapping arithmetic to avoid undefined signed overflow; this is preservation
+of the target behavior, not a new physics rule.
+
+The [native harness](../tests/test_bubsy_grounded_deceleration.c) executes
+1,310,720 boundary combinations with an independent arithmetic/call-order
+oracle, plus helper mutations. Coverage includes ordinary and unknown model
+modes, all five relevant starting state bits, stopped paths, increment sign
+and wrap boundaries, all pending components, stop-before-pending priority,
+assertion continuation, saved-bit behavior after state changes, component
+replacement, saved move-info pointers, both prospective bounds, and preservation
+of producer mutations. Address/undefined-behavior sanitizer runs cover the
+same matrix.
 
 The vector producer `func_80022944` calls the 416-byte helper `func_800227A4` in
 its special-state path at

@@ -1309,6 +1309,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x80038844",
+          "end": "0x80038C0C",
+          "symbol": "func_80038844",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x80038C0C",
           "end": "0x80039158",
           "symbol": "func_80038C0C",

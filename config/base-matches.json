@@ -161,6 +161,30 @@
           "symbols": ["func_80035ACC"]
         },
         {
+          "source": "src/player_model/bubsy_grounded_deceleration.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Complete plain C grounded deceleration producer; all 968 bytes match pinned GCC 2.6.3 PSX/MASPSX with natural register allocation and no inline assembly. Preserves wrapping delta arithmetic, independent stopped-mode sampling, saved state bit, helper mutations, pending X/Z gates and prospective-stride bounds.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/player_model/bubsy_grounded_state.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_stride_mode": "0x800BE548",
+            "g_deceleration_state_6464": "0x80186464",
+            "g_deceleration_stop_649C": "0x8018649C",
+            "g_deceleration_active_64B8": "0x801864B8",
+            "g_deceleration_state_64C0": "0x801864C0",
+            "g_stride_error_condition": "0x80012974",
+            "g_stride_source_path": "0x8001298C"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_stride_mode"]
+          },
+          "symbols": ["func_80038844"]
+        },
+        {
           "source": "src/player_model/func_800347EC_match.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
@@ -878,6 +902,12 @@
           "start": "0x80035ACC",
           "end": "0x80035FE4",
           "size": 1304
+        },
+        {
+          "name": "func_80038844",
+          "start": "0x80038844",
+          "end": "0x80038C0C",
+          "size": 968
         },
         {
           "name": "level_get_player_model_mode",

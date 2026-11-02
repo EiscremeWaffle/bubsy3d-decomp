@@ -22,6 +22,7 @@ typedef struct BubsyGroundedShared {
     uint8_t unknown_00[0x30];
     int32_t stride_30;
     int32_t stride_delta_34;
+    int32_t pending_38[3];
 } BubsyGroundedShared;
 
 typedef struct BubsyGroundedActor {
@@ -62,5 +63,6 @@ void bubsy_grounded_state_handler(
 );
 
 void func_80035ACC(BubsyGroundedActor *actor, void *transform);
+void func_80038844(BubsyGroundedActor *actor);
 
 #endif

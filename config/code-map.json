@@ -6,7 +6,7 @@
       "load_start": "0x80010000",
       "load_end": "0x800BE800",
       "entry_point": "0x8004EB64",
-      "reachable_code_bytes": 293392,
+      "reachable_code_bytes": 294360,
       "function_entry_candidates": [
         "0x80010000",
         "0x80010038",
@@ -237,6 +237,7 @@
         "0x80037B14",
         "0x80037B30",
         "0x80037D14",
+        "0x80038844",
         "0x80038C0C",
         "0x80039158",
         "0x8003AA1C",
@@ -1201,7 +1202,7 @@
           "end": "0x80038368"
         },
         {
-          "start": "0x80038C0C",
+          "start": "0x80038844",
           "end": "0x800395E8"
         },
         {
@@ -4117,6 +4118,14 @@
           "kind": "anchored_function",
           "symbol": "shared_actor_state_23_handler",
           "evidence": "1,616-byte routine ending at 0x80038368 with a 0x38-byte frame and matching return; its sole direct caller is dispatcher state 23. It branches on actor flags, sequence values, mode 0x80186463, and other shared state; gameplay meaning remains unresolved."
+        },
+        {
+          "start": "0x80038844",
+          "end": "0x80038C0C",
+          "size": 968,
+          "kind": "anchored_function",
+          "symbol": "func_80038844",
+          "evidence": "968-byte grounded deceleration producer with 0x48-byte frame at 0x80038844 and jr-ra at 0x80038C04 plus delay slot at 0x80038C08. Direct caller 0x8003619C is gated by byte 0x801864B8. All branch/jump targets stay inside this range; all 968 function bytes independently match plain C. State-dependent increment updates and prospective-stride bounds feed func_80022944; raw controller/physics semantics remain unproven."
         },
         {
           "start": "0x80038C0C",
@@ -8681,7 +8690,7 @@
           "kind": "anchored_function"
         }
       ],
-      "anchored_functions": 920,
+      "anchored_functions": 921,
       "reachable_fragments": 64,
       "indirect_references": [
         {
@@ -11903,6 +11912,18 @@
         {
           "site": "0x800380FC",
           "target": "0x80186461"
+        },
+        {
+          "site": "0x800389A4",
+          "target": "0x80012974"
+        },
+        {
+          "site": "0x800389AC",
+          "target": "0x8001298C"
+        },
+        {
+          "site": "0x800389FC",
+          "target": "0xFFFF0088"
         },
         {
           "site": "0x80038C58",
@@ -16271,6 +16292,11 @@
       ],
       "manual_roots": [
         {
+          "address": "0x80038844",
+          "symbol": "func_80038844",
+          "evidence": "968-byte grounded deceleration producer with 0x48-byte frame at 0x80038844 and jr-ra at 0x80038C04 plus delay slot at 0x80038C08. Direct caller 0x8003619C is gated by byte 0x801864B8. All branch/jump targets stay inside this range; all 968 function bytes independently match plain C. State-dependent increment updates and prospective-stride bounds feed func_80022944; raw controller/physics semantics remain unproven."
+        },
+        {
           "address": "0x8005385C",
           "symbol": "vector_length_q12",
           "evidence": "168-byte C helper squares the three nonzero Q20.12 components, sums them, and calls the scalar length conversion helper; independently byte-matched with the original linker label func_8005385C."
@@ -19534,7 +19560,7 @@
         },
         {
           "start": "0x80038368",
-          "end": "0x80038C0C"
+          "end": "0x80038844"
         },
         {
           "start": "0x800395E8",
@@ -20513,7 +20539,7 @@
           "end": "0x800BE800"
         }
       ],
-      "unclassified_payload_bytes": 421360
+      "unclassified_payload_bytes": 420392
     },
     {
       "path": "L1/L1.EXE",
@@ -222618,7 +222644,7 @@
     }
   ],
   "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
-  "code_bytes": 3039168,
-  "bounded_function_count": 10494,
+  "code_bytes": 3040136,
+  "bounded_function_count": 10495,
   "fragment_count": 1167
 }

@@ -36,3 +36,7 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_stride.c tests/test_bubsy_grounded_stride.c -o /tmp/test_bubsy_grounded_stride
           /tmp/test_bubsy_grounded_stride
+      - name: Compile and test grounded deceleration producer
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_deceleration.c tests/test_bubsy_grounded_deceleration.c -o /tmp/test_bubsy_grounded_deceleration
+          /tmp/test_bubsy_grounded_deceleration

@@ -1,8 +1,8 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 41,720 exact code bytes across 152
-functions (`1.372744%` of mapped code), including two Clang-built getters,
+The validated report currently contains 42,688 exact code bytes across 153
+functions (`1.404148%` of mapped code), including two Clang-built getters,
 eight original GCC C functions, ten GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
@@ -26,12 +26,15 @@ The 1,304-byte grounded stride producer `func_80035ACC` also matches from
 readable C, connecting grounded case 6 to animation-gated stride updates
 and the pending-vector producer. Its mode comes from the level/model-mode
 getter, not an identified controller input.
-Current exact coverage contains 116 C-based matches
+The complementary 968-byte deceleration producer `func_80038844` now matches
+from plain C with natural register allocation and no inline assembly. Its
+native tests cover 1,310,720 boundary combinations plus helper mutations.
+Current exact coverage contains 117 C-based matches
 and 36 assembly-backed matches; some C-based target sources still use inline
 instruction snippets. These counts include repeated module copies, and the
 remaining assembly-backed matches are unfinished for readable-C decompilation.
 Portable host models remain covered by native regression tests. The current report maps
-3,039,168 instruction bytes across all 22 recognized executables, including
+3,040,136 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully
 recovered high-level C, and the larger Bubsy actor updater remains incomplete.
