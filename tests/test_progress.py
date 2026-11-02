@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 
 from tools.command import CommandDeadline, run_command
 from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
-from tools.gcc_match import helper_definitions, normalize_delay_slots, small_data_declarations, small_data_layout
+from tools.gcc_match import compiled_rodata_bytes, helper_definitions, matching_linker_script, normalize_delay_slots, rodata_layout, small_data_declarations, small_data_layout
 from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, expand_base_matches, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
@@ -66,6 +66,46 @@ class ProgressTests(unittest.TestCase):
         ):
             with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "Invalid small-data"):
                 small_data_layout({"globals": globals, "small_data": invalid})
+
+    def test_rodata_layout_and_linker_order(self):
+        source = {"rodata": {"start": "0x800139A8", "size": 132}}
+        self.assertIsNone(rodata_layout({}))
+        self.assertEqual(rodata_layout(source), (0x800139A8, 132))
+        default = "SECTIONS { .text 0x8004B35C : SUBALIGN(4) { *(.text) } }\n"
+        self.assertEqual(matching_linker_script(0x8004B35C, {}), default)
+        script = matching_linker_script(0x8004B35C, source)
+        self.assertLess(script.index(".rodata"), script.index(".text"))
+        self.assertIn(".MIPS.abiflags : { *(.MIPS.abiflags) } .reginfo : { *(.reginfo) }", script)
+        self.assertLess(script.index(".text"), script.index(".MIPS.abiflags"))
+        script = matching_linker_script(0x80010000, source)
+        self.assertLess(script.index(".text"), script.index(".rodata"))
+        for invalid in (
+            False, [], {}, {"start": "0x800139A8"}, {"start": 0x800139A8, "size": 132},
+            {"start": "0x000139A8", "size": 132}, {"start": "0x800139A9", "size": 132},
+            {"start": "0xFFFFFFFC", "size": 8}, {"start": "0x800139A8", "size": 0},
+            {"start": "0x800139A8", "size": True}, {"start": "0x800139A8", "size": "132"},
+            {"start": "0x800139A8", "size": 132, "extra": 1},
+        ):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(ValueError, "read-only data"):
+                rodata_layout({"rodata": invalid})
+
+    def test_compiled_rodata_requires_mapped_bounds(self):
+        source = {"rodata": {"start": "0x800139A8", "size": 4}}
+        elf = Mock()
+        section = Mock()
+        section.__getitem__ = Mock(side_effect={"sh_addr": 0x800139A8, "sh_size": 4}.__getitem__)
+        section.data.return_value = b"DATA"
+        elf.get_section_by_name.return_value = section
+        self.assertEqual(compiled_rodata_bytes(elf, {}), b"")
+        self.assertEqual(compiled_rodata_bytes(elf, source), b"DATA")
+        elf.get_section_by_name.return_value = None
+        with self.assertRaisesRegex(ValueError, "mapped bounds"):
+            compiled_rodata_bytes(elf, source)
+        elf.get_section_by_name.return_value = section
+        for address, size in ((0x800139A4, 4), (0x800139A8, 8)):
+            section.__getitem__.side_effect = {"sh_addr": address, "sh_size": size}.__getitem__
+            with self.subTest(address=address, size=size), self.assertRaisesRegex(ValueError, "mapped bounds"):
+                compiled_rodata_bytes(elf, source)
 
     def test_small_data_layout_accepts_signed_16_bit_boundaries(self):
         gp = 0x800BDD5C
@@ -150,6 +190,30 @@ class ProgressTests(unittest.TestCase):
                          ["--defsym=g_value=0x801D8A0C"])
         with self.assertRaisesRegex(ValueError, "Invalid mapped global"):
             helper_definitions(["g_value"], {"g_value": "0x100"})
+
+    def test_matching_source_requires_original_rodata_equality(self):
+        symbol = {"name": "handler", "start": "0x80010000", "end": "0x80010004", "size": 4}
+        source = {"symbols": ["handler"], "rodata": {"start": "0x80010004", "size": 4}}
+        spec = {"symbols": [symbol], "matching_sources": [source]}
+        mapped = [{"symbol": "handler", "start": symbol["start"], "end": symbol["end"]}]
+        reference = bytes(HEADER_SIZE) + b"CODEDATA"
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "matching" / "handler"
+            output.mkdir(parents=True)
+            (output / "handler.elf").write_bytes(b"mocked ELF")
+            with (
+                patch("tools.gcc_match.build_gcc_symbol", return_value=b"CODE"),
+                patch("elftools.elf.elffile.ELFFile"),
+                patch("tools.gcc_match.compiled_rodata_bytes", return_value=b"DATA"),
+            ):
+                self.assertEqual(len(matching_source_declarations(spec, reference, 0x80010000, mapped, root)), 1)
+                for invalid in (bytes(HEADER_SIZE) + b"CODEFAIL", bytes(HEADER_SIZE) + b"CODEDA"):
+                    with self.subTest(reference=invalid[-8:]), self.assertRaisesRegex(ValueError, "read-only data does not byte-match"):
+                        matching_source_declarations(spec, invalid, 0x80010000, mapped, root)
+                source["rodata"]["start"] = "0x8000FFFC"
+                with self.assertRaisesRegex(ValueError, "read-only data does not byte-match"):
+                    matching_source_declarations(spec, reference, 0x80010000, mapped, root)
 
     def test_shared_match_specs_expand_into_each_unit(self):
         configuration = {

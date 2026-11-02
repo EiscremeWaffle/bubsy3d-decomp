@@ -24,3 +24,15 @@ jobs:
         run: |
           cc -std=c11 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80054414.c src/game/func_80054488.c src/game/func_800546F4.c src/game/func_8005476C.c src/game/func_8005406C.c src/game/func_80054120.c src/game/func_8001DCE0.c src/game/func_800516F8.c src/game/func_8003AA1C.c src/game/func_8002269C.c src/game/func_80056678.c src/game/func_8005668C.c src/game/func_800566E8.c src/game/func_800536F4.c src/game/func_8002262C.c src/game/func_80022650.c src/game/func_8002E7D8.c src/game/func_80053A08.c src/game/func_8008E044.c src/game/func_8005D5A8.c src/game/component_transform.c src/game/move_requests.c src/player_model/player_model.c src/player_model/player_model_global.c src/player_model/player_vector_dot.c src/player_model/player_vector_range.c src/player_model/player_vector_transform.c src/player_model/player_actor_flags.c src/player_model/player_actor_state_table.c src/player_model/bubsy_actor_events.c src/player_model/bubsy_actor_update.c src/player_model/bubsy_death_state.c tests/test_player_model.c -o /tmp/test_player_model
           /tmp/test_player_model
+      - name: Compile and test complete grounded handler
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_state.c src/player_model/bubsy_actor_update.c tests/test_bubsy_grounded_state.c -o /tmp/test_bubsy_grounded_state
+          /tmp/test_bubsy_grounded_state
+      - name: Compile and test complete movement preparation
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80025A98.c tests/test_move_preparation.c -o /tmp/test_move_preparation
+          /tmp/test_move_preparation
+      - name: Compile and test grounded stride producer
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_stride.c tests/test_bubsy_grounded_stride.c -o /tmp/test_bubsy_grounded_stride
+          /tmp/test_bubsy_grounded_stride

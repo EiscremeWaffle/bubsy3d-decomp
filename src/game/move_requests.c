@@ -220,7 +220,7 @@ int32_t game_prepare_move_request(
         payload = table[index].payload_08 + (size_t)counter * 4;
         for (element = 0; element < 3; element++) {
             words[0x08 / sizeof(int32_t) + element] = move_request_add_wrap(
-                words[0x08 / sizeof(int32_t) + element], payload[element]
+                words[0x58 / sizeof(int32_t) + element], payload[element]
             );
         }
 
@@ -258,6 +258,13 @@ int32_t game_prepare_move_request(
         if (words[0x18 / sizeof(int32_t)] == 0) {
             if (table[index].tag != 0x0A) {
                 move_request_assert(ops, 0xDAD);
+            }
+            index = words[0x04 / sizeof(int32_t)];
+            if (index < 0 || (uint32_t)index >= table_limit) {
+                return 0;
+            }
+            if (table[index].tag != 0x0A) {
+                break;
             }
             words[0] = words[0] == 0 ? 1 : 0;
         }

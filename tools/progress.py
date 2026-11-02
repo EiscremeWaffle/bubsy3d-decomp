@@ -100,7 +100,7 @@ def compiled_symbol_bytes(elf, name, expected_type):
 
 
 def matching_source_declarations(base_spec, data, load, symbols, directory):
-    from tools.gcc_match import build_gcc_symbol
+    from tools.gcc_match import build_gcc_symbol, compiled_rodata_bytes, rodata_layout
 
     exact = {symbol["name"]: symbol for symbol in base_spec["symbols"]}
     mapped = {(symbol["start"], symbol["end"]): symbol for symbol in symbols}
@@ -120,6 +120,16 @@ def matching_source_declarations(base_spec, data, load, symbols, directory):
             expected = data[offset:offset + spec["size"]]
             if len(expected) != spec["size"] or code != expected:
                 raise ValueError(f"Matching source does not byte-match original symbol {name}")
+            layout = rodata_layout(source)
+            if layout is not None:
+                from elftools.elf.elffile import ELFFile
+
+                with (output / f"{name}.elf").open("rb") as stream:
+                    rodata = compiled_rodata_bytes(ELFFile(stream), source)
+                rodata_offset = HEADER_SIZE + layout[0] - load
+                expected_rodata = data[rodata_offset:rodata_offset + layout[1]] if rodata_offset >= HEADER_SIZE else b""
+                if len(expected_rodata) != layout[1] or rodata != expected_rodata:
+                    raise ValueError(f"Matching source read-only data does not byte-match original symbol {name}")
             output.mkdir(parents=True, exist_ok=True)
             blob = output / f"{name}.bin"
             blob.write_bytes(code)

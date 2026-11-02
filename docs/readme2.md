@@ -1,8 +1,8 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 40,416 exact code bytes across 151
-functions (`1.329838%` of mapped code), including two Clang-built getters,
+The validated report currently contains 41,720 exact code bytes across 152
+functions (`1.372744%` of mapped code), including two Clang-built getters,
 eight original GCC C functions, ten GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
@@ -18,8 +18,16 @@ actor state-2 handler is byte-matched from high-level C using MASPSX
 `--expand-div` and gp-relative small-data externs.
 The readable-C conversion pass has also replaced the assembly-backed event-byte
 helpers `func_8002E7D8`/`func_8002E7FC` and vector-scale wrapper `func_80053A08`
-with byte-exact plain C. Current exact coverage contains 112 C-based matches
-and 39 assembly-backed matches; some C-based target sources still use inline
+with byte-exact plain C. The complete 3,228-byte grounded handler is now
+byte-matched readable C too, including an independently verified 132-byte
+compiler-generated switch table. The 1,380-byte movement preparer
+`func_80025A98` now matches from plain C with no inline assembly or register pins.
+The 1,304-byte grounded stride producer `func_80035ACC` also matches from
+readable C, connecting grounded case 6 to animation-gated stride updates
+and the pending-vector producer. Its mode comes from the level/model-mode
+getter, not an identified controller input.
+Current exact coverage contains 116 C-based matches
+and 36 assembly-backed matches; some C-based target sources still use inline
 instruction snippets. These counts include repeated module copies, and the
 remaining assembly-backed matches are unfinished for readable-C decompilation.
 Portable host models remain covered by native regression tests. The current report maps

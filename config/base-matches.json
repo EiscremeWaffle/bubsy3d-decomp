@@ -111,15 +111,54 @@
           "symbols": ["func_80053D68"]
         },
         {
-          "source": "src/player_model/bubsy_grounded_state_match.c",
+          "source": "src/player_model/bubsy_grounded_state.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "compiler_profile": "Complete readable C handler, byte-matched with pinned GCC 2.6.3/MASPSX. Requires -fno-cse-follow-jumps, gp-relative counter/event globals, two argument register pins and an empty compiler barrier. Compiler-generated switch table is linked at 0x800139A8 and independently byte-verified. Helper gameplay semantics remain provisional.",
           "flags": [
-            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-O2", "-fno-cse-follow-jumps", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": [
+            "src/player_model/bubsy_grounded_state.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_grounded_counter": "0x800BE298",
+            "g_grounded_event": "0x800BE29C",
+            "g_grounded_counter_state": "0x800BE2A0",
+            "g_grounded_reference_vector": "0x8018C778",
+            "g_grounded_current_vector": "0x8018C788",
+            "g_grounded_error_none": "0x80013980",
+            "g_grounded_source_path": "0x80013998"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_grounded_counter", "g_grounded_event", "g_grounded_counter_state"]
+          },
+          "rodata": {"start": "0x800139A8", "size": 132},
           "symbols": ["bubsy_grounded_state_handler"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_stride.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Complete readable C grounded stride producer; all 1304 bytes match pinned GCC 2.6.3 PSX/MASPSX. Requires -fno-cse-follow-jumps, three pointer register constraints, one empty memory barrier, and an independently sampled cap-mode read. No instruction transcription. Runtime mode is the level/player-model mode, not proven controller input.",
+          "flags": [
+            "-O2", "-fno-cse-follow-jumps", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/player_model/bubsy_grounded_state.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_stride_mode": "0x800BE548",
+            "g_stride_override": "0x80186460",
+            "g_stride_marker": "0x8018647A",
+            "g_stride_error_condition": "0x80012974",
+            "g_stride_source_path": "0x8001298C"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_stride_mode"]
+          },
+          "symbols": ["func_80035ACC"]
         },
         {
           "source": "src/player_model/func_800347EC_match.c",
@@ -679,14 +718,24 @@
           "symbols": ["func_80015A54"]
         },
         {
-          "source": "src/game/func_80025A98_match.c",
+          "source": "src/game/func_80025A98.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed transcription of a manually bounded L0 routine; linked at its verified address and byte-compared against the fingerprinted executable.",
+          "compiler_profile": "Complete readable C movement-preparation handler, byte-matched with pinned GCC 2.6.3 PSX and MASPSX 2.30. Uses the mapped gp-relative global transform pointer, natural register allocation, and no inline assembly. Native execution tests cover table transitions, fixed-origin target vectors, helper failures, transform gates, and enqueue ordering.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_move_preparation_transform": "0x800BDEF0",
+            "g_move_context_condition": "0x80012194",
+            "g_move_info_condition": "0x800BDEF4",
+            "g_move_table_condition": "0x8001214C",
+            "g_move_error_condition": "0x80012094",
+            "g_move_tag_condition": "0x800121AC",
+            "g_game_source_path": "0x800120AC"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_move_preparation_transform"]},
           "symbols": ["func_80025A98"]
         },
         {
@@ -823,6 +872,12 @@
           "start": "0x800358C8",
           "end": "0x80035ACC",
           "size": 516
+        },
+        {
+          "name": "func_80035ACC",
+          "start": "0x80035ACC",
+          "end": "0x80035FE4",
+          "size": 1304
         },
         {
           "name": "level_get_player_model_mode",

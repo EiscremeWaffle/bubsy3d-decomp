@@ -33,11 +33,13 @@ and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
 The current validated snapshot maps 3,039,168 instruction bytes and credits
-40,416 exact code bytes across 151 functions (1.329838%), plus 196 exact data
-bytes. This includes the 3,228-byte grounded-state handler, the 1,804-byte
-`func_800347EC` helper, the `game_apply_queued_move_request` movement consumer,
-and the `func_80054B20`/`func_80054C7C` component-transform helpers as
-assembly-backed exact matches. Four bounded move-request callers are also exact
+41,720 exact code bytes across 152 functions (1.372744%), plus 196 exact data
+bytes. This includes the readable-C 3,228-byte grounded-state handler,
+1,380-byte movement preparer `func_80025A98`, and newly recovered 1,304-byte
+grounded stride producer `func_80035ACC`. The 1,804-byte `func_800347EC`
+helper remains assembly-backed; the `game_apply_queued_move_request`
+movement consumer and `func_80054B20`/`func_80054C7C` component-transform helpers
+are C-built exact matches. Three other bounded move-request callers remain exact
 through assembly-backed transcriptions. It also includes the C-built
 `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12`
 (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`). The assembly transcriptions

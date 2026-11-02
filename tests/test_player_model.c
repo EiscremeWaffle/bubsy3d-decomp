@@ -1081,6 +1081,17 @@ typedef struct MovePreparationTestLog {
     size_t call_count;
 } MovePreparationTestLog;
 
+static unsigned int move_preparation_assertion_count;
+
+static void record_move_preparation_tag_assertion(
+    int32_t failed, const char *condition, const char *source_path, uint32_t source_line
+) {
+    assert(failed == 1 && source_line == 0xDAD);
+    assert(strcmp(condition, "errorFlag == EGSBoolTrue") == 0);
+    assert(strcmp(source_path, "../f/game.c") == 0);
+    move_preparation_assertion_count++;
+}
+
 static void record_move_preparation_magnitude(void *context, uint32_t squared_sum, int32_t *magnitude_out) {
     MovePreparationTestLog *log = context;
 
@@ -1187,6 +1198,9 @@ static void test_game_prepare_move_request(void) {
 
         memset(&move_info, 0, sizeof(move_info));
         memset(&log, 0, sizeof(log));
+        move_info.words[0x58 / 4] = 10;
+        move_info.words[0x5C / 4] = 20;
+        move_info.words[0x60 / 4] = 30;
         move_info.words[0x38 / 4] = 1;
         directory_entries[1] = (GameMoveRequestDirectoryEntry){1, movement_table, 1};
         object.component = &component;
@@ -1198,18 +1212,34 @@ static void test_game_prepare_move_request(void) {
         assert(completion_flag == 0);
         assert(move_info.words[0] == 1 && move_info.words[1] == 0);
         assert(((uint8_t *)move_info.words)[0x1C] == 1);
-        assert(move_info.words[2] == 7 && move_info.words[3] == 3 && move_info.words[4] == 11);
-        assert(global_transform.translation[0] == 7);
-        assert(global_transform.translation[1] == -3);
-        assert(global_transform.translation[2] == 11);
+        assert(move_info.words[2] == 15 && move_info.words[3] == 26 && move_info.words[4] == 37);
+        assert(global_transform.translation[0] == 15);
+        assert(global_transform.translation[1] == -26);
+        assert(global_transform.translation[2] == 37);
         assert(move_info.words[0x30 / 4] == 2);
         assert(log.component_update_count == 2);
-        assert(log.squared_sums[0] == 29 && log.squared_sums[1] == 179);
+        assert(log.squared_sums[0] == 1589 && log.squared_sums[1] == 2270);
         assert(log.call_count == sizeof(expected_calls) / sizeof(expected_calls[0]));
         for (call_index = 0; call_index < log.call_count; call_index++) {
             assert(log.calls[call_index] == expected_calls[call_index]);
         }
         assert(queue.count == 1 && entries[0] == &actor);
+
+        {
+            static const GameMovePreparationTableEntry non_retry_table[] = {
+                {3, 1, 0, 10, movement_payload},
+            };
+            memset(&move_info, 0, sizeof(move_info));
+            memset(&log, 0, sizeof(log));
+            directory_entries[1].table_10 = non_retry_table;
+            ops.assertion = record_move_preparation_tag_assertion;
+            move_preparation_assertion_count = 0;
+            assert(game_prepare_move_request(&queue, &actor, &object, &basis_marker, 0,
+                &completion_flag, &ops) == 1);
+            assert(move_preparation_assertion_count == 1);
+            assert(move_info.words[0] == 1 && log.component_update_count == 1);
+            assert(log.calls[log.call_count - 1] == 0x80022944);
+        }
     }
 }
 
@@ -2283,7 +2313,7 @@ static void test_bubsy_grounded_case12(void) {
     descriptor_state = 2;
     assert(bubsy_grounded_case12_update_state(0x800, 0, &actor_state, &descriptor_state) ==
         BUBSY_GROUNDED_CASE12_NO_ACTION);
-    assert(actor_state == 1 && descriptor_state == 5);
+    assert(actor_state == 1 && descriptor_state == 2);
 
     descriptor_state = 2;
     assert(bubsy_grounded_case12_update_state(0x100, 0x1000, &actor_state, &descriptor_state) ==
@@ -2320,6 +2350,10 @@ static void test_bubsy_grounded_case16(void) {
     descriptor_state = 0;
     assert(bubsy_grounded_case16_should_dispatch(0x2, 0, 0, &descriptor_state) == 0);
     assert(descriptor_state == 0);
+
+    descriptor_state = 2;
+    assert(bubsy_grounded_case16_should_dispatch(0x2, 0, 0, &descriptor_state) == 1);
+    assert(descriptor_state == 1);
 
     descriptor_state = 1;
     assert(bubsy_grounded_case16_should_dispatch(0, 0, 1, &descriptor_state) == 0);
@@ -2447,7 +2481,7 @@ static void test_bubsy_grounded_case31_followups(void) {
     int16_t descriptor_state = 0;
     int32_t linked_counter = 0;
     const uint8_t common_sequence_actions = BUBSY_GROUNDED_CASE31_SET_LINKED_30_TO_MINUS_11 |
-        BUBSY_GROUNDED_CASE31_CALL_22944;
+        BUBSY_GROUNDED_CASE31_CALL_22944 | BUBSY_GROUNDED_CASE31_CALL_22650_17;
 
     assert(bubsy_grounded_case31_select_alternate_action(0, 0x1000, &descriptor_state) ==
         BUBSY_GROUNDED_CASE31_SET_DESCRIPTOR_02_TO_2);
@@ -2561,7 +2595,7 @@ static void test_bubsy_grounded_case32(void) {
     assert(bubsy_grounded_case32_update_state(0, 0x44, &actor_state_01,
         &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
         &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_CALL_2262C_17);
-    assert(descriptor_state_4C == 0 && descriptor_state_68 == 1 && descriptor_state_02 == 6);
+    assert(descriptor_state_4C == 4 && descriptor_state_68 == 1 && descriptor_state_02 == 6);
 
     descriptor_state_4C = 4;
     descriptor_state_68 = 5;
@@ -2592,6 +2626,11 @@ static void test_bubsy_grounded_case32(void) {
     assert(bubsy_grounded_case32_update_state(0, 0x20000, &actor_state_01,
         &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
         &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_NO_ACTION);
+    descriptor_state_02 = 6;
+    assert(bubsy_grounded_case32_update_state(0x40, 0x1000, &actor_state_01,
+        &descriptor_counter_4D, &descriptor_state_4C, &descriptor_state_68,
+        &descriptor_state_02, &linked_counter_30) == BUBSY_GROUNDED_CASE32_CLEAR_DESCRIPTOR_02);
+    assert(descriptor_state_02 == 0);
 }
 
 static void test_bubsy_grounded_case7(void) {

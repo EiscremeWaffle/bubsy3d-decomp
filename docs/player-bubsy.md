@@ -41,19 +41,19 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 40,416 exact code bytes across 151
-functions, or `1.329838%` of mapped code. The total includes two Clang-built
- getters, eight original GCC C functions, the assembly-backed death and
-grounded-state handlers, `func_800347EC`, the movement consumer
+The validated report currently credits 41,720 exact code bytes across 152
+functions, or `1.372744%` of mapped code. The total includes two Clang-built
+ getters, eight original GCC C functions, the assembly-backed death handler,
+the readable-C grounded-state handler, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
 `game_enqueue_move_request` and `func_800250CC`, the event-record helper
 `func_8004FF50` and its remover `func_8004FFEC`, the exact case-37 initializer
 `func_80037B30`, the exact case-17 helpers `func_8001C700` and `func_8005E7B8`,
 plus the component-transform helpers
 `func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
-`func_80022944`,
-the four bounded move-request caller transcriptions `func_80015A54`,
-`func_80025A98`, `func_8003CC78`, and `func_80041218`,
+`func_80022944`, the readable-C stride producer `func_80035ACC`,
+the readable-C movement preparer `func_80025A98` and the three bounded
+move-request caller transcriptions `func_80015A54`, `func_8003CC78`, and `func_80041218`,
  20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`, and
 the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
@@ -320,7 +320,7 @@ The grounded handler starts with a `0x68`-byte frame and contains a 33-entry
 computed state switch at `0x8004B4D0`, backed by the table at `0x800139A8`.
 Every table target lies inside the handler body. Automatic L0 discovery stops
 at the indirect jump, but a manual root bounds the complete handler at
-`0x8004B35C..0x8004BFF8`, and its assembly transcription is byte-exact. The
+`0x8004B35C..0x8004BFF8`, and its complete readable C reconstruction is byte-exact. The
 inspected stores update actor state/flags, a companion object field, and global
 counters; no direct world-position or velocity write has been identified yet.
 Treat this as the grounded actor-state route, not a proven locomotion integrator.
@@ -329,8 +329,10 @@ for states `14` and `15`. State `14` skips the switch when actor flags overlap
 `0x1100`, or when actor state bit `0x1000` is set; in the latter case it first
 sets descriptor halfword `+0x02` to `1` if that field was zero. State `15`
 skips and clears descriptor halfword `+0x02` when actor state bit `0x1000` is
-set. Other inputs continue to the computed switch. This prelude gate is
-modeled and tested.
+set. Lookup values `0`, `1`, and `2` instead apply the state-14-style gate to
+state `6`; other state IDs continue to the switch. Any other lookup value,
+including negative values, skips dispatch. This prelude gate is modeled and
+tested.
 The extracted host dispatch map preserves all 33 targets for IDs `6..38`;
 out-of-range IDs take the shared epilogue at `0x8004BFD0`. The table is tested
 against the original executable's entries. Several IDs alias the same block,
@@ -340,16 +342,24 @@ host-side models in `bubsy_actor_update.c` and `test_player_model.c`. The
 unified `bubsy_grounded_handler_build_model_plan` composes the prelude gate,
 target table, direct state writes, and per-case action plans. It does not
 execute the engine calls encoded by those action masks, so it is a unified
-control-flow model, not a complete target C body or a byte-matched function.
-Opaque helper effects remain outside the model.
+control-flow model, not the target C body. Opaque helper effects remain outside
+the model. The separate `bubsy_grounded_state.c` executes all original branches,
+helper calls, assertions, event lifecycle operations, and direct state writes.
+Its native mock-engine harness checks call order, helper-driven mutations,
+prelude gates, counter boundaries, and regressions against the corrected case
+models.
 An instruction-store audit found no direct actor/descriptor coordinate or
 velocity writes in this handler. Its grounded-state dispatch is therefore
 mapped more completely, but grounded locomotion itself is not established.
-The bounded handler is now also an exact match through the explicitly
-assembly-backed mnemonic transcription in `bubsy_grounded_state_match.c`,
-verified at `0x8004B35C..0x8004BFF8` with pinned GCC 2.6.3/MASPSX and LLD. This
-earns byte-match credit only; it does not upgrade the control-flow models into
-recovered high-level C or establish a position/velocity integrator.
+All 3,228 function bytes from `bubsy_grounded_state.c` match
+`0x8004B35C..0x8004BFF8` with pinned GCC 2.6.3/MASPSX and LLD. Its profile uses
+`-fno-cse-follow-jumps`, gp-relative counter/event globals, two argument register
+pins, and an empty compiler barrier; no instruction transcription remains.
+The compiler-generated 132-byte switch table is linked at `0x800139A8` and
+independently compared with the fingerprinted executable. The superseded
+assembly source has been removed. This completes the bounded handler's
+readable-C reconstruction, but does not establish a position/velocity integrator
+or recover the gameplay semantics of every called helper.
 
 Switch case `38` targets `0x8004B6C0`. Its descriptor byte `+0x11` changes from
 `2` to `4`, or from `1` to `0`; only the latter path calls `0x8002262C` with
@@ -393,8 +403,8 @@ that helper's effects remain unresolved.
 
 Case `12` (`0x8004B70C`) proceeds only when actor flags `+0x04` have a nonzero
 overlap with `0x818`, no overlap with `0x1104`, and actor state `+0x10` has no
-overlap with `0xA0084`. It writes `5` to descriptor halfword `+0x02`. Actor
-state bit `0x1000` additionally requests `0x8002262C(actor, 0xC)`; if actor
+overlap with `0xA0084`. Only when actor state bit `0x1000` is set does it call
+`0x8002262C(actor, 0xC)` and then write `5` to descriptor halfword `+0x02`; if actor
 byte `+0x01` is not already `1`, it sets it to `1` and calls
 `0x800347EC(actor, third_argument, 1)`. These gates, writes, and call requests
 are modeled and tested; helper semantics remain unknown.
@@ -421,8 +431,9 @@ four adjacent row flag words, calls `func_80094108`, resets and copies state
 fields, initializes 16 per-entry slots, and returns `0x7F`. The notifier's
 effects remain unknown. These helper observations do not change case 17's
 return convention: `func_8005E7B8` returns zero after invoking the initializer.
-Case `16` (`0x8004B77C`) initializes descriptor byte `+0x14` to `1` when it
-is zero and actor flags `+0x04` bit `0x02` is clear. It then requests
+Case `16` (`0x8004B77C`) exits when descriptor byte `+0x14` is zero and actor
+flags `+0x04` bit `0x02` is set. Otherwise it writes `1` to the descriptor byte,
+including when its previous value was another nonzero byte. It then requests
 `0x800347EC(actor, third_argument, 0)` only when actor flags do not overlap
 `0x1104`, actor state `+0x10` does not overlap `0xA9180`, and actor byte `+0x01`
 is not `1`. The gate and initialization are modeled and tested.
@@ -441,9 +452,9 @@ or the sequence-key path. On the alternate path, actor state bit `0x1000`
 sets descriptor halfword `+0x02` to `2` only when that field is zero; otherwise
 state mask `0x44` calls `0x800358C8(actor, third_argument, 1)` when bit
 `0x10000` and actor flag `0x40` are clear. On the sequence-key path, a
-nonzero key additionally selects index `0`, calls `0x80052E18`, and calls
-`0x80022650(actor, 0x17)`; both zero and nonzero keys set linked word `+0x30`
-to `-0x11` and call `0x80022944(actor)`. Counter gates and followups are
+nonzero key additionally selects index `0` and calls `0x80052E18`; both zero
+and nonzero keys call `0x80022650(actor, 0x17)`, set linked word `+0x30`
+to `-0x11`, and call `0x80022944(actor)`. Counter gates and followups are
 modeled and tested.
 Cases `8` and `10` share `0x8004BC48`. They return early for actor flag bit
 `0x04`, actor-state mask `0x82000`, or actor-flag mask `0x1100`. With actor
@@ -456,16 +467,19 @@ it calls `0x8004FFEC` when `$gp+0x540` is nonzero, clears `$gp+0x540`, resets
 `$gp+0x53C` and writes the current case ID to `$gp+0x544` when that ID changes,
 then increments the signed halfword counter and caps values at `0x28`. It
 finally calls `0x80034EF8`. The selector and counter path are modeled and tested.
-Case `32` (`0x8004BB68`) returns without writes when actor state `+0x10` has
-bit `0x20000` or actor flags `+0x04` have bit `0x40`. State bit `0x1000`
-clears descriptor halfword `+0x02`. Otherwise state mask `0x44` calls
-`0x8002262C(actor, 0x17)`, clears descriptor byte `+0x4C`, and sets byte
+Case `32` (`0x8004BB68`) uses a restricted path when actor state `+0x10` has
+bit `0x20000` or actor flags `+0x04` have bit `0x40`: it clears descriptor
+halfword `+0x02` only when `(actor_state & 0x21000) == 0x1000`, then returns.
+On the unrestricted path, state bit `0x1000` clears the same halfword.
+Otherwise state mask `0x44` calls
+`0x8002262C(actor, 0x17)` and sets descriptor byte
 `+0x68` to `1`. With those gates clear, descriptor counter `+0x4D` below `11`
 and actor-state mask `0x01002000` clear selects calls
 `0x80022650(actor, 0x10)` and `0x800347EC(actor, third_argument, 1)`, clears
 linked word `+0x30`, sets actor byte `+0x01` to `2`, and clears the counter.
 Otherwise it calls `0x8002262C(actor, 0x17)` and `0x8003539C(actor, 1)`, then
-clears the counter. This whole switch block is modeled and tested; helper
+clears the counter. Descriptor byte `+0x4C` is preserved on every path.
+This whole switch block is modeled and tested; helper
 semantics remain unknown.
 Case `7` (`0x8004BE60`) sets actor byte `+0x01` to `2` and descriptor
 halfword `+0x02` to zero when actor state bit `0x1000` is set. Otherwise it
@@ -809,15 +823,42 @@ different sequence paths in `0x80041218..0x80041D80`. The three larger callers
 contain indirect dispatches, and none of these call sites is in the current
 reachable-code map, so their extents and state meanings remain provisional.
 
-The full bounded control flow of `func_80025A98` is modeled by
-`game_prepare_move_request` in `src/game/move_requests.c`; its exact bytes remain
-in the separate assembly transcription. The host model covers descriptor and
+The full bounded control flow of `func_80025A98` is reconstructed in
+`src/game/func_80025A98.c`, with target-facing layouts in `move_preparation.h`.
+All 1,380 bytes at `0x80025A98..0x80025FFC` match the fingerprinted executable
+under pinned GCC 2.6.3/MASPSX. The only special mapping is the global transform
+pointer at `$gp+0x194` (`0x800BDEF0`); the source uses natural register allocation
+and contains no inline assembly or register pins. The superseded assembly
+transcription has been removed.
+
+The separate host model `game_prepare_move_request` in
+`src/game/move_requests.c` covers descriptor and
 move-info guards, the control-table counter/index loop, component-vector updates,
 transform gates, and the final conditional enqueue. Opaque engine calls are
 injected through `GameMovePreparationOps.invoke`; this preserves call order and
 data flow without claiming their internal effects are understood. The smaller
 `game_enqueue_move_request_if_translation_pending` helper isolates and tests
 the final zero/nonzero vector gate. This model is host-side and not byte-matched.
+
+The preparer computes each target component at move-info `+0x08/+0x0C/+0x10`
+from the fixed origin at `+0x58/+0x5C/+0x60` plus the current 16-byte table
+payload, with 32-bit wrapping. It does not accumulate payloads into the prior
+target; the older host model did, and has been corrected. When a zero-separation
+payload is tagged `0x0A`, it toggles the payload counter and retries. A different
+tag asserts at line `0xDAD`; if the assertion returns and the tag remains
+different, it exits the loop rather than toggling.
+
+Its transform path saves the component basis, composes it with the global
+transform, and applies the supplied basis input. Flag mask `0x01` forces the
+four-word transform-vector copy and basis restoration. Flag mask `0x04` alone does
+so only when the vector's signed Y lies outside `[-3275, 3275]`; otherwise it
+clears the first three saved transform words, preserving the fourth. Helper
+failures return zero without notification or enqueue, but retain writes already
+performed. The final `func_80022944` call runs before the live pending-vector
+enqueue check, so its mutations affect whether the actor is queued.
+The native `test_move_preparation.c` harness exercises table rewind/advance and
+completion, fixed-origin retry behavior, wrapping arithmetic, transform bounds,
+helper failures, assertion continuation, and post-notification enqueue decisions.
 
 The enqueue guard at `0x80015EA0` is modeled by
 `game_enqueue_move_request_if_actor_state_bit_2` in the same module: it reads
@@ -866,7 +907,74 @@ preparation path initializes `+0x30` to twice a table selector in its selector
 mode. This grounds the stride-to-translation dataflow without identifying the
 stride as physical velocity.
 
-Its special-state path calls the 416-byte helper `func_800227A4` at
+### Grounded Stride Producer and Upstream Boundary
+
+The complete 1,304-byte routine `func_80035ACC` at
+`0x80035ACC..0x80035FE4` is now byte-matched readable C in
+[bubsy_grounded_stride.c](../src/player_model/bubsy_grounded_stride.c).
+Grounded case 6 calls it after the already recovered flag/state gates; the
+other direct caller is at `0x8004C758`. It clears byte `0x8018647A`, obtains
+the current component sequence, and updates move-info stride `+0x30` and
+signed Q12 increment `+0x34` before calling `func_80022944` exactly once.
+
+The runtime byte at `gp+0x7EC` (`0x800BE548`) is **not established pad input**.
+The verified state-2 initializer calls `level_get_player_model_mode` at
+`0x800369DC`, then stores its result at `0x800369EC`. That exact getter reads
+`0x801D89F0`, the mode also used to choose ordinary versus `*SWIM.TZP`
+resources. No controller-button interpretation is needed for this producer.
+
+With that mode stable, its three main ranges are:
+
+| Model mode | Starting stride | Sequence handling | Stride/increment action |
+| --- | --- | --- | --- |
+| `0` | below `17` | Select `19` if needed; restart and emit transition `26`, property `4` | Set stride `17`, increment `0x147`; set actor state bit `3`, clear bit `4` |
+| `0` | `17..34` | Select `19` and restart if needed, without the transition | Add `0x147` to the increment only if component byte `+4` has bit `0x20` |
+| `0` | at least `35` | Clear bit `3`, set bit `4`; select `36` if needed, restart and emit the transition | Clear increment and set stride `35` |
+| `1` | below `12` | Select `0` and restart if needed, without the transition | Set stride `12`, increment `0x147`; clear actor state bit `4` |
+| `1` | at least `12` | Clear bit `3`, set bit `4`; select `0` and restart if needed | Clear increment and set stride `12` |
+| other | any | No range-specific sequence action | Leave stride and increment unchanged before the override |
+
+The `0x147` value is accumulated in the signed Q12 increment, not directly
+added to integer stride on every call. The downstream producer performs the
+truncation-toward-zero conversion. Increment overflow wraps like the original
+32-bit MIPS addition.
+
+The final override byte at `0x80186460` aliases grounded descriptor `+0x10`
+(the descriptor base returned by `func_8003AA1C` is `0x80186450`).
+Grounded cases **29/30** write this byte to **1/0**, respectively:
+
+- Override `1` forces stride `35` in model mode `0`, otherwise `26`.
+- Override `0` applies upper caps `35`/`12` in model modes `0`/`1`.
+- Other override values skip this final cap. These are upper caps, not
+  lower clamps, and do not clear the increment.
+
+All helper order and subsequent mode/component rereads are preserved.
+Nonzero sequence-selection errors assert using the original source-line
+constants, then continue with the sequence restart; they do not return early.
+The transition passes value `14` and pointers to the three translation
+coordinates. The original component flag is sampled after any sequence change.
+
+The matching profile uses three pointer register constraints, one empty memory
+barrier, and an independently sampled cap-mode read. There is no instruction
+transcription. The dedicated
+[native harness](../tests/test_bubsy_grounded_stride.c) checks 9,216 boundary
+combinations plus helper mutations, including both final cap paths, unknown
+modes, all override classes, signed increment wrap, saved move-info pointers,
+and component replacement before the animation-flag read.
+
+This establishes **state/animation -> stride/increment -> pending translation**,
+not the complete controller -> heading path. The next complementary bounded
+producer is `func_80038844` (`0x80038844..0x80038C0C`, 968 bytes), called at
+`0x8003619C` when byte `0x801864B8` is nonzero. Its original instructions
+decrease `+0x34` through several state-dependent paths, constrain the
+prospective stride, and conditionally call `func_80022944`; it is not yet a
+registered readable-C match. Its gate has writers in `func_800347EC`, including
+`0x80034CBC` and `0x80034E28`. Those state transitions and the still-unresolved
+transform/direction writers remain the upstream work, rather than relabeling
+the model-mode byte as controller input.
+
+The vector producer `func_80022944` calls the 416-byte helper `func_800227A4` in
+its special-state path at
 `0x800227A4`; `src/game/func_800227A4.c` now byte-matches that L0 routine in C.
 It reads the component translation, passes it with the move-info vector to
 `func_80062E50`, and uses the resulting `+0x18` scalar and step `+0x30` for
@@ -901,9 +1009,9 @@ callbacks preserve the observed helper order and pointer ranges without
 guessing the opaque helpers' internal math; native tests cover optional paths,
 translation application, archival, clearing, and the missing-info assertion.
 
-The full bounded caller `func_80025A98` has a readable host-side control-flow
-model in `game_prepare_move_request` in `src/game/move_requests.c`, alongside
-its exact assembly transcription. The model covers the sentinel-state return,
+The full bounded caller `func_80025A98` now has a byte-matched readable C
+implementation in `src/game/func_80025A98.c`, alongside the host-side control-flow
+model `game_prepare_move_request` in `src/game/move_requests.c`. The model covers the sentinel-state return,
 control-table cursor/repeat updates, component-entry loop, transform stages,
 and final pending-translation enqueue gate. Component translation reads and
 global-transform writes use the direct null-basis models of `func_80054B20`

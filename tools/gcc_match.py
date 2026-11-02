@@ -13,6 +13,46 @@ from tools.verify_original import ROOT
 MASPSX_OPTIONAL_FLAGS = {"--expand-div"}
 
 
+def rodata_layout(source_spec):
+    """Validate an optional original address and size for compiler-generated read-only data."""
+    rodata = source_spec.get("rodata")
+    if rodata is None:
+        return None
+    if (
+        not isinstance(rodata, dict) or set(rodata) != {"start", "size"}
+        or not isinstance(rodata["start"], str)
+        or re.fullmatch(r"0x[0-9A-Fa-f]{8}", rodata["start"]) is None
+        or type(rodata["size"]) is not int or rodata["size"] <= 0
+    ):
+        raise ValueError("Invalid read-only data layout in matching source")
+    address = int(rodata["start"], 16)
+    if address < 0x80000000 or address % 4 or address + rodata["size"] > 0x100000000:
+        raise ValueError("Invalid read-only data bounds in matching source")
+    return address, rodata["size"]
+
+
+def compiled_rodata_bytes(elf, source_spec):
+    layout = rodata_layout(source_spec)
+    if layout is None:
+        return b""
+    section = elf.get_section_by_name(".rodata")
+    if section is None or (section["sh_addr"], section["sh_size"]) != layout:
+        raise ValueError("Compiled read-only data differs from its mapped bounds")
+    return section.data()
+
+
+def matching_linker_script(text_address, source_spec):
+    sections = [(text_address, f".text 0x{text_address:X} : SUBALIGN(4) {{ *(.text) }}")]
+    layout = rodata_layout(source_spec)
+    if layout is not None:
+        sections.append((layout[0], f".rodata 0x{layout[0]:X} : SUBALIGN(4) {{ *(.rodata) *(.rdata) }}"))
+    script = " ".join(section for _, section in sorted(sections))
+    if layout is not None:
+        # Orphan read-only metadata at address zero would create a multi-GB segment gap.
+        script += " .MIPS.abiflags : { *(.MIPS.abiflags) } .reginfo : { *(.reginfo) }"
+    return "SECTIONS { " + script + " }\n"
+
+
 def small_data_layout(source_spec):
     """Validate optional gp-relative small-data externs defined outside the matched TU."""
     small_data = source_spec.get("small_data")
@@ -136,6 +176,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     maspsx_flags = source_spec.get("maspsx_flags", [])
     if not isinstance(maspsx_flags, list) or not set(maspsx_flags) <= MASPSX_OPTIONAL_FLAGS:
         raise ValueError("Unsupported MASPSX flags in matching source")
+    rodata_layout(source_spec)
     directory.mkdir(parents=True, exist_ok=True)
     gcc_directory, maspsx_directory = fetch_matching_tools(source_spec["compiler"])
     name = symbol_spec["name"]
@@ -196,7 +237,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     undefined = [item.name for item in table.iter_symbols() if item["st_shndx"] == "SHN_UNDEF" and item.name]
     linker_script = directory / f"{name}.ld"
     linker_script.write_text(
-        f"SECTIONS {{ .text 0x{text_address:X} : SUBALIGN(4) {{ *(.text) }} }}\n",
+        matching_linker_script(text_address, source_spec),
         encoding="ascii",
     )
     linked_path = directory / f"{name}.elf"
@@ -212,6 +253,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     if linked_symbol["st_value"] != address:
         raise ValueError(f"GCC handler {name} linked at the wrong address")
     code = compiled_symbol_bytes(linked, name, "STT_FUNC")
+    rodata = compiled_rodata_bytes(linked, source_spec)
     expected_size = int(symbol_spec["end"], 16) - address
     if len(code) != expected_size or len(code) != symbol_spec["size"]:
         raise ValueError(f"GCC handler {name} has the wrong byte size")
@@ -221,6 +263,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         "compiler": source_spec["compiler"], "flags": source_spec["flags"],
         **({"maspsx_flags": maspsx_flags} if maspsx_flags else {}),
         **({"small_data": source_spec["small_data"]} if small_data is not None else {}),
+        **({"rodata": {**source_spec["rodata"], "compiled_sha256": hashlib.sha256(rodata).hexdigest()}} if rodata else {}),
         "globals": source_spec.get("globals", {}),
         "gcc_archive_sha256": GCC_COMPILERS[source_spec["compiler"]][1], "maspsx_archive_sha256": MASPSX_HASH,
         "linker": linker_version, "compiled_sha256": hashlib.sha256(code).hexdigest(),
