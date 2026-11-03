@@ -1,16 +1,4 @@
-#include <stdint.h>
-
-typedef struct ComponentBasisView {
-    uint16_t matrix[9];
-    uint16_t padding;
-    int32_t translation[3];
-} ComponentBasisView;
-
-typedef struct ComponentTransformView {
-    uint16_t matrix[9];
-    uint16_t padding;
-    int32_t translation[3];
-} ComponentTransformView;
+#include "component_rotation.h"
 
 typedef struct ComponentTransformVectorScratch {
     int32_t values[3];
@@ -43,13 +31,13 @@ extern int32_t func_80010128(
 extern int32_t func_8005395C(const int32_t input[3], int32_t output[3]);
 extern int32_t func_80053D68(const int32_t input[3], int32_t output[3]);
 extern int32_t func_80054488(
-    const ComponentBasisView *input,
-    ComponentBasisView *output
+    const ComponentRotationMatrix *input,
+    ComponentRotationMatrix *output
 );
 
 int32_t func_800550A4(
-    ComponentTransformView *component,
-    const ComponentBasisView *basis
+    ComponentRotationMatrix *component,
+    const ComponentRotationMatrix *basis
 ) {
     ComponentTransformScratch scratch;
     int32_t status;
@@ -112,7 +100,6 @@ int32_t func_800550A4(
     scratch.matrix[2] = (uint16_t)scratch.normalized_direction.values[0];
     scratch.matrix[5] = (uint16_t)scratch.normalized_direction.values[1];
     scratch.matrix[8] = (uint16_t)scratch.normalized_direction.values[2];
-    func_80054488((const ComponentBasisView *)scratch.matrix,
-        (ComponentBasisView *)component);
+    func_80054488((const ComponentRotationMatrix *)scratch.matrix, component);
     return 0;
 }

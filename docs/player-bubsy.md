@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 42,688 exact code bytes across 153
-functions, or `1.404148%` of mapped code. The total includes two Clang-built
+The validated report currently credits 44,928 exact code bytes across 159
+functions, or `1.477829%` of mapped code. The total includes two Clang-built
  getters, eight original GCC C functions, the assembly-backed death handler,
 the readable-C grounded-state handler, `func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
@@ -52,7 +52,8 @@ the readable-C grounded-state handler, `func_800347EC`, the movement consumer
 plus the component-transform helpers
 `func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
 `func_80022944`, the readable-C stride producers `func_80035ACC` and `func_80038844`,
-the readable-C movement preparer `func_80025A98` and the three bounded
+the readable-C movement preparer `func_80025A98`, its shared initializer
+`func_8002611C`, setup wrapper `func_80025FFC`, and the three bounded
 move-request caller transcriptions `func_80015A54`, `func_8003CC78`, and `func_80041218`,
  20 assembly-backed copies of
 `func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`, and
@@ -71,7 +72,8 @@ the fixed-pointer initializer `func_8003AA1C`, and the GP-relative accessors
 `func_8001DCE0` and `func_800516F8`,
 and the C-built component-basis matrix helpers `func_80054414` and
 `func_80054488`, plus basis normalization helpers `func_800546F4` and
-`func_8005476C`, and the inverse-basis wrappers `func_8005406C` and
+`func_8005476C`, basis reconstruction `func_800542A4`, the temporary-rotation helpers `func_800547C8` and
+`func_800549E8`, column scaling `func_8005541C`, and the inverse-basis wrappers `func_8005406C` and
 `func_80054120`,
 the C-built `vector_length_q12`, `vector_range_scale_q12`, and
  `vector_range_condition_q12` functions (their exact-match linker labels remain
@@ -100,8 +102,8 @@ GCC 2.6.3/MASPSX and linked at its verified address. A separate readable C
  translation is in `bubsy_actor_347ec.c`; it expresses the observed control
 flow, arguments, and state/global writes, but is not the source used for exact
 credit and has not been byte-matched. It now emits the same 1,804-byte size,
-with differences restricted to the entry saved-register store ordering and
-the final transition-index store ordering. The registered transcription is
+with differences restricted to the final transition-index store ordering.
+The entry saved-register ordering now matches. The registered transcription is
 unchanged. The host-side planners and tests cover
 the branch decisions and data changes. Engine-call effects and gameplay
 meanings remain unresolved.
@@ -221,11 +223,12 @@ For local state `1` in any nonzero runtime mode, the updater also writes
 
 Immediately following that updater is the shared routine now mapped as
 `shared_actor_state_dispatch` (`0x800358C8..0x80035ACC`). It has eight direct
-callers and takes an actor pointer, a pointer to a halfword state ID, and a
-mode; observed callers use modes `0`, `1`, and `2`, so it is not Bubsy-only.
-It derives a key from component halfword `+0x0C`, tests actor mask `0x1100`,
-updates component fields `+0x30/+0x34`, and calls shared engine helpers. Its
-gameplay role remains unresolved. The complete C reconstruction in
+callers and takes an actor pointer, a component-basis context, and a mode;
+grounded cases use modes `0`, `1`, `2`, and `3`, so it is not Bubsy-only.
+It queries the actor component's sequence key, tests actor mask `0x1100`,
+updates stride/increment fields `+0x30/+0x34` in the captured actor
+`shared_28` move-info pointer, and calls the movement-step producer.
+These fields are not component fields. The complete C reconstruction in
 `src/player_model/shared_actor_state_dispatch.c` is now byte-matched: the
 pinned GCC 2.6.3 profile reproduces all 516 bytes when compiled with
 `-fno-cse-follow-jumps` added to the usual flags. Under plain `-O2`, CSE
@@ -234,23 +237,118 @@ store to reuse the mode register instead of literal zero, which differs at
 one instruction word; the extra flag is a reproduction profile, not a claim
 about the original toolchain. Its initial branch is translated in
 `player_actor_shared_state_clear_progress`: key `0x2A7` or any overlap with
-actor mask `0x1100` clears component words `+0x30` and `+0x34`.
+actor mask `0x1100` clears move-info words `+0x30` and `+0x34`.
 In mode `1`, actor state mask `0x8000` bypasses the numeric update; otherwise
 mask `0x10000` sets `+0x30` to `-0x34`. When that mask is clear, `+0x34` is
 temporarily set to zero if `+0x30 < -0x11`, or to `-0x198C` otherwise; the
 callback path then restores its saved value. The scalar update is translated in
-`player_actor_shared_state_apply_mode1_numeric_update`; the callback effects and
-remaining modes are not yet translated. The
+`player_actor_shared_state_apply_mode1_numeric_update`. The actual matched
+dispatcher also executes the callback and the remaining modes. The
 mode-0 numeric stage clamps `+0x30` to `5..0x11` unless actor state mask
 `0x18000` bypasses it. Before the callback, `+0x34` is temporarily set to
 `0x198C` below the upper cap or cleared at the cap, then restored by the shared
 epilogue. The surviving clamp is translated in
-`player_actor_shared_state_clamp_mode0_progress`; its callback side effects and
-other mode processing remain incomplete. Modes `2` and `3` skip their
-callback path when actor mask `0x10000` is set; otherwise they prepare callback
-flags `-0x400`/`0x400` and temporary progress `0xE`, `6`, or `8`. The bounded
-argument-selection logic is captured by `player_actor_shared_state_make_mode23_plan`;
-the callbacks and their gameplay meaning remain unresolved.
+`player_actor_shared_state_clamp_mode0_progress`. Modes `2` and `3` skip their
+callback path when actor state mask `0x10000` is set; otherwise they snapshot
+the context basis through `func_800546F4`, rotate it through `func_800547C8`
+using angles `[0, -0x400/+0x400, 0]`, and call `func_80022944` with temporary
+stride `14`, or `8`/`6` for state bit `0x8000` and model mode zero/nonzero.
+State/model values are sampled after the rotation helpers. The dispatcher then
+restores the basis through `func_800549E8`, restores the saved stride, and
+restores the saved increment in its common epilogue. It retains the original
+move-info pointer even if a helper replaces `actor->shared_28`.
+
+The 216-byte `func_800547C8` and 132-byte `func_800549E8` now match from
+plain C with natural register allocation and no inline assembly or barriers.
+The rotation wrapper saves all 32 basis bytes, converts the low halfwords of
+the input angles with wrapping X/Z negation, and writes back only nine matrix
+halfwords. A null component returns `0x18`. Restoration sequentially copies
+nine halfwords, negating odd indices; padding and translation are unchanged.
+The [native harness](../tests/test_grounded_rotation.c) executes both helpers
+and the actual matched dispatcher, checking 405 overlap cases, 343 angle
+cases, all 65,536 halfword direction values, 1,872 dispatch boundaries, and
+helper mutations. The 368-byte `func_800542A4` basis reconstruction now also
+matches plain C without register constraints or barriers. It samples all three
+signed input columns before any callback, conditions columns two and three,
+rebuilds the first through their cross product, conditions it, rebuilds the
+third through another cross product, and normalizes all three. It stores only
+the resulting nine low halfwords, leaving padding and translation untouched.
+The helper ignores every callee status, exactly as the original does.
+The [basis harness](../tests/test_grounded_basis.c) checks 131,072 reconstruction
+cases, including all halfword signs, in-place output, ignored error statuses,
+and callback mutation of the component after initial sampling.
+
+That harness also executes the already-matched 476-byte `func_800550A4`
+orientation builder used by movement preparation. It verifies translation
+snapshots, the zero-direction exit, the vertical-direction X/Z fallback,
+preserved translation/padding, and propagation of subtraction/cross-product
+failures in 120 cases. Its normalization/conditioning statuses are ignored;
+failure before the final matrix copy preserves the component's basis except
+for callback mutations. Rotation backends `func_80077C50` and `func_80076890`
+and the cross-product/normalization internals are still not recovered in
+instruction-free C; these wrapper matches do not establish scalar GTE recovery.
+
+The preparation path's `func_8005541C` at `0x8005541C..0x80055674` now matches
+all 600 bytes from plain C with natural register allocation. It visits matrix
+elements in column order `0/3/6`, `1/4/7`, `2/5/8`, multiplying each signed
+halfword by the corresponding 32-bit Q12 scale through `func_8001007C`.
+Each callback's product is sampled into a separate local and clamped to
+`-32767..32767` before the halfword store; `-32768` is deliberately excluded.
+The scale is reread for every element, so callback mutations affect subsequent
+samples. All multiply statuses are ignored; padding and translation are
+untouched except for callee mutations. The same basis harness covers 589,824
+input/scale combinations plus 24 forced-product clamp and mutation cases,
+including signed Q12 rounding and low-32-bit product wrapping. The multiply
+backend remains an instruction-assisted C match, not recovered plain C.
+
+The shared movement initializer `func_8002611C` (`0x8002611C..0x80026398`)
+now matches all 636 bytes from plain C without register constraints or inline
+assembly. Its direct caller at `0x800260EC` is in `func_80025FFC`, which
+allocates missing move-info and initializes the shared target transform before
+calling this routine. This is shared movement infrastructure, not evidence of
+a controller-input routine or a Bubsy-only action.
+
+The initializer captures `actor->move_info_28` before querying the movement
+table. It clears index/counter, sets mode byte `+0x1C` to one, snapshots the
+first table payload, and adds its X/Y/Z to move-info origin `+0x58` with
+32-bit wrapping. Selector one rereads the current index and sets stride to
+twice that entry's selector byte. It computes separation from origin to target,
+captures the actor component's transform after that callback, and calls target
+translation, basis snapshot, orientation construction, and column scaling in
+order. Table/separation errors use the original assertions and continue if
+the assertion callback returns; later transform-helper failures return zero.
+
+Flags one/four enable direction extraction. Flag one always keeps the vector;
+flag four alone keeps it only outside inclusive Y range `-3275..3275`. The
+keep path copies all 16 bytes into `+0x88`, then restores the saved basis.
+The clear path zeros only X/Y/Z, preserving the fourth word. There is no
+movement-step callback or queue insertion in this initializer. The original
+direction extractor defines only X/Y/Z; the copied fourth word is scratch
+padding, not a recovered semantic field. The
+[native harness](../tests/test_move_initializer.c) checks 216 flag/direction/
+selector combinations, exact helper order, six failure exits, assertion
+continuation, wrapping target sums, and captured-pointer/helper mutations.
+
+The 288-byte setup wrapper `func_80025FFC` (`0x80025FFC..0x8002611C`)
+now also matches plain C without register constraints or inline assembly.
+An existing `actor->move_info_28` returns one immediately, without querying
+the table, allocating, creating a transform, or rerunning initialization.
+With no move-info, it queries the movement table and returns one for zero
+entries or a zero first-entry limit. A non-one table-query byte calls the
+original assertion; execution continues if that callback returns. It then
+calls `func_800222EC` with the actor's move-info pointer address and supplied
+origin. A zero allocation-result byte returns zero; a zero actor context
+sampled after allocation returns one without transform setup.
+
+Otherwise a null shared transform calls `func_80054624`; nonzero status
+returns zero. A ready transform bypasses creation. Finally the wrapper calls
+`func_8002611C` and normalizes only its low result byte to zero/one, so
+`256` and `-256` are false while `255` and `-1` are true. The
+[setup harness](../tests/test_move_setup.c) covers 176 result/allocation/flag/
+global combinations, repeat-call idempotence, all early exits, assertion
+continuation, and allocation-time context/global mutations. Allocation and
+transform-creation internals remain unrecovered; this is not a completed
+controller-to-heading trace.
 
 The separate state-ID switch appears in the mapped `func_80036270` range. Its
 dispatch instruction is at `0x800363E4`; it subtracts `2` from the state
@@ -521,7 +619,8 @@ Case `6` (`0x8004B990`) proceeds only when actor flags `+0x04` do not overlap
 byte `+0x4C` to `1`; actor-state mask `0x44` selects
 `0x800358C8(actor, third_argument, 0)`, otherwise a clear mask `0x01020080`
 selects `0x80035ACC(actor, third_argument)`. The gate and action selection are
-modeled and tested; the shared callees remain opaque.
+modeled and tested; both shared callees are byte-matched readable C. Their
+lower-level engine effects are not all recovered.
 Case `20` (`0x8004B4D8`) returns early if descriptor byte `+0x0D` or actor
 state `+0x10` is nonzero, or actor flags `+0x04` overlap `0x1100`. Otherwise
 it calls `0x800516F8`, `0x80054AF0`, and `0x80022650(actor, 0xC)`. It selects
@@ -978,8 +1077,18 @@ This establishes **state/animation -> stride/increment -> pending translation**,
 not the complete controller -> heading path. The complementary deceleration
 producer below completes another bounded stride path. Its gate has writers in
 `func_800347EC`, including `0x80034CBC` and `0x80034E28`. Those state transitions
-and the still-unresolved transform/direction writers remain the upstream work,
-rather than relabeling the model-mode byte as controller input.
+and the still-unresolved input/heading writers remain upstream work. The
+shared dispatcher's temporary basis-rotation/stride path and its column
+reconstruction are now recovered and native-tested, but the GTE backends are
+not. The model-mode byte is not an
+identified controller input. The already-matched `func_80054AF0` is a
+direction extractor, not an angle decoder: it reads signed basis halfwords at
+`+0x04`, `+0x0A`, and `+0x10`, negates the middle sample after sign extension,
+and writes three 32-bit direction components. Thus an input Y halfword
+`-32768` produces `+32768`, not a wrapped halfword. The preparation routine
+copies this vector into move-info `+0x88` when its transform gates pass.
+This proves a component-basis -> direction path, not the upstream
+controller -> basis construction.
 
 ### Complementary Grounded Deceleration Producer
 

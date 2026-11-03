@@ -54,5 +54,9 @@ typedef struct MovePreparationEntry {
 
 int32_t func_80025A98(MovePreparationActor *actor, const void *basis_input,
     uint32_t operation_flags, uint8_t *completion);
+int32_t func_8002611C(MovePreparationActor *actor, const void *scale_input,
+    uint32_t operation_flags);
+int32_t func_80025FFC(MovePreparationActor *actor, const MovePreparationVector *origin,
+    const void *scale_input, uint32_t operation_flags);
 
 #endif

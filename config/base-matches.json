@@ -659,7 +659,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_800550A4"]
         },
         {
@@ -843,6 +843,91 @@
           "symbols": ["func_80054AF0"]
         },
         {
+          "source": "src/game/func_80025FFC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C shared movement setup wrapper; all 288 bytes match with natural register allocation. Existing move-info and empty table entries return success without callbacks; allocation and shared-transform setup precede initializer, whose low-byte result is normalized.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_80025FFC"],
+          "globals": {
+            "g_move_preparation_transform": "0x800BDEF0",
+            "g_move_table_condition": "0x8001214C",
+            "g_game_source_path": "0x800120AC"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_move_preparation_transform"]
+          }
+        },
+        {
+          "source": "src/game/func_8002611C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Complete plain C shared movement initializer; all 636 bytes match with natural register allocation. Preserves captured move-info, table/selector resampling, wrapping target addition, sequential helper gates, full direction copy and original shared success/failure epilogues.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8002611C"],
+          "globals": {
+            "g_move_preparation_transform": "0x800BDEF0",
+            "g_move_table_condition": "0x8001214C",
+            "g_move_error_condition": "0x80012094",
+            "g_game_source_path": "0x800120AC"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_move_preparation_transform"]
+          }
+        },
+        {
+          "source": "src/game/func_8005541C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C component-column scale with natural register allocation; all 600 bytes match. Samples each element and scale before its multiply callback, clamps the sampled product to -32767..32767, ignores helper status, and preserves padding/translation.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_8005541C"]
+        },
+        {
+          "source": "src/game/func_800542A4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C basis reconstruction from conditioned columns and cross products; all 368 bytes match with natural register allocation. Preserves original helper order, ignored statuses, initial samples, and halfword-only output.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_800542A4"]
+        },
+        {
+          "source": "src/game/func_800547C8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C rotation-update wrapper with natural register allocation; all 216 bytes match. Preserves wrapped halfword angles, complete saved matrix, and four original engine calls.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_800547C8"]
+        },
+        {
+          "source": "src/game/func_800549E8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C component-basis restore with natural register allocation; all 132 bytes match. Preserves sequential halfword sampling, four wrapping sign inversions, and untouched translation/padding.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_800549E8"]
+        },
+        {
           "source": "src/player_model/shared_actor_state_dispatch.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "High-level C implementation byte-matched with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; requires -fno-cse-follow-jumps so CSE does not rewrite the mode-zero progress store through the mode register. The flag is a reproduction profile, not a toolchain claim.",
@@ -851,7 +936,9 @@
             "-fomit-frame-pointer", "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "headers": [
+            "src/player_model/shared_actor_state_dispatch.h",
             "src/player_model/player_model.h",
+            "src/game/component_rotation.h",
             "tools/gcc_include/stdint.h",
             "tools/gcc_include/stddef.h"
           ],
@@ -1177,6 +1264,42 @@
           "start": "0x8005476C",
           "end": "0x800547C8",
           "size": 92
+        },
+        {
+          "name": "func_80025FFC",
+          "start": "0x80025FFC",
+          "end": "0x8002611C",
+          "size": 288
+        },
+        {
+          "name": "func_8002611C",
+          "start": "0x8002611C",
+          "end": "0x80026398",
+          "size": 636
+        },
+        {
+          "name": "func_8005541C",
+          "start": "0x8005541C",
+          "end": "0x80055674",
+          "size": 600
+        },
+        {
+          "name": "func_800542A4",
+          "start": "0x800542A4",
+          "end": "0x80054414",
+          "size": 368
+        },
+        {
+          "name": "func_800547C8",
+          "start": "0x800547C8",
+          "end": "0x800548A0",
+          "size": 216
+        },
+        {
+          "name": "func_800549E8",
+          "start": "0x800549E8",
+          "end": "0x80054A6C",
+          "size": 132
         },
         {
           "name": "func_8005406C",

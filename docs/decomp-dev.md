@@ -33,11 +33,16 @@ and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
 The current validated snapshot maps 3,040,136 instruction bytes and credits
-42,688 exact code bytes across 153 functions (1.404148%), plus 196 exact data
+44,928 exact code bytes across 159 functions (1.477829%), plus 196 exact data
 bytes. This includes the readable-C 3,228-byte grounded-state handler,
 1,380-byte movement preparer `func_80025A98`, and newly recovered 1,304-byte
 grounded stride producer `func_80035ACC`, plus the 968-byte plain-C
-deceleration producer `func_80038844`. The 1,804-byte `func_800347EC`
+deceleration producer `func_80038844` and the plain-C grounded rotation helpers
+`func_800547C8`/`func_800549E8` and basis reconstruction `func_800542A4`
+(716 bytes together), plus the 600-byte plain-C column-scaling helper
+`func_8005541C`, 636-byte shared movement initializer `func_8002611C`,
+and its 288-byte setup caller `func_80025FFC`.
+The 1,804-byte `func_800347EC`
 helper remains assembly-backed; the `game_apply_queued_move_request`
 movement consumer and `func_80054B20`/`func_80054C7C` component-transform helpers
 are C-built exact matches. Three other bounded move-request callers remain exact

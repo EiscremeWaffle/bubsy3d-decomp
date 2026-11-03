@@ -1,31 +1,31 @@
 {
   "measures": {
-    "fuzzy_match_percent": 1.4041477,
+    "fuzzy_match_percent": 1.4778286,
     "total_code": "3040136",
-    "matched_code": "42688",
-    "matched_code_percent": 1.4041477,
+    "matched_code": "44928",
+    "matched_code_percent": 1.4778286,
     "total_data": "196",
     "matched_data": "196",
     "matched_data_percent": 100.0,
     "total_functions": 11662,
-    "matched_functions": 153,
-    "matched_functions_percent": 1.3119533,
+    "matched_functions": 159,
+    "matched_functions_percent": 1.3634025,
     "total_units": 44
   },
   "units": [
     {
       "name": "l0/functions",
       "measures": {
-        "fuzzy_match_percent": 11.212284,
+        "fuzzy_match_percent": 12.024242,
         "total_code": "275876",
-        "matched_code": "30932",
-        "matched_code_percent": 11.212284,
+        "matched_code": "33172",
+        "matched_code_percent": 12.024242,
         "total_data": "196",
         "matched_data": "196",
         "matched_data_percent": 100.0,
         "total_functions": 921,
-        "matched_functions": 75,
-        "matched_functions_percent": 8.143322,
+        "matched_functions": 81,
+        "matched_functions_percent": 8.794788,
         "total_units": 1
       },
       "sections": [
@@ -48,7 +48,7 @@
         {
           "name": ".text",
           "size": "275876",
-          "fuzzy_match_percent": 11.212284,
+          "fuzzy_match_percent": 12.024242,
           "metadata": {}
         }
       ],
@@ -605,12 +605,14 @@
         {
           "name": "func_80025FFC",
           "size": "288",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "27152"
         },
         {
           "name": "func_8002611C",
           "size": "636",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "27440"
         },
@@ -2704,6 +2706,7 @@
         {
           "name": "func_800542A4",
           "size": "368",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "140756"
         },
@@ -2762,6 +2765,7 @@
         {
           "name": "func_800547C8",
           "size": "216",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "141984"
         },
@@ -2780,6 +2784,7 @@
         {
           "name": "func_800549E8",
           "size": "132",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "142528"
         },
@@ -2875,6 +2880,7 @@
         {
           "name": "func_8005541C",
           "size": "600",
+          "fuzzy_match_percent": 100.0,
           "metadata": {},
           "address": "144924"
         },

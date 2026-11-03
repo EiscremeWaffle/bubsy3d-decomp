@@ -93,7 +93,7 @@ void func_800347EC(
     register void *shared_state __asm__("$18");
     register int32_t first_sequence __asm__("$20");
     register int32_t second_sequence __asm__("$21");
-    int32_t mode_value;
+    register int32_t mode_value __asm__("$16");
     register int32_t mode_source __asm__("$6") = mode;
     register uint32_t state_mask __asm__("$2");
     uint32_t object_index;
@@ -103,7 +103,7 @@ void func_800347EC(
 
     first_sequence = 0x29B;
     component_out = &component_value;
-    __asm__ volatile("" : "=r"(actor), "=r"(context), "=r"(first_sequence), "=r"(component_out), "=r"(mode_source) : "0"(actor), "1"(context), "2"(first_sequence), "3"(component_out), "4"(mode_source));
+    __asm__("" : "=r"(actor), "=r"(context), "=r"(first_sequence), "=r"(component_out), "=r"(mode_source) : "0"(actor), "1"(context), "2"(first_sequence), "3"(component_out), "4"(mode_source));
     mode_value = mode_source;
     shared_state = actor->shared_28;
     func_80052ABC(actor->component_1C, component_out);

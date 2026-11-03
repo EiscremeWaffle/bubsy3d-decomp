@@ -1,8 +1,8 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 42,688 exact code bytes across 153
-functions (`1.404148%` of mapped code), including two Clang-built getters,
+The validated report currently contains 44,928 exact code bytes across 159
+functions (`1.477829%` of mapped code), including two Clang-built getters,
 eight original GCC C functions, ten GCC assembly-backed functions, the
 C-built `vector_length_q12` (`func_8005385C` linker label),
 `vector_range_scale_q12` (`func_8005395C`), and
@@ -10,8 +10,8 @@ C-built `vector_length_q12` (`func_8005385C` linker label),
 assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
 product, four newly matched bounded move-request callers, 22 C matrix-scaler
 copies, and 38 repeated actor-flag/cursor helper copies. The actor-event
-dispatcher now has an assembly-backed exact transcription; its separate C
-candidate remains a semantic model. The shared actor-state dispatcher is
+dispatcher `bubsy_process_actor_event` now matches from readable C without
+instruction snippets. The shared actor-state dispatcher is
 byte-matched from high-level C under a documented per-function
 `-fno-cse-follow-jumps` reproduction profile, and the 2,200-byte shared
 actor state-2 handler is byte-matched from high-level C using MASPSX
@@ -32,9 +32,28 @@ native tests cover 1,310,720 boundary combinations plus helper mutations.
 The readable-C pass has additionally converted nine old assembly-backed
 functions (1,852 bytes), and removed instruction snippets from seven existing
 C matches without changing any matched bytes.
-Current exact coverage contains 126 C-based matches
+The shared grounded dispatcher's temporary basis rotation and stride
+restoration are native-tested. Its 216-byte rotation wrapper `func_800547C8`
+and 132-byte basis-restoration leaf `func_800549E8` now match plain C without
+inline assembly or register constraints. Their 368-byte column-reconstruction
+callee `func_800542A4` now matches plain C too. Native tests cover 131,072
+reconstruction cases and 120 orientation/failure cases in the already-matched
+`func_800550A4`. Engine/GTE backends and the complete controller-to-heading
+path remain unrecovered. The movement preparer's 600-byte column-scaling
+helper `func_8005541C` now matches plain C too, with 589,824 input/scale
+combinations and 24 clamp/callback-mutation cases passing native and sanitizer
+tests. Its multiply backend still contains instruction snippets.
+The shared movement initializer `func_8002611C` also matches all 636 bytes
+from plain C, setting up target/stride/basis/direction without producing or
+enqueueing a movement step. Its 216 boundary cases, failure exits and callback
+mutations pass native and sanitizer tests; this is not identified pad input.
+Its 288-byte setup caller `func_80025FFC` now matches plain C as well.
+Existing move-info returns success without reinitializing; 176 setup/result
+combinations plus early exits, repeat calls and helper mutations pass native
+and sanitizer tests. Allocation/transform-creation internals remain unresolved.
+Current exact coverage contains 132 C-based matches
 and 27 assembly-backed matches. One C-based source still contains instruction
-snippets (`func_8001007C`); the other 125 matches contain
+snippets (`func_8001007C`); the other 131 matches contain
 readable C with at most symbol aliases, register constraints, and empty barriers.
 These counts include repeated module copies, and the
 remaining assembly-backed matches are unfinished for readable-C decompilation.

@@ -12,7 +12,7 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,040,136 code bytes; the current report validates 42,688 exact code bytes across 153 functions (1.404148%) and 196 exact data bytes. New exact coverage includes the readable-C grounded stride producers `func_80035ACC` and `func_80038844`, three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, plus the readable-C movement preparer `func_80025A98`, the movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. The complete grounded handler now matches from readable C. Coverage also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` now matches all 316 bytes from readable C without instruction snippets.
+The current validated scope maps 3,040,136 code bytes; the current report validates 44,928 exact code bytes across 159 functions (1.477829%) and 196 exact data bytes. New exact coverage includes plain-C movement setup `func_80025FFC`, initialization `func_8002611C`, column scaling `func_8005541C`, the temporary grounded rotation helpers `func_800547C8` and `func_800549E8` and their column-reconstruction callee `func_800542A4`, the readable-C grounded stride producers `func_80035ACC` and `func_80038844`, three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, plus the readable-C movement preparer `func_80025A98`, the movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. The complete grounded handler now matches from readable C. Coverage also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` now matches all 316 bytes from readable C without instruction snippets.
 
 ## Setup
 
@@ -141,22 +141,25 @@ and mutations during assertion, special-state and multiply callbacks.
 Its shared layouts are declared in `src/game/move_step.h`; the arithmetic
 uses explicit wrapping intermediates and contains no instruction snippets.
 
-The allowlist now contains 126 C-based function matches (25,348 bytes) and
+The allowlist now contains 132 C-based function matches (27,588 bytes) and
 27 assembly-backed matches (17,340 bytes), including repeated module copies.
 Of those C-based matches, one still contains real instruction snippets:
-`func_8001007C` (36 bytes). The other 125 matches (25,312 bytes) contain no
+`func_8001007C` (36 bytes). The other 131 matches (27,552 bytes) contain no
 instruction transcriptions; some require
 register constraints, symbol aliases, or empty compiler barriers, so they are
 not all unconstrained ISO C.
-The overall exact total remains 42,688 bytes across 153 matches; converting
-an already matched function to C does not increase that total.
+The overall exact total is 44,928 bytes across 159 matches. The plain-C
+grounded rotation helpers `func_800547C8`, `func_800549E8`, and `func_800542A4`
+and column scaling `func_8005541C`, together with shared movement initialization
+`func_8002611C` and setup `func_80025FFC`, add 2,240 bytes;
+converting an already matched function to C does not increase that total.
 
 The remaining assembly-backed implementations have all been inventoried:
 
 | Implementation | Bytes per copy | Copies | Remaining work |
 |---|---:|---:|---|
 | `bubsy_handle_death_state` | 1,920 | 1 | Large inline-assembly blocks |
-| `func_800347EC` | 1,804 | 1 | C candidate has matching size; two instruction-order groups still differ |
+| `func_800347EC` | 1,804 | 1 | C candidate has matching size; final transition-index store ordering still differs |
 | `func_80015A54` | 2,080 | 1 | Full move-request caller reconstruction |
 | `func_8003CC78` | 3,168 | 1 | Full move-request caller reconstruction |
 | `func_80041218` | 2,920 | 1 | Full move-request caller reconstruction |
@@ -171,8 +174,8 @@ model is not proof of an exact C match, and the GTE routine cannot simply be
 replaced with scalar math while claiming its original COP2 bytes are retained.
 
 The uncredited `src/player_model/bubsy_actor_347ec.c` candidate now emits
-1,804 bytes. Its remaining differences are the entry saved-register store
-ordering and the final transition-index store ordering. Its state-bit branches,
+1,804 bytes. Its entry saved-register ordering now matches; the final
+transition-index store ordering still differs. Its state-bit branches,
 fallback flag clear, and mode-zero state writes have been corrected against
 the original instructions, but equal size is not an exact match.
 The registered assembly transcription remains unchanged.

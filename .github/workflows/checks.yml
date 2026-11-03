@@ -52,3 +52,19 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80022944.c tests/test_move_step.c -o /tmp/test_move_step
           /tmp/test_move_step
+      - name: Compile and test grounded temporary rotation
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800549E8.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
+          /tmp/test_grounded_rotation
+      - name: Compile and test grounded basis reconstruction
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054488.c src/game/func_800542A4.c src/game/func_800550A4.c src/game/func_8005541C.c tests/test_grounded_basis.c -o /tmp/test_grounded_basis
+          /tmp/test_grounded_basis
+      - name: Compile and test movement initialization
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002611C.c tests/test_move_initializer.c -o /tmp/test_move_initializer
+          /tmp/test_move_initializer
+      - name: Compile and test movement setup
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80025FFC.c tests/test_move_setup.c -o /tmp/test_move_setup
+          /tmp/test_move_setup
