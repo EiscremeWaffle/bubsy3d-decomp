@@ -1,4 +1,7 @@
+#include "actor_context.h"
+#include "bubsy_actor_state_update.h"
 #include "bubsy_death_state.h"
+#include "bubsy_grounded_interaction.h"
 
 int32_t bubsy_death_state_normalize_initial(
     int32_t death_state,
@@ -122,14 +125,12 @@ int32_t bubsy_death_state_should_dispatch_counter_entry_event(
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
 #define BUBSY_GLOBAL_COUNTER (*(volatile int32_t *)0x800BE100u)
 
-extern void *func_80026648(void *actor, void *context);
 extern void func_80028FC8(void);
 extern int32_t func_800222E0(void);
 extern int32_t func_80082ECC(void);
 extern void func_8002DD24(volatile uint8_t *state);
 extern void func_8005F2C0(int32_t value, int32_t value_copy);
 extern void func_80037214(int32_t mode, void *actor);
-extern void func_8003539C(void *actor, int32_t mode);
 extern void func_800289E8(int32_t mode, void *output);
 extern void func_800549E8(void *context, void *input);
 extern void func_80054C7C(void *object, int32_t mode, void *data);
@@ -140,7 +141,6 @@ extern void func_8002CB2C(int32_t value);
 extern void func_8002CA88(int32_t value, int32_t duration);
 extern void func_8002BAD4(int32_t value);
 extern void func_8003CB14(void);
-extern void func_80039158(int32_t mode, int32_t flags);
 extern void func_80048488(void);
 extern void func_80040634(void);
 extern void func_8005FBE4(void);
@@ -156,17 +156,7 @@ extern void func_80045094(void);
 extern void func_80044268(void);
 extern void func_80069758(void);
 extern void func_8003AA30(void);
-extern void func_8001B558(
-    int32_t event_id,
-    int32_t property_id,
-    int32_t actor_value,
-    int32_t actor_value_copy,
-    int32_t argument_10,
-    int32_t argument_14,
-    int32_t argument_18,
-    int32_t argument_1C
-);
-extern void func_8001C700(int32_t event_id, int32_t property_id);
+extern int32_t func_8001C700(int32_t event_id, int32_t property_id);
 extern void func_8004733C(int32_t value);
 extern void func_8001A670(void);
 extern void func_800556D0(

@@ -1,4 +1,6 @@
+#include "bubsy_actor_state_update.h"
 #include "bubsy_grounded_state.h"
+#include "game_transition.h"
 
 typedef struct BubsyDecelerationComponent {
     uint8_t unknown_00[0x14];
@@ -15,10 +17,7 @@ extern const char g_stride_source_path[];
 
 extern void func_8002262C(BubsyGroundedActor *actor, int32_t selector);
 extern void func_80022650(BubsyGroundedActor *actor, int32_t selector);
-extern void func_8003539C(BubsyGroundedActor *actor, int32_t mode);
 extern void func_80054B20(void *transform, int32_t mode, int32_t *output);
-extern void func_8001B558(int32_t state, int32_t mode, int32_t argument_2, int32_t argument_3,
-    int32_t *argument_4, int32_t *argument_5, int32_t *argument_6, int32_t *argument_7);
 extern int32_t func_80052AEC(void *component, int32_t sequence);
 extern void func_80052E18(void *component);
 extern void func_800556D0(int32_t level, const char *condition, const char *source, uint32_t line);

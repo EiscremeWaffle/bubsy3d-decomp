@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "move_preparation.h"
+#include "level_records.h"
 
 _Static_assert(sizeof(MovePreparationVector) == 16, "vector size");
 _Static_assert(sizeof(MovePreparationBasis) == 32, "basis size");
@@ -86,13 +86,14 @@ uint8_t func_80028C18(int32_t context, int32_t *count, const MovePreparationEntr
     return table_result;
 }
 
-void func_800286F8(int32_t context, uint8_t *output) {
+uint8_t func_800286F8(int32_t context, uint8_t *output) {
     record(0x800286F8);
     assert(context == actor.context_0C);
     *output = selector;
     if (mutate_after_selection) {
         info.index = 1;
     }
+    return 1;
 }
 
 int32_t func_80054B20(void *transform, int32_t mode, MovePreparationVector *output) {

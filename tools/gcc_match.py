@@ -1,9 +1,11 @@
+from collections import Counter
 import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import re
+import struct
 import sys
 
 from tools.command import run_command
@@ -11,6 +13,14 @@ from tools.fetch_tools import GCC_COMPILERS, MASPSX_HASH, fetch_matching_tools
 from tools.verify_original import ROOT
 
 MASPSX_OPTIONAL_FLAGS = {"--expand-div"}
+MASPSX_ASPSX_VERSIONS = {"2.21", "2.30"}
+
+
+def aspsx_version(source_spec):
+    version = source_spec.get("aspsx_version", "2.30")
+    if not isinstance(version, str) or version not in MASPSX_ASPSX_VERSIONS:
+        raise ValueError("Unsupported ASPSX version in matching source")
+    return version
 
 
 def rodata_layout(source_spec):
@@ -167,12 +177,50 @@ def normalize_delay_slots(assembly, compiler_assembly=None):
     return "\n".join(result) + "\n"
 
 
+def normalize_double_immediates(assembly, compiler_assembly):
+    """Expand MASPSX's residual zero halves of li.d as ASPSX 2.30 does."""
+    compiler_load = re.compile(r"^\s*li\.d\s+\$(\d+),\s*([^#\s]+)")
+    expected = Counter()
+    for line in compiler_assembly.splitlines():
+        match = compiler_load.match(line)
+        if match is None:
+            continue
+        register = int(match.group(1))
+        bits = struct.unpack(">Q", struct.pack(">d", float(match.group(2))))[0]
+        if bits & 0xFFFFFFFF == 0:
+            expected[(register, bits >> 48)] += 1
+    if not expected:
+        return assembly
+
+    lines = assembly.splitlines()
+    zero_load = re.compile(r"^\s*li\s+\$(\d+),\s*(?:0x0|0)\s*$")
+    high_load = re.compile(r"^\s*lui\s+\$(\d+),\s*(0x[0-9A-Fa-f]+|\d+)\s*$")
+    found = Counter()
+    replacements = []
+    for index, line in enumerate(lines[:-1]):
+        low_match = zero_load.match(line)
+        high_match = high_load.match(lines[index + 1])
+        if low_match is None or high_match is None:
+            continue
+        register = int(low_match.group(1))
+        key = (register, int(high_match.group(2), 0))
+        if int(high_match.group(1)) == register + 1 and key in expected:
+            found[key] += 1
+            replacements.append((index, register))
+    if found != expected:
+        raise ValueError("MASPSX double-immediate zero halves do not match compiler output")
+    for index, register in replacements:
+        lines[index] = f"\tori\t${register},$zero,0"
+    return "\n".join(lines) + "\n"
+
+
 def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
     from elftools.elf.elffile import ELFFile
     from tools.progress import compiled_symbol_bytes
 
     if source_spec["compiler"] not in GCC_COMPILERS:
         raise ValueError("Unsupported matching compiler profile")
+    version = aspsx_version(source_spec)
     maspsx_flags = source_spec.get("maspsx_flags", [])
     if not isinstance(maspsx_flags, list) or not set(maspsx_flags) <= MASPSX_OPTIONAL_FLAGS:
         raise ValueError("Unsupported MASPSX flags in matching source")
@@ -209,7 +257,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         gp_flags = ["-G8"]
     converted = run_tool([
         sys.executable, str(maspsx_directory / "maspsx.py"),
-        "--aspsx-version", "2.30", "--force-stdin", *gp_flags, *maspsx_flags,
+        "--aspsx-version", version, "--force-stdin", *gp_flags, *maspsx_flags,
     ], maspsx_input)
     if small_data is not None:
         lines = converted.split("\n")
@@ -219,6 +267,7 @@ def build_gcc_symbol(source_spec, symbol_spec, directory, zig):
         if file_index is None or prefix != expected:
             raise ValueError("MASPSX did not preserve the small-data declarations")
         converted = "\n".join(lines[file_index:])
+    converted = normalize_double_immediates(converted, compiler_assembly)
     converted_assembly = directory / f"{name}.maspsx.s"
     converted_assembly.write_text(normalize_delay_slots(converted, compiler_assembly), encoding="ascii")
     object_path = directory / f"{name}.o"

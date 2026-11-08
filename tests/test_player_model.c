@@ -8,6 +8,7 @@
 #include "component_transform.h"
 #include "move_requests.h"
 #include "player_model.h"
+#include "sequence_limit.h"
 
 extern int32_t func_800536F4(const int32_t *input, int32_t *output);
 extern int32_t func_8002262C(void *actor, uint8_t selector);
@@ -23,7 +24,6 @@ extern int32_t func_8005476C(const GameComponentBasisView *input, GameComponentB
 extern int32_t func_8005406C(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
 extern int32_t func_80054120(const int32_t input[4], const GameComponentBasisView *basis, int32_t output[4]);
 extern int32_t func_8008E044(int32_t character_index, int32_t state_index);
-extern int32_t func_8005D5A8(int16_t requested_key, int16_t value);
 extern void func_8002E7D8(void);
 extern void func_8002E7FC(void);
 extern int32_t func_80053A08(const int32_t *input, int32_t scale, int32_t *output);
@@ -31,16 +31,15 @@ volatile uint8_t g_grounded_case_event;
 uint32_t g_l0_gp_170;
 void *g_l0_gp_888;
 volatile uintptr_t g_character_state_table[8];
-_Alignas(uint32_t) static uint8_t g_character_state_fixture[512];
-typedef struct SequenceLimitEntry {
-    int16_t key;
-    int16_t limit;
-    uint8_t padding[68];
-} SequenceLimitEntry;
-_Alignas(int16_t) volatile uint8_t g_l0_runtime_globals[0x630];
-volatile SequenceLimitEntry g_sequence_limit_entries[4];
+_Alignas(uint32_t) static uint8_t g_character_state_fixture[1024];
+_Alignas(uint32_t) static uint8_t g_character_state_replacement[1024];
+uint8_t g_sequence_limit_scan_enabled;
+int16_t g_sequence_limit_count;
+SequenceLimitEntry g_sequence_limit_entries[4];
 static uint32_t g_character_state_notification;
 static unsigned int g_character_state_notification_count;
+static uint8_t *g_character_state_mutation_row;
+static uint32_t g_character_state_flags_at_notification;
 extern uint32_t func_80056678(uint32_t value, uint32_t selector);
 extern int32_t func_8005668C(uint32_t *state, uint8_t selector);
 extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
@@ -48,6 +47,14 @@ extern int32_t func_800566E8(uint32_t *state, uint8_t selector);
 int32_t func_80094108(uint32_t selection) {
     g_character_state_notification = selection;
     g_character_state_notification_count++;
+    if (g_character_state_mutation_row != NULL) {
+        g_character_state_flags_at_notification = *(uint32_t *)(g_character_state_mutation_row + 0x90);
+        *(uint32_t *)(g_character_state_mutation_row + 0x7C) = 0x12345678u;
+        *(uint32_t *)(g_character_state_mutation_row + 0x84) = 0x89ABCDEFu;
+        *(uint32_t *)(g_character_state_mutation_row + 0x08) = 0x76543210u;
+        *(uint16_t *)(g_character_state_mutation_row + 0x72) = 0xBEEFu;
+        g_character_state_table[4] = (uintptr_t)g_character_state_replacement;
+    }
     return -1;
 }
 
@@ -58,36 +65,28 @@ static unsigned int g_inverse_basis_call_count;
 static unsigned int g_point_transform_word_count = 4;
 
 static void test_func_8008E044(void) {
-    const size_t row_offset = 3u * 44u;
-    uint32_t source_word;
-    uint16_t source_halfword;
+    const size_t row_offset = 3u * 172u;
     unsigned int index;
 
     memset(g_character_state_fixture, 0xA5, sizeof(g_character_state_fixture));
+    memset(g_character_state_replacement, 0x5A, sizeof(g_character_state_replacement));
     g_character_state_table[4] = (uintptr_t)g_character_state_fixture;
     g_character_state_notification = 0;
     g_character_state_notification_count = 0;
+    g_character_state_flags_at_notification = 0;
+    g_character_state_mutation_row = g_character_state_fixture + row_offset;
 
     *(uint32_t *)(g_character_state_fixture + row_offset + 0x90) = UINT32_MAX;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 44 + 0x90) = UINT32_MAX;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 88 + 0x90) = UINT32_MAX;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 132 + 0x90) = UINT32_MAX & ~0x04u;
-    source_word = 0x12345678u;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 0x7C) = source_word;
-    source_word = 0x89ABCDEFu;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 0x84) = source_word;
-    source_word = 0x76543210u;
-    *(uint32_t *)(g_character_state_fixture + row_offset + 0x08) = source_word;
-    source_halfword = 0xBEEFu;
-    *(uint16_t *)(g_character_state_fixture + row_offset + 0x72) = source_halfword;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 172 + 0x90) = UINT32_MAX;
 
     assert(func_8008E044(0x10004, 0x10003) == 0x7F);
+    g_character_state_mutation_row = NULL;
     assert(g_character_state_notification_count == 1);
     assert(g_character_state_notification == 0x304);
-    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x90) == (UINT32_MAX & ~0x02u));
-    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 44 + 0x90) == (UINT32_MAX & ~0x04u));
-    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 88 + 0x90) == (UINT32_MAX & ~0x08u));
-    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 132 + 0x90) == UINT32_MAX);
+    assert(g_character_state_flags_at_notification == (UINT32_MAX & ~0x0Bu));
+    assert(g_character_state_table[4] == (uintptr_t)g_character_state_replacement);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x90) == (UINT32_MAX & ~0x0Bu));
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 172 + 0x90) == UINT32_MAX);
     assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x80) == 0);
     assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x88) == 0x12345678u);
     assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x8C) == 0x89ABCDEFu);
@@ -109,35 +108,55 @@ static void test_func_8008E044(void) {
     assert(g_character_state_fixture[row_offset + 0x2B] == 0);
 
     for (index = 0; index < 16; index++) {
-        assert(g_character_state_fixture[row_offset + 0x2C + index] == 0);
+        assert(g_character_state_fixture[row_offset + 0x2C + index] == index);
         assert(g_character_state_fixture[row_offset + 0x17 + index] == 0x40);
         assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x4E + index * 2) == 0x7F);
     }
     assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x78) == 0x7F);
     assert(*(uint16_t *)(g_character_state_fixture + row_offset + 0x7A) == 0x7F);
+    for (index = 0; index < sizeof(g_character_state_replacement); index++) {
+        assert(g_character_state_replacement[index] == 0x5A);
+    }
+
+    memset(g_character_state_fixture, 0xA5, sizeof(g_character_state_fixture));
+    g_character_state_table[4] = (uintptr_t)(g_character_state_fixture + 4u * 172u);
+    g_character_state_notification_count = 0;
+    *(uint32_t *)(g_character_state_fixture + row_offset + 0x90) = 0x0Bu;
+    assert(func_8008E044(0x10004, 0x1FFFF) == 0x7F);
+    assert(g_character_state_notification_count == 1);
+    assert(g_character_state_notification == 0xFFFFFF04u);
+    assert(*(uint32_t *)(g_character_state_fixture + row_offset + 0x90) == 0x04u);
+    assert(g_character_state_fixture[row_offset + 0x2C + 15] == 15);
 }
 
 static void test_func_8005D5A8(void) {
     unsigned int index;
 
-    for (index = 0; index < sizeof(g_l0_runtime_globals); index++) {
-        g_l0_runtime_globals[index] = 0;
-    }
     for (index = 0; index < 4; index++) {
         g_sequence_limit_entries[index].key = (int16_t)(100 + index);
         g_sequence_limit_entries[index].limit = 0;
     }
-    *(volatile int16_t *)(g_l0_runtime_globals + 0x62C) = 3;
+    g_sequence_limit_count = 3;
     g_sequence_limit_entries[1].key = 7;
     g_sequence_limit_entries[1].limit = -3;
 
-    g_l0_runtime_globals[0x624] = 1;
+    g_sequence_limit_scan_enabled = 0;
     assert(func_8005D5A8(7, -4) == 0x1B);
-    g_l0_runtime_globals[0x624] = 0;
+    g_sequence_limit_scan_enabled = 1;
     assert(func_8005D5A8(7, -4) == 1);
-    assert(func_8005D5A8(7, -2) == 0);
-    assert(func_8005D5A8(7, 0) == 0);
+    assert(func_8005D5A8(7, -2) == 1);
+    assert(func_8005D5A8(7, 0) == 1);
     assert(func_8005D5A8(99, -4) == 1);
+    g_sequence_limit_entries[1].limit = 3;
+    assert(func_8005D5A8(7, -1) == 1);
+    assert(func_8005D5A8(7, 0) == 0);
+    assert(func_8005D5A8(7, 2) == 0);
+    assert(func_8005D5A8(7, 3) == 1);
+    g_sequence_limit_count = 0;
+    g_sequence_limit_entries[0].key = 7;
+    g_sequence_limit_entries[0].limit = 1;
+    assert(func_8005D5A8(7, 0) == 0);
+    assert(func_8005D5A8(99, 0) == 1);
 }
 
 int32_t func_80010000(const int32_t left[3], const int32_t right[3], int32_t output[3]) {
@@ -1809,22 +1828,51 @@ static void test_bubsy_actor_update_entry_gate(void) {
 }
 
 static void test_bubsy_actor_default_state_route(void) {
+    static const uint16_t ids[] = {8, 0x24, 0x25, 0x26};
+    static const int32_t auxiliary[] = {0, 0xFFFE, -2};
     BubsyActorUpdateActorView actor = {0};
+    unsigned int runtime, mode, i, j;
+
+    for (runtime = 0; runtime < 256; ++runtime) {
+        for (i = 0; i < sizeof(ids) / sizeof(ids[0]); ++i) {
+            for (j = 0; j < sizeof(auxiliary) / sizeof(auxiliary[0]); ++j) {
+                for (mode = 0; mode < 2; ++mode) {
+                    BubsyActorDefaultStateRoute expected = mode == 0 ?
+                        BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED : BUBSY_ACTOR_DEFAULT_ROUTE_SWIM;
+                    if (runtime == 5 && ids[i] != 0x25 &&
+                        !(ids[i] == 0x26 && auxiliary[j] != 0xFFFE)) {
+                        expected = BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
+                    }
+                    assert(bubsy_actor_state_route_default(
+                        &actor, ids[i], auxiliary[j], (uint8_t)runtime, 0, 0, (uint8_t)mode
+                    ) == expected);
+                }
+            }
+        }
+    }
 
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 1) == BUBSY_ACTOR_DEFAULT_ROUTE_SWIM);
     assert(bubsy_actor_state_route_default(&actor, 0x26, -1, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
-    assert(bubsy_actor_state_route_default(&actor, 0x26, -2, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x26, -2, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    assert(bubsy_actor_state_route_default(&actor, 0x26, 0xFFFE, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
     assert(bubsy_actor_state_route_default(&actor, 0x24, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
-    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 4, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 4, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    assert(bubsy_actor_state_route_default(&actor, 8, 0, 0, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    assert(bubsy_actor_state_route_default(&actor, 10, 0xFFFE, 255, 0, 0, 2) == BUBSY_ACTOR_DEFAULT_ROUTE_SWIM);
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 1, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 1, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 8, 0, 0, 1, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
 
     actor.flags_04 = 0x100;
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 8, 0, 0, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
     actor.flags_04 = 0;
     actor.update_state_10 = 0x10000;
+    assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED);
+    actor.update_state_10 = 0x100000;
     assert(bubsy_actor_state_route_default(&actor, 0x25, 0, 5, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
+    assert(bubsy_actor_state_route_default(&actor, 8, 0, 0, 0, 0, 0) == BUBSY_ACTOR_DEFAULT_ROUTE_SKIP);
 }
 
 static void test_bubsy_actor_shared_update_entry(void) {
@@ -2827,17 +2875,19 @@ static void test_bubsy_actor_update_sequence_counter_reset(void) {
     assert(bubsy_actor_update_should_reset_sequence_counter(&actor, 1, 0, 0) == 1);
 }
 
-static void test_bubsy_actor_update_level14_counter_path(void) {
+static void test_bubsy_actor_update_start_counter_phase(void) {
     BubsyActorUpdateActorView actor = {0};
 
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 0) == 1);
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 0, 0, 0x14, 0) == 0);
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 1, 0x14, 0) == 0);
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x13, 0) == 0);
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 1) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 0, 0x13, 0) == 1);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 0, 0x15, 0) == 1);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, -1, 0, 0x13, 0) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 0, 0, 0x13, 0) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 1, 0x13, 0) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 0, 0x14, 0) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 0, 0x13, 1) == 0);
 
     actor.flags_04 = 0x40;
-    assert(bubsy_actor_update_should_enter_level14_counter_path(&actor, 1, 0, 0x14, 0) == 0);
+    assert(bubsy_actor_update_should_start_counter_phase(&actor, 1, 0, 0x13, 0) == 0);
 }
 
 static void test_bubsy_actor_update_sequence_index_for_local_state(void) {
@@ -3021,7 +3071,7 @@ int main(void) {
     test_component_transform_helper_models();
     test_actor_event_dispatch();
     test_bubsy_actor_update_entry_gate();
-    test_bubsy_actor_update_level14_counter_path();
+    test_bubsy_actor_update_start_counter_phase();
     test_bubsy_actor_default_state_route();
     test_bubsy_actor_shared_update_entry();
     test_bubsy_actor_347ec_mode_entry();

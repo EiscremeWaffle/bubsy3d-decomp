@@ -12,7 +12,34 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,040,136 code bytes; the current report validates 44,928 exact code bytes across 159 functions (1.477829%) and 196 exact data bytes. New exact coverage includes plain-C movement setup `func_80025FFC`, initialization `func_8002611C`, column scaling `func_8005541C`, the temporary grounded rotation helpers `func_800547C8` and `func_800549E8` and their column-reconstruction callee `func_800542A4`, the readable-C grounded stride producers `func_80035ACC` and `func_80038844`, three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and `func_80041218`) captured as assembly-backed transcriptions, plus the readable-C movement preparer `func_80025A98`, the movement consumer, shared component-transform helpers `func_80054B20` and `func_80054C7C`, and shared `func_800347EC` actor-state handler. The complete grounded handler now matches from readable C. Coverage also includes the C vector functions `vector_length_q12` (`func_8005385C` linker label), `vector_range_scale_q12` (`func_8005395C`), and `vector_range_condition_q12` (`func_80053D68`), 20 assembly-backed copies of `func_80010128`, one assembly-backed L0 Q20.12 dot product, 22 C copies of `func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under a documented per-function `-fno-cse-follow-jumps` profile. `shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX `--expand-div` and declared gp-relative small-data externs. `bubsy_process_actor_event` now matches all 316 bytes from readable C without instruction snippets.
+The current validated scope maps 3,069,356 code bytes; the current report
+validates 63,972 exact code bytes across 263 functions (2.084216%) and 196
+exact data bytes. New exact coverage includes readable-C grounded helpers
+`func_800556D0`, `func_8001B558`, `func_80034EF8`, `func_8003539C`, and
+`func_80039158`, the readable-C queue processor `func_8001B1E4`, plain-C
+move-info and component-basis allocators
+`func_800222EC` and `func_80054624`, movement setup `func_80025FFC`,
+initialization `func_8002611C`, column scaling `func_8005541C`, rotation
+wrappers `func_800547C8` and `func_800548A0`, `func_800549E8` and their
+column-reconstruction callee `func_800542A4`, the readable-C grounded stride
+producers `func_80035ACC` and `func_80038844`, plus event, record, sequence,
+and runtime dependencies documented in [player-bubsy.md](player-bubsy.md).
+Three bounded move-request callers (`func_80015A54`, `func_8003CC78`, and
+`func_80041218`) remain assembly-backed. The shared actor-state helper
+`func_800347EC` now matches from readable C. The complete grounded handler, movement preparer
+`func_80025A98`, movement consumer, and shared component-transform helpers
+`func_80054B20` and `func_80054C7C` match from readable C. Coverage also
+includes the C vector functions `vector_length_q12` (`func_8005385C` linker
+label), `vector_range_scale_q12` (`func_8005395C`), and
+`vector_range_condition_q12` (`func_80053D68`), 20 assembly-assisted C copies
+of `func_80010128`, one assembly-assisted L0 Q20.12 dot product, 22 C copies of
+`func_80072F4C`, and 19 additional copies each of two existing actor-flag/cursor
+helpers. `shared_actor_state_dispatch` is byte-matched from high-level C under
+a documented per-function `-fno-cse-follow-jumps` profile.
+`shared_actor_state_2_handler` is byte-matched from high-level C using MASPSX
+`--expand-div` and declared gp-relative small-data externs.
+`bubsy_process_actor_event` now matches all 316 bytes from readable C without
+instruction snippets.
 
 ## Setup
 
@@ -37,7 +64,7 @@ The 2.6.3 archive SHA256 is `01e6e8c4933414ea3f8d8e3bc766a1f5fafd4fc0110e0b75d1f
 3. **Trace before naming.** Record argument registers, saved registers, stack size/offsets, globals, field widths, call arguments, branch destinations, and delay-slot effects. Calculate branch destinations from instruction addresses instead of inferring them from a decompiler label. Use `rabbitizer`/`spimdisasm` or a focused Python snippet to print bounded instruction ranges.
 4. **Build a small semantic C model first.** Add explicit structs and `_Static_assert` offset checks where layouts are supported. Keep host-testable logic separate from target runtime ABI when necessary. Add tests for signed boundaries, branch predicates, stores, and return values. Avoid assigning gameplay meanings to numeric IDs without evidence.
 5. **Try the matching compiler.** Use an isolated compiler profile and compare the linked symbol bytes to the verified executable. Compiler version, flags, compatibility headers, source hash, and binary hashes are recorded by `tools/gcc_match.py`. Test alternate compiler versions when repeated register-allocation or scheduling differences suggest the compiler may be wrong; keep results per symbol until a whole translation unit is reproduced.
-6. **Prefer C constraints over instruction strings.** Fixed-register variables, typed volatile accesses, empty compiler barriers, and ordinary C expressions can influence allocation/order without embedding machine instructions. A `__asm__` block containing MIPS mnemonics is still assembly-backed, even if the rest of the function is C. Be precise in docs and profiles about which is used.
+6. **Prefer C constraints over instruction strings.** Fixed-register variables, typed volatile accesses, empty compiler barriers, and ordinary C expressions can influence allocation/order without embedding machine instructions. C containing MIPS mnemonics is assembly-assisted rather than instruction-free; a whole-function transcription remains assembly-backed. Be precise in docs and profiles about which is used.
 7. **Use a byte gate.** `build_gcc_symbol` compiles, assembles, links helper symbols to observed addresses, and checks the symbol bounds. Exact credit requires same start address, size, and bytes. If it differs, inspect the first byte/instruction mismatch and make one local hypothesis-driven change.
 8. **Register only exact results.** Add an entry to `matching_sources` and `symbols` only after the source-built bytes match the original. Leave partial implementations in `fuzzy_sources`. Then run the complete progress build, validator, tests, and stage command.
 
@@ -60,6 +87,8 @@ The native C harness is separate from Python tests. CI's compile command is in `
 - Its preprocessor is sensitive to backslash-newline macros in CRLF files. Keep compatibility macros such as `_Static_assert` on one line.
 - MASPSX reads stdin when launched non-interactively. Use `--force-stdin` and pass the compiler assembly as subprocess input; otherwise it can wait indefinitely.
 - Do not delete every MASPSX `# DEBUG: branch/jump` nop. For compiler-generated code, `tools/gcc_match.normalize_delay_slots` tracks the original `.set reorder`/`.set noreorder` mode and retains required delay slots. It rejects branch-expansion mismatches.
+- For a GCC `li.d` with a zero low word, `tools/gcc_match.normalize_double_immediates` replaces the compiler-evidenced MASPSX zero-load pseudo-instruction with the ASPSX-compatible `ori` encoding. Missing or ambiguous expansions are rejected rather than rewriting unrelated zero loads.
+- The per-source `aspsx_version` option defaults to `2.30`; use another supported profile only when its fully linked output matches the original. This records a reproducible assembler setting, not proof of original-toolchain provenance.
 - For hand-authored inline assembly, put `.set noreorder` around explicitly ordered branches/calls. Restore `.set reorder` before a compiler-generated return if its final nop is required.
 - Relocatable object bytes alone are not enough for calls and local jumps. The matching tool links at the symbol's real address, resolves only explicit `func_XXXXXXXX` helpers and configured globals, then compares bytes.
 - A source with compiler-generated read-only data can declare `rodata: {"start": "0x800139A8", "size": 132}` in its matching profile. The linker places that section at the original address; the build checks its exact bounds and records its hash, and the progress builder independently compares all its bytes with the verified executable. A matching switch instruction sequence alone is not enough.
@@ -141,17 +170,19 @@ and mutations during assertion, special-state and multiply callbacks.
 Its shared layouts are declared in `src/game/move_step.h`; the arithmetic
 uses explicit wrapping intermediates and contains no instruction snippets.
 
-The allowlist now contains 132 C-based function matches (27,588 bytes) and
-27 assembly-backed matches (17,340 bytes), including repeated module copies.
-Of those C-based matches, one still contains real instruction snippets:
-`func_8001007C` (36 bytes). The other 131 matches (27,552 bytes) contain no
-instruction transcriptions; some require
-register constraints, symbol aliases, or empty compiler barriers, so they are
-not all unconstrained ISO C.
-The overall exact total is 44,928 bytes across 159 matches. The plain-C
+The allowlist now contains 232 instruction-free GCC C matches (47,264 bytes),
+24 assembly-assisted C matches (6,236 bytes), five assembly-backed
+transcriptions (10,440 bytes), and two Clang-built getters (32 bytes), including
+repeated module copies. The assembly-assisted matches comprise 20 copies of
+`func_80010128`, `func_800100A0`, `func_8001007C`, and the queue processor
+`func_8001B1E4`, plus the 220-byte sequence-notification backend
+`func_80091194`. Instruction-free matches may require register constraints,
+symbol aliases, or empty compiler barriers, so they are not all unconstrained
+ISO C. The overall exact total is 63,972 bytes across 263 matches. The plain-C
 grounded rotation helpers `func_800547C8`, `func_800549E8`, and `func_800542A4`
 and column scaling `func_8005541C`, together with shared movement initialization
-`func_8002611C` and setup `func_80025FFC`, add 2,240 bytes;
+`func_8002611C`, setup `func_80025FFC`, and allocation `func_800222EC`, add
+2,648 bytes;
 converting an already matched function to C does not increase that total.
 
 The remaining assembly-backed implementations have all been inventoried:
@@ -159,33 +190,31 @@ The remaining assembly-backed implementations have all been inventoried:
 | Implementation | Bytes per copy | Copies | Remaining work |
 |---|---:|---:|---|
 | `bubsy_handle_death_state` | 1,920 | 1 | Large inline-assembly blocks |
-| `func_800347EC` | 1,804 | 1 | C candidate has matching size; final transition-index store ordering still differs |
 | `func_80015A54` | 2,080 | 1 | Full move-request caller reconstruction |
 | `func_8003CC78` | 3,168 | 1 | Full move-request caller reconstruction |
 | `func_80041218` | 2,920 | 1 | Full move-request caller reconstruction |
-| `func_800100A0` | 136 | 1 | Signed multiply-high/low register ordering |
-| `func_80010128` | 248 | 20 | Signed multiply-high/low register ordering |
 | `func_80077298` | 352 | 1 | GTE coprocessor transfers and commands |
 
 An ordinary 64-bit C multiplication candidate for `func_8001007C` emitted
 44 bytes with register barriers, or 36 bytes with different registers and
-instruction order without them. It was not promoted. A portable arithmetic
-model is not proof of an exact C match, and the GTE routine cannot simply be
-replaced with scalar math while claiming its original COP2 bytes are retained.
+instruction order without them. It was not promoted. The cross and dot
+products now have readable C control flow, but retain target-only multiply and
+HI/LO instructions. A portable arithmetic model is not proof of an exact C
+match, and the GTE routine cannot simply be replaced with scalar math while
+claiming its original COP2 bytes are retained.
 
-The uncredited `src/player_model/bubsy_actor_347ec.c` candidate now emits
-1,804 bytes. Its entry saved-register ordering now matches; the final
-transition-index store ordering still differs. Its state-bit branches,
-fallback flag clear, and mode-zero state writes have been corrected against
-the original instructions, but equal size is not an exact match.
-The registered assembly transcription remains unchanged.
+`src/player_model/bubsy_actor_347ec.c` now matches all 1,804 bytes and
+replaces the former assembly transcription. The decisive changes were reading
+the transition object ID through the actor struct member and modeling the
+`0x80186450` player globals as one structure, which removed every memory
+barrier. Five register pins and one empty entry barrier remain.
 
 For each remaining conversion, retain the assembly-backed profile until the
 C build passes the complete linked-byte comparison. Then switch the profile,
 remove the superseded assembly source, and update its behavior tests and
-documentation. The larger actor handlers, move-request callers,
-and repeated vector-helper transcriptions remain conversion work,
-not completed readable-C decompilation.
+documentation. The larger actor handlers, move-request callers, and remaining
+assembly-assisted vector helpers are conversion work, not completed
+instruction-free C decompilation.
 
 ## Safe Repository Hygiene
 

@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "bubsy_actor_state_update.h"
+#include "bubsy_grounded_interaction.h"
 #include "bubsy_grounded_state.h"
 #include "bubsy_actor_update.h"
+#include "game_transition.h"
+#include "sequence_queries.h"
 
 _Static_assert(offsetof(BubsyGroundedDescriptor, state_11) == 0x11, "descriptor layout");
 _Static_assert(offsetof(BubsyGroundedDescriptor, state_14) == 0x14, "descriptor layout");
@@ -159,14 +163,15 @@ void func_80035ACC(BubsyGroundedActor *value, void *argument) {
     record(0x80035ACC, 0);
 }
 
-void func_8001C700(int32_t selection, int32_t value) {
+int32_t func_8001C700(int32_t selection, int32_t value) {
     assert(selection == 4 && value == 3);
     record(0x8001C700, selection);
+    return 1;
 }
 
-void func_8001B558(int32_t value, int32_t mode, uint32_t flags, uint32_t heading,
-    int32_t a4, int32_t a5, int32_t a6, int32_t a7) {
-    assert(value == 15 && mode == 4 && flags == 0xFFFE && heading == actor.heading_0C);
+void func_8001B558(int32_t value, int32_t mode, uintptr_t flags, int32_t heading,
+    void *a4, void *a5, void *a6, void *a7) {
+    assert(value == 15 && mode == 4 && flags == 0xFFFE && (uint32_t)heading == actor.heading_0C);
     assert(a4 == 0 && a5 == 0 && a6 == 0 && a7 == 0);
     record(0x8001B558, value);
 }
@@ -181,7 +186,7 @@ void func_80022944(BubsyGroundedActor *value) {
     record(0x80022944, 0);
 }
 
-void func_8003539C(BubsyGroundedActor *value, int32_t mode) {
+void func_8003539C(void *value, int32_t mode) {
     assert(value == &actor && mode == 1);
     record(0x8003539C, mode);
 }

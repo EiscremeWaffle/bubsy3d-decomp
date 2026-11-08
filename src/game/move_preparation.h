@@ -25,9 +25,10 @@ typedef struct MovePreparationInfo {
     MovePreparationVector pending_38;
     MovePreparationVector rotation_48;
     MovePreparationVector origin_58;
-    uint8_t unknown_68[0x20];
+    MovePreparationVector origin_copy_68;
+    MovePreparationVector auxiliary_78;
     MovePreparationVector transform_88;
-    uint8_t unknown_98[0x0C];
+    int32_t auxiliary_98[3];
 } MovePreparationInfo;
 
 typedef struct MovePreparationComponent {
@@ -58,5 +59,6 @@ int32_t func_8002611C(MovePreparationActor *actor, const void *scale_input,
     uint32_t operation_flags);
 int32_t func_80025FFC(MovePreparationActor *actor, const MovePreparationVector *origin,
     const void *scale_input, uint32_t operation_flags);
+uint8_t func_800222EC(MovePreparationInfo **output, const MovePreparationVector *origin);
 
 #endif

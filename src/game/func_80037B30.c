@@ -1,11 +1,10 @@
 #include "grounded_case37.h"
+#include "game_transition.h"
+#include "level_records.h"
 
 extern int16_t g_grounded_case37_counter;
 extern GroundedCase37ObjectView *g_grounded_case37_object;
 extern uint8_t g_runtime_state_61;
-extern int32_t g_level_value_801E8994;
-extern GroundedCase37ComponentView *g_level_pointer_801E89A4;
-extern void *func_80028764(int32_t unused);
 extern void *func_80040FC0(int32_t mode);
 extern int32_t func_80054B20(void *component, int32_t mode, int32_t *translation);
 extern int32_t func_80054C7C(void *component, int32_t mode, const int32_t *translation);
@@ -14,16 +13,6 @@ extern int32_t func_800550A4(void *component, const void *basis);
 extern void func_800288D8(void *object);
 extern void func_80052BDC(void *component, int32_t mode);
 extern void func_8002BB64(int32_t value);
-extern void func_8001B558(
-    int32_t transition_group,
-    int32_t transition_id,
-    void *argument_2,
-    int32_t argument_3,
-    int32_t argument_4,
-    int32_t argument_5,
-    int32_t argument_6,
-    int32_t argument_7
-);
 
 void func_80037B30(void *initial_object) {
     GroundedCase37ObjectView *current_object;
@@ -58,10 +47,10 @@ void func_80037B30(void *initial_object) {
         return;
     }
 
-    if (g_level_value_801E8994 <= 0) {
+    if (g_level_record_count <= 0) {
         current_component_owner = func_80040FC0(0);
     } else {
-        current_component_owner = g_level_pointer_801E89A4->owner_1C;
+        current_component_owner = g_level_records->object_1C;
     }
     current_component_owner = current_component_owner->owner_1C;
     current_component = current_component_owner->transform_14;
@@ -90,7 +79,7 @@ void func_80037B30(void *initial_object) {
     func_8001B558(
         0x17,
         5,
-        g_grounded_case37_object->event_0C,
+        (uintptr_t)g_grounded_case37_object->event_0C,
         0,
         0,
         0,

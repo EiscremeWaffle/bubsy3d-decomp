@@ -41,10 +41,11 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report currently credits 44,928 exact code bytes across 159
-functions, or `1.477829%` of mapped code. The total includes two Clang-built
- getters, eight original GCC C functions, the assembly-backed death handler,
-the readable-C grounded-state handler, `func_800347EC`, the movement consumer
+The validated report currently credits 63,972 exact code bytes across 263
+functions, or `2.084216%` of mapped code. The total includes two Clang-built
+getters, the assembly-backed death handler,
+the readable-C grounded-state handler, the readable-C shared transition
+`func_800347EC`, the movement consumer
 `game_apply_queued_move_request`, and the queue insertion and drain routines
 `game_enqueue_move_request` and `func_800250CC`, the event-record helper
 `func_8004FF50` and its remover `func_8004FFEC`, the exact case-37 initializer
@@ -53,11 +54,16 @@ plus the component-transform helpers
 `func_80054B20` and `func_80054C7C`, plus the grounded movement-vector producer
 `func_80022944`, the readable-C stride producers `func_80035ACC` and `func_80038844`,
 the readable-C movement preparer `func_80025A98`, its shared initializer
-`func_8002611C`, setup wrapper `func_80025FFC`, and the three bounded
+`func_8002611C`, setup wrapper `func_80025FFC`, move-info allocator
+`func_800222EC`, its component-basis allocator `func_80054624`, the
+record/sequence/runtime helpers and conditional input-to-turn path detailed
+below, and the five grounded-path helpers `func_800556D0`,
+`func_8001B558`, `func_80034EF8`, `func_8003539C`, and `func_80039158`,
+and the three bounded
 move-request caller transcriptions `func_80015A54`, `func_8003CC78`, and `func_80041218`,
- 20 assembly-backed copies of
-`func_80010128`, the L0 assembly-backed Q20.12 dot product `func_800100A0`, and
-the C-built Q20.12 scalar multiply `func_8001007C` and distance approximation
+20 assembly-assisted C copies of
+`func_80010128`, the L0 assembly-assisted Q20.12 dot product `func_800100A0`, and
+the assembly-assisted Q20.12 scalar multiply `func_8001007C` and C distance approximation
 `func_80062E50`, the exact C squared-difference nonzero test
 `move_vector_has_nonzero_squared_length` (linker label `func_80053904`), the
 C-built forwarding helper `func_800539E4`, and the C-built grounded-case
@@ -96,17 +102,17 @@ with four direct callers. Its entry returns immediately when actor flag
 mask continues into the caller-selected mode path. This entry gate is modeled
 and covered by host tests.
 
-The full 1,804-byte range has an exact match through the explicitly
-assembly-backed transcription in `func_800347EC_match.c`, built with pinned
-GCC 2.6.3/MASPSX and linked at its verified address. A separate readable C
- translation is in `bubsy_actor_347ec.c`; it expresses the observed control
-flow, arguments, and state/global writes, but is not the source used for exact
-credit and has not been byte-matched. It now emits the same 1,804-byte size,
-with differences restricted to the final transition-index store ordering.
-The entry saved-register ordering now matches. The registered transcription is
-unchanged. The host-side planners and tests cover
-the branch decisions and data changes. Engine-call effects and gameplay
-meanings remain unresolved.
+The full 1,804-byte range now matches from readable C in
+`bubsy_actor_347ec.c`, built with pinned GCC 2.6.3/MASPSX and linked at its
+verified address; the former assembly transcription was removed. Five register
+pins and one empty entry barrier reproduce the original global register
+allocation without emitting instructions. Two source-shape facts made the
+remaining store ordering natural. First, the transition call reads the object ID
+through the actor struct member `object_id_0C`. Second, the player globals at
+`0x80186450` are one structure. GCC 2.6 then keeps those stores ordered relative
+to actor-field accesses without memory barriers. The host-side planners and
+tests cover the branch decisions and data changes. Engine-call effects and
+gameplay meanings remain unresolved.
 
 In nonzero mode, state mask `0x44` clear selects the regular path: it clears
 actor byte `+0x00`, calls `0x8002269C(actor, 1)` and `0x80054B20`, optionally
@@ -179,11 +185,15 @@ clears byte `0x80186460`, dispatches actor events in mode `0`, and computes the
 current sequence key as actor-component halfword `+0x0C - 2`.
 
 The entry gate is translated in `bubsy_actor_update.c` and covered by host tests
-for the zero-gate, nonzero-actor-state, and forced-clear branches. It represents
-only this entry slice; the rest of `bubsy_update_actor_state` remains incomplete
-and the slice is not byte-matched.
+for the zero-gate, nonzero-actor-state, and forced-clear branches. The complete
+[bubsy_actor_state_update.c](../src/player_model/bubsy_actor_state_update.c)
+matches all 1,324 bytes with pinned GCC 2.6.3/MASPSX and LLD. It uses register
+constraints and empty compiler barriers, not instruction transcription. Native
+tests and 1,536 deterministic original-versus-C MIPS cases cover the observed
+counter, sequence, phase, message, and helper-mutation paths; those sampled
+cases are behavioral evidence, not proof for every possible input.
 
-Actor byte `+0x04` bits `0x80` and `0x100` steer distinct sequence paths. On
+Actor flags at `+0x04`, bits `0x80` and `0x100`, steer distinct sequence paths. On
 the `0x100` path, the local state byte `+0x24` is cleared when `$gp+0x7EC` is
 zero. With that flag clear, sequence key `0x32E` sets local state to `1` when
 the runtime mode is zero. This local-state predicate is translated and tested
@@ -196,11 +206,12 @@ After a successful boundary check, it increments `$gp+0x38C` and clears the
 counter when mode `1` reaches `12`, the level ID is `0x14`, or actor flags
 `+0x04` contain `0x40`. This reset predicate is tested in
 `bubsy_actor_update_should_reset_sequence_counter`.
-For level `0x14`, a later path is entered only in runtime mode `0`, with a
-positive sequence counter, actor flag `0x40` clear, and update gate
-`0x80186454` zero. The predicate is translated and tested in
-`bubsy_actor_update_should_enter_level14_counter_path`; the calls it gates are
-still unidentified.
+For levels other than `0x14`, the later phase-processing path is entered only
+in runtime mode `0`, with a positive sequence counter and actor flag `0x40`
+clear. If update gate `0x80186454` is zero, it begins the phase and submits
+event `0x2C`; the initial gate is modeled and tested by
+`bubsy_actor_update_should_start_counter_phase`. Gate values `3` and `2`
+select the subsequent ready and message paths.
 
 On the `0x80` path, it selects index `0x309` only when `$gp+0x7EC` is zero, the
 current key is not `0x309`, and actor state `+0x10` does not contain mask
@@ -346,9 +357,373 @@ returns zero. A ready transform bypasses creation. Finally the wrapper calls
 `256` and `-256` are false while `255` and `-1` are true. The
 [setup harness](../tests/test_move_setup.c) covers 176 result/allocation/flag/
 global combinations, repeat-call idempotence, all early exits, assertion
-continuation, and allocation-time context/global mutations. Allocation and
-transform-creation internals remain unrecovered; this is not a completed
-controller-to-heading trace.
+continuation, and allocation-time context/global mutations.
+
+The move-info allocator `func_800222EC` (`0x800222EC..0x80022484`) now
+matches all 408 bytes from plain C without inline assembly, barriers, or
+register constraints. It requests `0xA8` bytes from `func_80082EEC` and
+publishes the allocation through the output pointer before checking for null.
+Null returns zero without reading the origin; success returns one.
+
+It sets index to minus one and selectively clears counter, target XYZ,
+separation, stride/increment, pending XYZ, rotation XYZ, direction XYZ, and
+the auxiliary XYZ fields at `+0x78` and `+0x98`. After the initial clears,
+it samples origin separately per axis and writes each sample to both
+`+0x58` and `+0x68`. The output pointer is reread between field stores;
+each origin sample captures that pointer for its two destination stores.
+This ordering preserves the original behavior when origin overlaps the
+allocation. It does not initialize the whole object: mode `+0x1C`, vector
+padding, opaque bytes, and the final four-byte tail at `+0xA4` are untouched.
+The named C layout covers `0xA4` bytes of the `0xA8` allocation.
+
+The [allocation harness](../tests/test_move_allocation.c) compares the entire
+allocation against an ordered byte-level model over 343 origin boundary
+combinations and 1,792 overlap/fill cases, plus null allocation with a null
+origin. Native and ASan/UBSan runs pass.
+
+The 140-byte transform allocator `func_80054624` now matches plain C in
+[func_80054624.c](../src/game/func_80054624.c). It asks `func_80082EEC` for
+32 bytes, publishes the returned pointer even on failure, returns `3` for
+null, and otherwise copies all 32 bytes of the live template at `0x800A42EC`.
+The lower wrapper dispatches BIOS vector `A(33h)` (`malloc`); its adjacent
+`func_80082EFC` wrapper dispatches `A(34h)` (`free`). The real setup, allocation,
+and record-table lookup are exercised together in
+[test_transform_allocation.c](../tests/test_transform_allocation.c). Notably,
+transform-allocation failure leaves move-info installed: a repeat setup call
+then returns success without retrying the transform allocation. This is original
+behavior, not a proposed recovery strategy.
+
+### Shared Lookups and Conditional Input-to-Turn Trace
+
+The record-pointer global is `0x801D89A4`, and the signed record count is
+`0x801D8994`. The three lookups now match plain C and share the target's
+36-byte record layout in [level_records.h](../src/game/level_records.h):
+
+- `func_800286F8` returns zero for a negative index; otherwise it writes the
+  selector byte at `+0x04` and returns one. It does not check the upper bound.
+- `func_80028764` returns null for a negative index, the record's `+0x1C`
+  object for an in-range index, or the result of `func_80040FC0` otherwise.
+- `func_80028C18` rejects negative and out-of-range indices, then writes the
+  table pointer at `+0x14` before its count at `+0x10`. It rereads the global
+  record pointer between these writes. This ordering was checked against the
+  original with overlapping outputs; the volatile pointer declaration is
+  intentional.
+
+The other newly matched dependencies include the runtime sample getter
+`func_8001AE88`, readiness-byte getter `func_800222E0`, and 19-entry update
+loop `func_8002C488`. The sequence wrappers `func_8001C6BC` and `func_8001C7C4`
+use the shared table at `0x80182F64`; the latter initializes an output byte,
+reports backend failure through the assertion callback, and returns the byte
+after that callback. Their native tests cover return values, signed narrowing,
+callback mutation, and lookup boundaries.
+
+The following controller-to-turn-event path is established for the default
+tables and the indicated runtime gates:
+
+1. The matched [func_8004FCBC](../src/game/func_8004FCBC.c) registers two
+   eight-byte controller buffers at `0x8018CA48` and `0x8018CA50` with BIOS
+   pad services and starts polling. The matched
+   [func_8004FCF8](../src/game/func_8004FCF8.c) accepts a buffer only when
+   its status is zero and its type is `0x41` (digital pad), complements its
+   two active-low button bytes, and combines port 1 in the low halfword and
+   port 2 in the high halfword. Other controller types are rejected.
+2. The matched [func_8001A6E0](../src/game/func_8001A6E0.c) polls those
+   buffers. In normal input mode zero it queues
+   `func_8001B558(3, 0, 0xFFFE, 0xFFFE, &buttons, &port1, &port2, 0)`.
+   Mode one can instead select a word from an indexed input stream; the
+   original's stop, effect, sample, and index-reread ordering is preserved.
+   The stream sample publisher [func_8004FF28](../src/game/func_8004FF28.c)
+   also matches. The native
+   [controller tests](../tests/test_controller_input.c) cover all 65,536
+   button patterns, while the
+   [poll integration tests](../tests/test_controller_poll.c) exercise both
+   ports, stream boundaries, and callback mutations.
+3. The matched [func_8002278C](../src/game/func_8002278C.c) publishes the
+   default mode table at `0x8009EC8C`. Its **event-3** callback and payload
+   initializer are `func_80023E94` and
+   [func_80023A0C](../src/game/func_80023A0C.c) at `0x8009ECB4` and
+   `0x8009ECB8`. These same addresses also alias static event-10 entries; the
+   physical poller uses event 3 with `0xFFFE` flags and heading. The
+   initializer copies the bitmap and digital-pad status bytes to event-record
+   offsets `+0x0C`, `+0x10`, and `+0x11` in order.
+4. When its gates allow the bitmap branch, `func_80023E94` uses tables at
+   `0x8009EEF0` and `0x8009EFF0`. For the first port, the digital-pad
+   protocol's directional right and left bits become bits 13 and 15 in this
+   game's byte-swapped bitmap; see the
+   [PSX controller bit layout](https://psx-spx.consoledev.net/controllersandmemorycards/#controllers-standard-digitalanalog-controllers).
+   In the first four observed mapping rows, those active bits queue events 8
+   and 10 respectively; their cleared-bit events are 9 and 11.
+   Original-MIPS execution using synthetic BIOS buffers exercised all 16
+   active/cleared combinations across those rows, from the real pad reader
+   through the real event initializer and callback, without stubbing helpers.
+   In that test the callback was invoked directly with the queued record.
+   Its matched helpers include the runtime-byte getter
+   [func_8001BCE4](../src/game/func_8001BCE4.c), input-gate getters
+   [func_8001BCF0](../src/game/func_8001BCF0.c) and
+   [func_8001BD00](../src/game/func_8001BD00.c), sample reader
+   [func_80050128](../src/game/func_80050128.c), and interval gate
+   [func_80023A30](../src/game/func_80023A30.c). The interval is narrowed to
+   a signed halfword, added to the previous sample with unsigned wrapping, and
+   the previous sample is updated only if the new sample meets the threshold.
+   [Native gate tests](../tests/test_input_event_gates.c) cover byte values,
+   signed interval boundaries, and counter wraparound.
+   Separately, when the input-gate byte is nonzero, the callback adds `100`
+   to its reference with 32-bit wrapping and compares the result to the
+   `func_8001AE88` sample as signed words. If the threshold is strictly less
+   and the current bitmap is nonzero, it stores `40` at `0x800BDEFE`, calls
+   `func_8001C04C`, and leaves before bitmap mapping. Original-MIPS tests cover
+   equality, signed boundaries, and wraparound in that comparison.
+5. `func_8001AEC0` initializes the configuration at `0x801D891C`, and the
+   matched [func_80027F08](../src/game/func_80027F08.c) publishes its heading
+   table and copies parameters through
+   [func_80044C34](../src/game/func_80044C34.c). With the default table,
+   heading slot zero is `func_80036018`; the queue processor
+   `func_8001B1E4` can dispatch the generated events through that slot.
+   `func_80036018` looks up the actor by the event's `+0x08` field and, when
+   its state gates allow it, calls the matched grounded handler. Cases 8 and
+   10 reach `func_80034EF8`, which sets the turn-direction global from
+   `state->id == 8` and can write a signed turn at move-info `+0x4C`.
+   The matched movement consumer `func_80024F2C` subsequently passes a
+   nonzero pending rotation at `+0x48` to the matched
+   [func_800548A0](../src/game/func_800548A0.c), before clearing that vector.
+
+Additional controller-path helpers include these exact matches:
+[func_8001BC08](../src/game/func_8001BC08.c) sets the event-runtime byte to `1`,
+and [func_80061A64](../src/game/func_80061A64.c) stores its argument at
+`0x800BE400` and returns zero.
+[func_8001BC28](../src/game/func_8001BC28.c) looks up the actor, clears the
+event-runtime byte, and reads the current context. If context bytes `+0x6D`
+and `+0x2B` are clear and the low 16 bits returned by `func_80045278` are
+nonzero, it increments the word at `0x800BDE98` with 32-bit wrapping, calls
+`func_80045094` and `func_80069758`, and dispatches event 4 with the numeric
+actor address plus `0x0C`. This address is `0x0C` even when the lookup returns
+null. The [native reset tests](../tests/test_event_runtime_reset.c) and
+original-MIPS tests cover the gates, call ordering, counter wrap, and null actor.
+The matched [func_80045278](../src/game/func_80045278.c) reads the unsigned
+status byte at `0x800BE1C2`.
+[func_80045094](../src/game/func_80045094.c) sets a reset byte, runs a setup
+callback, and walks the live entry count. For each entry it passes the whole
+word to `func_80044458`, then rereads its first signed little-endian halfword
+for `func_8004232C`. It clears the configured number of words, clears a second
+flag, invokes `func_800439EC` twice followed by `func_80044268` and
+`func_80069758`, and finally clears the reset byte. Callbacks can change the
+current entry and the remaining entry count. The target match uses register
+constraints and an empty frame-reservation barrier, not instruction
+transcriptions. [Reset-resource tests](../tests/test_reset_resources.c) cover
+callback mutations and clearing boundaries.
+Its matched [entry dispatcher](../src/game/func_80044458.c) looks up the
+indexed object, calls `func_80052BDC` with mode 1, then calls
+`func_80044B24` with the original index and the low byte of its mode; its
+result is narrowed to a byte. The matched
+[tracked-object sweep](../src/game/func_8004232C.c) captures the list head
+before looking up the reference, narrows the requested tag to a signed
+halfword, and calls `func_80042170` only for matching objects that do not
+reference the captured object and lack flag `0x200000`. It captures each next
+node before its callback but reads later nodes live. The
+[entry tests](../tests/test_reset_entry_helpers.c) exercise every tag value,
+callback mutations, and byte-narrowing behavior. The entry dispatcher uses
+target register constraints and empty barriers; the tracked sweep is plain C.
+The [real-entry integration test](../tests/test_reset_real_entries.c) also
+connects both helpers, the object getters, and proximity refresh to the reset
+backend, including a callback that changes an entry between its two reads.
+Its 224-byte [group-dispatch backend](../src/game/func_80044B24.c) also
+matches readable C. It captures the selected group before the actor getter,
+reads its entry count and indices live, skips the actor's current object, and
+optionally checks whether another active group contains each entry before
+preparing it. Target register constraints and empty barriers preserve the
+original allocation and scheduling without instruction transcriptions.
+The [dispatch tests](../tests/test_reset_group_dispatch.c) cover mode and
+predicate byte-narrowing, empty counts, and callback mutations. Its 156-byte
+[membership check](../src/game/func_80044A88.c) now matches the original from
+C using target register constraints and empty barriers without instruction
+transcriptions. It skips the current group, then returns 1 if any other active
+group with a positive signed entry count contains the requested object index.
+The [native membership and integration test](../tests/test_reset_group_membership.c)
+and [original-MIPS tests](../tests/test_original_controller_route.py) cover
+empty and negative counts, duplicate active groups, exclusions, randomized
+membership combinations, and callback changes to a later group.
+[func_80069758](../src/game/func_80069758.c) refreshes a list of objects near
+the current reference. It snapshots the reference's X and Z, walks the live
+linked list, and retains objects whose wrapping sum of absolute coordinate
+differences is signed-less-than their nonzero signed radius. It increments the
+16-bit count and stores the object before calling the assertion backend when
+the new signed count is at least 40; the assertion is not a capacity limit and
+may return. An assertion callback can change the count, the current list slot,
+or its next link. The target match uses register constraints and empty
+scheduling/reload barriers, without transcribed instructions. The
+[native tests](../tests/test_proximity_list.c) and original-MIPS tests cover
+null references, distance and overflow boundaries, assertion thresholds, and
+callback mutations. The [full timeout-reset integration test](../tests/test_timeout_full_integration.c)
+links the real cleanup, tagged-slot, reset, and proximity C helpers together
+and checks both proximity refreshes and callback-sensitive event dispatch.
+The proximity backend's [reference getter](../src/game/func_8005327C.c) and
+[list getter](../src/game/func_800529D0.c) also match in plain C. The latter
+copies the live list head through its output pointer and returns zero; the
+[getter integration test](../tests/test_proximity_getters.c) uses both real
+getters with the refresh routine.
+[func_8001C04C](../src/game/func_8001C04C.c) handles the input timeout: unless
+the initial event ID is `0xFE` or `0x16`, it checks `func_80062890`, reports
+a nonzero result through the assertion helper, and calls `func_80048488`.
+It then clears the input gate and calls the reset helper unless the current ID
+is `0xFE`. After these callbacks it rereads the ID, flags, and heading and
+dispatches the event unless its ID is `0xFE` or `0xFF`. Callbacks may change
+the ID or re-enable the gate. The [timeout tests](../tests/test_timeout_dispatch.c)
+cover all 256 IDs and callback mutations; the
+[integration test](../tests/test_timeout_reset_real.c) uses both matched C
+helpers together.
+[func_80062890](../src/game/func_80062890.c) returns immediately when its
+active byte is zero. Otherwise it runs four shutdown callbacks, conditionally
+frees four live resource pointers when the protection word is zero, invokes a
+final state callback, clears the active byte, and returns zero. Each pointer
+is reread after earlier callbacks and is cleared after its own free callback;
+the protection word is tested once before the frees. The
+[resource tests](../tests/test_timeout_resources.c) cover empty and populated
+slots, protection, callback mutations, and ordering.
+[func_80027F40](../src/game/func_80027F40.c) passes the state at `0x800BE4F8`
+to `func_80062C54`, then reads and frees the current model-asset pointer;
+the first helper can change that pointer.
+[func_8002C9D4](../src/game/func_8002C9D4.c) tests the low byte of its input;
+for zero it conditionally calls `func_8002CA88(5, -1)`, then checks the live
+model mode and, for mode one, calls `func_8002BC9C` and
+`func_8002CA88(15, -1)`. It writes the input byte after these callbacks.
+
+The optional stream path uses three matched texture-font helpers:
+[func_800483C0](../src/game/func_800483C0.c) asserts
+when the loaded flag is not `1`, then scans all 50 tags and invokes
+`func_80050534` for matches; [func_80048504](../src/game/func_80048504.c)
+scans only when that flag is nonzero and invokes `func_80050650`; both report
+nonzero backend results through the assertion helper. Finally,
+[func_80048C48](../src/game/func_80048C48.c) marks matching tags `-1` and
+subtracts their count with 32-bit wrapping when loaded. A requested tag of
+`-1` also counts entries already marked `-1`. The
+[native tests](../tests/test_controller_related_helpers.c) cover all flag
+bytes, signed tag truncation, counter wrap, assertion order, and callback
+mutations. Original-MIPS tests check representative flag and tag boundaries
+and callback mutations against the executable. A
+[stream integration test](../tests/test_controller_stream_real.c) uses the real
+poller and these three C helpers together for activation and release; hardware,
+backend operations, and the final event dispatcher are stubbed.
+
+The matched [func_80048488](../src/game/func_80048488.c) walks those 50 slots;
+for every tag other than `-1`, it calls `func_80048504` and `func_80048C48`
+with the tag read before either callback. Later slots are read live, so callback
+mutations affect subsequent iterations. Both
+[isolated sweep tests](../tests/test_texture_font_sweep.c) and the real-helper
+integration tests cover this behavior.
+
+The [queue snapshot helper](../src/game/func_8001B8B8.c) `func_8001B8B8`
+now matches all 272 bytes from readable C; the same bytes occur at relocated
+addresses in all 20 level executables. It reloads the pending count for each
+mode and scans at most 100 slots, copying occupied records in mode order `0..4`
+and preserving their slot order within each mode. A scan stops after
+seeing the current count of occupied records; records in other modes remain
+pending when the count reflects the occupied slots. A copied record's event ID
+is cleared and the pending count is decremented. Its
+[native tests](../tests/test_transition_snapshot.c) cover empty and full
+queues, inconsistent counts, priority, preserved data, and 8,192 randomized
+separate-queue and same-queue cases. A sparse-queue fixture also checks the
+original helper under MIPS emulation.
+
+The snapshot calls [func_80010220](../src/game/func_80010220.c) to copy seven
+aligned words per record. Its 36-byte readable C matches the identical helper
+in all 22 executables. The general helper requires valid aligned arrays and a
+nonzero word count; it copies forwards even when ranges overlap, so it is not
+`memmove`. Its native test covers 15,000 lengths, offsets, and overlap cases.
+
+The event processor also calls [func_80032D7C](../src/game/func_80032D7C.c),
+whose 120 L0 bytes now match from plain C. When its byte flag is nonzero, it
+gets the reference component, passes it and the destination global to
+`func_80054A6C`, then calls `func_8003ABE8`; it always returns `1`. The
+[native test](../tests/test_queue_update_gate.c) covers all flag values, call
+order, pointer forwarding, and a flag mutation during the getter.
+
+[func_80054A6C](../src/game/func_80054A6C.c) now matches all 92 L0 bytes from
+plain C. It first calls the basis-copy helper, then copies the three translation
+words, negating Y with 32-bit wrapping. Its translation reads occur after the
+helper call, and it leaves the destination padding untouched.
+
+[func_8003ABE8](../src/game/func_8003ABE8.c) matches all 120 L0 bytes from C
+with register constraints and empty ordering barriers. When `$gp+0x36C` is
+nonzero, it looks up actor zero and, if present, captures its component transform,
+samples its translation, reads and clears the `$gp+0x378` word, subtracts it
+from Y with 32-bit wrapping, and applies the adjusted translation. It
+does not recheck the gate or replace the captured transform after callbacks;
+skipped paths leave the offset unchanged. The
+[queue-transform test](../tests/test_queue_transform.c) covers all gate bytes,
+missing actors, wraparound, callback mutations, and the integrated call order.
+The [real-helper integration test](../tests/test_queue_transform_real.c) runs the
+queue adjustment with the actual C translation reader and writer across 6,400
+gate/Y/offset combinations, including `INT32_MIN`. It also tests their
+null, matching-basis, and different-basis branches; the transformation backends
+are stubbed for the different-basis cases.
+An [original-MIPS test](../tests/test_original_controller_route.py) also exercises
+the real actor lookup and translation helpers together, including signed
+boundary values and offset wraparound; it does not emulate controller hardware.
+
+[func_80032C8C](../src/game/func_80032C8C.c) is now a readable-C exact match
+for all 240 L0 bytes. It returns immediately when the runtime gate is zero;
+otherwise it prepares and retrieves a component, conditionally enables it for
+byte-mode zero when its flag is set, always clears the associated runtime
+state, applies the component, conditionally finalizes it for byte-mode zero
+when its flag is set, then always finishes.
+Its [native test](../tests/test_queue_runtime_gate.c) covers every gate byte,
+byte narrowing of the mode argument, forwarded pointers, and callback order.
+
+The event processor [func_8001B1E4](../src/game/func_8001B1E4.c) now matches all
+884 L0 bytes from readable C, using small inline MIPS load sequences and
+delay-slot barriers without transcribing the control flow. It updates the queue
+counters, snapshots pending records, routes static, mode-specific, and heading
+handlers, and stops scanning when the live snapshot count reaches zero. Its
+[native test](../tests/test_queue_processor.c) covers those dispatch paths,
+heading parity, the empty-count exit, generated-event handling, and tail calls.
+
+The optional [original-MIPS integration tests](../tests/test_original_controller_route.py)
+also process the event queue twice with a synthetic actor, including the
+original queue-update gate, callback, heading handler, grounded handler, turn
+helper, movement consumer, rotation wrapper, rotation generator, composition
+routine, conversion routine, and cross product. For first-port bits 13 and 15,
+they observe respective turn inputs of `+11` and `-11` in mapping row zero and
+verify that the pending vector is cleared. Starting from an identity basis,
+the final nine halfwords are `(4103, 0, +/-69, 0, 4096, 0, -/+69, 0, 4103)`;
+the wrapper preserves the remaining component bytes.
+
+The fixture exercises the queue-update gate's disabled branch and explicitly
+supplies the queued move request; separate original-MIPS tests check the
+enabled branch and its original pointer getter with two downstream calls
+stubbed. Other engine/BIOS and sequence functions are also stubbed. Unicorn
+executes the original rotation software, but its GTE transfers are intercepted
+by a narrow software model:
+the `MVMVA` rotation command used by `func_8007699C` and the leading-sign
+count registers used by the original square-root backend. The model follows
+the [GTE register and saturation rules](https://psx-spx.consoledev.net/geometrytransformationenginegte/).
+Tests cover sign counts, signed shifts and saturation, and the original
+composition routine with noncommuting, extreme, and in-place matrices. This
+does not validate physical controller hardware, GTE flags or timing, other GTE
+commands, or an unstubbed game. The matched dot and cross products now express
+their arithmetic in C, but their target path still uses a small three-instruction
+MIPS HI/LO multiply intrinsic with register constraints and barriers; they are
+assembly-assisted, not pure C. The scalar multiply also retains its target-only
+HI/LO instructions, while its C shift and addition use defined unsigned
+arithmetic. Its portable host path is tested against the original's low 32
+result bits. The [native vector tests](../tests/test_fixed_vectors.c) cover
+10,049 scalar and 80,000 signed-boundary, random, and overlapping-buffer cases
+for the host dot and cross models. [Original-MIPS tests](../tests/test_original_controller_route.py)
+also compare both routines against a fixed-point reference, including overlap.
+
+The 216-byte `func_800548A0` snapshots the complete 32-byte basis, wraps the
+three input angles to halfwords (negating the first and third), builds a
+rotation, calls the GTE composition backend `func_8007699C` with the saved
+basis first, converts the result via `func_800542A4`, and copies only the
+nine basis halfwords back. It leaves the live component's padding and
+translation untouched. The
+[rotation harness](../tests/test_grounded_rotation.c) checks both rotation
+wrappers across 686 angle combinations, callback order, snapshot timing,
+null input, and preservation of padding/translation.
+
+The paths above depend on configuration, queue, actor, and state gates. The
+input callback `func_80023E94`, GTE matrix composition backend, and portions
+of the final orientation/rendering path are not yet readable matched C. This
+is not a complete unmodified controller-to-heading execution proof.
 
 The separate state-ID switch appears in the mapped `func_80036270` range. Its
 dispatch instruction is at `0x800363E4`; it subtracts `2` from the state
@@ -408,14 +783,17 @@ not been recovered.
 
 ### Grounded/Swim Routing
 
-The default-state block at `0x80036874` can route to `0x8004B35C` when the
-runtime state byte `0x80186461` is `5`, the actor `+0x10` mask `0x10000` is
-clear, lock byte `0x80186479` and gate halfword `0x80186454` are zero, and
-actor flag `+0x04` bit `0x100` is clear. Descriptor state `0x25` takes this
-route directly; state `0x26` takes it only when descriptor word `+0x04` is not
-`-2`. Runtime mode zero selects `0x8004B35C`; nonzero mode selects
+The default-state block at `0x80036874` can route to `0x8004B35C` when actor
+`+0x10` mask `0x100000` is clear, lock byte `0x80186479` and gate halfword
+`0x80186454` are zero, and actor flag `+0x04` bit `0x100` is clear. If runtime
+state byte `0x80186461` is `5`, it additionally requires descriptor state
+`0x25`, or state `0x26` with descriptor word `+0x04` not equal to `0xFFFE`.
+Other runtime-state values do not impose that descriptor-state restriction.
+Runtime mode zero selects `0x8004B35C`; nonzero mode selects
 `0x8004BFF8`. `bubsy_actor_state_route_default` models and tests these routing
-conditions.
+conditions. Original-MIPS tests cover 96 state/auxiliary/mode combinations
+and each actor, lock, and gate bit independently; native tests cover all 256
+runtime-state bytes. The `0xFFFE` sentinel is zero-extended, not signed `-2`.
 
 The grounded handler starts with a `0x68`-byte frame and contains a 33-entry
 computed state switch at `0x8004B4D0`, backed by the table at `0x800139A8`.
@@ -466,8 +844,17 @@ Switch case `38` targets `0x8004B6C0`. Its descriptor byte `+0x11` changes from
 `2` to `4`, or from `1` to `0`; only the latter path calls `0x8002262C` with
 argument `0x11`. All three outcomes then call `0x80039158` with the actor and
 third argument. The byte transition and conditional argument are modeled and
-tested by `bubsy_grounded_case38_update_descriptor`; the called helpers'
-effects and the state's gameplay meaning remain unknown.
+tested by `bubsy_grounded_case38_update_descriptor`; the state's full gameplay
+meaning remains unknown. The
+[interaction helper](../src/player_model/bubsy_grounded_interaction.c) matches
+all 1,168 bytes with pinned GCC 2.6.3/MASPSX and LLD; register constraints and
+empty barriers preserve the original scheduling without instruction
+transcription. Native tests and 772 deterministic original-versus-C MIPS
+cases cover its observed branches and helper mutations. Its phase-two path uses
+the first lookup's target for `func_80038C0C` and a second lookup's target for
+the later heading and used-byte write; an already-used second target still
+dispatches event `0x25`. If the second poll fails, the current phase is
+re-read and processed, including changes made by the poll helper.
 
 Case `37` at `0x8004B66C` does nothing further when actor flags `+0x04` overlap
 `0x1100`. Otherwise descriptor byte `+0x11` value `0` changes to `1` and calls
@@ -522,17 +909,44 @@ first argument, passes that value and the narrowed second argument to
 C wrapper narrows both inputs to signed halfwords, calls `func_8005D5A8`, and
 preserves its nonzero result; when it returns zero, the wrapper calls
 `func_8008E1DC` and returns zero. `func_8005D5A8` bypasses its table lookup with
-result `0x1B` when `$gp+0x624` is nonzero; otherwise it scans `$gp+0x62C`
-signed key/limit entries at `0x801CCE14` with a 72-byte stride. An unmatched
-key returns `1`; a match returns true only when the signed value is below both
-the row limit and zero. Its C candidate is not byte-matched.
+result `0x1B` when `$gp+0x624` is zero; otherwise it scans up to the signed
+count at `$gp+0x62C` in the key/limit table at `0x801CCE14`, using a 72-byte
+stride. It also checks the entry at the stopping index when the count is
+exhausted or nonpositive. An unmatched key returns `1`; a match returns zero
+only when the signed value is nonnegative and below the signed row limit.
+The [selector](../src/game/func_8005D5A8.c) matches all 204 original bytes
+using target register constraints and empty barriers without instruction
+transcriptions. Its native and original-MIPS tests cover all flag values,
+signed boundaries, duplicate keys, and stopping-index entries.
 `func_8008E1DC` sign-extends both inputs to halfwords and delegates to
 `func_8008E044`; its current C source also remains non-exact. That initializer
-selects a 44-byte state row from the character table at `0x801D7D44`, changes
-four adjacent row flag words, calls `func_80094108`, resets and copies state
-fields, initializes 16 per-entry slots, and returns `0x7F`. The notifier's
-effects remain unknown. These helper observations do not change case 17's
-return convention: `func_8005E7B8` returns zero after invoking the initializer.
+selects a 172-byte state row from the character table at `0x801D7D44`. It
+clears flag bits `1`, `2`, and `8`, then sets bit `4`, rereading the character
+table pointer for each update. It captures the first row for the later reset,
+calls `func_80094108`, resets and copies that row's state fields, writes indices
+`0..15` to its 16 per-entry slots, and returns `0x7F`. The notifier scans a
+byte-counted table of 52-byte records at `0x801CFE80`, comparing signed
+halfword keys at record offset `0x0E` with the packed selection. For every
+match it stores the index at `0x801D5F26`, calls `func_80091194(0)`, and
+rereads the count before continuing. That backend ignores its argument and
+clears the selected record's fields at offsets `0x1B`, `0x04`, and `0x00`.
+It sets the indexed bit in the low or high halfword at `0x801D8AD8` or
+`0x801D8AE0`, then clears every bit present in those resulting halfwords from
+the corresponding halfwords at `0x801D043C` and `0x801D0444`. For indices
+above 15, the original variable shift wraps its count modulo 32 before the
+result is stored as a halfword. The notifier remains non-exact. The
+[backend](../src/game/func_80091194.c) now matches all 220 bytes using readable
+C with four target-specific MIPS instructions, register constraints, and the
+per-source ASPSX 2.21 expansion profile. The profile is a verified reproducer;
+it does not assert that version 2.21 was the original assembler.
+Original-MIPS tests cover callback mutation, changes to the character-table
+pointer between flag updates, all 256 byte-sized backend indices, overlapping
+record/global addresses, and the real initializer-to-backend call chain,
+including 255 matching notifications. A separate
+[native alias test](../tests/test_sequence_backend_alias.c) preserves the
+original overlapping addresses at index `691`.
+These observations do not change case 17's return convention:
+`func_8005E7B8` returns zero after invoking the initializer.
 Case `16` (`0x8004B77C`) exits when descriptor byte `+0x14` is zero and actor
 flags `+0x04` bit `0x02` is set. Otherwise it writes `1` to the descriptor byte,
 including when its previous value was another nonzero byte. It then requests
@@ -607,7 +1021,28 @@ frees it through `func_80082EFC`, and returns zero; null or not-found records
 return one after clearing busy where applicable. All 164 bytes now match
 plain C in `src/game/func_8004FFEC.c`. Native tests cover allocation failure,
 head/middle/tail removal, missing records, and helper mutations.
-The larger `func_80034EF8` effects in this path remain unresolved.
+The [event callback](../src/player_model/bubsy_grounded_event_callback.c)
+at `0x8004B2A4` subtracts two from the counter with halfword wrapping, clamps
+negative results to zero, and otherwise returns while the counter is nonzero.
+At zero it selects the first level-record actor when the signed record count is
+positive, or calls `func_80040FC0(0)` otherwise. It releases the event even
+when the pointer is null, clears the event pointer and actor word `+0x14`,
+clears actor-state bits `0x200` and `0x20`, and calls `func_8003539C(actor, 1)`.
+The actor is captured before event release; mutations during either helper are
+preserved in the original order. All 184 bytes match plain C without register
+constraints or assembly. Native tests cover all 65,536 counter inputs, and
+original-MIPS tests cover signed count boundaries, event-pointer and actor
+mutations, and a helper changing the counter after the zero check.
+The complete 1,188-byte `func_80034EF8` now matches readable
+[C](../src/player_model/bubsy_grounded_turn.c), with register constraints and
+empty compiler barriers but no instruction transcription. It samples the
+direction and runtime mode, performs the observed state/sequence calls, and
+writes the signed turn to linked offset `+0x4C` when nonzero. Its native
+tests and 768 deterministic original-versus-C MIPS cases cover the direction,
+counter, mode, state-bit, and helper-mutation paths; gameplay labels remain
+provisional. The called assertion dispatcher `func_800556D0` and transition
+dispatcher `func_8001B558` are also readable C byte matches of 176 and 864
+bytes, respectively.
 Case `15` (`0x8004B8D8`) reads the current sequence key. Key `0x2BE` selects
 index `0x2C3`, calls `0x80052E18`, and submits the move request with arguments
 `(0xF, 4, -2, actor+0x0C)`. For other keys, a true result from
@@ -636,9 +1071,9 @@ then requests calls `0x80022650(actor, 0xF)`, `0x80022650(actor, 8)`, and
 `0x800347EC(actor, third_argument, 1)`. The gate and direct writes are tested.
 
 The grounded handler at `0x8004B35C` calls `func_800100A0` while combining two
-three-component Q20.12 vectors. Its C host model computes the signed dot
-product; its target profile is assembly-backed and byte-exact for the single
-L0 copy. The actual persistent transform write is in the generic move-request
+three-component Q20.12 vectors. Its C implementation computes the signed dot
+product using a target-only HI/LO multiply intrinsic and is byte-exact for the
+single L0 copy. The actual persistent transform write is in the generic move-request
 consumer `game_apply_queued_move_request` at `0x80024F2C`: it composes pending
 moveInfo vectors and applies the resulting translation through
 `func_80054C7C` to the object's component transform, then archives and clears the
@@ -699,9 +1134,9 @@ word at `$gp + 0x888` to its output pointer and returns zero. L0 initializes
 their gameplay meanings remain unknown.
 
 The `vector_range_scale_q12` wrapper also calls `vector_range_condition_q12`, a
-vector range-conditioning helper that selects a shift from the largest component magnitude. Its C model
-and threshold tests are in `player_vector_range.c`; the current 36.9% objdiff
-similarity is diagnostic only and earns no exact credit.
+vector range-conditioning helper that selects a shift from the largest component magnitude. Its C implementation
+and threshold tests are in `player_vector_range.c`; its 312-byte range now
+matches exactly under the pinned GCC profile.
 
 The grounded handler calls `vector_range_scale_q12`, which range-conditions a 3-vector
 with `vector_range_condition_q12`, obtains one scalar from `vector_length_q12`, and scales each
@@ -927,6 +1362,46 @@ different sequence paths in `0x80041218..0x80041D80`. The three larger callers
 contain indirect dispatches, and none of these call sites is in the current
 reachable-code map, so their extents and state meanings remain provisional.
 
+The first caller also invokes `func_80027E24`, which calls the actor-state flag
+lookup `func_8004B264` at `0x80027EA0`. All 64 bytes of that lookup match plain C
+in `src/player_model/bubsy_grounded_state_flag.c`. It resolves a context table
+through `func_80026648`, then reads the actor's current byte at `+0x01` and
+returns whether table byte `+0x40 + state` is zero. The state byte is read
+after the resolver returns. The real resolver ignores both arguments and
+returns the fixed address `0x801D5F70`; its 16 bytes now match plain C in
+`src/game/func_80026648.c`. The meanings of the table and flag remain
+unverified. Native tests cover all 65,536 state/flag combinations, and
+original-MIPS tests cover all 256 state indices with zero and nonzero flags.
+Both test suites also use a synthetic resolver that changes the state to verify
+the read order; the real resolver itself does not mutate it.
+
+The 228-byte `func_80027E24` list search matches readable C in
+`src/game/func_80027E24.c`. It obtains the input's record ID from `+0x0C`,
+looks up the associated list, skips entries equal to the current input ID, and
+uses the first object whose byte `+0x00` is `0xF5` for the state-flag test. If
+none qualifies, it calls the assertion helper with `EGSBoolFalse`,
+`../f/game.c`, line `0x12CA`, and returns one if that helper returns. The
+target build uses a fixed register and empty compiler barrier to forward the
+object getter's live argument register; the real context getter ignores that
+argument. The caller must supply a valid record ID and nonnull selected
+objects: the original ignores a failed record lookup and dereferences the
+selected object without a null check. Native and original-MIPS mutation tests
+verify that changes to the list count or input record ID during object lookup
+affect the remaining search, and that only the low result byte is tested.
+
+The 80-byte `func_80028C84` record-to-list-ID lookup matches plain C; invalid
+indices leave its output untouched. The following one-based list getter,
+`func_80028CD4`, also matches all 100 bytes from plain C in
+`src/game/func_80028CD4.c`, with no assembly, register pins, or barriers. It
+returns null and writes a zero count for an invalid list ID; otherwise it
+writes the signed halfword count and returns the list pointer. Its global list
+pointer is loaded again after the count write. Original-MIPS tests exercise
+that reload by making the output alias the pointer slot. The original scaled
+the byte offset inside the second range test and then reused the offset
+register as the entry address, so the source mirrors that shape.
+The host integration test links the matched search and getters; the
+original-MIPS integration executes the real unmodified list helper.
+
 The full bounded control flow of `func_80025A98` is reconstructed in
 `src/game/func_80025A98.c`, with target-facing layouts in `move_preparation.h`.
 All 1,380 bytes at `0x80025A98..0x80025FFC` match the fingerprinted executable
@@ -1076,8 +1551,9 @@ and component replacement before the animation-flag read.
 This establishes **state/animation -> stride/increment -> pending translation**,
 not the complete controller -> heading path. The complementary deceleration
 producer below completes another bounded stride path. Its gate has writers in
-`func_800347EC`, including `0x80034CBC` and `0x80034E28`. Those state transitions
-and the still-unresolved input/heading writers remain upstream work. The
+`func_800347EC`, including `0x80034CBC` and `0x80034E28`. Those state
+transitions, the input callback, and remaining heading writers need readable
+matches. The
 shared dispatcher's temporary basis-rotation/stride path and its column
 reconstruction are now recovered and native-tested, but the GTE backends are
 not. The model-mode byte is not an
@@ -1098,8 +1574,8 @@ byte-matches from plain C in
 It is called at `0x8003619C` when byte `0x801864B8` is nonzero.
 The standard pinned GCC 2.6.3 PSX/MASPSX profile suffices: natural register
 allocation, no inline assembly, no register pins, and no compiler barriers.
-Its analyst-confirmed root adds these 968 previously unclassified bytes to the
-discovered map, bringing the denominator to 3,040,136 bytes. This is newly
+Its analyst-confirmed root added these 968 previously unclassified bytes to the
+discovered map, bringing the denominator to 3,040,136 bytes at that time. This is newly
 mapped and matched code, not a reclassification of a previous exact match.
 The first stopped-mode read is independent of the later mode-1 test, matching
 the original two global samples.

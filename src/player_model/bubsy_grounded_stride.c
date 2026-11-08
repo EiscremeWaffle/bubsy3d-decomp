@@ -1,4 +1,5 @@
 #include "bubsy_grounded_state.h"
+#include "game_transition.h"
 
 extern uint8_t g_stride_mode;
 extern uint8_t g_stride_override;
@@ -11,8 +12,6 @@ extern int32_t func_80052AEC(void *component, int32_t sequence);
 extern void func_80052E18(void *component);
 extern void func_800556D0(int32_t level, const char *condition, const char *source, uint32_t line);
 extern void func_80054B20(void *transform, int32_t mode, int32_t *output);
-extern void func_8001B558(int32_t state, int32_t mode, int32_t argument_2, int32_t argument_3,
-    int32_t *argument_4, int32_t *argument_5, int32_t *argument_6, int32_t *argument_7);
 extern void func_80022650(BubsyGroundedActor *actor, int32_t selector);
 extern void func_8002262C(BubsyGroundedActor *actor, int32_t selector);
 extern void func_80022944(BubsyGroundedActor *actor);

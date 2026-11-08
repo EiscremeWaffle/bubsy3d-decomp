@@ -26,20 +26,192 @@ jobs:
           /tmp/test_player_model
       - name: Compile and test complete grounded handler
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_state.c src/player_model/bubsy_actor_update.c tests/test_bubsy_grounded_state.c -o /tmp/test_bubsy_grounded_state
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_state.c src/player_model/bubsy_actor_update.c tests/test_bubsy_grounded_state.c -o /tmp/test_bubsy_grounded_state
           /tmp/test_bubsy_grounded_state
+      - name: Compile and test assertion dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_800556D0.c tests/test_assertion_dispatch.c -o /tmp/test_assertion_dispatch
+          /tmp/test_assertion_dispatch
+      - name: Compile and test transition dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001B558.c src/game/func_8002278C.c src/game/func_80023A0C.c src/game/func_80027F08.c src/game/func_80044C34.c tests/test_transition_dispatch.c -o /tmp/test_transition_dispatch
+          /tmp/test_transition_dispatch
+      - name: Compile and test physical controller input
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004FCBC.c src/game/func_8004FCF8.c src/game/func_8004FF28.c tests/test_controller_input.c -o /tmp/test_controller_input
+          /tmp/test_controller_input
+      - name: Compile and test controller poll integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001A6E0.c src/game/func_8004FCF8.c src/game/func_8001B558.c src/game/func_8002278C.c src/game/func_80023A0C.c tests/test_controller_poll.c -o /tmp/test_controller_poll
+          /tmp/test_controller_poll
+      - name: Test controller stream with real tagged-slot helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001A6E0.c src/game/func_800483C0.c src/game/func_80048504.c src/game/func_80048C48.c tests/test_controller_stream_real.c -o /tmp/test_controller_stream_real
+          /tmp/test_controller_stream_real
       - name: Compile and test complete movement preparation
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80025A98.c tests/test_move_preparation.c -o /tmp/test_move_preparation
           /tmp/test_move_preparation
       - name: Compile and test grounded stride producer
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_stride.c tests/test_bubsy_grounded_stride.c -o /tmp/test_bubsy_grounded_stride
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_stride.c tests/test_bubsy_grounded_stride.c -o /tmp/test_bubsy_grounded_stride
           /tmp/test_bubsy_grounded_stride
+      - name: Compile and test grounded turn helper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_turn.c tests/test_bubsy_grounded_turn.c -o /tmp/test_bubsy_grounded_turn
+          /tmp/test_bubsy_grounded_turn
+      - name: Compile and test grounded interaction helper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_interaction.c tests/test_bubsy_grounded_interaction.c -o /tmp/test_bubsy_grounded_interaction
+          /tmp/test_bubsy_grounded_interaction
+      - name: Compile and test actor-state update helper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_actor_state_update.c tests/test_bubsy_actor_state_update.c -o /tmp/test_bubsy_actor_state_update
+          /tmp/test_bubsy_actor_state_update
+      - name: Compile and test grounded runtime helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001AE88.c src/game/func_8001BCE4.c src/game/func_800222E0.c src/game/func_8002C488.c tests/test_grounded_runtime_helpers.c -o /tmp/test_grounded_runtime_helpers
+          /tmp/test_grounded_runtime_helpers
+      - name: Compile and test input event gates
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001BCE4.c src/game/func_8001BCF0.c src/game/func_8001BD00.c src/game/func_80023A30.c src/game/func_80045278.c src/game/func_80050128.c tests/test_input_event_gates.c -o /tmp/test_input_event_gates
+          /tmp/test_input_event_gates
+      - name: Compile and test controller-related helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001BC08.c src/game/func_80061A64.c src/game/func_80027F40.c src/game/func_8002C9D4.c src/game/func_800483C0.c src/game/func_80048488.c src/game/func_80048504.c src/game/func_80048C48.c tests/test_controller_related_helpers.c -o /tmp/test_controller_related_helpers
+          /tmp/test_controller_related_helpers
+      - name: Compile and test tagged-slot cleanup sweep
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80048488.c tests/test_texture_font_sweep.c -o /tmp/test_texture_font_sweep
+          /tmp/test_texture_font_sweep
+      - name: Compile and test event-runtime reset
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001BC28.c tests/test_event_runtime_reset.c -o /tmp/test_event_runtime_reset
+          /tmp/test_event_runtime_reset
+      - name: Compile and test timeout dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001C04C.c tests/test_timeout_dispatch.c -o /tmp/test_timeout_dispatch
+          /tmp/test_timeout_dispatch
+      - name: Test timeout dispatch with real event reset
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001C04C.c src/game/func_8001BC28.c tests/test_timeout_reset_real.c -o /tmp/test_timeout_reset_real
+          /tmp/test_timeout_reset_real
+      - name: Compile and test timeout resource cleanup
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80062890.c tests/test_timeout_resources.c -o /tmp/test_timeout_resources
+          /tmp/test_timeout_resources
+      - name: Compile and test reset-resource backend
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80045094.c tests/test_reset_resources.c -o /tmp/test_reset_resources
+          /tmp/test_reset_resources
+      - name: Compile and test reset-entry helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004232C.c src/game/func_80044458.c tests/test_reset_entry_helpers.c -o /tmp/test_reset_entry_helpers
+          /tmp/test_reset_entry_helpers
+      - name: Test reset-entry group dispatcher
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80044458.c src/game/func_80044B24.c tests/test_reset_group_dispatch.c -o /tmp/test_reset_group_dispatch
+          /tmp/test_reset_group_dispatch
+      - name: Test reset group membership and real dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80044458.c src/game/func_80044B24.c src/game/func_80044A88.c tests/test_reset_group_membership.c -o /tmp/test_reset_group_membership
+          /tmp/test_reset_group_membership
+      - name: Test reset with real entry and proximity helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80045094.c src/game/func_8004232C.c src/game/func_80044458.c src/game/func_8005327C.c src/game/func_800529D0.c src/game/func_80069758.c tests/test_reset_real_entries.c -o /tmp/test_reset_real_entries
+          /tmp/test_reset_real_entries
+      - name: Compile and test proximity-list backend
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80069758.c tests/test_proximity_list.c -o /tmp/test_proximity_list
+          /tmp/test_proximity_list
+      - name: Test proximity list with real object getters
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8005327C.c src/game/func_800529D0.c src/game/func_80069758.c tests/test_proximity_getters.c -o /tmp/test_proximity_getters
+          /tmp/test_proximity_getters
+      - name: Test full timeout and reset integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001C04C.c src/game/func_80062890.c src/game/func_80048488.c src/game/func_80048504.c src/game/func_80048C48.c src/game/func_8001BC28.c src/game/func_80045278.c src/game/func_80045094.c src/game/func_80069758.c tests/test_timeout_full_integration.c -o /tmp/test_timeout_full_integration
+          /tmp/test_timeout_full_integration
+      - name: Compile and test queue-update gate
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80032D7C.c tests/test_queue_update_gate.c -o /tmp/test_queue_update_gate
+          /tmp/test_queue_update_gate
+      - name: Compile and test queue runtime gate
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80032C8C.c tests/test_queue_runtime_gate.c -o /tmp/test_queue_runtime_gate
+          /tmp/test_queue_runtime_gate
+      - name: Compile and test queue transform helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80032D7C.c src/game/func_8003ABE8.c src/game/func_80054A6C.c tests/test_queue_transform.c -o /tmp/test_queue_transform
+          /tmp/test_queue_transform
+      - name: Test queue adjustment with real translation helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8003ABE8.c src/game/func_80054B20.c src/game/func_80054C7C.c tests/test_queue_transform_real.c -o /tmp/test_queue_transform_real
+          /tmp/test_queue_transform_real
+      - name: Compile and test queue processor
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001B1E4.c tests/test_queue_processor.c -o /tmp/test_queue_processor
+          /tmp/test_queue_processor
+      - name: Compile and test forward word copy
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010220.c tests/test_word_copy.c -o /tmp/test_word_copy
+          /tmp/test_word_copy
+      - name: Compile and test transition queue snapshot
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010220.c src/game/func_8001B8B8.c tests/test_transition_snapshot.c -o /tmp/test_transition_snapshot
+          /tmp/test_transition_snapshot
+      - name: Compile and test level-record lookups
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800286F8.c src/game/func_80028764.c src/game/func_80028C18.c src/game/func_80028C84.c src/game/func_80028CD4.c tests/test_level_records.c -o /tmp/test_level_records
+          /tmp/test_level_records
+      - name: Test grounded level-list lookup integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80026648.c src/game/func_80027E24.c src/game/func_80028C84.c src/game/func_80028CD4.c src/game/func_80028764.c src/player_model/bubsy_grounded_state_flag.c tests/test_grounded_level_list_integration.c -o /tmp/test_grounded_level_list_integration
+          /tmp/test_grounded_level_list_integration
+      - name: Test grounded level-list search mutations
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80027E24.c tests/test_grounded_level_list_search.c -o /tmp/test_grounded_level_list_search
+          /tmp/test_grounded_level_list_search
+      - name: Compile and test sequence queries
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001C6BC.c src/game/func_8001C700.c src/game/func_8001C7C4.c tests/test_sequence_queries.c -o /tmp/test_sequence_queries
+          /tmp/test_sequence_queries
+      - name: Test sequence-limit selector and real wrapper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8005D5A8.c src/game/func_8005E7B8.c tests/test_sequence_limit_selector.c -o /tmp/test_sequence_limit_selector
+          /tmp/test_sequence_limit_selector
+      - name: Test sequence notification and initializer
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8008E044.c src/game/func_80094108.c tests/test_sequence_notification.c -o /tmp/test_sequence_notification
+          /tmp/test_sequence_notification
+      - name: Test sequence notification backend integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8008E044.c src/game/func_80094108.c src/game/func_80091194.c tests/test_sequence_backend.c -o /tmp/test_sequence_backend
+          /tmp/test_sequence_backend
+      - name: Test overlapping sequence record globals
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80091194.c tests/test_sequence_backend_alias.c -o /tmp/test_sequence_backend_alias
+          /tmp/test_sequence_backend_alias
+      - name: Test grounded stride with real transition dispatcher
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY_TRANSITION_INTEGRATION_TEST -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_stride.c src/game/func_8001B558.c tests/test_bubsy_grounded_stride.c -o /tmp/test_stride_transition
+          /tmp/test_stride_transition
       - name: Compile and test grounded deceleration producer
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model src/player_model/bubsy_grounded_deceleration.c tests/test_bubsy_grounded_deceleration.c -o /tmp/test_bubsy_grounded_deceleration
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_deceleration.c tests/test_bubsy_grounded_deceleration.c -o /tmp/test_bubsy_grounded_deceleration
           /tmp/test_bubsy_grounded_deceleration
+      - name: Compile and test grounded event callback
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_event_callback.c tests/test_grounded_event_callback.c -o /tmp/test_grounded_event_callback
+          /tmp/test_grounded_event_callback
+      - name: Compile and test grounded state flag lookup
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_state_flag.c tests/test_grounded_state_flag.c -o /tmp/test_grounded_state_flag
+          /tmp/test_grounded_state_flag
+      - name: Test grounded callback with real event release
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/player_model/bubsy_grounded_event_callback.c src/game/func_8004FFEC.c tests/test_grounded_event_callback_real.c -o /tmp/test_grounded_event_callback_real
+          /tmp/test_grounded_event_callback_real
       - name: Compile and test converted readable matches
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80024EBC.c src/game/func_800250CC.c src/game/func_8004FF50.c src/game/func_8004FFEC.c src/game/func_8004EC20.c src/game/func_8004ECFC.c src/game/func_8004ED78.c src/game/func_80037B30.c src/game/func_80062E50.c tests/test_readable_matches.c -o /tmp/test_readable_matches
@@ -54,12 +226,16 @@ jobs:
           /tmp/test_move_step
       - name: Compile and test grounded temporary rotation
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800549E8.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800548A0.c src/game/func_800549E8.c src/game/func_80054A6C.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
           /tmp/test_grounded_rotation
       - name: Compile and test grounded basis reconstruction
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054488.c src/game/func_800542A4.c src/game/func_800550A4.c src/game/func_8005541C.c tests/test_grounded_basis.c -o /tmp/test_grounded_basis
           /tmp/test_grounded_basis
+      - name: Compile and test fixed-point products
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_8001007C.c src/player_model/player_vector_dot.c src/player_model/player_vector_cross.c tests/test_fixed_vectors.c -o /tmp/test_fixed_vectors
+          /tmp/test_fixed_vectors
       - name: Compile and test movement initialization
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002611C.c tests/test_move_initializer.c -o /tmp/test_move_initializer
@@ -68,3 +244,11 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80025FFC.c tests/test_move_setup.c -o /tmp/test_move_setup
           /tmp/test_move_setup
+      - name: Compile and test transform allocation and setup integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054624.c src/game/func_800222EC.c src/game/func_80028C18.c src/game/func_80025FFC.c tests/test_transform_allocation.c -o /tmp/test_transform_allocation
+          /tmp/test_transform_allocation
+      - name: Compile and test move-info allocation
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800222EC.c tests/test_move_allocation.c -o /tmp/test_move_allocation
+          /tmp/test_move_allocation

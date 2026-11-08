@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "bubsy_grounded_state.h"
+#include "game_transition.h"
 
 _Static_assert(offsetof(BubsyGroundedShared, stride_30) == 0x30, "stride offset");
 _Static_assert(offsetof(BubsyGroundedShared, stride_delta_34) == 0x34, "stride delta offset");
@@ -18,6 +19,17 @@ uint8_t g_stride_override;
 uint8_t g_stride_marker;
 const char g_stride_error_condition[] = "errorFlag == EGSErrorNone";
 const char g_stride_source_path[] = "../f/bubsy.c";
+
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+GameTransitionEventRecord g_transition_event_records[100];
+int32_t g_transition_event_count;
+GameTransitionStaticHandlers g_transition_static_handlers[256];
+const GameTransitionModeHandlers *g_transition_mode_handlers;
+const GameTransitionHeadingTable *g_transition_heading_handlers;
+const char g_transition_overflow_condition[] = "transition event slots";
+const char g_transition_source_path[] = "../f/event.c";
+static GameTransitionModeHandlers transition_modes[256];
+#endif
 
 enum Action { GET_SEQUENCE, SELECT_SEQUENCE, ASSERTION, RESTART, READ_TRANSLATION,
     TRANSITION, CLEAR_BIT, SET_BIT, PRODUCE };
@@ -106,13 +118,34 @@ void func_80054B20(void *value, int32_t mode, int32_t *output) {
     output[2] = INT_MAX;
 }
 
-void func_8001B558(int32_t state, int32_t mode, int32_t a2, int32_t a3,
-    int32_t *a4, int32_t *a5, int32_t *a6, int32_t *a7) {
-    assert(state == 26 && mode == 4 && a2 == 0xFFFE && a3 == 0xFFFE);
+static void check_transition_arguments(
+    void *argument_4, void *argument_5, void *argument_6, void *argument_7
+) {
+    int32_t *a4 = argument_4;
+    int32_t *a5 = argument_5;
+    int32_t *a6 = argument_6;
+    int32_t *a7 = argument_7;
     assert(*a4 == 14 && *a5 == 123 && *a6 == -456 && *a7 == INT_MAX);
     assert(a6 == a5 + 1 && a7 == a5 + 2);
     record(TRANSITION, 14);
 }
+
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+static void transition_handler(
+    GameTransitionEventRecord *event,
+    void *argument_4, void *argument_5, void *argument_6, void *argument_7
+) {
+    assert(event == &g_transition_event_records[0]);
+    assert(event->event_id == 0);
+    check_transition_arguments(argument_4, argument_5, argument_6, argument_7);
+}
+#else
+void func_8001B558(int32_t state, int32_t mode, uintptr_t a2, int32_t a3,
+    void *argument_4, void *argument_5, void *argument_6, void *argument_7) {
+    assert(state == 26 && mode == 4 && a2 == 0xFFFE && a3 == 0xFFFE);
+    check_transition_arguments(argument_4, argument_5, argument_6, argument_7);
+}
+#endif
 
 void func_8002262C(BubsyGroundedActor *value, int32_t bit) {
     assert(value == &actor);
@@ -166,6 +199,15 @@ static void reset(uint8_t mode, int32_t stride, int32_t delta, int32_t key,
     mutate_property_stride = 0;
     mutate_shared_pointer = 0;
     mutate_producer = 0;
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+    memset(g_transition_event_records, 0, sizeof(g_transition_event_records));
+    memset(g_transition_static_handlers, 0, sizeof(g_transition_static_handlers));
+    memset(transition_modes, 0, sizeof(transition_modes));
+    g_transition_event_count = 0;
+    g_transition_mode_handlers = transition_modes;
+    g_transition_heading_handlers = 0;
+    transition_modes[26].flags_fffe = transition_handler;
+#endif
 }
 
 static Call expected[16];
@@ -200,6 +242,9 @@ static void expect_sequence(int32_t key, uint32_t line, int emit_transition) {
 
 static void check_stable_case(void) {
     unsigned int i;
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+    unsigned int transition_count = 0;
+#endif
     int32_t floor = g_stride_mode == 0 ? 17 : 12;
     int32_t cap = g_stride_mode == 0 ? 35 : 12;
     expected_count = 0;
@@ -243,7 +288,21 @@ static void check_stable_case(void) {
         assert(actual[i].argument == expected[i].argument);
         assert(actual[i].stride == expected[i].stride);
         assert(actual[i].delta == expected[i].delta);
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+        if (actual[i].action == TRANSITION) {
+            ++transition_count;
+        }
+#endif
     }
+#ifdef BUBSY_TRANSITION_INTEGRATION_TEST
+    assert((unsigned int)g_transition_event_count == transition_count);
+    if (transition_count != 0) {
+        assert(g_transition_event_records[0].event_id == 26);
+        assert(g_transition_event_records[0].mode == 4);
+        assert(g_transition_event_records[0].flags == 0xFFFE);
+        assert(g_transition_event_records[0].heading == 0xFFFE);
+    }
+#endif
     assert(shared.stride_30 == expected_stride && shared.stride_delta_34 == expected_delta);
     assert(observed_stride == expected_stride && observed_delta == expected_delta);
 }

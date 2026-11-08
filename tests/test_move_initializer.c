@@ -1,4 +1,4 @@
-#include "move_preparation.h"
+#include "level_records.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -52,7 +52,7 @@ uint8_t func_80028C18(int32_t context, int32_t *table_count, const MovePreparati
     return query_status;
 }
 
-void func_800286F8(int32_t context, uint8_t *output) {
+uint8_t func_800286F8(int32_t context, uint8_t *output) {
     record(0x800286F8);
     assert(context == 5);
     assert(info.counter == 0 && info.index == 0 && info.mode_1C == 1);
@@ -62,6 +62,7 @@ void func_800286F8(int32_t context, uint8_t *output) {
         info.index = 1;
         info.origin_58.y = 1234;
     }
+    return 1;
 }
 
 int32_t func_80062D4C(const MovePreparationVector *left,

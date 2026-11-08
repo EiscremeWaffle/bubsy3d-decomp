@@ -1,6 +1,8 @@
 #include "camera_slots.h"
 #include "grounded_case37.h"
 #include "grounded_event_records.h"
+#include "game_transition.h"
+#include "level_records.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -24,8 +26,8 @@ uint8_t g_camera_mode;
 int16_t g_grounded_case37_counter;
 GroundedCase37ObjectView *g_grounded_case37_object;
 uint8_t g_runtime_state_61;
-int32_t g_level_value_801E8994;
-GroundedCase37ComponentView *g_level_pointer_801E89A4;
+int32_t g_level_record_count;
+GameLevelRecord *volatile g_level_records;
 
 typedef struct QueueObject {
     uint8_t padding[0x1C];
@@ -34,7 +36,8 @@ typedef struct QueueObject {
 
 static QueueObject queue_object;
 static GroundedCase37ObjectView player, selected, replacement;
-static GroundedCase37ComponentView root, owner, current_component, selected_component;
+static GameLevelRecord root;
+static GroundedCase37ComponentView owner, current_component, selected_component;
 static int current_transform, selected_transform, basis;
 static void *lookup_object;
 static int32_t sequence;
@@ -164,9 +167,9 @@ void func_8002BB64(int32_t value) {
     if (case_mutation) g_grounded_case37_counter = 77;
 }
 
-void func_8001B558(int32_t group, int32_t event, void *object,
-    int32_t a3, int32_t a4, int32_t a5, int32_t a6, int32_t a7) {
-    assert(group == 23 && event == 5 && object == g_grounded_case37_object->event_0C);
+void func_8001B558(int32_t group, int32_t event, uintptr_t object,
+    int32_t a3, void *a4, void *a5, void *a6, void *a7) {
+    assert(group == 23 && event == 5 && object == (uintptr_t)g_grounded_case37_object->event_0C);
     assert(a3 == 0 && a4 == 0 && a5 == 0 && a6 == 0 && a7 == 0);
     record_call(11);
 }
@@ -308,7 +311,7 @@ static void reset_case(void) {
     memset(&player, 0, sizeof(player));
     memset(&selected, 0, sizeof(selected));
     memset(&replacement, 0, sizeof(replacement));
-    root.owner_1C = &owner;
+    root.object_1C = &owner;
     owner.owner_1C = &current_component;
     current_component.transform_14 = &current_transform;
     selected_component.transform_14 = &selected_transform;
@@ -320,7 +323,7 @@ static void reset_case(void) {
     replacement = selected;
     lookup_object = &player;
     g_grounded_case37_object = &selected;
-    g_level_pointer_801E89A4 = &root;
+    g_level_records = &root;
     g_runtime_state_61 = 1;
     g_grounded_case37_counter = 5;
     call_count = 0;
@@ -345,7 +348,7 @@ static void test_case37(void) {
     for (int positive = 0; positive < 2; positive++) {
         for (case_mutation = 0; case_mutation < 2; case_mutation++) {
             reset_case();
-            g_level_value_801E8994 = positive;
+            g_level_record_count = positive;
             func_80037B30(NULL);
             assert(call_count == (positive ? 8 : 9));
             for (int item = 0; item < call_count; item++) assert(calls[item] == item + (positive ? 4 : 3));

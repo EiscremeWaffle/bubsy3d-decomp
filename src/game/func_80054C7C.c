@@ -30,10 +30,17 @@ int32_t func_80054C7C(
     const int32_t input[3]
 ) {
     ComponentTransformScratch scratch;
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
     register ComponentTransformView *component_value __asm__("$17") = component;
     register const ComponentBasisView *basis_value __asm__("$4") = basis;
     register const int32_t *input_value __asm__("$18") = input;
     register ComponentBasisView *normalized_basis __asm__("$16");
+#else
+    ComponentTransformView *component_value = component;
+    const ComponentBasisView *basis_value = basis;
+    const int32_t *input_value = input;
+    ComponentBasisView *normalized_basis;
+#endif
 
     if (component_value == 0) {
         return 0x18;
@@ -55,7 +62,7 @@ int32_t func_80054C7C(
 
 copy_translation:
     component_value->translation[0] = input_value[0];
-    component_value->translation[1] = -input_value[1];
+    component_value->translation[1] = (int32_t)(0u - (uint32_t)input_value[1]);
     component_value->translation[2] = input_value[2];
     return 0;
 

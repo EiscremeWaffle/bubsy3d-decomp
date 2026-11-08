@@ -740,21 +740,21 @@ BubsyActorDefaultStateRoute bubsy_actor_state_route_default(
     int16_t update_gate_6454,
     uint8_t runtime_mode
 ) {
-    if (runtime_state_6461 != 5 ||
-        (actor->update_state_10 & 0x00010000u) != 0 ||
+    if ((actor->update_state_10 & 0x00100000u) != 0 ||
         update_lock_6479 != 0 ||
         update_gate_6454 != 0 ||
         (actor->flags_04 & 0x00000100u) != 0) {
         return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
     }
 
-    if (handler_state_id == 0x25 ||
-        (handler_state_id == 0x26 && handler_state_aux != -2)) {
-        return runtime_mode == 0 ?
-            BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED : BUBSY_ACTOR_DEFAULT_ROUTE_SWIM;
+    if (runtime_state_6461 == 5 &&
+        handler_state_id != 0x25 &&
+        !(handler_state_id == 0x26 && handler_state_aux != 0xFFFE)) {
+        return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
     }
 
-    return BUBSY_ACTOR_DEFAULT_ROUTE_SKIP;
+    return runtime_mode == 0 ?
+        BUBSY_ACTOR_DEFAULT_ROUTE_GROUNDED : BUBSY_ACTOR_DEFAULT_ROUTE_SWIM;
 }
 
 BubsyActorSharedUpdateEntryAction bubsy_actor_shared_update_entry_action(
@@ -1186,7 +1186,7 @@ int32_t bubsy_actor_update_should_reset_sequence_counter(
         (actor->flags_04 & 0x40u) != 0;
 }
 
-int32_t bubsy_actor_update_should_enter_level14_counter_path(
+int32_t bubsy_actor_update_should_start_counter_phase(
     const BubsyActorUpdateActorView *actor,
     int32_t sequence_counter,
     uint8_t runtime_mode,
@@ -1195,7 +1195,7 @@ int32_t bubsy_actor_update_should_enter_level14_counter_path(
 ) {
     return runtime_mode == 0 &&
         sequence_counter > 0 &&
-        level_id == 0x14 &&
+        level_id != 0x14 &&
         (actor->flags_04 & 0x40u) == 0 &&
         update_gate == 0;
 }

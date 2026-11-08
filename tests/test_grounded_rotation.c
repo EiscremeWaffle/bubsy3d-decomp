@@ -1,6 +1,9 @@
 #include "component_rotation.h"
 #include "shared_actor_state_dispatch.h"
 
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
 #include <assert.h>
 #include <limits.h>
 #include <stdio.h>
@@ -24,6 +27,7 @@ static int32_t expected_stride;
 static int32_t expected_delta;
 static int mutate_query;
 static int mutate_rotation;
+static int mutate_rotation_source;
 static int mutate_step;
 
 static void record(unsigned call) {
@@ -46,6 +50,11 @@ void func_80077C50(const uint16_t angles[3], ComponentRotationMatrix *output) {
     record(0x80077C50);
     assert(memcmp(angles, expected_angles, sizeof(expected_angles)) == 0);
     *output = rotation_matrix;
+    if (mutate_rotation_source) {
+        context.elements[0] = 0xEEEE;
+        context.padding = 0xDDDD;
+        context.translation[0] = 444;
+    }
 }
 
 void func_80076890(ComponentRotationMatrix *rotation, const ComponentRotationMatrix *basis) {
@@ -53,6 +62,15 @@ void func_80076890(ComponentRotationMatrix *rotation, const ComponentRotationMat
     assert(memcmp(rotation, &rotation_matrix, sizeof(*rotation)) == 0);
     assert(memcmp(basis, &saved_context, sizeof(*basis)) == 0);
     rotation->elements[0] = 0x5678;
+}
+
+ComponentRotationMatrix *func_8007699C(
+    const ComponentRotationMatrix *basis, ComponentRotationMatrix *rotation) {
+    record(0x8007699C);
+    assert(memcmp(rotation, &rotation_matrix, sizeof(*rotation)) == 0);
+    assert(memcmp(basis, &saved_context, sizeof(*basis)) == 0);
+    rotation->elements[0] = 0x5678;
+    return rotation;
 }
 
 int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMatrix *output) {
@@ -106,6 +124,7 @@ static void reset(void) {
     call_count = 0;
     mutate_query = 0;
     mutate_rotation = 0;
+    mutate_rotation_source = 0;
     mutate_step = 0;
 }
 
@@ -134,29 +153,89 @@ static void test_restore_overlap(void) {
     }
 }
 
+static void test_basis_copy(void) {
+    static const int32_t y_values[] = {INT32_MIN, -1, 0, 1, INT32_MAX};
+    unsigned int value, index;
+
+    for (value = 0; value < sizeof(y_values) / sizeof(y_values[0]); ++value) {
+        ComponentRotationMatrix input;
+        ComponentRotationMatrix output;
+        ComponentRotationMatrix in_place;
+
+        memset(&input, 0, sizeof(input));
+        memset(&output, 0, sizeof(output));
+        for (index = 0; index < 9; ++index) {
+            input.elements[index] = (uint16_t)(0x1000u + index * 0x1111u);
+        }
+        input.padding = 0x1234;
+        input.translation[0] = -7;
+        input.translation[1] = y_values[value];
+        input.translation[2] = INT32_MAX;
+        output.padding = 0xCAFE;
+        in_place = input;
+
+        assert(func_80054A6C(&output, &input) == 0);
+        assert(func_80054A6C(&in_place, &in_place) == 0);
+        for (index = 0; index < 9; ++index) {
+            uint16_t expected = (index & 1u)
+                ? (uint16_t)(0u - input.elements[index]) : input.elements[index];
+            assert(output.elements[index] == expected);
+            assert(in_place.elements[index] == expected);
+        }
+        assert(output.padding == 0xCAFE && in_place.padding == 0x1234);
+        assert(output.translation[0] == -7 && in_place.translation[0] == -7);
+        assert((uint32_t)output.translation[1] == 0u - (uint32_t)y_values[value]);
+        assert((uint32_t)in_place.translation[1] == 0u - (uint32_t)y_values[value]);
+        assert(output.translation[2] == INT32_MAX && in_place.translation[2] == INT32_MAX);
+    }
+}
+
 static void test_rotation_wrapper(void) {
     static const int32_t angles[] = {INT32_MIN, -65537, -1, 0, 1, 65537, INT32_MAX};
-    unsigned x, y, z;
-    for (x = 0; x < sizeof(angles) / sizeof(angles[0]); ++x) {
-        for (y = 0; y < sizeof(angles) / sizeof(angles[0]); ++y) {
-            for (z = 0; z < sizeof(angles) / sizeof(angles[0]); ++z) {
-                int32_t input[3] = {angles[x], angles[y], angles[z]};
-                reset();
-                expected_angles[0] = (uint16_t)(0u - (uint32_t)input[0]);
-                expected_angles[1] = (uint16_t)input[1];
-                expected_angles[2] = (uint16_t)(0u - (uint32_t)input[2]);
-                assert(func_800547C8(&context, input) == 0);
-                assert(call_count == 3);
-                assert(calls[0] == 0x80077C50 && calls[1] == 0x80076890 && calls[2] == 0x800542A4);
-                rotation_matrix.elements[0] = 0x5678;
-                assert(memcmp(context.elements, rotation_matrix.elements, sizeof(context.elements)) == 0);
-                assert(context.padding == saved_context.padding);
-                assert(memcmp(context.translation, saved_context.translation, sizeof(context.translation)) == 0);
+    static int32_t (*const rotate[])(ComponentRotationMatrix *, const int32_t *) = {
+        func_800547C8, func_800548A0
+    };
+    unsigned variant, x, y, z;
+    for (variant = 0; variant < sizeof(rotate) / sizeof(rotate[0]); ++variant) {
+        for (x = 0; x < sizeof(angles) / sizeof(angles[0]); ++x) {
+            for (y = 0; y < sizeof(angles) / sizeof(angles[0]); ++y) {
+                for (z = 0; z < sizeof(angles) / sizeof(angles[0]); ++z) {
+                    int32_t input[3] = {angles[x], angles[y], angles[z]};
+                    reset();
+                    expected_angles[0] = (uint16_t)(0u - (uint32_t)input[0]);
+                    expected_angles[1] = (uint16_t)input[1];
+                    expected_angles[2] = (uint16_t)(0u - (uint32_t)input[2]);
+                    assert(rotate[variant](&context, input) == 0);
+                    assert(call_count == 3);
+                    assert(calls[0] == 0x80077C50);
+                    assert(calls[1] == (variant == 0 ? 0x80076890 : 0x8007699C));
+                    assert(calls[2] == 0x800542A4);
+                    rotation_matrix.elements[0] = 0x5678;
+                    assert(memcmp(context.elements, rotation_matrix.elements, sizeof(context.elements)) == 0);
+                    assert(context.padding == saved_context.padding);
+                    assert(memcmp(context.translation, saved_context.translation, sizeof(context.translation)) == 0);
+                }
             }
+        }
+        {
+            int32_t input[3] = {0, 1, -1};
+            reset();
+            expected_angles[0] = 0;
+            expected_angles[1] = 1;
+            expected_angles[2] = 1;
+            mutate_rotation_source = 1;
+            assert(rotate[variant](&context, input) == 0);
+            assert(call_count == 3);
+            assert(context.elements[0] == 0x5678);
+            assert(context.padding == 0xDDDD);
+            assert(context.translation[0] == 444);
+            assert(context.translation[1] == saved_context.translation[1]);
+            assert(context.translation[2] == saved_context.translation[2]);
         }
     }
     reset();
     assert(func_800547C8(NULL, NULL) == 0x18);
+    assert(func_800548A0(NULL, NULL) == 0x18);
     assert(call_count == 0);
 }
 
@@ -285,10 +364,11 @@ static void test_dispatch_mutations(void) {
 
 int main(void) {
     test_restore_overlap();
+    test_basis_copy();
     test_rotation_wrapper();
     test_basis_direction();
     test_dispatch_boundaries();
     test_dispatch_mutations();
-    puts("Grounded rotation: 405 overlap cases, 343 angle cases, 65536 basis directions, 1872 dispatch boundaries and helper mutations passed.");
+    puts("Grounded rotation: overlap, basis copy, angle, direction, boundary and mutation cases passed.");
     return 0;
 }

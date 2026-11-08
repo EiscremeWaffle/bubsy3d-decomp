@@ -3,16 +3,16 @@
 This is the current decomp.dev report scope, not a certified whole-game function map.
 
 - Executable modules: 22
-- Mapped instruction bytes: 3,040,136
-- Bounded function candidates: 10,495
-- Explicitly labeled reachable fragments: 1,167
-- Unclassified executable payload bytes: 12,778,616
+- Mapped instruction bytes: 3,069,356
+- Bounded function candidates: 10,535
+- Explicitly labeled reachable fragments: 1,169
+- Unclassified executable payload bytes: 12,749,396
 - Indirect sites requiring further review: 2,394
-- Exact source matches configured: 44928 bytes across 159 function(s) (1.477829%)
+- Exact source matches configured: 63972 bytes across 263 function(s) (2.084216%)
 
 - Exact executable C data matches configured: 196 bytes across 1 data symbol(s)
 - Other disc files: 621,466,361 bytes across 424 files (inventory only; not objdiff data coverage)
-- Unclassified executable payload: 12,778,616 bytes (code or data; not counted as data)
+- Unclassified executable payload: 12,749,396 bytes (code or data; not counted as data)
 No section map is present in the PS-X EXE headers; total executable data size is not yet known.
 Objdiff reports fuzzy similarity separately in `config/code-report.json`; partial scores do not add exact matched bytes or functions.
 
@@ -48,7 +48,7 @@ pinned Clang MIPS-II scheduling profile; this does not establish the original ga
 
 | Module | Code bytes | Bounded candidates | Fragments | Unclassified payload | Indirect sites |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `L0/L0.EXE` | 294360 | 921 | 64 | 420392 | 130 |
+| `L0/L0.EXE` | 323580 | 961 | 66 | 391172 | 130 |
 | `L1/L1.EXE` | 130260 | 462 | 51 | 629548 | 104 |
 | `L10/L10.EXE` | 130260 | 462 | 51 | 621356 | 104 |
 | `L11/L11.EXE` | 130260 | 462 | 51 | 625452 | 104 |

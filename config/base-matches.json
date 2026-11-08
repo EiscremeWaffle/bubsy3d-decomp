@@ -14,6 +14,391 @@
       "fuzzy_sources": [],
       "matching_sources": [
         {
+          "source": "src/game/func_8001A6E0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C controller poll and optional input-stream path; all 776 bytes match the original unoptimized frame-pointer build, including callback-sensitive rereads.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/controller_input.h", "src/game/game_transition.h",
+            "src/game/sequence_queries.h", "src/game/texture_font_slots.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_input_stream_mode": "0x800BE2E5",
+            "g_input_stream_limit": "0x800BDE60",
+            "g_input_stream_index": "0x800BE2E0",
+            "g_input_stream_words": "0x801D12A0",
+            "g_input_effect_active": "0x800BDE80",
+            "g_input_effect_channel": "0x800BE440",
+            "g_input_effect_context": "0x800BDE84"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_input_effect_active", "g_input_effect_channel"]
+          },
+          "symbols": ["func_8001A6E0"]
+        },
+        {
+          "source": "src/game/func_8001BC08.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C setter for the event-runtime byte; all 16 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_event_runtime_byte": "0x800BE444"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_event_runtime_byte"]},
+          "symbols": ["func_8001BC08"]
+        },
+        {
+          "source": "src/game/func_8001BC28.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C event-runtime reset with context gates and wrapping counter; all 188 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/game_transition.h", "src/game/input_events.h",
+            "src/game/reset_resources.h", "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_event_runtime_byte": "0x800BE444",
+            "global_0x800BDE98": "0x800BDE98"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_event_runtime_byte", "global_0x800BDE98"]
+          },
+          "symbols": ["func_8001BC28"]
+        },
+        {
+          "source": "src/game/func_8001C04C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C timeout dispatcher with callback-sensitive global rereads and ordered event arguments; all 220 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/game_transition.h", "src/game/input_events.h",
+            "src/game/texture_font_slots.h", "src/game/timeout_resources.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_timeout_event_id": "0x801D8AC4",
+            "g_timeout_event_flags": "0x801D8AC8",
+            "g_timeout_event_heading": "0x801D8ACC",
+            "g_event_input_gate": "0x801D8AD0",
+            "g_sequence_query_condition": "0x80011E14",
+            "g_transition_source_path": "0x80011E2C"
+          },
+          "symbols": ["func_8001C04C"]
+        },
+        {
+          "source": "src/game/func_80045278.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C event-reset status byte getter; all 12 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_unknown_800BE1C2": "0x800BE1C2"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_unknown_800BE1C2"]},
+          "symbols": ["func_80045278"]
+        },
+        {
+          "source": "src/game/func_80048488.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C sweep of 50 tagged texture-font slots, retaining each tag across its two callbacks; all 124 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/texture_font_slots.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_texture_font_slots": "0x80189C90"},
+          "symbols": ["func_80048488"]
+        },
+        {
+          "source": "src/game/func_80062890.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C resource cleanup with callback-sensitive pointer reloads; all 284 bytes match the original unoptimized frame-pointer build.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/timeout_resources.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_timeout_resource_active": "0x800BE408",
+            "g_timeout_resource_protected": "0x800BE3E4",
+            "g_timeout_resource_a": "0x800BE3F0",
+            "g_timeout_resource_b": "0x800BE3F4",
+            "g_timeout_resource_c": "0x800BE3F8",
+            "g_timeout_resource_d": "0x800BE3FC",
+            "g_timeout_resource_state": "0x800BE3D0"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": [
+              "g_timeout_resource_active", "g_timeout_resource_protected",
+              "g_timeout_resource_a", "g_timeout_resource_b",
+              "g_timeout_resource_c", "g_timeout_resource_d"
+            ]
+          },
+          "symbols": ["func_80062890"]
+        },
+        {
+          "source": "src/game/func_80045094.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C reset backend with target register constraints and an empty stack-frame reservation barrier; all 208 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/reset_resources.h", "src/game/reset_entry_helpers.h",
+            "src/game/proximity_list.h", "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_reset_active": "0x800BE1E0",
+            "g_reset_secondary_flag": "0x800BE1E1",
+            "g_reset_entry_count": "0x800BE678",
+            "g_reset_entries": "0x801D795C",
+            "g_reset_clear_count": "0x800BE1C4",
+            "g_reset_clear_words": "0x801D08E4"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": [
+              "g_reset_active", "g_reset_secondary_flag",
+              "g_reset_entry_count", "g_reset_clear_count"
+            ]
+          },
+          "symbols": ["func_80045094"]
+        },
+        {
+          "source": "src/game/func_80069758.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C proximity-list refresh with target register constraints and empty scheduling/reload barriers; all 360 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/proximity_list.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_proximity_count": "0x800BE41C",
+            "g_proximity_objects": "0x801D5050",
+            "g_proximity_limit_condition": "0x80013E78",
+            "g_proximity_source_path": "0x80013E30"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_proximity_count"]},
+          "symbols": ["func_80069758"]
+        },
+        {
+          "source": "src/game/func_8005327C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C reference-object getter; all 12 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/proximity_list.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_reference_object": "0x800BE33C"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_reference_object"]},
+          "symbols": ["func_8005327C"]
+        },
+        {
+          "source": "src/game/func_800529D0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C object-list getter and zero return; all 20 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/proximity_list.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_object_list_head": "0x800BE32C"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_object_list_head"]},
+          "symbols": ["func_800529D0"]
+        },
+        {
+          "source": "src/game/func_8004232C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C tracked-object sweep with captured next pointers and reference; all 172 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/reset_entry_helpers.h", "src/game/proximity_list.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {"g_reset_tracked_head": "0x800BE568"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_reset_tracked_head"]},
+          "symbols": ["func_8004232C"]
+        },
+        {
+          "source": "src/game/func_80044458.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C reset-entry dispatch with target register constraints and empty scheduling barriers; all 88 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/reset_entry_helpers.h", "src/game/proximity_list.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {"g_reset_entry_table": "0x800BE1B8"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_reset_entry_table"]},
+          "symbols": ["func_80044458"]
+        },
+        {
+          "source": "src/game/func_80044A88.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C active-group membership check with target register constraints and empty scheduling/frame barriers; all 156 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/reset_entry_helpers.h", "src/game/proximity_list.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_reset_active_group_count": "0x800BE678",
+            "g_reset_active_group_indices": "0x801D795C",
+            "g_reset_entry_groups": "0x800BE1B0"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_reset_active_group_count", "g_reset_entry_groups"]
+          },
+          "symbols": ["func_80044A88"]
+        },
+        {
+          "source": "src/game/func_80044B24.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C reset-group dispatcher with target register constraints and empty scheduling/frame barriers; all 224 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/reset_entry_helpers.h", "src/game/proximity_list.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_reset_entry_groups": "0x800BE1B0",
+            "g_reset_selected_objects": "0x800BE1BC"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_reset_entry_groups", "g_reset_selected_objects"]
+          },
+          "symbols": ["func_80044B24"]
+        },
+        {
+          "source": "src/game/func_80061A64.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C word setter; all 60 bytes match the original unoptimized frame-pointer build with gp-relative addressing.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_input.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_unknown_800BE400": "0x800BE400"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_unknown_800BE400"]},
+          "symbols": ["func_80061A64"]
+        },
+        {
+          "source": "src/game/func_80027F40.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C callback cleanup preserving the post-helper asset-pointer read; all 56 bytes match with natural register allocation.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_callback_helpers.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_unknown_800BE4F8": "0x800BE4F8",
+            "g_player_model_asset": "0x801D8A08"
+          },
+          "symbols": ["func_80027F40"]
+        },
+        {
+          "source": "src/game/func_8002C9D4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C callback mode gate with live model-mode reread and final byte store; all 120 bytes match with gp-relative addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_callback_helpers.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_unknown_8009F58C": "0x8009F58C",
+            "g_unknown_800BDFD2": "0x800BDFD2"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_unknown_800BDFD2"]},
+          "symbols": ["func_8002C9D4"]
+        },
+        {
+          "source": "src/game/func_800483C0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C scan of 50 tagged texture-font slots with assertion and callback paths; all 200 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/texture_font_slots.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_texture_font_loaded": "0x80189C71",
+            "g_texture_font_slots": "0x80189C90",
+            "g_texture_font_error_condition": "0x8001370C",
+            "g_texture_font_state_condition": "0x80013730",
+            "g_texture_font_source_path": "0x80013724"
+          },
+          "symbols": ["func_800483C0"]
+        },
+        {
+          "source": "src/game/func_80048504.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C gated scan of tagged texture-font slots with callback assertions; all 164 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/texture_font_slots.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_texture_font_loaded": "0x80189C71",
+            "g_texture_font_slots": "0x80189C90",
+            "g_texture_font_error_condition": "0x8001370C",
+            "g_texture_font_source_path": "0x80013724"
+          },
+          "symbols": ["func_80048504"]
+        },
+        {
+          "source": "src/game/func_80048C48.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C tagged-slot cleanup with wrapping count subtraction; all 112 bytes match with gp-relative counter addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/texture_font_slots.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_texture_font_loaded": "0x80189C71",
+            "g_texture_font_slots": "0x80189C90",
+            "g_texture_font_count": "0x800BE24C"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_texture_font_count"]},
+          "symbols": ["func_80048C48"]
+        },
+        {
           "source": "src/player_model/bubsy_death_state.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Assembly-backed match compiled with checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30, independently linked by LLD before byte verification. Not fully recovered high-level C.",
@@ -22,7 +407,13 @@
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "headers": [
+            "src/game/actor_context.h",
+            "src/player_model/bubsy_actor_state_update.h",
             "src/player_model/bubsy_death_state.h",
+            "src/player_model/bubsy_grounded_interaction.h",
+            "src/player_model/bubsy_grounded_state.h",
+            "src/game/level_records.h",
+            "src/game/move_preparation.h",
             "tools/gcc_include/stdint.h"
           ],
           "symbols": ["bubsy_handle_death_state"]
@@ -69,12 +460,12 @@
         {
           "source": "src/player_model/player_vector_dot.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed target sequence compiled using checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; the host C path expresses the signed Q20.12 dot product.",
+          "compiler_profile": "C Q20.12 dot product with a target-only three-instruction MIPS HI/LO multiply intrinsic, fixed registers, and empty barriers; all 136 bytes match. This is assembly-assisted, not pure C.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/player_model/player_vector_q12.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_800100A0"]
         },
         {
@@ -119,7 +510,14 @@
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "headers": [
+            "src/player_model/bubsy_actor_state_update.h",
+            "src/player_model/bubsy_grounded_interaction.h",
             "src/player_model/bubsy_grounded_state.h",
+            "src/player_model/bubsy_grounded_turn.h",
+            "src/game/game_transition.h",
+            "src/game/level_records.h",
+            "src/game/move_preparation.h",
+            "src/game/sequence_queries.h",
             "tools/gcc_include/stdint.h"
           ],
           "globals": {
@@ -139,6 +537,212 @@
           "symbols": ["bubsy_grounded_state_handler"]
         },
         {
+          "source": "src/game/func_80026648.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C fixed actor-context table getter; all 16 bytes match with natural register allocation and no assembly or compiler barriers.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/actor_context.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_actor_context_table": "0x801D5F70"},
+          "symbols": ["func_80026648"]
+        },
+        {
+          "source": "src/game/func_80028C84.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C checked level-list ID getter; all 80 bytes match with natural register allocation and no assembly or compiler barriers.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/level_records.h", "src/game/move_preparation.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_level_record_count": "0x801D8994",
+            "g_level_records": "0x801D89A4"
+          },
+          "symbols": ["func_80028C84"]
+        },
+        {
+          "source": "src/game/func_80028CD4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C checked level-list getter; all 100 bytes match with natural register allocation and no assembly or compiler barriers. The byte offset is scaled inside the second range test and then reused as the entry address.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/level_records.h", "src/game/move_preparation.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_level_list_count": "0x801D89AC",
+            "g_level_lists": "0x801D89B0"
+          },
+          "symbols": ["func_80028CD4"]
+        },
+        {
+          "source": "src/game/func_80027E24.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C level-list actor lookup; all 228 bytes match with a target-only fixed register and empty barrier to forward the original live argument.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_grounded_state.h",
+            "src/game/level_records.h", "src/game/move_preparation.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_level_list_condition": "0x800121F8",
+            "g_game_source_path": "0x800120AC"
+          },
+          "symbols": ["func_80027E24"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_state_flag.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C actor-state table flag lookup; all 64 bytes match with natural register allocation and no assembly or compiler barriers.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/actor_context.h", "src/player_model/bubsy_grounded_state.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "symbols": ["func_8004B264"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_event_callback.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C grounded-event callback with gp-relative counter and event globals; all 184 bytes match with natural register allocation and no assembly or compiler barriers.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_grounded_state.h",
+            "src/player_model/bubsy_actor_state_update.h",
+            "src/game/grounded_event_records.h",
+            "src/game/level_records.h",
+            "src/game/move_preparation.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_grounded_counter": "0x800BE298",
+            "g_grounded_event": "0x800BE29C",
+            "g_level_record_count": "0x801D8994",
+            "g_level_records": "0x801D89A4"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_grounded_counter", "g_grounded_event"]
+          },
+          "symbols": ["func_8004B2A4"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_turn.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C grounded-turn helper; all 1188 bytes match pinned GCC 2.6.3 PSX/MASPSX. Register constraints and empty barriers preserve the original allocation and scheduling without instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_grounded_turn.h",
+            "src/player_model/bubsy_grounded_state.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_stride_marker": "0x8018647A",
+            "g_stride_mode": "0x800BE548",
+            "g_turn_direction": "0x800BE0E0",
+            "g_runtime_state_61": "0x80186461",
+            "g_turn_counter": "0x801864BA",
+            "g_stride_error_condition": "0x80012974",
+            "g_stride_source_path": "0x8001298C",
+            "__floatsidf": "0x80096058",
+            "__muldf3": "0x80096454",
+            "__adddf3": "0x80095A64",
+            "__fixdfsi": "0x80095F58"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_stride_mode", "g_turn_direction"]
+          },
+          "symbols": ["func_80034EF8"]
+        },
+        {
+          "source": "src/player_model/bubsy_actor_state_update.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C actor-state updater; all 1324 bytes match pinned GCC 2.6.3 PSX/MASPSX. Register constraints and empty barriers preserve the original allocation and scheduling without instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_actor_state_update.h",
+            "src/player_model/bubsy_grounded_state.h",
+            "src/game/game_transition.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_actor_update_phase": "0x80186454",
+            "g_actor_update_counter": "0x800BE0E8",
+            "g_actor_message_index": "0x800BE0E4",
+            "g_actor_environment": "0x801D36F0",
+            "g_actor_update_marker": "0x80186460",
+            "g_actor_update_value": "0x801864A0",
+            "g_stride_marker": "0x8018647A",
+            "g_stride_mode": "0x800BE548",
+            "g_actor_message_strings": "0x8009F8F4",
+            "g_stride_error_condition": "0x80012974",
+            "g_stride_source_path": "0x8001298C"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_actor_update_counter", "g_actor_message_index", "g_stride_mode"]
+          },
+          "symbols": ["func_8003539C"]
+        },
+        {
+          "source": "src/player_model/bubsy_grounded_interaction.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C grounded interaction helper; all 1168 bytes match pinned GCC 2.6.3 PSX/MASPSX. Register constraints and empty barriers preserve the original allocation and scheduling without instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/player_model/bubsy_actor_state_update.h",
+            "src/player_model/bubsy_grounded_interaction.h",
+            "src/player_model/bubsy_grounded_state.h",
+            "src/game/game_transition.h",
+            "src/game/level_records.h",
+            "src/game/move_preparation.h",
+            "src/game/sequence_queries.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_interaction_state": "0x8018645C",
+            "g_interaction_previous_phase": "0x80186458",
+            "g_interaction_active": "0x800BE108",
+            "g_interaction_marker": "0x8018649C",
+            "g_stride_mode": "0x800BE548",
+            "g_level_records": "0x801D89A4"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_interaction_active", "g_stride_mode"]
+          },
+          "symbols": ["func_80039158"]
+        },
+        {
           "source": "src/player_model/bubsy_grounded_stride.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Complete readable C grounded stride producer; all 1304 bytes match pinned GCC 2.6.3 PSX/MASPSX. Requires -fno-cse-follow-jumps, three pointer register constraints, one empty memory barrier, and an independently sampled cap-mode read. No instruction transcription. Runtime mode is the level/player-model mode, not proven controller input.",
@@ -146,7 +750,7 @@
             "-O2", "-fno-cse-follow-jumps", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/player_model/bubsy_grounded_state.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/player_model/bubsy_grounded_state.h", "src/game/game_transition.h", "tools/gcc_include/stdint.h"],
           "globals": {
             "g_stride_mode": "0x800BE548",
             "g_stride_override": "0x80186460",
@@ -168,7 +772,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/player_model/bubsy_grounded_state.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/player_model/bubsy_actor_state_update.h", "src/player_model/bubsy_grounded_state.h", "src/game/game_transition.h", "tools/gcc_include/stdint.h"],
           "globals": {
             "g_stride_mode": "0x800BE548",
             "g_deceleration_state_6464": "0x80186464",
@@ -185,14 +789,37 @@
           "symbols": ["func_80038844"]
         },
         {
-          "source": "src/player_model/func_800347EC_match.c",
+          "source": "src/player_model/bubsy_actor_347ec.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed instruction transcription from the verified L0 executable, compiled and linked at the mapped address before byte comparison. This is an exact byte match, not recovered high-level C or proven gameplay semantics.",
+          "compiler_profile": "Readable C shared grounded transition handler; all 1,804 bytes match. Five register pins and one empty entry barrier reproduce the original global register allocation without emitting instructions. Player globals at 0x80186450 are modeled as one structure, so GCC 2.6 keeps their stores ordered against actor-field accesses without memory barriers.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": [],
+          "headers": [
+            "src/player_model/bubsy_actor_state_update.h",
+            "src/game/game_transition.h",
+            "tools/gcc_include/stdint.h",
+            "tools/gcc_include/stddef.h"
+          ],
+          "globals": {
+            "g_player_80186450": "0x80186450",
+            "global_0x80186204": "0x80186204",
+            "global_0x800BDE98": "0x800BDE98",
+            "global_0x80012958": "0x80012958",
+            "global_0x8001293C": "0x8001293C",
+            "g_actor_transition_index": "0x800BE0DC",
+            "g_actor_flag_800BE0D8": "0x800BE0D8",
+            "g_actor_flag_800BE0D9": "0x800BE0D9",
+            "g_actor_flag_800BE0DA": "0x800BE0DA"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": [
+              "g_actor_transition_index", "g_actor_flag_800BE0D8",
+              "g_actor_flag_800BE0D9", "g_actor_flag_800BE0DA"
+            ]
+          },
           "symbols": ["func_800347EC"]
         },
         {
@@ -203,7 +830,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_80024F2C"],
           "globals": {
             "g_move_info_condition": "0x800BDEF4",
@@ -236,7 +863,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_800250CC"],
           "globals": {
             "g_move_request_count": "0x800BDED8",
@@ -312,14 +939,14 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/game/grounded_case37.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/game/grounded_case37.h", "src/game/game_transition.h", "src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_80037B30"],
           "globals": {
             "g_grounded_case37_counter": "0x800BE0BE",
             "g_grounded_case37_object": "0x800BE104",
             "g_runtime_state_61": "0x80186461",
-            "g_level_value_801E8994": "0x801D8994",
-            "g_level_pointer_801E89A4": "0x801D89A4"
+            "g_level_record_count": "0x801D8994",
+            "g_level_records": "0x801D89A4"
           },
           "small_data": {"gp": "0x800BDD5C", "symbols": ["g_grounded_case37_counter", "g_grounded_case37_object"]}
         },
@@ -331,12 +958,60 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/sequence_queries.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_8001C700"],
           "globals": {
             "func_8005E7B8": "0x8005E7B8",
-            "g_case17_sequence_values": "0x80182F64"
+            "g_sequence_values": "0x80182F64"
           }
+        },
+        {
+          "source": "src/game/func_8001C6BC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C sequence setter wrapper; all 68 bytes match. Narrows all three inputs to signed halfwords, reads the indexed sequence value, and returns whether the backend returned zero.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/sequence_queries.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_sequence_values": "0x80182F64"},
+          "symbols": ["func_8001C6BC"]
+        },
+        {
+          "source": "src/game/func_8001C7C4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C sequence status wrapper; all 100 bytes match. Initializes the output byte, narrows both inputs to signed halfwords, and reports a nonzero backend status before returning the byte.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/sequence_queries.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_sequence_values": "0x80182F64",
+            "g_sequence_query_condition": "0x80011E14",
+            "g_transition_source_path": "0x80011E2C"
+          },
+          "symbols": ["func_8001C7C4"]
+        },
+        {
+          "source": "src/game/func_8005D5A8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C signed sequence-limit selector with target register constraints and empty scheduling/frame barriers; all 204 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/sequence_limit.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_sequence_limit_scan_enabled": "0x800BE380",
+            "g_sequence_limit_count": "0x800BE388",
+            "g_sequence_limit_entries": "0x801CCE14"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_sequence_limit_scan_enabled", "g_sequence_limit_count"]
+          },
+          "symbols": ["func_8005D5A8"]
         },
         {
           "source": "src/game/func_8005E7B8.c",
@@ -346,12 +1021,37 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/game/sequence_limit.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_8005E7B8"],
           "globals": {
             "func_8005D5A8": "0x8005D5A8",
             "func_8008E1DC": "0x8008E1DC"
           }
+        },
+        {
+          "source": "src/game/func_80091194.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C sequence-notification backend with four target-specific MIPS instructions and register constraints; all 220 bytes match using the configured ASPSX 2.21 expansion profile. The profile establishes a reproducer, not the original assembler version.",
+          "aspsx_version": "2.21",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/sequence_notification.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_sequence_notification_index": "0x801D5F26",
+            "g_sequence_set_mask_low": "0x801D8AD8",
+            "g_sequence_set_mask_high": "0x801D8AE0",
+            "g_sequence_clear_mask_low": "0x801D043C",
+            "g_sequence_clear_mask_high": "0x801D0444",
+            "g_sequence_record_byte": "0x801CFE9B",
+            "g_sequence_record_half_a": "0x801CFE84",
+            "g_sequence_record_half_b": "0x801CFE80"
+          },
+          "symbols": ["func_80091194"]
         },
         {
           "source": "src/game/func_8001007C.c",
@@ -796,7 +1496,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
           "globals": {
             "g_move_preparation_transform": "0x800BDEF0",
             "g_move_context_condition": "0x80012194",
@@ -843,6 +1543,394 @@
           "symbols": ["func_80054AF0"]
         },
         {
+          "source": "src/game/func_8001B558.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C transition dispatcher; all 864 bytes match pinned GCC 2.6.3 PSX/MASPSX. Register constraints and empty barriers preserve the original allocation and scheduling without instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/game_transition.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_transition_event_records": "0x80182F7C",
+            "g_transition_event_count": "0x80182F78",
+            "g_transition_static_handlers": "0x8009EC3C",
+            "g_transition_mode_handlers": "0x801D36F4",
+            "g_transition_heading_handlers": "0x801D36F8",
+            "g_transition_overflow_condition": "0x80011E60",
+            "g_transition_source_path": "0x80011E2C"
+          },
+          "symbols": ["func_8001B558"]
+        },
+        {
+          "source": "src/game/func_8001B8B8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C event-queue snapshot; all 272 bytes match with register constraints and empty compiler barriers, without instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/game_transition.h", "src/game/word_copy.h", "tools/gcc_include/stdint.h"
+          ],
+          "symbols": ["func_8001B8B8"]
+        },
+        {
+          "source": "src/game/func_8001B1E4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C event-queue processor; all 884 bytes match with register constraints, small inline MIPS load sequences, and explicit MIPS-I delay-slot barriers. The control flow is not instruction-transcribed.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/actor_context.h", "src/game/game_transition.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_queue_counter_144": "0x800BDEA0",
+            "g_queue_counter_148": "0x800BDEA4",
+            "g_queue_counter_14C": "0x800BDEA8",
+            "g_queue_value_150": "0x800BDEAC",
+            "g_queue_mode": "0x800BE444",
+            "g_queue_transition_state": "0x800BDE96",
+            "g_queue_message": "0x80011E3C",
+            "g_transition_static_handlers": "0x8009EC3C",
+            "g_transition_mode_handlers": "0x801D36F4",
+            "g_transition_heading_handlers": "0x801D36F8",
+            "g_transition_queue_input": "0x80182F78",
+            "g_transition_queue_snapshot": "0x80183A6C"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": [
+              "g_queue_counter_144", "g_queue_counter_148", "g_queue_counter_14C",
+              "g_queue_value_150", "g_queue_mode", "g_queue_transition_state"
+            ]
+          },
+          "symbols": ["func_8001B1E4"]
+        },
+        {
+          "source": "src/game/func_8002278C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C publisher for the default event-mode table; all 24 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/game_transition.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_default_transition_mode_handlers": "0x8009EC8C",
+            "g_transition_mode_handlers": "0x801D36F4"
+          },
+          "symbols": ["func_8002278C"]
+        },
+        {
+          "source": "src/game/func_80023A0C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C controller-event payload initializer; all 36 bytes match, including ordered reads and writes when input bytes alias the event record.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/game_transition.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_80023A0C"]
+        },
+        {
+          "source": "src/game/func_80023A30.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C input-event interval gate; all 84 bytes match, including signed-halfword narrowing and unsigned wrapping threshold comparison.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_input_gate_last_sample": "0x800BDEDC"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_input_gate_last_sample"]},
+          "symbols": ["func_80023A30"]
+        },
+        {
+          "source": "src/game/func_80027F08.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C event-heading table activation; all 56 bytes match. Publishes the configured heading table before copying event parameters.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/game_transition.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_level_heading_table": "0x801D8A04",
+            "g_level_event_parameters": "0x801D8958",
+            "g_transition_heading_handlers": "0x801D36F8"
+          },
+          "symbols": ["func_80027F08"]
+        },
+        {
+          "source": "src/game/func_80044C34.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C event-parameter copy; all 48 bytes match, including the original forward copy order.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/game_transition.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_event_parameters": "0x801D05C4"},
+          "symbols": ["func_80044C34"]
+        },
+        {
+          "source": "src/game/func_8004FCBC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C controller initialization; all 60 bytes match. Registers both eight-byte BIOS buffers, starts polling and returns zero.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_input.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_controller_packets": "0x8018CA48"},
+          "symbols": ["func_8004FCBC"]
+        },
+        {
+          "source": "src/game/func_8004FCF8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C digital-controller packet reader; all 256 bytes match with natural register allocation and volatile BIOS packet reads.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_input.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_controller_packets": "0x8018CA48"},
+          "symbols": ["func_8004FCF8"]
+        },
+        {
+          "source": "src/game/func_8004FF28.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C input-stream sample publisher; all 12 bytes match with gp-relative small-data addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/controller_input.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_input_stream_sample": "0x800BE5B4"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_input_stream_sample"]},
+          "symbols": ["func_8004FF28"]
+        },
+        {
+          "source": "src/game/func_80050128.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C input-event counter reader; all 20 bytes match with gp-relative small-data addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_input_sample_counter": "0x800BE308"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_input_sample_counter"]},
+          "symbols": ["func_80050128"]
+        },
+        {
+          "source": "src/game/func_800222EC.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C move-info allocation and selective initialization; all 408 bytes match with natural register allocation. Publishes allocation before null check, preserves per-field output-pointer rereads and origin sampling, and leaves original untouched bytes unchanged.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_800222EC"]
+        },
+        {
+          "source": "src/game/func_80054624.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C component-basis allocation; all 140 bytes match with natural register allocation. Publishes the allocation result before its null check, copies all 32 bytes of the live template on success, and returns 3 on allocation failure.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_component_allocation_template": "0x800A42EC"},
+          "symbols": ["func_80054624"]
+        },
+        {
+          "source": "src/game/func_8001AE88.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C runtime sample getter; all 56 bytes match under the unoptimized frame-pointer profile used by the original.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "globals": {"g_runtime_sample_counter": "0x800BE648"},
+          "symbols": ["func_8001AE88"]
+        },
+        {
+          "source": "src/game/func_8001BCE4.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C event-runtime byte getter; all 12 bytes match with gp-relative small-data addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_event_runtime_byte": "0x800BE444"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_event_runtime_byte"]},
+          "symbols": ["func_8001BCE4"]
+        },
+        {
+          "source": "src/game/func_8001BCF0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C input-event gate byte getter; all 16 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_event_input_gate": "0x801D8AD0"},
+          "symbols": ["func_8001BCF0"]
+        },
+        {
+          "source": "src/game/func_8001BD00.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C input-event gate reference getter; all 16 bytes match.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/input_events.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_event_input_gate_reference": "0x801D8AD4"},
+          "symbols": ["func_8001BD00"]
+        },
+        {
+          "source": "src/game/func_80032C8C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C queue runtime gate; all 240 bytes match under the unoptimized frame-pointer profile, with the original argument pinned to $s0.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/queue_update.h", "src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_unknown_800BE023": "0x800BE023",
+            "g_unknown_800BE024": "0x800BE024",
+            "g_unknown_80186174": "0x80186174",
+            "g_unknown_80186154": "0x80186154"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_unknown_800BE023", "g_unknown_800BE024"]
+          },
+          "symbols": ["func_80032C8C"]
+        },
+        {
+          "source": "src/game/func_80032D7C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C queue-update gate; all 120 bytes match under the unoptimized frame-pointer profile.",
+          "flags": [
+            "-O0", "-G8", "-msoft-float", "-fno-pic",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/queue_update.h", "src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_unknown_800BE024": "0x800BE024",
+            "g_unknown_80186154": "0x80186154"
+          },
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_unknown_800BE024"]},
+          "symbols": ["func_80032D7C"]
+        },
+        {
+          "source": "src/game/func_8003ABE8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C queue-path translation adjustment; all 120 bytes match using target-only register constraints and empty ordering barriers.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": [
+            "src/game/level_records.h", "src/game/move_preparation.h",
+            "src/game/queue_update.h", "src/game/component_rotation.h",
+            "tools/gcc_include/stdint.h"
+          ],
+          "globals": {
+            "g_unknown_800BE0C8": "0x800BE0C8",
+            "g_unknown_800BE0D4": "0x800BE0D4"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_unknown_800BE0C8", "g_unknown_800BE0D4"]
+          },
+          "symbols": ["func_8003ABE8"]
+        },
+        {
+          "source": "src/game/func_80054A6C.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C basis and translation copy with wrapping Y negation; all 92 bytes match with natural register allocation.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_80054A6C"]
+        },
+        {
+          "source": "src/game/func_800222E0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C byte getter for the actor-update readiness slot; all 12 bytes match with gp-relative small-data addressing.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "globals": {"g_actor_update_readiness": "0x800BDEEC"},
+          "small_data": {"gp": "0x800BDD5C", "symbols": ["g_actor_update_readiness"]},
+          "symbols": ["func_800222E0"]
+        },
+        {
+          "source": "src/game/func_8002C488.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C loop over 19 signed-halfword indices; all 64 bytes match with natural register allocation.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "symbols": ["func_8002C488"]
+        },
+        {
+          "source": "src/game/func_800286F8.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C selector lookup; all 56 bytes match. Rejects negative indices without an upper-bound check and leaves the output untouched on failure.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_level_records": "0x801D89A4"},
+          "symbols": ["func_800286F8"]
+        },
+        {
+          "source": "src/game/func_80028764.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C object lookup; all 100 bytes match. Rejects negative indices and delegates indices outside the primary table to the alternate lookup.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_level_records": "0x801D89A4", "g_level_record_count": "0x801D8994"},
+          "symbols": ["func_80028764"]
+        },
+        {
+          "source": "src/game/func_80028C18.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C level-record table lookup; all 108 bytes match. Writes the table pointer before the count and rereads the shared record pointer between writes.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "globals": {"g_level_records": "0x801D89A4", "g_level_record_count": "0x801D8994"},
+          "symbols": ["func_80028C18"]
+        },
+        {
           "source": "src/game/func_80025FFC.c",
           "compiler": "gcc-2.6.3-psx",
           "compiler_profile": "Plain C shared movement setup wrapper; all 288 bytes match with natural register allocation. Existing move-info and empty table entries return success without callbacks; allocation and shared-transform setup precede initializer, whose low-byte result is normalized.",
@@ -850,7 +1938,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/game/component_rotation.h", "src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_80025FFC"],
           "globals": {
             "g_move_preparation_transform": "0x800BDEF0",
@@ -870,7 +1958,7 @@
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
+          "headers": ["src/game/level_records.h", "src/game/move_preparation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_8002611C"],
           "globals": {
             "g_move_preparation_transform": "0x800BDEF0",
@@ -915,6 +2003,17 @@
           ],
           "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_800547C8"]
+        },
+        {
+          "source": "src/game/func_800548A0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C queued-turn rotation wrapper; all 216 bytes match. Preserves wrapped halfword angles, the complete sampled basis, and the original basis-first composition order.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/component_rotation.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_800548A0"]
         },
         {
           "source": "src/game/func_800549E8.c",
@@ -964,7 +2063,7 @@
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
           "maspsx_flags": ["--expand-div"],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/player_model/bubsy_actor_state_update.h", "tools/gcc_include/stdint.h"],
           "globals": {
             "g_level_config": "0x800BE698",
             "g_player_control": "0x80186450",
@@ -997,6 +2096,27 @@
             "symbols": ["g_runtime_mode", "g_player_ready", "g_mode_one_handle"]
           },
           "symbols": ["shared_actor_state_2_handler"]
+        },
+        {
+          "source": "src/game/func_800556D0.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Plain C assertion dispatcher; all 176 bytes match with the original saved-argument registers and gp-relative logging controls. The optional callback has no parameters; the return path calls the engine halt helper when it is absent. No instruction transcription.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["tools/gcc_include/stdint.h"],
+          "globals": {
+            "g_assertion_format": "0x80013CE0",
+            "g_assertion_halted": "0x80013D10",
+            "g_assertion_print_enabled": "0x800BE354",
+            "g_assertion_handler": "0x800BE358"
+          },
+          "small_data": {
+            "gp": "0x800BDD5C",
+            "symbols": ["g_assertion_print_enabled", "g_assertion_handler"]
+          },
+          "symbols": ["func_800556D0"]
         }
       ],
       "data_sources": [
@@ -1014,6 +2134,126 @@
       ],
       "symbols": [
         {
+          "name": "func_8001BC08",
+          "start": "0x8001BC08",
+          "end": "0x8001BC18",
+          "size": 16
+        },
+        {
+          "name": "func_8001BC28",
+          "start": "0x8001BC28",
+          "end": "0x8001BCE4",
+          "size": 188
+        },
+        {
+          "name": "func_8001C04C",
+          "start": "0x8001C04C",
+          "end": "0x8001C128",
+          "size": 220
+        },
+        {
+          "name": "func_80045278",
+          "start": "0x80045278",
+          "end": "0x80045284",
+          "size": 12
+        },
+        {
+          "name": "func_80048488",
+          "start": "0x80048488",
+          "end": "0x80048504",
+          "size": 124
+        },
+        {
+          "name": "func_80062890",
+          "start": "0x80062890",
+          "end": "0x800629AC",
+          "size": 284
+        },
+        {
+          "name": "func_80045094",
+          "start": "0x80045094",
+          "end": "0x80045164",
+          "size": 208
+        },
+        {
+          "name": "func_80069758",
+          "start": "0x80069758",
+          "end": "0x800698C0",
+          "size": 360
+        },
+        {
+          "name": "func_8005327C",
+          "start": "0x8005327C",
+          "end": "0x80053288",
+          "size": 12
+        },
+        {
+          "name": "func_800529D0",
+          "start": "0x800529D0",
+          "end": "0x800529E4",
+          "size": 20
+        },
+        {
+          "name": "func_8004232C",
+          "start": "0x8004232C",
+          "end": "0x800423D8",
+          "size": 172
+        },
+        {
+          "name": "func_80044458",
+          "start": "0x80044458",
+          "end": "0x800444B0",
+          "size": 88
+        },
+        {
+          "name": "func_80044A88",
+          "start": "0x80044A88",
+          "end": "0x80044B24",
+          "size": 156
+        },
+        {
+          "name": "func_80044B24",
+          "start": "0x80044B24",
+          "end": "0x80044C04",
+          "size": 224
+        },
+        {
+          "name": "func_80061A64",
+          "start": "0x80061A64",
+          "end": "0x80061AA0",
+          "size": 60
+        },
+        {
+          "name": "func_80027F40",
+          "start": "0x80027F40",
+          "end": "0x80027F78",
+          "size": 56
+        },
+        {
+          "name": "func_8002C9D4",
+          "start": "0x8002C9D4",
+          "end": "0x8002CA4C",
+          "size": 120
+        },
+        {
+          "name": "func_800483C0",
+          "start": "0x800483C0",
+          "end": "0x80048488",
+          "size": 200
+        },
+        {
+          "name": "func_80048504",
+          "start": "0x80048504",
+          "end": "0x800485A8",
+          "size": 164
+        },
+        {
+          "name": "func_80048C48",
+          "start": "0x80048C48",
+          "end": "0x80048CB8",
+          "size": 112
+        },
+        {
           "name": "shared_actor_state_2_handler",
           "start": "0x8003697C",
           "end": "0x80037214",
@@ -1030,6 +2270,24 @@
           "start": "0x800358C8",
           "end": "0x80035ACC",
           "size": 516
+        },
+        {
+          "name": "func_80034EF8",
+          "start": "0x80034EF8",
+          "end": "0x8003539C",
+          "size": 1188
+        },
+        {
+          "name": "func_8003539C",
+          "start": "0x8003539C",
+          "end": "0x800358C8",
+          "size": 1324
+        },
+        {
+          "name": "func_80039158",
+          "start": "0x80039158",
+          "end": "0x800395E8",
+          "size": 1168
         },
         {
           "name": "func_80035ACC",
@@ -1188,6 +2446,12 @@
           "size": 60
         },
         {
+          "name": "func_8005D5A8",
+          "start": "0x8005D5A8",
+          "end": "0x8005D674",
+          "size": 204
+        },
+        {
           "name": "func_8005E7B8",
           "start": "0x8005E7B8",
           "end": "0x8005E810",
@@ -1266,6 +2530,186 @@
           "size": 92
         },
         {
+          "name": "func_8001A6E0",
+          "start": "0x8001A6E0",
+          "end": "0x8001A9E8",
+          "size": 776
+        },
+        {
+          "name": "func_8001B1E4",
+          "start": "0x8001B1E4",
+          "end": "0x8001B558",
+          "size": 884
+        },
+        {
+          "name": "func_8001B558",
+          "start": "0x8001B558",
+          "end": "0x8001B8B8",
+          "size": 864
+        },
+        {
+          "name": "func_8001B8B8",
+          "start": "0x8001B8B8",
+          "end": "0x8001B9C8",
+          "size": 272
+        },
+        {
+          "name": "func_8002278C",
+          "start": "0x8002278C",
+          "end": "0x800227A4",
+          "size": 24
+        },
+        {
+          "name": "func_80023A0C",
+          "start": "0x80023A0C",
+          "end": "0x80023A30",
+          "size": 36
+        },
+        {
+          "name": "func_80023A30",
+          "start": "0x80023A30",
+          "end": "0x80023A84",
+          "size": 84
+        },
+        {
+          "name": "func_80027F08",
+          "start": "0x80027F08",
+          "end": "0x80027F40",
+          "size": 56
+        },
+        {
+          "name": "func_80044C34",
+          "start": "0x80044C34",
+          "end": "0x80044C64",
+          "size": 48
+        },
+        {
+          "name": "func_8004FCBC",
+          "start": "0x8004FCBC",
+          "end": "0x8004FCF8",
+          "size": 60
+        },
+        {
+          "name": "func_8004FCF8",
+          "start": "0x8004FCF8",
+          "end": "0x8004FDF8",
+          "size": 256
+        },
+        {
+          "name": "func_8004FF28",
+          "start": "0x8004FF28",
+          "end": "0x8004FF34",
+          "size": 12
+        },
+        {
+          "name": "func_80050128",
+          "start": "0x80050128",
+          "end": "0x8005013C",
+          "size": 20
+        },
+        {
+          "name": "func_800222EC",
+          "start": "0x800222EC",
+          "end": "0x80022484",
+          "size": 408
+        },
+        {
+          "name": "func_80054624",
+          "start": "0x80054624",
+          "end": "0x800546B0",
+          "size": 140
+        },
+        {
+          "name": "func_8001AE88",
+          "start": "0x8001AE88",
+          "end": "0x8001AEC0",
+          "size": 56
+        },
+        {
+          "name": "func_8001C6BC",
+          "start": "0x8001C6BC",
+          "end": "0x8001C700",
+          "size": 68
+        },
+        {
+          "name": "func_8001C7C4",
+          "start": "0x8001C7C4",
+          "end": "0x8001C828",
+          "size": 100
+        },
+        {
+          "name": "func_8001BCE4",
+          "start": "0x8001BCE4",
+          "end": "0x8001BCF0",
+          "size": 12
+        },
+        {
+          "name": "func_8001BCF0",
+          "start": "0x8001BCF0",
+          "end": "0x8001BD00",
+          "size": 16
+        },
+        {
+          "name": "func_8001BD00",
+          "start": "0x8001BD00",
+          "end": "0x8001BD10",
+          "size": 16
+        },
+        {
+          "name": "func_80032C8C",
+          "start": "0x80032C8C",
+          "end": "0x80032D7C",
+          "size": 240
+        },
+        {
+          "name": "func_80032D7C",
+          "start": "0x80032D7C",
+          "end": "0x80032DF4",
+          "size": 120
+        },
+        {
+          "name": "func_8003ABE8",
+          "start": "0x8003ABE8",
+          "end": "0x8003AC60",
+          "size": 120
+        },
+        {
+          "name": "func_80054A6C",
+          "start": "0x80054A6C",
+          "end": "0x80054AC8",
+          "size": 92
+        },
+        {
+          "name": "func_800222E0",
+          "start": "0x800222E0",
+          "end": "0x800222EC",
+          "size": 12
+        },
+        {
+          "name": "func_8002C488",
+          "start": "0x8002C488",
+          "end": "0x8002C4C8",
+          "size": 64
+        },
+        {
+          "name": "func_800286F8",
+          "start": "0x800286F8",
+          "end": "0x80028730",
+          "size": 56
+        },
+        {
+          "name": "func_80028764",
+          "start": "0x80028764",
+          "end": "0x800287C8",
+          "size": 100
+        },
+        {
+          "name": "func_80028C18",
+          "start": "0x80028C18",
+          "end": "0x80028C84",
+          "size": 108
+        },
+        {
           "name": "func_80025FFC",
           "start": "0x80025FFC",
           "end": "0x8002611C",
@@ -1293,6 +2737,12 @@
           "name": "func_800547C8",
           "start": "0x800547C8",
           "end": "0x800548A0",
+          "size": 216
+        },
+        {
+          "name": "func_800548A0",
+          "start": "0x800548A0",
+          "end": "0x80054978",
           "size": 216
         },
         {
@@ -1404,6 +2854,42 @@
           "size": 312
         },
         {
+          "name": "func_80026648",
+          "start": "0x80026648",
+          "end": "0x80026658",
+          "size": 16
+        },
+        {
+          "name": "func_80028C84",
+          "start": "0x80028C84",
+          "end": "0x80028CD4",
+          "size": 80
+        },
+        {
+          "name": "func_80028CD4",
+          "start": "0x80028CD4",
+          "end": "0x80028D38",
+          "size": 100
+        },
+        {
+          "name": "func_80027E24",
+          "start": "0x80027E24",
+          "end": "0x80027F08",
+          "size": 228
+        },
+        {
+          "name": "func_8004B264",
+          "start": "0x8004B264",
+          "end": "0x8004B2A4",
+          "size": 64
+        },
+        {
+          "name": "func_8004B2A4",
+          "start": "0x8004B2A4",
+          "end": "0x8004B35C",
+          "size": 184
+        },
+        {
           "name": "bubsy_grounded_state_handler",
           "start": "0x8004B35C",
           "end": "0x8004BFF8",
@@ -1486,11 +2972,97 @@
           "start": "0x80041218",
           "end": "0x80041D80",
           "size": 2920
+        },
+        {
+          "name": "func_800556D0",
+          "start": "0x800556D0",
+          "end": "0x80055780",
+          "size": 176
+        },
+        {
+          "name": "func_80091194",
+          "start": "0x80091194",
+          "end": "0x80091270",
+          "size": 220
         }
       ]
     }
   },
   "shared_matches": [
+    {
+      "function_profile": {
+        "source": "src/game/func_8001B8B8.c",
+        "compiler": "gcc-2.6.3-psx",
+        "compiler_profile": "Readable C event-queue snapshot; each relocated 272-byte level copy is independently verified with register constraints and empty barriers.",
+        "flags": [
+          "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+          "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+        ],
+        "headers": [
+          "src/game/game_transition.h", "src/game/word_copy.h", "tools/gcc_include/stdint.h"
+        ],
+        "symbol_macro": "TRANSITION_SNAPSHOT_FUNCTION"
+      },
+      "function_variants": [
+        {"unit":"l1/functions","name":"func_8001E060","start":"0x8001E060","end":"0x8001E170"},
+        {"unit":"l10/functions","name":"func_8001C620","start":"0x8001C620","end":"0x8001C730"},
+        {"unit":"l11/functions","name":"func_8002030C","start":"0x8002030C","end":"0x8002041C"},
+        {"unit":"l12/functions","name":"func_80020A4C","start":"0x80020A4C","end":"0x80020B5C"},
+        {"unit":"l13/functions","name":"func_80020B58","start":"0x80020B58","end":"0x80020C68"},
+        {"unit":"l14/functions","name":"func_8001F8A0","start":"0x8001F8A0","end":"0x8001F9B0"},
+        {"unit":"l15/functions","name":"func_80020A08","start":"0x80020A08","end":"0x80020B18"},
+        {"unit":"l16/functions","name":"func_8001FC60","start":"0x8001FC60","end":"0x8001FD70"},
+        {"unit":"l17/functions","name":"func_800185C8","start":"0x800185C8","end":"0x800186D8"},
+        {"unit":"l18/functions","name":"func_8001A848","start":"0x8001A848","end":"0x8001A958"},
+        {"unit":"l19/functions","name":"func_8001AAFC","start":"0x8001AAFC","end":"0x8001AC0C"},
+        {"unit":"l2/functions","name":"func_8001DED8","start":"0x8001DED8","end":"0x8001DFE8"},
+        {"unit":"l20/functions","name":"func_8001DE34","start":"0x8001DE34","end":"0x8001DF44"},
+        {"unit":"l4/functions","name":"func_8001C368","start":"0x8001C368","end":"0x8001C478"},
+        {"unit":"l5/functions","name":"func_8001D3C4","start":"0x8001D3C4","end":"0x8001D4D4"},
+        {"unit":"l6/functions","name":"func_8001BCB0","start":"0x8001BCB0","end":"0x8001BDC0"},
+        {"unit":"l7/functions","name":"func_800208F8","start":"0x800208F8","end":"0x80020A08"},
+        {"unit":"l8/functions","name":"func_8001B984","start":"0x8001B984","end":"0x8001BA94"},
+        {"unit":"l9/functions","name":"func_800202F4","start":"0x800202F4","end":"0x80020404"}
+      ]
+    },
+    {
+      "units": [
+        "l0/functions", "l1/functions", "l10/functions", "l11/functions",
+        "l12/functions", "l13/functions", "l14/functions", "l15/functions",
+        "l16/functions", "l17/functions", "l18/functions", "l19/functions",
+        "l2/functions", "l20/functions", "l4/functions", "l5/functions",
+        "l6/functions", "l7/functions", "l8/functions", "l9/functions",
+        "menu/functions", "boot/functions"
+      ],
+      "source": "src/player_model/player_model_global.c",
+      "flags": [
+        "-target", "mipsel-linux-musl",
+        "-march=mips2", "-mabi=32", "-mno-abicalls", "-G0", "-fno-pic",
+        "-fomit-frame-pointer", "-fno-stack-protector", "-O2",
+        "-ffunction-sections", "-fdata-sections", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+      ],
+      "matching_sources": [
+        {
+          "source": "src/game/func_80010220.c",
+          "compiler": "gcc-2.6.3-psx",
+          "compiler_profile": "Readable C aligned forward word copy; all 36 bytes match in each executable with register constraints and an empty compiler barrier, preserving overlap behavior.",
+          "flags": [
+            "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
+            "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
+          ],
+          "headers": ["src/game/word_copy.h", "tools/gcc_include/stdint.h"],
+          "symbols": ["func_80010220"]
+        }
+      ],
+      "symbols": [
+        {
+          "name": "func_80010220",
+          "start": "0x80010220",
+          "end": "0x80010244",
+          "size": 36
+        }
+      ]
+    },
     {
       "units": [
         "l0/functions", "l1/functions", "l10/functions", "l11/functions",
@@ -1510,12 +3082,12 @@
         {
           "source": "src/player_model/player_vector_cross.c",
           "compiler": "gcc-2.6.3-psx",
-          "compiler_profile": "Assembly-backed target sequence compiled through checksum-pinned GCC 2.6.3 PSX and MASPSX 2.30; a separate host C model is retained. This is not a high-level C match.",
+          "compiler_profile": "C Q20.12 cross product with target-only three-instruction MIPS HI/LO multiply intrinsics, fixed registers, and empty barriers; all 248 bytes match. This is assembly-assisted, not pure C.",
           "flags": [
             "-O2", "-G8", "-msoft-float", "-fno-pic", "-fomit-frame-pointer",
             "-S", "-DBUBSY3D_MATCH_ORIGINAL_L0"
           ],
-          "headers": ["tools/gcc_include/stdint.h"],
+          "headers": ["src/player_model/player_vector_q12.h", "tools/gcc_include/stdint.h"],
           "symbols": ["func_80010128"]
         }
       ],

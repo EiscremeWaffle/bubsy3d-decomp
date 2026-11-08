@@ -1,4 +1,9 @@
+#include "bubsy_actor_state_update.h"
+#include "bubsy_grounded_interaction.h"
 #include "bubsy_grounded_state.h"
+#include "bubsy_grounded_turn.h"
+#include "game_transition.h"
+#include "sequence_queries.h"
 
 typedef union BubsyGroundedFlags {
     uint32_t word;
@@ -36,21 +41,14 @@ extern void func_80022650(BubsyGroundedActor *actor, int32_t selector);
 extern void func_8002269C(BubsyGroundedActor *actor, int32_t selector);
 extern void func_8002E7D8(void);
 extern void func_80037B30(int32_t mode);
-extern void func_80039158(BubsyGroundedActor *actor, void *context);
 extern void func_800347EC(BubsyGroundedActor *actor, void *context, int32_t mode);
 extern void func_800358C8(BubsyGroundedActor *actor, void *context, int32_t mode);
 extern void func_80035ACC(BubsyGroundedActor *actor, void *context);
-extern void func_8001C700(int32_t selection, int32_t state);
-extern void func_8001B558(int32_t state, int32_t mode, uint32_t flags, uint32_t heading,
-    int32_t argument_4, int32_t argument_5, int32_t argument_6, int32_t argument_7);
 extern void func_800556D0(int32_t level, const char *condition, const char *source, uint32_t line);
 extern void func_80022944(BubsyGroundedActor *actor);
-extern void func_8003539C(BubsyGroundedActor *actor, int32_t mode);
 extern void func_8004FFEC(void *event);
 extern void func_8004FF50(void (*callback)(BubsyGroundedActor *, BubsyGroundedState *, void *, int32_t),
     int32_t mode, void **output);
-extern void func_80034EF8(BubsyGroundedActor *actor, BubsyGroundedState *state, void *context, int32_t counter);
-extern void func_8004B2A4(BubsyGroundedActor *actor, BubsyGroundedState *state, void *context, int32_t counter);
 
 void bubsy_grounded_state_handler(
     BubsyGroundedState *state,

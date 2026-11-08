@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "bubsy_actor_state_update.h"
 #include "bubsy_grounded_state.h"
+#include "game_transition.h"
 
 typedef struct Component {
     uint8_t reserved[0x14];
@@ -115,7 +117,7 @@ void func_80022650(BubsyGroundedActor *value, int32_t bit) {
     }
 }
 
-void func_8003539C(BubsyGroundedActor *value, int32_t mode) {
+void func_8003539C(void *value, int32_t mode) {
     assert(value == &actor && mode == 1);
     record(RESET_ACTOR, mode);
     if (mutate_on_reset) {
@@ -133,8 +135,12 @@ void func_80054B20(void *value, int32_t mode, int32_t *output) {
     output[2] = INT_MAX;
 }
 
-void func_8001B558(int32_t state, int32_t mode, int32_t a2, int32_t a3,
-    int32_t *a4, int32_t *a5, int32_t *a6, int32_t *a7) {
+void func_8001B558(int32_t state, int32_t mode, uintptr_t a2, int32_t a3,
+    void *argument_4, void *argument_5, void *argument_6, void *argument_7) {
+    int32_t *a4 = argument_4;
+    int32_t *a5 = argument_5;
+    int32_t *a6 = argument_6;
+    int32_t *a7 = argument_7;
     assert(state == 26 && mode == 4 && a2 == 0xFFFE && a3 == 0xFFFE);
     assert(*a4 == 14 && *a5 == INT_MIN && *a6 == -321 && *a7 == INT_MAX);
     assert(a6 == a5 + 1 && a7 == a5 + 2);

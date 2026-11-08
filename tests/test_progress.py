@@ -13,12 +13,21 @@ from unittest.mock import Mock, patch
 
 from tools.command import CommandDeadline, run_command
 from tools.fetch_tools import download_checked, extract_tar_checked, fetch_matching_tools
-from tools.gcc_match import compiled_rodata_bytes, helper_definitions, matching_linker_script, normalize_delay_slots, rodata_layout, small_data_declarations, small_data_layout
+from tools.gcc_match import aspsx_version, compiled_rodata_bytes, helper_definitions, matching_linker_script, normalize_delay_slots, normalize_double_immediates, rodata_layout, small_data_declarations, small_data_layout
 from tools.progress import BASE_MATCHES_PATH, SCOPE_PATH, SNAPSHOT_PATH, compiled_symbol_bytes, expand_base_matches, extract_startup, load_json, matching_source_declarations, stage_report, unit_symbols, validate_report
 from tools.verify_original import HEADER_SIZE, ROOT
 
 
 class ProgressTests(unittest.TestCase):
+    def test_aspsx_version_defaults_and_accepts_supported_override(self):
+        self.assertEqual(aspsx_version({}), "2.30")
+        self.assertEqual(aspsx_version({"aspsx_version": "2.21"}), "2.21")
+        for invalid in ("2.20", None, ["2.21"]):
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(
+                ValueError, "Unsupported ASPSX version"
+            ):
+                aspsx_version({"aspsx_version": invalid})
+
     def test_build_command_deadline_terminates_slow_process(self):
         started = time.monotonic()
         with CommandDeadline(1):
@@ -45,6 +54,23 @@ class ProgressTests(unittest.TestCase):
         self.assertEqual(normalize_delay_slots(converted, source), expected)
         with self.assertRaisesRegex(ValueError, "branches differ"):
             normalize_delay_slots(".set noreorder\n", source)
+
+    def test_double_immediate_zero_halves_use_aspsx_230_encoding(self):
+        source = "\tli.d\t$6,1.00000000000000000000e+00\n\tli.d\t$6,4.09600000000000000000e+03\n\tli.d\t$4,2.00000000000000011102e-01\n"
+        converted = "\tli\t$2,0x0\nli\t$6,0x0\nlui\t$7,0x3FF0\nli\t$6,0x0\nlui\t$7,0x40B0\n"
+        expected = "\tli\t$2,0x0\n\tori\t$6,$zero,0\nlui\t$7,0x3FF0\n\tori\t$6,$zero,0\nlui\t$7,0x40B0\n"
+        self.assertEqual(normalize_double_immediates(converted, source), expected)
+        self.assertEqual(normalize_double_immediates(converted, ""), converted)
+        with self.assertRaisesRegex(ValueError, "double-immediate zero halves"):
+            normalize_double_immediates(converted.replace("lui\t$7,0x40B0", "lui\t$7,0x40B1"), source)
+        with self.assertRaisesRegex(ValueError, "double-immediate zero halves"):
+            normalize_double_immediates(converted + "li\t$6,0x0\nlui\t$7,0x3FF0\n", source)
+
+    def test_double_immediate_preserves_nonzero_high_word_low_half(self):
+        source = "\tli.d\t$8,1.00000095367431640625e+00\n"
+        converted = "li\t$8,0x0\nlui\t$9,0x3FF0\nori\t$9,0x1\n"
+        expected = "\tori\t$8,$zero,0\nlui\t$9,0x3FF0\nori\t$9,0x1\n"
+        self.assertEqual(normalize_double_immediates(converted, source), expected)
 
     def test_small_data_layout_validates_gp_window(self):
         globals = {"near": "0x800BE548", "far": "0x80186450"}

@@ -1,4 +1,4 @@
-#include "move_preparation.h"
+#include "level_records.h"
 
 extern void *g_move_preparation_transform;
 extern const char g_move_context_condition[];
@@ -9,8 +9,6 @@ extern const char g_move_tag_condition[];
 extern const char g_game_source_path[];
 
 extern void func_800556D0(int32_t failed, const char *condition, const char *source, uint32_t line);
-extern uint8_t func_80028C18(int32_t context, int32_t *count, const MovePreparationEntry **table);
-extern void func_800286F8(int32_t context, uint8_t *selector);
 extern int32_t func_80054B20(void *transform, int32_t mode, MovePreparationVector *output);
 extern int32_t func_80062D4C(const MovePreparationVector *left, const MovePreparationVector *right, int32_t *output);
 extern int32_t func_80054C7C(void *transform, int32_t mode, const MovePreparationVector *input);

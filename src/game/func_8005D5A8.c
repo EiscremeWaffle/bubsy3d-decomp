@@ -1,42 +1,66 @@
-#include <stdint.h>
+#include "sequence_limit.h"
 
-typedef struct SequenceLimitEntry {
-    int16_t key;
-    int16_t limit;
-    uint8_t padding[68];
-} SequenceLimitEntry;
-
+int32_t func_8005D5A8(int32_t requested_key, int32_t value) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
-register volatile uint8_t *func_8005D5A8_gp __asm__("$28");
-#define FUNC_8005D5A8_GLOBALS func_8005D5A8_gp
-#define FUNC_8005D5A8_SEQUENCE_LIMITS ((volatile SequenceLimitEntry *)(uintptr_t)0x801CCE14)
+    register int32_t key_copy __asm__("$3") = requested_key;
+    register int32_t index __asm__("$6");
+    register int32_t count __asm__("$7");
+    register int32_t loop_key __asm__("$8");
+    register int32_t offset __asm__("$4");
+    register int32_t shifted_key __asm__("$2");
+    uint8_t target_frame[8];
 #else
-extern volatile uint8_t g_l0_runtime_globals[];
-extern volatile SequenceLimitEntry g_sequence_limit_entries[];
-#define FUNC_8005D5A8_GLOBALS g_l0_runtime_globals
-#define FUNC_8005D5A8_SEQUENCE_LIMITS g_sequence_limit_entries
-#endif
-
-int32_t func_8005D5A8(int16_t requested_key, int16_t value) {
+    int32_t key_copy = requested_key;
     int32_t index;
-    int16_t count;
-    volatile SequenceLimitEntry *entry;
+    int32_t count;
+    int32_t loop_key;
+    int32_t offset;
+#endif
+    int32_t result;
 
-    if (FUNC_8005D5A8_GLOBALS[0x624] != 0) {
-        return 0x1B;
+    if (g_sequence_limit_scan_enabled == 0) {
+        result = 0x1B;
+        goto done;
     }
 
-    count = *(volatile int16_t *)(FUNC_8005D5A8_GLOBALS + 0x62C);
+    count = g_sequence_limit_count;
     index = 0;
-    while (index < count &&
-           FUNC_8005D5A8_SEQUENCE_LIMITS[index].key != requested_key) {
-        index++;
+    if (count > 0) {
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+        /* Preserve the original sign-extension register order. */
+        shifted_key = (int32_t)((uint32_t)requested_key << 16);
+        __asm__("" : "=r"(shifted_key) : "0"(shifted_key));
+        loop_key = shifted_key >> 16;
+#else
+        loop_key = (int16_t)requested_key;
+#endif
+        offset = 0;
+        do {
+            if (loop_key == ((SequenceLimitEntry *)((uint8_t *)g_sequence_limit_entries + offset))->key) {
+                goto matched;
+            }
+            ++index;
+            offset += sizeof(SequenceLimitEntry);
+        } while (index < count);
     }
-
-    entry = &FUNC_8005D5A8_SEQUENCE_LIMITS[index];
-    if (entry->key != requested_key) {
-        return 1;
+    if ((int16_t)key_copy != g_sequence_limit_entries[index].key) {
+        result = 1;
+        goto done;
     }
-
-    return value < entry->limit && value < 0;
+matched:
+    if ((int16_t)value < g_sequence_limit_entries[index].limit) {
+        if ((int16_t)value >= 0) {
+            result = 0;
+            goto done;
+        }
+    }
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    __asm__ volatile("");
+#endif
+    result = 1;
+done:
+#ifdef BUBSY3D_MATCH_ORIGINAL_L0
+    __asm__ volatile("" : "=m"(target_frame));
+#endif
+    return result;
 }

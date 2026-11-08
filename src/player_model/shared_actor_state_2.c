@@ -1,3 +1,4 @@
+#include "bubsy_actor_state_update.h"
 #include <stdint.h>
 
 /*
@@ -146,7 +147,6 @@ extern void func_800549E8(void *transform, Matrix *rotation);
 extern void func_80054978(void *transform, Vector *offset);
 extern uint8_t func_800222EC(ActorSharedState **shared, Vector *position);
 extern void func_8002CA88(int32_t mode, int32_t duration);
-extern void func_8003539C(SharedActorState2Actor *actor, int32_t mode);
 
 #define EGSErrorNone 0
 #define EGSBoolTrue 1

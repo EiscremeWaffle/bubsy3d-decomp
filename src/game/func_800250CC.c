@@ -1,11 +1,10 @@
-#include <stdint.h>
+#include "level_records.h"
 
 typedef struct GameObjectView {
     uint8_t unused_00_to_1B[0x1C];
     void *component_1C;
 } GameObjectView;
 
-extern void *func_80028764(int32_t unused);
 extern int32_t func_80052ABC(void *component, int32_t *sequence_key_out);
 extern void func_80024F2C(void *object);
 extern uint16_t g_move_request_count;

@@ -64,5 +64,7 @@ void bubsy_grounded_state_handler(
 
 void func_80035ACC(BubsyGroundedActor *actor, void *transform);
 void func_80038844(BubsyGroundedActor *actor);
+int32_t func_8004B264(BubsyGroundedActor *actor, void *context);
+void func_8004B2A4(BubsyGroundedActor *actor, BubsyGroundedState *state, void *context, int32_t counter);
 
 #endif

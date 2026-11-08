@@ -1,14 +1,11 @@
-#include "move_preparation.h"
+#include "component_rotation.h"
+#include "level_records.h"
 
 extern void *g_move_preparation_transform;
 extern const char g_move_table_condition[];
 extern const char g_game_source_path[];
 
-extern uint8_t func_80028C18(int32_t context, int32_t *count, const MovePreparationEntry **table);
 extern void func_800556D0(int32_t failed, const char *condition, const char *source, uint32_t line);
-extern uint8_t func_800222EC(MovePreparationInfo **info, const MovePreparationVector *origin);
-extern int32_t func_80054624(void **transform);
-
 int32_t func_80025FFC(MovePreparationActor *actor, const MovePreparationVector *origin,
     const void *scale_input, uint32_t operation_flags) {
     int32_t table_count;

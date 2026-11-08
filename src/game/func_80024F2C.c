@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "component_rotation.h"
 
 typedef struct MoveInfoView {
     int32_t words[0xA4 / sizeof(int32_t)];
@@ -18,8 +18,7 @@ typedef struct MoveConsumerObjectView {
 
 extern const char g_move_info_condition[];
 extern const char g_game_source_path[];
-extern int32_t func_800556D0(int32_t failed, const char *condition, const char *source_path, uint32_t line);
-extern int32_t func_800548A0(void *component_transform, const int32_t *rotation);
+extern void func_800556D0(int32_t failed, const char *condition, const char *source_path, uint32_t line);
 extern int32_t func_800536F4(const int32_t *input, int32_t *output);
 extern int32_t func_80010038(const int32_t *left, const int32_t *right, int32_t *output);
 extern int32_t func_80054B20(void *component_transform, int32_t mode, int32_t *output);

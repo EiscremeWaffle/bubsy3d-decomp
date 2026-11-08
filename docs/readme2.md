@@ -1,15 +1,9 @@
 ## Status
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 44,928 exact code bytes across 159
-functions (`1.477829%` of mapped code), including two Clang-built getters,
-eight original GCC C functions, ten GCC assembly-backed functions, the
-C-built `vector_length_q12` (`func_8005385C` linker label),
-`vector_range_scale_q12` (`func_8005395C`), and
-`vector_range_condition_q12` (`func_80053D68`), 20
-assembly-backed vector-helper copies, one L0 assembly-backed Q20.12 dot
-product, four newly matched bounded move-request callers, 22 C matrix-scaler
-copies, and 38 repeated actor-flag/cursor helper copies. The actor-event
+The validated report currently contains 63,972 exact code bytes across 263
+functions (`2.084216%` of mapped code). These totals include repeated module
+copies and both C-based and assembly-backed matches. The actor-event
 dispatcher `bubsy_process_actor_event` now matches from readable C without
 instruction snippets. The shared actor-state dispatcher is
 byte-matched from high-level C under a documented per-function
@@ -22,6 +16,11 @@ with byte-exact plain C. The complete 3,228-byte grounded handler is now
 byte-matched readable C too, including an independently verified 132-byte
 compiler-generated switch table. The 1,380-byte movement preparer
 `func_80025A98` now matches from plain C with no inline assembly or register pins.
+The 884-byte queue processor `func_8001B1E4` also matches from readable C, with
+small target-only MIPS load and delay-slot sequences, and has native routing
+and snapshot-exit regression coverage.
+The grounded event callback and a related level-list/state-flag search are
+matched C, including the plain-C list getter `func_80028CD4`.
 The 1,304-byte grounded stride producer `func_80035ACC` also matches from
 readable C, connecting grounded case 6 to animation-gated stride updates
 and the pending-vector producer. Its mode comes from the level/model-mode
@@ -29,6 +28,9 @@ getter, not an identified controller input.
 The complementary 968-byte deceleration producer `func_80038844` now matches
 from plain C with natural register allocation and no inline assembly. Its
 native tests cover 1,310,720 boundary combinations plus helper mutations.
+Five formerly uncredited grounded-path helpers also match readable C:
+`func_800556D0`, `func_8001B558`, `func_80034EF8`, `func_8003539C`, and
+`func_80039158`, totaling 4,720 bytes.
 The readable-C pass has additionally converted nine old assembly-backed
 functions (1,852 bytes), and removed instruction snippets from seven existing
 C matches without changing any matched bytes.
@@ -38,8 +40,8 @@ and 132-byte basis-restoration leaf `func_800549E8` now match plain C without
 inline assembly or register constraints. Their 368-byte column-reconstruction
 callee `func_800542A4` now matches plain C too. Native tests cover 131,072
 reconstruction cases and 120 orientation/failure cases in the already-matched
-`func_800550A4`. Engine/GTE backends and the complete controller-to-heading
-path remain unrecovered. The movement preparer's 600-byte column-scaling
+`func_800550A4`. Engine/GTE backends and readable C for the complete
+controller-to-heading path remain unrecovered. The movement preparer's 600-byte column-scaling
 helper `func_8005541C` now matches plain C too, with 589,824 input/scale
 combinations and 24 clamp/callback-mutation cases passing native and sanitizer
 tests. Its multiply backend still contains instruction snippets.
@@ -50,28 +52,55 @@ mutations pass native and sanitizer tests; this is not identified pad input.
 Its 288-byte setup caller `func_80025FFC` now matches plain C as well.
 Existing move-info returns success without reinitializing; 176 setup/result
 combinations plus early exits, repeat calls and helper mutations pass native
-and sanitizer tests. Allocation/transform-creation internals remain unresolved.
-Current exact coverage contains 132 C-based matches
-and 27 assembly-backed matches. One C-based source still contains instruction
-snippets (`func_8001007C`); the other 131 matches contain
-readable C with at most symbol aliases, register constraints, and empty barriers.
-These counts include repeated module copies, and the
-remaining assembly-backed matches are unfinished for readable-C decompilation.
+and sanitizer tests. Its 408-byte move-info allocator `func_800222EC` now
+matches plain C too. Whole-allocation comparisons cover 343 origin boundaries,
+1,792 overlap/fill cases, untouched bytes, and null publication/failure;
+native and sanitizer tests pass. The component-basis allocator
+`func_80054624` also matches plain C; the allocation backend is BIOS `malloc`,
+and the real setup/allocation/table-lookup integration tests cover allocation
+failure and repeat setup. Three shared record lookups, two sequence wrappers,
+and three runtime helpers also match plain C.
+The physical pad initializer `func_8004FCBC`, reader `func_8004FCF8`, input
+poller `func_8001A6E0`, stream-sample writer `func_8004FF28`, and default
+event-table publisher `func_8002278C` now match readable C. Five input-event
+gate and counter helpers also match readable C. Original-MIPS execution links
+synthetic physical pad packets to turn events through the real callback. A
+second fixture executes the original queue, grounded turn, rotation generator,
+composition, and conversion through to the final synthetic orientation, with
+synthetic actor/move-request state, other engine stubs, and a narrow software
+model for the required GTE operations. This is not a hardware test. The callback
+`func_80023E94` still lacks readable matching C; the queue processor is now a
+readable-C exact match. The unstubbed controller-to-orientation path and GTE
+composition internals remain unfinished.
+The 272-byte event-queue snapshot `func_8001B8B8` now matches readable C in
+all 20 level executables. Its forward word-copy helper `func_80010220` also
+matches all 22 executable copies; it requires aligned arrays and a nonzero
+count and does not provide `memmove` overlap semantics. The queue-update gate
+`func_80032D7C` also matches all 120 L0 bytes from plain C.
+Current exact coverage contains 232 instruction-free GCC C matches (47,264
+bytes), 24 assembly-assisted C matches (6,236 bytes), five assembly-backed
+transcriptions (10,440 bytes), and two Clang-built getters (32 bytes). The
+assembly-assisted matches are the 20 cross-product copies, the dot product,
+the scalar multiply, the queue processor, and the sequence-notification backend.
+Instruction-free sources may still use symbol aliases, register constraints,
+and empty compiler barriers.
+The assembly-assisted and assembly-backed matches remain unfinished for
+instruction-free C decompilation.
 Portable host models remain covered by native regression tests. The current report maps
-3,040,136 instruction bytes across all 22 recognized executables, including
+3,069,356 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully
-recovered high-level C, and the larger Bubsy actor updater remains incomplete.
+recovered high-level C, and many actor-state helper meanings remain unknown.
 It is still not a complete whole-game denominator.
-See the [current executable code map](docs/code-map.md) for evidence and limitations.
+See the [current executable code map](code-map.md) for evidence and limitations.
 The first player-specific source reconstruction is documented in
-[docs/player-bubsy.md](docs/player-bubsy.md).
+[docs/player-bubsy.md](player-bubsy.md).
 Contributors extending the byte-matched source work should start with the
-[decompilation workflow guide](docs/contributor-decompilation-guide.md).
+[decompilation workflow guide](contributor-decompilation-guide.md).
 
-The boot and menu reference fingerprints are in [config/usa.json](config/usa.json).
+The boot and menu reference fingerprints are in [config/usa.json](../config/usa.json).
 All 22 executable fingerprints, including 20 level modules, are in
-[config/executable-map.json](config/executable-map.json).
+[config/executable-map.json](../config/executable-map.json).
 The USA serial is known, but the precise disc
 revision still needs independent verification against a trusted disc inventory.
 Do not label this a confirmed original-release revision based on the serial alone.
@@ -109,8 +138,21 @@ python -m unittest discover -s tests -v
 ```
 
 GitHub Actions runs these tests using synthetic inputs only. It does not need
-the game executables. A separate executable-code workflow validates and uploads
-the checked-in report metadata on pushes to `main`; it does not rebuild the game.
+the game executables. The optional original-MIPS controller tests in
+`tests/test_original_controller_route.py` run when both the verified L0
+executable and the `unicorn` Python package are available; otherwise they
+are explicitly skipped. They use synthetic controller/actor state, engine
+stubs, and the narrow GTE model described in
+[the grounded path](player-bubsy.md#shared-lookups-and-conditional-input-to-turn-trace).
+A separate executable-code workflow validates and uploads the checked-in
+report metadata on pushes to `main`; it does not rebuild the game.
+
+To run the optional controller tests locally with a verified L0 executable:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install unicorn==2.1.4
+.\.venv\Scripts\python.exe -m unittest discover -s tests -p test_original_controller_route.py -v
+```
 
 ## Executable Code Baseline
 
@@ -173,14 +215,14 @@ the validated report metadata are tracked.
 
 ## Complete Disc Inventory
 
-The [directory map](docs/disc-map.md) lists all 446 files and 40 directories in
+The [directory map](disc-map.md) lists all 446 files and 40 directories in
 this extraction, totaling 637,330,169 file bytes. Every file has a SHA256 and SHA1
-fingerprint plus cautious format evidence in [config/disc-map.json](config/disc-map.json).
+fingerprint plus cautious format evidence in [config/disc-map.json](../config/disc-map.json).
 
-[config/executable-coverage.json](config/executable-coverage.json) accounts for
+[config/executable-coverage.json](../config/executable-coverage.json) accounts for
 all 15,818,752 loaded executable payload bytes using the original startup baseline.
-The newer [config/code-map.json](config/code-map.json) maps 2,981,616 instruction
-bytes and explicitly lists the other 12,837,136 bytes as unclassified code/data.
+The newer [config/code-map.json](../config/code-map.json) maps 3,069,356 instruction
+bytes and explicitly lists the other 12,749,580 bytes as unclassified code/data.
 An inventory or a load region is not a complete internal function map.
 
 To reproduce the maps and update the report using your extracted disc:
@@ -213,7 +255,7 @@ Keep disc images, original executables, extracted assets, generated disassembly,
 and proprietary SDK/compiler files out of Git. Ignore rules are safeguards, not
 a substitute for reviewing `git status` before committing. Do not force-add them.
 
-See [docs/decomp-dev.md](docs/decomp-dev.md) for GitHub and progress-site setup.
+See [docs/decomp-dev.md](decomp-dev.md) for GitHub and progress-site setup.
 
 ## Next Research Milestones
 

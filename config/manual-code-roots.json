@@ -4,6 +4,21 @@
   "modules": {
     "L0/L0.EXE": [
       {
+        "address": "0x80023A0C",
+        "symbol": "func_80023A0C",
+        "evidence": "The default controller-event mode table at 0x8009EC8C references this 36-byte initializer for event 3 at 0x8009ECB8; the same location aliases a static event-10 table entry. The preceding function returns at 0x80023A04 with its delay slot at 0x80023A08; this entry returns at 0x80023A28 with its delay slot at 0x80023A2C; a new frame begins at 0x80023A30. It copies the controller bitmap and two digital-pad status bytes into event-record offsets 0x0C, 0x10, and 0x11 in that order. All 36 bytes match plain C."
+      },
+      {
+        "address": "0x80023E94",
+        "symbol": "func_80023E94",
+        "evidence": "The default controller-event mode table at 0x8009EC8C points to this callback for event 3 at 0x8009ECB4. Its frame begins at 0x80023E94 and returns at 0x80024BFC with the delay slot at 0x80024C00; the next function begins at 0x80024C04. Original-MIPS execution confirmed the callback queues turn events 8/10 or release events 9/11 from physical digital-pad bits 13/15 when its gates permit."
+      },
+      {
+        "address": "0x8004B2A4",
+        "symbol": "func_8004B2A4",
+        "evidence": "The grounded-state handler passes this callback to func_8004FF50 at 0x8004BF6C. Its frame begins at 0x8004B2A8 and returns at 0x8004B354 with delay slot 0x8004B358; the grounded handler begins at 0x8004B35C. It decrements and clamps the grounded counter, then releases the event and updates the selected actor when the counter reaches zero. All 184 bytes match plain C."
+      },
+      {
         "address": "0x80038844",
         "symbol": "func_80038844",
         "evidence": "968-byte grounded deceleration producer with 0x48-byte frame at 0x80038844 and jr-ra at 0x80038C04 plus delay slot at 0x80038C08. Direct caller 0x8003619C is gated by byte 0x801864B8. All branch/jump targets stay inside this range; all 968 function bytes independently match plain C. State-dependent increment updates and prospective-stride bounds feed func_80022944; raw controller/physics semantics remain unproven."

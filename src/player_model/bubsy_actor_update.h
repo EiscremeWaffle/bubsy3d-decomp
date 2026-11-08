@@ -582,7 +582,7 @@ int32_t bubsy_actor_update_should_reset_sequence_counter(
     uint8_t runtime_mode,
     int16_t level_id
 );
-int32_t bubsy_actor_update_should_enter_level14_counter_path(
+int32_t bubsy_actor_update_should_start_counter_phase(
     const BubsyActorUpdateActorView *actor,
     int32_t sequence_counter,
     uint8_t runtime_mode,

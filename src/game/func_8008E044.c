@@ -1,28 +1,31 @@
 #include <stdint.h>
 
-#ifdef BUBSY3D_MATCH_ORIGINAL_L0
-#define FUNC_8008E044_CHARACTER_TABLE ((volatile uint32_t *)0x801D7D44)
-#else
-extern volatile uintptr_t g_character_state_table[];
-#define FUNC_8008E044_CHARACTER_TABLE g_character_state_table
-#endif
+#include "sequence_notification.h"
 
-extern int32_t func_80094108(uint32_t selection);
+/* Behavioral candidate; not yet byte-matched. */
+extern volatile uintptr_t g_character_state_table[];
 
 int32_t func_8008E044(int32_t character_index, int32_t state_index) {
-    uint8_t *state;
+    volatile uint8_t *state;
+    volatile uint8_t *current_state;
+    int32_t state_offset;
     uint32_t selection;
+    uint32_t source_word_7c, source_word_84, source_word_08_first, source_word_08_second;
+    uint16_t source_halfword_72;
     int32_t index;
 
     character_index = (int16_t)character_index;
     state_index = (int16_t)state_index;
-    state = (uint8_t *)(uintptr_t)FUNC_8008E044_CHARACTER_TABLE[character_index] +
-            state_index * 44;
+    state_offset = state_index * 172;
+    state = (volatile uint8_t *)(uintptr_t)g_character_state_table[character_index] + state_offset;
 
-    *(volatile uint32_t *)(state + 0x90) &= ~0x02u;
-    *(volatile uint32_t *)(state + 44 + 0x90) &= ~0x04u;
-    *(volatile uint32_t *)(state + 88 + 0x90) &= ~0x08u;
-    *(volatile uint32_t *)(state + 132 + 0x90) |= 0x04u;
+    *(volatile uint32_t *)(state + 0x90) &= ~0x01u;
+    current_state = (volatile uint8_t *)(uintptr_t)g_character_state_table[character_index] + state_offset;
+    *(volatile uint32_t *)(current_state + 0x90) &= ~0x02u;
+    current_state = (volatile uint8_t *)(uintptr_t)g_character_state_table[character_index] + state_offset;
+    *(volatile uint32_t *)(current_state + 0x90) &= ~0x08u;
+    current_state = (volatile uint8_t *)(uintptr_t)g_character_state_table[character_index] + state_offset;
+    *(volatile uint32_t *)(current_state + 0x90) |= 0x04u;
 
     selection = ((uint32_t)state_index << 8) | (uint32_t)character_index;
     func_80094108(selection);
@@ -43,14 +46,19 @@ int32_t func_8008E044(int32_t character_index, int32_t state_index) {
     state[0x10] = 0;
     state[0x11] = 0;
 
-    *(volatile uint32_t *)(state + 0x88) = *(volatile uint32_t *)(state + 0x7C);
-    *(volatile uint32_t *)(state + 0x8C) = *(volatile uint32_t *)(state + 0x84);
-    *(volatile uint16_t *)(state + 0x70) = *(volatile uint16_t *)(state + 0x72);
-    *(volatile uint32_t *)(state + 0x04) = *(volatile uint32_t *)(state + 0x08);
-    *(volatile uint32_t *)(state + 0x0C) = *(volatile uint32_t *)(state + 0x08);
+    source_word_7c = *(volatile uint32_t *)(state + 0x7C);
+    source_word_84 = *(volatile uint32_t *)(state + 0x84);
+    source_halfword_72 = *(volatile uint16_t *)(state + 0x72);
+    source_word_08_first = *(volatile uint32_t *)(state + 0x08);
+    source_word_08_second = *(volatile uint32_t *)(state + 0x08);
+    *(volatile uint32_t *)(state + 0x88) = source_word_7c;
+    *(volatile uint32_t *)(state + 0x8C) = source_word_84;
+    *(volatile uint16_t *)(state + 0x70) = source_halfword_72;
+    *(volatile uint32_t *)(state + 0x04) = source_word_08_first;
+    *(volatile uint32_t *)(state + 0x0C) = source_word_08_second;
 
     for (index = 0; index < 16; index++) {
-        state[0x2C + index] = 0;
+        state[0x2C + index] = (uint8_t)index;
         state[0x17 + index] = 0x40;
         *(volatile uint16_t *)(state + 0x4E + index * 2) = 0x7F;
     }
