@@ -46,7 +46,8 @@ int32_t func_80052ABC(void *component, int32_t *output) {
     return 0;
 }
 
-void func_80077C50(const uint16_t angles[3], ComponentRotationMatrix *output) {
+ComponentRotationMatrix *func_80077C50(
+    const uint16_t angles[3], ComponentRotationMatrix *output) {
     record(0x80077C50);
     assert(memcmp(angles, expected_angles, sizeof(expected_angles)) == 0);
     *output = rotation_matrix;
@@ -55,13 +56,16 @@ void func_80077C50(const uint16_t angles[3], ComponentRotationMatrix *output) {
         context.padding = 0xDDDD;
         context.translation[0] = 444;
     }
+    return output;
 }
 
-void func_80076890(ComponentRotationMatrix *rotation, const ComponentRotationMatrix *basis) {
+ComponentRotationMatrix *func_80076890(
+    ComponentRotationMatrix *rotation, const ComponentRotationMatrix *basis) {
     record(0x80076890);
     assert(memcmp(rotation, &rotation_matrix, sizeof(*rotation)) == 0);
     assert(memcmp(basis, &saved_context, sizeof(*basis)) == 0);
     rotation->elements[0] = 0x5678;
+    return rotation;
 }
 
 ComponentRotationMatrix *func_8007699C(

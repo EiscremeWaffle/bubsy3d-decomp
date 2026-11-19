@@ -41,7 +41,7 @@ void func_8004380C(void) {
     record(SETUP);
 }
 
-void func_80052BDC(void *object, int32_t mode) {
+int32_t func_80052BDC(void *object, int32_t mode) {
     assert(mode == 1);
     if (object == &assets[0]) {
         record(PREPARE_0);
@@ -52,6 +52,7 @@ void func_80052BDC(void *object, int32_t mode) {
         assert(object == &assets[1]);
         record(PREPARE_1);
     }
+    return 0;
 }
 
 int32_t func_80044B24(uint32_t index, uint32_t mode) {

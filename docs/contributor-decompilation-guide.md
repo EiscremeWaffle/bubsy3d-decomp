@@ -12,9 +12,15 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The current validated scope maps 3,069,356 code bytes; the current report
-validates 63,972 exact code bytes across 263 functions (2.084216%) and 196
-exact data bytes. New exact coverage includes readable-C grounded helpers
+The validated report maps 3,089,916 code bytes and credits 80,304 exact code
+bytes across 372 functions (2.598906%) and 196 exact data bytes. New exact
+coverage includes readable-C grounded helpers
+and the 2,404-byte `func_80036018` heading callback with its independently
+verified 196-byte switch table. The callback uses register constraints and
+empty barriers, not transcribed instructions. Its mode-one, heading-effect,
+timed-record, and camera-channel dependencies are also matched; the GTE
+background-color backend uses explicit hardware instructions.
+Other exact coverage includes grounded helpers
 `func_800556D0`, `func_8001B558`, `func_80034EF8`, `func_8003539C`, and
 `func_80039158`, the readable-C queue processor `func_8001B1E4`, plain-C
 move-info and component-basis allocators
@@ -88,7 +94,7 @@ The native C harness is separate from Python tests. CI's compile command is in `
 - MASPSX reads stdin when launched non-interactively. Use `--force-stdin` and pass the compiler assembly as subprocess input; otherwise it can wait indefinitely.
 - Do not delete every MASPSX `# DEBUG: branch/jump` nop. For compiler-generated code, `tools/gcc_match.normalize_delay_slots` tracks the original `.set reorder`/`.set noreorder` mode and retains required delay slots. It rejects branch-expansion mismatches.
 - For a GCC `li.d` with a zero low word, `tools/gcc_match.normalize_double_immediates` replaces the compiler-evidenced MASPSX zero-load pseudo-instruction with the ASPSX-compatible `ori` encoding. Missing or ambiguous expansions are rejected rather than rewriting unrelated zero loads.
-- The per-source `aspsx_version` option defaults to `2.30`; use another supported profile only when its fully linked output matches the original. This records a reproducible assembler setting, not proof of original-toolchain provenance.
+- The per-source `aspsx_version` option defaults to `2.30`; use another supported profile only when its fully linked output matches the original. The menu and boot copies of `func_80010278` use `2.50` to reproduce their immediate-load encoding; the level copies use `2.30`. This records a reproducible assembler setting, not proof of original-toolchain provenance.
 - For hand-authored inline assembly, put `.set noreorder` around explicitly ordered branches/calls. Restore `.set reorder` before a compiler-generated return if its final nop is required.
 - Relocatable object bytes alone are not enough for calls and local jumps. The matching tool links at the symbol's real address, resolves only explicit `func_XXXXXXXX` helpers and configured globals, then compares bytes.
 - A source with compiler-generated read-only data can declare `rodata: {"start": "0x800139A8", "size": 132}` in its matching profile. The linker places that section at the original address; the build checks its exact bounds and records its hash, and the progress builder independently compares all its bytes with the verified executable. A matching switch instruction sequence alone is not enough.
@@ -170,19 +176,18 @@ and mutations during assertion, special-state and multiply callbacks.
 Its shared layouts are declared in `src/game/move_step.h`; the arithmetic
 uses explicit wrapping intermediates and contains no instruction snippets.
 
-The allowlist now contains 232 instruction-free GCC C matches (47,264 bytes),
-24 assembly-assisted C matches (6,236 bytes), five assembly-backed
-transcriptions (10,440 bytes), and two Clang-built getters (32 bytes), including
-repeated module copies. The assembly-assisted matches comprise 20 copies of
-`func_80010128`, `func_800100A0`, `func_8001007C`, and the queue processor
-`func_8001B1E4`, plus the 220-byte sequence-notification backend
-`func_80091194`. Instruction-free matches may require register constraints,
+The allowlist includes instruction-free GCC C, assembly-assisted C,
+assembly-backed transcriptions, and two Clang-built getters; totals include
+repeated module copies. Assembly-assisted coverage includes cross-product
+copies, the dot product, scalar multiply, queue processor, sequence
+notification backend, and GTE composition routines.
+Instruction-free matches may require register constraints,
 symbol aliases, or empty compiler barriers, so they are not all unconstrained
-ISO C. The overall exact total is 63,972 bytes across 263 matches. The plain-C
-grounded rotation helpers `func_800547C8`, `func_800549E8`, and `func_800542A4`
-and column scaling `func_8005541C`, together with shared movement initialization
-`func_8002611C`, setup `func_80025FFC`, and allocation `func_800222EC`, add
-2,648 bytes;
+ISO C. The validated exact total is 80,304 bytes across 372 matches. The plain-C
+grounded rotation helpers `func_800547C8`, `func_80054978`, `func_800549E8`,
+and `func_800542A4`, plus column scaling `func_8005541C`, together with shared
+movement initialization `func_8002611C`, setup `func_80025FFC`, and allocation
+`func_800222EC`, add 2,760 bytes;
 converting an already matched function to C does not increase that total.
 
 The remaining assembly-backed implementations have all been inventoried:

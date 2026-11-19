@@ -1,13 +1,13 @@
-#include <stdint.h>
+#include "component_rotation.h"
 
-typedef struct GteTransformMatrix {
+typedef union GteTransformMatrix {
     uint32_t words[8];
+    ComponentRotationMatrix rotation;
 } GteTransformMatrix;
 
 extern const volatile GteTransformMatrix g_camera_view_transform;
 extern void func_8007754C(void);
 extern void func_800775EC(void);
-extern void *func_80076890(GteTransformMatrix *view_matrix, const void *object_transform);
 extern void func_80076CCC(const GteTransformMatrix *light_matrix);
 
 void func_800722C8(const void *object_transform) {
@@ -52,7 +52,7 @@ void func_800722C8(const void *object_transform) {
 
     func_8007754C();
     view_matrix_value = (GteTransformMatrix *)&view_matrix;
-    func_80076890(view_matrix_value, object_transform);
+    func_80076890(&view_matrix_value->rotation, object_transform);
     func_800775EC();
     func_80076CCC(view_matrix_value);
 }

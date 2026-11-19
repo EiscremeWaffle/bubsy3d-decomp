@@ -1,8 +1,5 @@
 #include "component_rotation.h"
 
-extern void func_80077C50(const uint16_t angles[3], ComponentRotationMatrix *output);
-extern ComponentRotationMatrix *func_8007699C(
-    const ComponentRotationMatrix *basis, ComponentRotationMatrix *rotation);
 extern void func_80054488(const ComponentRotationMatrix *input, ComponentRotationMatrix *output);
 
 int32_t func_800548A0(ComponentRotationMatrix *component, const int32_t rotation[3]) {

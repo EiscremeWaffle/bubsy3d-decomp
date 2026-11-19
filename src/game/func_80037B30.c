@@ -3,15 +3,13 @@
 #include "level_records.h"
 
 extern int16_t g_grounded_case37_counter;
-extern GroundedCase37ObjectView *g_grounded_case37_object;
 extern uint8_t g_runtime_state_61;
 extern void *func_80040FC0(int32_t mode);
 extern int32_t func_80054B20(void *component, int32_t mode, int32_t *translation);
 extern int32_t func_80054C7C(void *component, int32_t mode, const int32_t *translation);
 extern int32_t func_800516F8(void **value_out);
 extern int32_t func_800550A4(void *component, const void *basis);
-extern void func_800288D8(void *object);
-extern void func_80052BDC(void *component, int32_t mode);
+extern int32_t func_80052BDC(void *component, int32_t mode);
 extern void func_8002BB64(int32_t value);
 
 void func_80037B30(void *initial_object) {
@@ -60,7 +58,7 @@ void func_80037B30(void *initial_object) {
     func_80054C7C(selected_component, 0, translation);
     func_800516F8(&basis);
     func_800550A4(selected_component, basis);
-    func_800288D8(g_grounded_case37_object->event_0C);
+    func_800288D8(g_grounded_case37_object->record_id_0C);
     func_80052BDC(g_grounded_case37_object->component_1C, 0);
 
     g_grounded_case37_object->state_2C = 0;
@@ -79,7 +77,7 @@ void func_80037B30(void *initial_object) {
     func_8001B558(
         0x17,
         5,
-        (uintptr_t)g_grounded_case37_object->event_0C,
+        (uintptr_t)(uint32_t)g_grounded_case37_object->record_id_0C,
         0,
         0,
         0,

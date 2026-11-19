@@ -25,13 +25,37 @@ typedef struct PlayerActorFlagByte {
 
 _Static_assert(offsetof(PlayerActorFlagByte, flags_04) == 0x04, "actor flag byte offset must match the executable");
 
+struct SequencePlaybackNode;
+struct SequencePlaybackSlot;
+
+typedef struct PlayerSequenceChannels {
+    uint8_t *first_output;
+    int32_t first_count;
+    uint8_t *second_output;
+    int32_t second_count;
+} PlayerSequenceChannels;
+
+typedef struct PlayerSequenceResource {
+    uint8_t unknown_00_to_07[8];
+    PlayerSequenceChannels *channels_08;
+} PlayerSequenceResource;
+
 typedef struct PlayerActorSequenceData {
 #if UINTPTR_MAX == 0xFFFFFFFFu
     uint8_t unknown_00_to_03[4];
     const int32_t *entries;
     uint32_t unknown_08;
     int16_t entry_count;
-    uint8_t unknown_0E_to_2B[0x1E];
+    uint8_t unknown_0E_to_0F[2];
+    const uint8_t *first_frames_10;
+    const uint8_t *second_frames_14;
+    const uint8_t *stream_table_18;
+    uint32_t unknown_1C;
+    PlayerSequenceResource *resource_20;
+    struct SequencePlaybackSlot *playback_slots;
+    int16_t initialized_key_28;
+    uint8_t unknown_2A;
+    uint8_t enabled_2B;
 #else
     uint8_t unknown_00_to_07[8];
     const int32_t *entries;
@@ -39,25 +63,50 @@ typedef struct PlayerActorSequenceData {
     uint8_t unknown_12_to_2B[0x1A];
 #endif
     uint32_t flags_2C;
+#if UINTPTR_MAX != 0xFFFFFFFFu
+    struct SequencePlaybackSlot *playback_slots;
+    const uint8_t *first_frames_10;
+    const uint8_t *second_frames_14;
+    PlayerSequenceResource *resource_20;
+    int16_t initialized_key_28;
+    uint8_t enabled_2B;
+    const uint8_t *stream_table_18;
+#endif
 } PlayerActorSequenceData;
 
 _Static_assert(offsetof(PlayerActorSequenceData, flags_2C) == 0x2C, "sequence data flags offset must match the executable");
 #if UINTPTR_MAX == 0xFFFFFFFFu
 _Static_assert(offsetof(PlayerActorSequenceData, entry_count) == 0x0C, "sequence data count offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, first_frames_10) == 0x10, "first sequence frame offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, second_frames_14) == 0x14, "second sequence frame offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, stream_table_18) == 0x18, "sequence stream table offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, resource_20) == 0x20, "sequence resource offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, playback_slots) == 0x24, "sequence playback slots offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, initialized_key_28) == 0x28, "initialized sequence key offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceData, enabled_2B) == 0x2B, "sequence enabled flag offset must match the executable");
+_Static_assert(offsetof(PlayerSequenceResource, channels_08) == 0x08, "sequence channels offset must match the executable");
+_Static_assert(sizeof(PlayerSequenceChannels) == 0x10, "sequence channel layout must match the executable");
 #endif
 
 typedef struct PlayerActorSequenceView {
+#if UINTPTR_MAX == 0xFFFFFFFFu
+    struct SequencePlaybackNode *playback_node_00;
+#else
     uint8_t unknown_00_to_03[4];
+#endif
     uint8_t flags_04;
     int8_t state_05;
-    uint8_t unknown_06;
+    int8_t playback_slot_06;
     uint8_t advance_cursor_07;
     int16_t cursor_08;
     uint16_t unknown_0A;
     int16_t previous_cursor_0C;
     int16_t threshold_0E;
     uint8_t unknown_10_to_17[8];
-    const PlayerActorSequenceData *sequence_18;
+    PlayerActorSequenceData *sequence_18;
+#if UINTPTR_MAX != 0xFFFFFFFFu
+    struct SequencePlaybackNode *playback_node_00;
+#endif
 } PlayerActorSequenceView;
 
 typedef struct PlayerActorSharedStateView {
@@ -84,11 +133,15 @@ enum {
 
 _Static_assert(offsetof(PlayerActorSequenceView, flags_04) == 0x04, "sequence flag offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, state_05) == 0x05, "sequence state offset must match the executable");
+_Static_assert(offsetof(PlayerActorSequenceView, playback_slot_06) == 0x06, "sequence playback slot offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, advance_cursor_07) == 0x07, "sequence direction offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, cursor_08) == 0x08, "sequence cursor offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, previous_cursor_0C) == 0x0C, "previous cursor offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, threshold_0E) == 0x0E, "sequence threshold offset must match the executable");
 _Static_assert(offsetof(PlayerActorSequenceView, sequence_18) == 0x18, "sequence pointer offset must match the executable");
+#if UINTPTR_MAX == 0xFFFFFFFFu
+_Static_assert(offsetof(PlayerActorSequenceView, playback_node_00) == 0x00, "sequence playback node offset must match the executable");
+#endif
 
 typedef int32_t (*PlayerModelLoadResource)(const char *path, void **asset_out, int32_t previous_size);
 typedef void (*PlayerModelAssertFailure)(int32_t failed, const char *condition, const char *source_path, uint32_t source_line);

@@ -22,8 +22,8 @@ performed automatically by the setup tools.
 ## Current Discovered-Code Integration
 
 The report contains 44 object groups across all 22 executable images:
-`functions` and `fragments` for each module. The current map includes 3,069,356
-instruction bytes, with 10,535 bounded function candidates and 1,169 explicitly
+`functions` and `fragments` for each module. The current map includes 3,089,676
+instruction bytes, with 10,565 bounded function candidates and 1,170 explicitly
 labeled fragments.
 It is no longer startup-only, but it is still an incomplete static code-discovery
 baseline, not a whole-game code/data or original translation-unit map.
@@ -32,17 +32,20 @@ See the [current code map](code-map.md) for module coverage, discovery criteria,
 and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
-The current validated snapshot maps 3,069,356 instruction bytes and credits
-63,972 exact code bytes across 263 functions (2.084216%), plus 196 exact data
-bytes. This includes the readable-C 3,228-byte grounded-state handler,
+The validated snapshot maps 3,089,916 instruction bytes and credits 80,304
+exact code bytes across 372 functions (2.598906%), plus 196 exact data bytes.
+This includes the readable-C 3,228-byte grounded-state handler,
+the 2,404-byte heading callback and its separately verified 196-byte switch
+table, the heading mode-one and effect implementations, their timed-record
+and camera-channel helpers,
 the five readable-C grounded-path helpers `func_800556D0`, `func_8001B558`,
 `func_80034EF8`, `func_8003539C`, and `func_80039158` (4,720 bytes),
 1,380-byte movement preparer `func_80025A98`, and newly recovered 1,304-byte
 grounded stride producer `func_80035ACC`, plus the 968-byte plain-C
 deceleration producer `func_80038844` and the plain-C grounded rotation helpers
-`func_800547C8`/`func_800549E8` and basis reconstruction `func_800542A4`
-(716 bytes together), plus the 600-byte plain-C column-scaling helper
-`func_8005541C`, 636-byte shared movement initializer `func_8002611C`,
+`func_800547C8`/`func_80054978`/`func_800549E8` and basis reconstruction
+`func_800542A4` (828 bytes together), plus the 600-byte plain-C column-scaling
+helper `func_8005541C`, 636-byte shared movement initializer `func_8002611C`,
 its 288-byte setup caller `func_80025FFC`, the 408-byte move-info allocator
 `func_800222EC`, and the 140-byte component-basis allocator `func_80054624`.
 The conditional input-to-turn path includes the matched physical-pad initializer
@@ -60,6 +63,8 @@ arrays and a nonzero count. The 120-byte queue-update gate `func_80032D7C`
 also matches plain C in L0. Shared record and sequence lookups and three runtime
 helpers are matched too; see
 [the grounded path](player-bubsy.md#shared-lookups-and-conditional-input-to-turn-trace).
+The 364-byte stream dispatcher `func_80067DEC` matches plain C; its two
+stream-processing callees are tested behavioral candidates, not byte matches.
 The 1,804-byte `func_800347EC`
 helper now matches from readable C; the `game_apply_queued_move_request`
 movement consumer and `func_80054B20`/`func_80054C7C` component-transform helpers
@@ -117,7 +122,7 @@ functions.
 This denominator is currently limited to identified executable data symbols.
 PS-X EXE headers provide a load address and payload size but no section map; all
 22 recorded headers also have zero memory-fill/BSS fields. The remaining
-12,749,580 loaded bytes are unclassified code-or-data, not a measured data total.
+12,729,076 loaded bytes are unclassified code-or-data, not a measured data total.
 The separate disc inventory records 621,466,361 bytes across 424 non-EXE files;
 those resource files are not part of objdiff's C-data metric.
 The validator rejects an unlisted fuzzy match and rejects a fuzzy candidate at

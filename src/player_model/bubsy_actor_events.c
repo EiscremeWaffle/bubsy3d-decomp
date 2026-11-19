@@ -1,11 +1,11 @@
 #include "bubsy_actor_events.h"
 
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0
+#include "component_fields.h"
 register volatile uint8_t *bubsy_runtime_globals __asm__("$28");
 extern int32_t func_80052ABC(void *component, int32_t *event_out);
 extern int32_t func_80052AEC(void *component, int32_t property_id);
 extern int32_t func_80052E18(void *component);
-extern int32_t func_800532CC(void *component, int32_t active, int32_t argument_2, int32_t argument_3, uint32_t flags);
 
 int32_t bubsy_process_actor_event(int32_t update_mode, void *actor) {
     register void *actor_value __asm__("$16") = actor;

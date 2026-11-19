@@ -9,6 +9,13 @@ typedef struct ComponentRotationMatrix {
     int32_t translation[3];
 } ComponentRotationMatrix;
 
+int32_t func_800289E8(int32_t index, ComponentRotationMatrix *output);
+ComponentRotationMatrix *func_80077C50(
+    const uint16_t angles[3], ComponentRotationMatrix *output);
+ComponentRotationMatrix *func_80076890(
+    ComponentRotationMatrix *first, const ComponentRotationMatrix *second);
+ComponentRotationMatrix *func_8007699C(
+    const ComponentRotationMatrix *first, ComponentRotationMatrix *second);
 int32_t func_80054624(void **output);
 int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMatrix *output);
 int32_t func_800547C8(ComponentRotationMatrix *component, const int32_t rotation[3]);

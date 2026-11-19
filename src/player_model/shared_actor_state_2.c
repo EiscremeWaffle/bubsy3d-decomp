@@ -1,4 +1,7 @@
 #include "bubsy_actor_state_update.h"
+#include "component_fields.h"
+#include "component_rotation.h"
+#include "proximity_list.h"
 #include <stdint.h>
 
 /*
@@ -13,11 +16,6 @@ typedef struct Vector {
     int32_t vz;
     int32_t pad;
 } Vector;
-
-typedef struct Matrix {
-    int16_t m[3][3];
-    int32_t t[3];
-} Matrix;
 
 typedef union ActorHeading {
     uint32_t packed;
@@ -135,15 +133,11 @@ extern void func_80029790(void **model);
 extern uint8_t func_800297A0(int32_t slot, void **model);
 extern int32_t func_8005170C(void *model, int32_t frames, void *resource_a, void *resource_b,
     int32_t argument_4, int32_t argument_5, uint32_t flags, void *handle_out);
-extern void func_80053270(ActorComponent *component);
-extern void func_800532CC(ActorComponent *component, int32_t active, int32_t argument_2, int32_t argument_3, int32_t argument_4);
 extern void func_8006B8A4(void *renderer, void *handle, RenderSlot *slot, Vector *offset, Vector *scale);
-extern void func_80052BDC(void *handle, int32_t mode);
+extern int32_t func_80052BDC(void *handle, int32_t mode);
 extern void func_80054C7C(void *transform, int32_t mode, Vector *translation);
 extern void func_80035FE4(Vector *position);
 extern int32_t func_80055280(void *transform, int32_t mode, Vector *rotation);
-extern void func_800289E8(uint32_t heading, Matrix *rotation);
-extern void func_800549E8(void *transform, Matrix *rotation);
 extern void func_80054978(void *transform, Vector *offset);
 extern uint8_t func_800222EC(ActorSharedState **shared, Vector *position);
 extern void func_8002CA88(int32_t mode, int32_t duration);
@@ -156,7 +150,7 @@ extern void func_8002CA88(int32_t mode, int32_t duration);
 
 void shared_actor_state_2_handler(SharedActorState2Actor *actor, void **transform_out)
 {
-    Matrix rotation;
+    ComponentRotationMatrix rotation;
     Vector position;
     Vector facing;
     Vector offset = g_state2_zero_vector;

@@ -1,3 +1,6 @@
+#include "component_rotation.h"
+#include "gte_basis_transform.h"
+
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -10,8 +13,9 @@ typedef struct ComponentBasisView {
     int32_t translation[3];
 } ComponentBasisView;
 
-typedef struct GteTransformMatrix {
+typedef union GteTransformMatrix {
     uint32_t words[8];
+    ComponentRotationMatrix rotation;
 } GteTransformMatrix;
 
 const volatile ComponentBasisView g_gte_global_basis = {{10, 20, 30, 40}, -7, 0, {0, 0, 0}};
@@ -23,31 +27,26 @@ int32_t func_80053FA4(const int32_t input[4], const volatile ComponentBasisView 
 int32_t func_800540BC(const int32_t input[4], const ComponentBasisView *basis, int32_t output[3]);
 void func_800722C8(const void *object);
 
-int32_t func_80077298(const volatile ComponentBasisView *basis, const int32_t input[4], int32_t output[4]) {
+int32_t *func_80077298(const volatile void *basis, const int32_t *input, int32_t *output) {
     assert(basis != NULL && input != NULL);
     transform_calls++;
     output[0] = -5;
     output[1] = 6;
     output[2] = 7;
-    return -1;
-}
-
-int32_t func_80010038(const int32_t left[3], const int32_t right[3], int32_t output[3]) {
-    for (int item = 0; item < 3; item++) {
-        output[item] = (int32_t)((uint32_t)left[item] + (uint32_t)right[item]);
-    }
-    return 0;
+    return output;
 }
 
 void func_8007754C(void) {
     assert(matrix_calls++ == 0);
 }
 
-void *func_80076890(GteTransformMatrix *matrix, const void *object) {
+ComponentRotationMatrix *func_80076890(
+    ComponentRotationMatrix *rotation, const ComponentRotationMatrix *object) {
+    GteTransformMatrix *matrix = (GteTransformMatrix *)rotation;
     assert(matrix_calls++ == 1 && object == object_argument);
     for (int item = 0; item < 8; item++) assert(matrix->words[item] == g_camera_view_transform.words[item]);
     matrix->words[0] = 0xDEADBEEFu;
-    return NULL;
+    return rotation;
 }
 
 void func_800775EC(void) {

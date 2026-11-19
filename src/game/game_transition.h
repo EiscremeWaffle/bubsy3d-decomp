@@ -95,6 +95,7 @@ void func_8001B558(
 
 /* Snapshot occupied modes 0..4 in priority and slot order; count tracks occupied slots. */
 void func_8001B8B8(GameTransitionQueue *input, GameTransitionQueue *output);
+void func_8001B9C8(void);
 
 void func_80023A0C(
     GameTransitionEventRecord *record,

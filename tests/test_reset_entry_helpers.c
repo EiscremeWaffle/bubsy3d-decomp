@@ -52,13 +52,14 @@ void func_80042170(ResetTrackedNode *node) {
     }
 }
 
-void func_80052BDC(void *object, int32_t mode) {
+int32_t func_80052BDC(void *object, int32_t mode) {
     ++prepare_calls;
     assert(mode == 1);
     selected_object = object;
     if (mutate_entry_table) {
         g_reset_entry_table = replacement_table;
     }
+    return 0;
 }
 
 int32_t func_80044B24(uint32_t index, uint32_t mode) {

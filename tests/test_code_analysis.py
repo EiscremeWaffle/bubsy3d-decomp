@@ -1,7 +1,11 @@
 import copy
+import struct
 import unittest
 
-from tools.code_analysis import contiguous_ranges, manual_trace_entries, render_code_map, trace_reachable, validate_discovery
+from tools.code_analysis import (
+    contiguous_ranges, manual_trace_entries, promote_manual_switch_roots,
+    render_code_map, trace_reachable, validate_discovery,
+)
 from tools.progress import ROOT, load_json
 from tools.verify_original import HEADER_SIZE
 
@@ -87,6 +91,57 @@ class CodeAnalysisTests(unittest.TestCase):
         self.assertEqual(result["reachable_code_bytes"], 16)
         self.assertEqual(result["function_entry_candidates"], [hex(load)])
 
+    def test_manual_function_splits_enclosing_reachable_fragment(self):
+        load = 0x80010000
+        data = bytearray(HEADER_SIZE + 40)
+        struct.pack_into("<I", data, HEADER_SIZE + 8, 0x03E00008)
+        struct.pack_into("<I", data, HEADER_SIZE + 24, 0x03E00008)
+        expected = {"load_address": hex(load), "payload_size": hex(40)}
+        discovery = {
+            "ranges": [{"start": f"0x{load:08X}", "end": f"0x{load + 40:08X}"}],
+            "indirect_references": [],
+            "manual_roots": [
+                {"address": f"0x{load + 8:08X}", "end": f"0x{load + 16:08X}",
+                 "symbol": "first", "evidence": "test"},
+                {"address": f"0x{load + 24:08X}", "end": f"0x{load + 32:08X}",
+                 "symbol": "second", "evidence": "test"},
+            ],
+            "symbols": [{"start": f"0x{load:08X}", "end": f"0x{load + 40:08X}",
+                         "size": 40, "kind": "reachable_fragment"}],
+            "anchored_functions": 0,
+            "reachable_fragments": 1,
+        }
+
+        result = promote_manual_switch_roots(data, expected, discovery)
+        self.assertEqual(result["anchored_functions"], 2)
+        self.assertEqual(result["reachable_fragments"], 3)
+        self.assertEqual(
+            [(int(symbol["start"], 16) - load, int(symbol["end"], 16) - load, symbol["kind"])
+             for symbol in result["symbols"]],
+            [(0, 8, "reachable_fragment"), (8, 16, "anchored_function"),
+             (16, 24, "reachable_fragment"), (24, 32, "anchored_function"),
+             (32, 40, "reachable_fragment")],
+        )
+        self.assertEqual(sum(symbol["size"] for symbol in result["symbols"]), 40)
+
+    def test_manual_function_rejects_overlapping_bounded_symbol(self):
+        load = 0x80010000
+        data = bytearray(HEADER_SIZE + 16)
+        struct.pack_into("<I", data, HEADER_SIZE + 4, 0x03E00008)
+        expected = {"load_address": hex(load), "payload_size": hex(16)}
+        discovery = {
+            "ranges": [{"start": f"0x{load:08X}", "end": f"0x{load + 16:08X}"}],
+            "indirect_references": [],
+            "manual_roots": [{"address": f"0x{load + 4:08X}", "end": f"0x{load + 12:08X}",
+                              "symbol": "manual", "evidence": "test"}],
+            "symbols": [{"start": f"0x{load:08X}", "end": f"0x{load + 16:08X}",
+                         "size": 16, "kind": "anchored_function"}],
+            "anchored_functions": 1,
+            "reachable_fragments": 0,
+        }
+        with self.assertRaisesRegex(ValueError, "overlaps another bounded symbol"):
+            promote_manual_switch_roots(data, expected, discovery)
+
     def test_real_discovery_partitions_traced_code_for_every_module(self):
         total = validate_discovery(self.document, self.manifest)
         self.assertEqual(total, self.document["code_bytes"])
@@ -123,6 +178,17 @@ class CodeAnalysisTests(unittest.TestCase):
         self.assertEqual(symbol["kind"], "anchored_function")
         self.assertEqual(root["computed_jump_tables"], [{
             "site": "0x8004B4D0", "table": "0x800139A8", "count": 33,
+        }])
+
+    def test_heading_callback_switch_is_bounded_by_its_table(self):
+        roots = load_json(ROOT / "config" / "manual-code-roots.json")["modules"]["L0/L0.EXE"]
+        root = next(item for item in roots if item["address"] == "0x80036018")
+        module = next(item for item in self.document["modules"] if item["path"] == "L0/L0.EXE")
+        symbol = next(item for item in module["symbols"] if item.get("symbol") == root["symbol"])
+        self.assertEqual((symbol["start"], symbol["end"], symbol["kind"]),
+                         (root["address"], root["end"], "anchored_function"))
+        self.assertEqual(root["computed_jump_tables"], [{
+            "site": "0x80036404", "table": "0x80012B00", "count": 49,
         }])
 
     def one_module(self):

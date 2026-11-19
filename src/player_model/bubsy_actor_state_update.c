@@ -39,7 +39,7 @@ extern void func_80037214(int32_t mode, BubsyGroundedActor *actor);
 extern void func_80052ABC(void *component, int32_t *sequence);
 extern int32_t func_80052AEC(void *component, int32_t sequence);
 extern void func_80052E18(void *component);
-extern void func_80052BDC(void *component, int32_t mode);
+extern int32_t func_80052BDC(void *component, int32_t mode);
 extern void func_8005290C(void *component, uint8_t *output);
 extern void func_800556D0(int32_t failed, const char *condition, const char *source, uint32_t line);
 extern void func_80026A0C(int32_t mode, int32_t value);

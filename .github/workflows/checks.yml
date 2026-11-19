@@ -40,6 +40,184 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004FCBC.c src/game/func_8004FCF8.c src/game/func_8004FF28.c tests/test_controller_input.c -o /tmp/test_controller_input
           /tmp/test_controller_input
+      - name: Compile and test controller bitmap dispatch model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_bitmap_dispatch.c tests/test_controller_bitmap_dispatch.c -o /tmp/test_controller_bitmap_dispatch
+          /tmp/test_controller_bitmap_dispatch
+      - name: Compile and test controller input-preparation model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_input_prepare.c src/game/func_80056678.c src/game/func_8005668C.c tests/test_controller_input_prepare.c -o /tmp/test_controller_input_prepare
+          /tmp/test_controller_input_prepare
+      - name: Compile and test controller input-routing model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_input_route.c src/game/controller_input_prepare.c src/game/func_80056678.c src/game/func_8005668C.c tests/test_controller_input_route.c -o /tmp/test_controller_input_route
+          /tmp/test_controller_input_route
+      - name: Compile and test controller bitmap-gate model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_bitmap_gate.c src/game/func_80056678.c tests/test_controller_bitmap_gate.c -o /tmp/test_controller_bitmap_gate
+          /tmp/test_controller_bitmap_gate
+      - name: Compile and test controller mode-one tail model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_mode_one_tail.c tests/test_controller_mode_one_tail.c -o /tmp/test_controller_mode_one_tail
+          /tmp/test_controller_mode_one_tail
+      - name: Compile and test integrated grounded-controller input model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_input_prepare.c src/game/controller_input_route.c src/game/controller_bitmap_gate.c src/game/controller_bitmap_dispatch.c src/game/controller_mode_one_tail.c src/game/controller_grounded_input_path.c src/game/func_80056678.c src/game/func_8005668C.c tests/test_controller_grounded_input_path.c -o /tmp/test_controller_grounded_input_path
+          /tmp/test_controller_grounded_input_path
+      - name: Compile and test secondary-controller event helper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800493CC.c tests/test_secondary_controller_helper.c -o /tmp/test_secondary_controller_helper
+          /tmp/test_secondary_controller_helper
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800493CC.c src/game/func_8004FFEC.c tests/test_secondary_controller_event_flow.c -o /tmp/test_secondary_controller_event_flow
+          /tmp/test_secondary_controller_event_flow
+      - name: Compile and test secondary-controller cleanup
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800493F8.c tests/test_secondary_controller_cleanup.c -o /tmp/test_secondary_controller_cleanup
+          /tmp/test_secondary_controller_cleanup
+      - name: Compile and test cyclic controller entries
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001A280.c tests/test_cyclic_entries.c -o /tmp/test_cyclic_entries
+          /tmp/test_cyclic_entries
+      - name: Compile and test controller result dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002C370.c tests/test_controller_result.c -o /tmp/test_controller_result
+          /tmp/test_controller_result
+      - name: Compile and test heading callback gates
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002E7D8.c src/game/func_8002E824.c src/game/func_8002B620.c tests/test_heading_callback_gates.c -o /tmp/test_heading_callback_gates
+          /tmp/test_heading_callback_gates
+      - name: Compile and test heading entry gate model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/heading_entry_gates.c src/game/func_8002B620.c tests/test_heading_entry_gates.c -o /tmp/test_heading_entry_gates
+          /tmp/test_heading_entry_gates
+      - name: Compile and test heading common gate model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/heading_common_gates.c src/game/func_8002E7D8.c src/game/func_8002E824.c tests/test_heading_common_gates.c -o /tmp/test_heading_common_gates
+          /tmp/test_heading_common_gates
+      - name: Compile and test heading effects
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80039AB4.c tests/test_heading_effects.c -o /tmp/test_heading_effects
+          /tmp/test_heading_effects
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_REAL_TIMED_RECORDS -Isrc/player_model -Isrc/game src/game/func_80039AB4.c src/game/func_8002CA88.c src/game/func_8002CB2C.c tests/test_heading_effects.c -o /tmp/test_heading_effects_timed
+          /tmp/test_heading_effects_timed
+      - name: Compile and test integrated heading path
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/heading_entry_gates.c src/game/heading_common_gates.c src/game/func_80039AB4.c src/game/func_8002B620.c src/game/func_8002E7D8.c src/game/func_8002E824.c tests/test_heading_path.c -o /tmp/test_heading_path
+          /tmp/test_heading_path
+      - name: Compile and test heading state-dispatch model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/heading_state_dispatch.c tests/test_heading_state_dispatch.c -o /tmp/test_heading_state_dispatch
+          /tmp/test_heading_state_dispatch
+      - name: Compile and test complete modeled heading callback
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_FULL_HEADING -Isrc/player_model -Isrc/game src/game/heading_entry_gates.c src/game/heading_common_gates.c src/game/heading_state_dispatch.c src/game/func_80039AB4.c src/game/func_8002B620.c src/game/func_8002E7D8.c src/game/func_8002E824.c tests/test_heading_path.c -o /tmp/test_heading_full_path
+          /tmp/test_heading_full_path
+      - name: Compile and test matched heading callback
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_FULL_HEADING -DBUBSY3D_TEST_UNIFIED_HEADING -Isrc/player_model -Isrc/game src/game/func_80036018.c src/game/func_80039AB4.c src/game/func_8002B620.c src/game/func_8002E7D8.c src/game/func_8002E824.c tests/test_heading_path.c -o /tmp/test_heading_matched_path
+          /tmp/test_heading_matched_path
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_FULL_HEADING -DBUBSY3D_TEST_UNIFIED_HEADING -DBUBSY3D_TEST_REAL_SEQUENCE_WRAPPERS -Isrc/player_model -Isrc/game src/game/func_80036018.c src/game/func_80039AB4.c src/game/func_8002B620.c src/game/func_8002E7D8.c src/game/func_8002E824.c src/game/func_8005E708.c src/game/func_8005E760.c src/game/func_8005D5A8.c tests/test_heading_path.c -o /tmp/test_heading_sequence_path
+          /tmp/test_heading_sequence_path
+      - name: Compile and test sequence-effect wrappers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8005E708.c src/game/func_8005E760.c tests/test_sequence_effect_wrappers.c -o /tmp/test_sequence_effect_wrappers
+          /tmp/test_sequence_effect_wrappers
+      - name: Compile and test sequence-playback allocation and release
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800530FC.c src/game/func_80053180.c tests/test_sequence_playback.c -o /tmp/test_sequence_playback
+          /tmp/test_sequence_playback
+      - name: Compile and test sequence playback modes
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80052BDC.c src/game/func_800530FC.c src/game/func_80053180.c src/game/func_80050128.c src/player_model/player_actor_flags.c tests/test_sequence_mode.c -o /tmp/test_sequence_mode
+          /tmp/test_sequence_mode
+      - name: Compile and test packed sequence-channel expansion
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010244.c src/game/func_80010278.c tests/test_packed_channel_copy.c -o /tmp/test_packed_channel_copy
+          /tmp/test_packed_channel_copy
+      - name: Compile and test sequence-channel initialization
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80052E54.c tests/test_sequence_channel_init.c -o /tmp/test_sequence_channel_init
+          /tmp/test_sequence_channel_init
+      - name: Test playback through real channel copies
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80052BDC.c src/game/func_80052E54.c src/game/func_800530FC.c src/game/func_80053180.c src/game/func_80050128.c src/player_model/player_actor_flags.c src/game/func_80010220.c src/game/func_80010244.c src/game/func_80010278.c tests/test_sequence_real_channels.c -o /tmp/test_sequence_real_channels
+          /tmp/test_sequence_real_channels
+      - name: Compile and test sequence-stream dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80067DEC.c tests/test_sequence_stream.c -o /tmp/test_sequence_stream
+          /tmp/test_sequence_stream
+      - name: Compile and test sequence-stream grid expansion
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80010368.c tests/test_sequence_stream_grid.c -o /tmp/test_sequence_stream_grid
+          /tmp/test_sequence_stream_grid
+      - name: Compile and test sequence-stream transfer
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_800102BC.c tests/test_sequence_stream_transfer.c -o /tmp/test_sequence_stream_transfer
+          /tmp/test_sequence_stream_transfer
+      - name: Test complete sequence-stream chain
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80052BDC.c src/game/func_80052E54.c src/game/func_800530FC.c src/game/func_80053180.c src/game/func_80050128.c src/player_model/player_actor_flags.c src/game/func_80010220.c src/game/func_80010244.c src/game/func_80010278.c src/game/func_80067DEC.c src/game/func_80010368.c src/game/func_800102BC.c tests/test_sequence_stream_chain.c -o /tmp/test_sequence_stream_chain
+          /tmp/test_sequence_stream_chain
+      - name: Compile and test matched mode-camera helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80028100.c src/game/func_8004EDEC.c src/game/func_8004EF10.c tests/test_mode_camera_helpers.c -o /tmp/test_mode_camera_helpers
+          /tmp/test_mode_camera_helpers
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_REAL_CAMERA_CHANNEL -Isrc/player_model -Isrc/game src/game/func_80028100.c src/game/func_8004EDEC.c src/game/func_8004EF10.c src/game/func_80072DF0.c tests/test_mode_camera_helpers.c -o /tmp/test_camera_channel_backend
+          /tmp/test_camera_channel_backend
+      - name: Compile and test camera GTE background controls
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80077874.c src/game/func_80072DF0.c src/game/func_8004EF10.c tests/test_mode_camera_gte.c -o /tmp/test_mode_camera_gte
+          /tmp/test_mode_camera_gte
+      - name: Compile and test mode-one heading backend
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_800395E8.c tests/test_heading_mode_one.c -o /tmp/test_heading_mode_one
+          /tmp/test_heading_mode_one
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_REAL_MODE_CAMERA -Isrc/player_model -Isrc/game src/game/func_800395E8.c src/game/func_80028100.c src/game/func_8004EDEC.c src/game/func_8004EF10.c tests/test_heading_mode_one.c -o /tmp/test_heading_mode_camera
+          /tmp/test_heading_mode_camera
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_TEST_REAL_MODE_CAMERA -DBUBSY3D_TEST_REAL_TIMED_RECORDS -Isrc/player_model -Isrc/game src/game/func_800395E8.c src/game/func_80028100.c src/game/func_8004EDEC.c src/game/func_8004EF10.c src/game/func_8002CA88.c src/game/func_8002CB2C.c tests/test_heading_mode_one.c -o /tmp/test_heading_mode_timed
+          /tmp/test_heading_mode_timed
+      - name: Compile and test heading timed records
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002CA4C.c src/game/func_8002CA88.c src/game/func_8002CB2C.c tests/test_heading_timed_records.c -o /tmp/test_heading_timed_records
+          /tmp/test_heading_timed_records
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002BAD4.c tests/test_heading_timed_delete.c -o /tmp/test_heading_timed_delete
+          /tmp/test_heading_timed_delete
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002C708.c tests/test_heading_timed_cleanup.c -o /tmp/test_heading_timed_cleanup
+          /tmp/test_heading_timed_cleanup
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002C604.c tests/test_heading_timed_start.c -o /tmp/test_heading_timed_start
+          /tmp/test_heading_timed_start
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002BAD4.c src/game/func_8002CA4C.c src/game/func_8002CA88.c src/game/func_8002CB2C.c src/game/func_8002C604.c src/game/func_8002C708.c tests/test_heading_timed_flow.c -o /tmp/test_heading_timed_flow
+          /tmp/test_heading_timed_flow
+      - name: Compile and test controller support
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004753C.c src/game/func_80055D94.c tests/test_controller_support.c -o /tmp/test_controller_support
+          /tmp/test_controller_support
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80052094.c src/game/func_800528A4.c tests/test_component_records.c -o /tmp/test_component_records
+          /tmp/test_component_records
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002DE34.c src/game/func_8002DF24.c tests/test_result_display.c -o /tmp/test_result_display
+          /tmp/test_result_display
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002C370.c src/game/func_8002DE34.c src/game/func_8002DF24.c tests/test_result_display_flow.c -o /tmp/test_result_display_flow
+          /tmp/test_result_display_flow
+      - name: Compile and test texture-font color dispatch
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800482D0.c tests/test_texture_font_color.c -o /tmp/test_texture_font_color
+          /tmp/test_texture_font_color
+      - name: Test real texture-font color backend and overlap
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800482D0.c src/game/func_80055EA8.c tests/test_texture_color_payload.c -o /tmp/test_texture_color_payload
+          /tmp/test_texture_color_payload
+      - name: Compile and test tick history
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004F688.c tests/test_tick_history.c -o /tmp/test_tick_history
+          /tmp/test_tick_history
+      - name: Compile and test frame buffer updates
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800720FC.c tests/test_frame_buffers.c -o /tmp/test_frame_buffers
+          /tmp/test_frame_buffers
+      - name: Test timing and frame buffer integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8004F688.c src/game/func_800720FC.c tests/test_tick_frame_integration.c -o /tmp/test_tick_frame_integration
+          /tmp/test_tick_frame_integration
       - name: Compile and test controller poll integration
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001A6E0.c src/game/func_8004FCF8.c src/game/func_8001B558.c src/game/func_8002278C.c src/game/func_80023A0C.c tests/test_controller_poll.c -o /tmp/test_controller_poll
@@ -156,14 +334,42 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010220.c tests/test_word_copy.c -o /tmp/test_word_copy
           /tmp/test_word_copy
+      - name: Compile and test deferred event copy
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8001B044.c src/game/func_80010220.c tests/test_deferred_event_copy.c -o /tmp/test_deferred_event_copy
+          /tmp/test_deferred_event_copy
       - name: Compile and test transition queue snapshot
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010220.c src/game/func_8001B8B8.c tests/test_transition_snapshot.c -o /tmp/test_transition_snapshot
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80010220.c src/game/func_8001B8B8.c src/game/func_8001B9C8.c tests/test_transition_snapshot.c -o /tmp/test_transition_snapshot
           /tmp/test_transition_snapshot
       - name: Compile and test level-record lookups
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800286F8.c src/game/func_80028764.c src/game/func_80028C18.c src/game/func_80028C84.c src/game/func_80028CD4.c tests/test_level_records.c -o /tmp/test_level_records
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800286F8.c src/game/func_80028764.c src/game/func_80028B5C.c src/game/func_800289E8.c src/game/func_80028C18.c src/game/func_80028C84.c src/game/func_80028CD4.c tests/test_level_records.c -o /tmp/test_level_records
           /tmp/test_level_records
+      - name: Compile and test grounded low-level helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80052AD4.c src/game/func_800532CC.c src/game/func_80022604.c src/game/func_80022674.c src/game/func_80056678.c src/game/func_80028D48.c src/game/func_80040FC0.c src/game/func_80028764.c src/game/func_80053270.c src/game/func_8005327C.c src/game/func_80037B14.c src/game/func_800691AC.c src/game/func_80028698.c tests/test_grounded_lowlevel_helpers.c -o /tmp/test_grounded_lowlevel_helpers
+          /tmp/test_grounded_lowlevel_helpers
+      - name: Compile and test movement reset backend
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80028600.c tests/test_movement_reset_backend.c -o /tmp/test_movement_reset_backend
+          /tmp/test_movement_reset_backend
+      - name: Test level-record reset and movement integration
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800288D8.c src/game/func_80028600.c src/game/func_80028B5C.c src/game/func_800289E8.c tests/test_level_record_reset.c -o /tmp/test_level_record_reset
+          /tmp/test_level_record_reset
+      - name: Test transform reset and current-transform getter
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80051678.c src/game/func_800516F8.c tests/test_transform_reset.c -o /tmp/test_transform_reset
+          /tmp/test_transform_reset
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800731C0.c src/game/func_80077C00.c tests/test_transform_reset_backend.c -o /tmp/test_transform_reset_backend
+          /tmp/test_transform_reset_backend
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800731C0.c src/game/func_80077C00.c src/game/func_8007242C.c src/game/gte_rotation_composition.c tests/test_transform_reset_real_composition.c -o /tmp/test_transform_reset_real_composition
+          /tmp/test_transform_reset_real_composition
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80073324.c tests/test_hierarchy_transform.c -o /tmp/test_hierarchy_transform
+          /tmp/test_hierarchy_transform
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80051678.c src/game/func_800731C0.c src/game/func_80073324.c src/game/func_80077C00.c src/game/func_8007242C.c src/game/func_800724B0.c src/game/gte_rotation_composition.c src/game/component_transform.c tests/test_transform_hierarchy_integration.c -o /tmp/test_transform_hierarchy_integration
+          /tmp/test_transform_hierarchy_integration
       - name: Test grounded level-list lookup integration
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/player_model -Isrc/game src/game/func_80026648.c src/game/func_80027E24.c src/game/func_80028C84.c src/game/func_80028CD4.c src/game/func_80028764.c src/player_model/bubsy_grounded_state_flag.c tests/test_grounded_level_list_integration.c -o /tmp/test_grounded_level_list_integration
@@ -218,7 +424,7 @@ jobs:
           /tmp/test_readable_matches
       - name: Compile and test readable transform wrappers
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80053FA4.c src/game/func_800540BC.c src/game/func_800722C8.c tests/test_readable_transforms.c -o /tmp/test_readable_transforms
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80053FA4.c src/game/func_800540BC.c src/game/func_80010038.c src/game/func_800722C8.c tests/test_readable_transforms.c -o /tmp/test_readable_transforms
           /tmp/test_readable_transforms
       - name: Compile and test movement step production
         run: |
@@ -228,13 +434,37 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800548A0.c src/game/func_800549E8.c src/game/func_80054A6C.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
           /tmp/test_grounded_rotation
+      - name: Compile and test rotation-generator candidate
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80077C50.c tests/test_rotation_generator.c -o /tmp/test_rotation_generator
+          /tmp/test_rotation_generator
+      - name: Compile and test matrix transpose
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80077C00.c tests/test_matrix_transpose.c -o /tmp/test_matrix_transpose
+          /tmp/test_matrix_transpose
+      - name: Compile and test transform composition
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8007242C.c src/game/func_800724B0.c tests/test_transform_composition.c -o /tmp/test_transform_composition
+          /tmp/test_transform_composition
+      - name: Compile and test GTE rotation composition model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/gte_rotation_composition.c tests/test_gte_rotation_composition.c -o /tmp/test_gte_rotation_composition
+          /tmp/test_gte_rotation_composition
+      - name: Compile and test square-root backend wrappers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/sqrt_backend_wrappers.c src/game/func_80053904.c src/game/func_80062D4C.c tests/test_sqrt_backend_wrappers.c -o /tmp/test_sqrt_backend_wrappers
+          /tmp/test_sqrt_backend_wrappers
+      - name: Compile and test GTE square-root candidates
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/gte_sqrt_backends.c src/game/sqrt_backend_wrappers.c src/game/func_80053904.c tests/test_gte_sqrt_backends.c -o /tmp/test_gte_sqrt_backends
+          /tmp/test_gte_sqrt_backends
       - name: Compile and test grounded basis reconstruction
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054488.c src/game/func_800542A4.c src/game/func_800550A4.c src/game/func_8005541C.c tests/test_grounded_basis.c -o /tmp/test_grounded_basis
           /tmp/test_grounded_basis
       - name: Compile and test fixed-point products
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_8001007C.c src/player_model/player_vector_dot.c src/player_model/player_vector_cross.c tests/test_fixed_vectors.c -o /tmp/test_fixed_vectors
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80010038.c src/game/func_8001007C.c src/player_model/player_vector_dot.c src/player_model/player_vector_cross.c tests/test_fixed_vectors.c -o /tmp/test_fixed_vectors
           /tmp/test_fixed_vectors
       - name: Compile and test movement initialization
         run: |

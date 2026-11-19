@@ -73,9 +73,10 @@ void func_80052E18(void *value) {
     ++restart_calls;
 }
 
-void func_80052BDC(void *value, int32_t mode) {
+int32_t func_80052BDC(void *value, int32_t mode) {
     assert(value == &component && mode == 0);
     ++sequence_mode_calls;
+    return 0;
 }
 
 void func_8005290C(void *value, uint8_t *output) {

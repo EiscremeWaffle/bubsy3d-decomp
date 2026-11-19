@@ -1,8 +1,9 @@
-## Status
+## Statuss
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report currently contains 63,972 exact code bytes across 263
-functions (`2.084216%` of mapped code). These totals include repeated module
+The validated report contains 80,304 exact code bytes across 372 functions
+(`2.598906%` of mapped code).
+These totals include repeated module
 copies and both C-based and assembly-backed matches. The actor-event
 dispatcher `bubsy_process_actor_event` now matches from readable C without
 instruction snippets. The shared actor-state dispatcher is
@@ -31,6 +32,17 @@ native tests cover 1,310,720 boundary combinations plus helper mutations.
 Five formerly uncredited grounded-path helpers also match readable C:
 `func_800556D0`, `func_8001B558`, `func_80034EF8`, `func_8003539C`, and
 `func_80039158`, totaling 4,720 bytes.
+The complete 2,404-byte heading callback `func_80036018` now also matches
+readable C, including its 196-byte compiler-generated switch table. Native
+and original-MIPS comparisons cover its entry, gates, switch, timer state, and
+callback effects; the switch callees and mode-one backend are stubbed in that
+integration test. The mode-one and effect routines themselves separately
+match readable C, as do the timed-record start/stop and display setup/cleanup
+functions. The camera-channel shift helper matches plain C; its GTE
+background-color backend matches with three explicit CTC2 instruction words.
+Six direct secondary-controller helpers now match plain C as well: timed-record
+setting and deletion, a selection getter, a screen-position setter, and
+two component-record copies. The secondary controller itself remains unmatched.
 The readable-C pass has additionally converted nine old assembly-backed
 functions (1,852 bytes), and removed instruction snippets from seven existing
 C matches without changing any matched bytes.
@@ -59,7 +71,9 @@ native and sanitizer tests pass. The component-basis allocator
 `func_80054624` also matches plain C; the allocation backend is BIOS `malloc`,
 and the real setup/allocation/table-lookup integration tests cover allocation
 failure and repeat setup. Three shared record lookups, two sequence wrappers,
-and three runtime helpers also match plain C.
+and three runtime helpers also match plain C. The 364-byte streaming dispatcher
+`func_80067DEC` also matches plain C; its two lower-level streaming helpers
+remain behavioral candidates rather than byte matches.
 The physical pad initializer `func_8004FCBC`, reader `func_8004FCF8`, input
 poller `func_8001A6E0`, stream-sample writer `func_8004FF28`, and default
 event-table publisher `func_8002278C` now match readable C. Five input-event
@@ -70,24 +84,47 @@ composition, and conversion through to the final synthetic orientation, with
 synthetic actor/move-request state, other engine stubs, and a narrow software
 model for the required GTE operations. This is not a hardware test. The callback
 `func_80023E94` still lacks readable matching C; the queue processor is now a
-readable-C exact match. The unstubbed controller-to-orientation path and GTE
-composition internals remain unfinished.
+readable-C exact match. The unstubbed controller-to-orientation path and
+instruction-free GTE internals remain unfinished. The 268-byte composition
+backends `func_80076890` and `func_8007699C` now match from C with explicit
+COP2 operations. They write the first and second operand respectively; native
+and original-MIPS modeled tests cover saturation, aliasing, padding, and
+unchanged translation.
+The rotation generator has a readable C candidate with original-MIPS and
+native behavioral coverage, but its 652-byte body has not yet been proven to
+match and is not included in the exact-match totals.
+Both 48-byte square-root forwarding wrappers now match plain C. Readable
+GTE-assisted candidates for their two backends are behavior-tested, including
+negative wrapped inputs, but remain unmatched and uncredited.
+The controller callback's bitmap-to-event loop also has a separately tested
+host model, but the complete callback remains unmatched.
+The bounded 352-byte GTE basis-transform routine is still an assembly
+transcription, but an optional original-MIPS test now compares its output to the
+fixed-point reference for 132 deterministic matrix/vector cases, including
+signed-word split boundaries. It checks the preserved fourth output word and
+return pointer too; it does not model GTE flags or timing.
 The 272-byte event-queue snapshot `func_8001B8B8` now matches readable C in
 all 20 level executables. Its forward word-copy helper `func_80010220` also
 matches all 22 executable copies; it requires aligned arrays and a nonzero
 count and does not provide `memmove` overlap semantics. The queue-update gate
 `func_80032D7C` also matches all 120 L0 bytes from plain C.
-Current exact coverage contains 232 instruction-free GCC C matches (47,264
-bytes), 24 assembly-assisted C matches (6,236 bytes), five assembly-backed
-transcriptions (10,440 bytes), and two Clang-built getters (32 bytes). The
-assembly-assisted matches are the 20 cross-product copies, the dot product,
-the scalar multiply, the queue processor, and the sequence-notification backend.
+The 92-byte queue append helper `func_8001B044` now also matches from readable
+C; it copies seven words into the next input-queue record before incrementing
+the live count.
+The sequence playback mode `func_80052BDC`, channel initializer
+`func_80052E54`, and list allocator/releaser `func_800530FC`/`func_80053180`
+now match readable C. The two packed-channel expanders `func_80010244` and
+`func_80010278` match all 22 executable copies. Original-MIPS tests exercise
+the real playback-to-channel chain, as well as overlapping input/output and
+callback mutations; the separate streaming backend remains stubbed there.
+Current exact coverage includes instruction-free GCC C, assembly-assisted C,
+whole-function assembly transcriptions, and two Clang-built getters.
 Instruction-free sources may still use symbol aliases, register constraints,
 and empty compiler barriers.
 The assembly-assisted and assembly-backed matches remain unfinished for
 instruction-free C decompilation.
 Portable host models remain covered by native regression tests. The current report maps
-3,069,356 instruction bytes across all 22 recognized executables, including
+3,089,676 instruction bytes across all 22 recognized executables, including
 explicitly labeled reachable fragments. The original SDK version and complete
 section layout remain unresolved. Assembly-backed matches are not fully
 recovered high-level C, and many actor-state helper meanings remain unknown.
@@ -221,8 +258,8 @@ fingerprint plus cautious format evidence in [config/disc-map.json](../config/di
 
 [config/executable-coverage.json](../config/executable-coverage.json) accounts for
 all 15,818,752 loaded executable payload bytes using the original startup baseline.
-The newer [config/code-map.json](../config/code-map.json) maps 3,069,356 instruction
-bytes and explicitly lists the other 12,749,580 bytes as unclassified code/data.
+The newer [config/code-map.json](../config/code-map.json) maps 3,089,676 instruction
+bytes and explicitly lists the other 12,729,076 bytes as unclassified code/data.
 An inventory or a load region is not a complete internal function map.
 
 To reproduce the maps and update the report using your extracted disc:

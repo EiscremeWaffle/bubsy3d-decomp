@@ -22,6 +22,7 @@ class ProgressTests(unittest.TestCase):
     def test_aspsx_version_defaults_and_accepts_supported_override(self):
         self.assertEqual(aspsx_version({}), "2.30")
         self.assertEqual(aspsx_version({"aspsx_version": "2.21"}), "2.21")
+        self.assertEqual(aspsx_version({"aspsx_version": "2.50"}), "2.50")
         for invalid in ("2.20", None, ["2.21"]):
             with self.subTest(invalid=invalid), self.assertRaisesRegex(
                 ValueError, "Unsupported ASPSX version"

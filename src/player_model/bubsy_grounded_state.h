@@ -19,7 +19,9 @@ typedef struct BubsyGroundedDescriptor {
 } BubsyGroundedDescriptor;
 
 typedef struct BubsyGroundedShared {
-    uint8_t unknown_00[0x30];
+    uint8_t unknown_00[4];
+    int32_t state_04;
+    uint8_t unknown_08[0x28];
     int32_t stride_30;
     int32_t stride_delta_34;
     int32_t pending_38[3];

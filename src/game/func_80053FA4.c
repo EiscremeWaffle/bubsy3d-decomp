@@ -1,3 +1,4 @@
+#include "gte_basis_transform.h"
 #include <stdint.h>
 
 typedef struct ComponentBasisView {
@@ -7,7 +8,6 @@ typedef struct ComponentBasisView {
     int32_t translation[3];
 } ComponentBasisView;
 
-extern int32_t func_80077298(const volatile ComponentBasisView *basis, const int32_t input[4], int32_t output[4]);
 extern const volatile ComponentBasisView g_gte_global_basis;
 extern const volatile uint32_t g_gte_global_basis_word_0;
 extern const volatile uint32_t g_gte_global_basis_word_1;

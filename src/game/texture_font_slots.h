@@ -18,9 +18,11 @@ extern const char g_texture_font_error_condition[];
 extern const char g_texture_font_state_condition[];
 extern const char g_texture_font_source_path[];
 
+int32_t func_800482D0(int32_t tag, const uint8_t color[3]);
 int32_t func_800483C0(int32_t tag);
 void func_80048488(void);
 int32_t func_80048504(int32_t tag);
 int32_t func_80048C48(int32_t tag);
+int32_t func_80055EA8(uint8_t *payload, const uint8_t color[3]);
 
 #endif

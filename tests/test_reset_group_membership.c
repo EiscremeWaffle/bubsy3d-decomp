@@ -31,12 +31,13 @@ void *func_80028764(int32_t index) {
     return &actor;
 }
 
-void func_80052BDC(void *object, int32_t mode) {
+int32_t func_80052BDC(void *object, int32_t mode) {
     assert(mode == 1 && prepared_count < sizeof(prepared) / sizeof(prepared[0]));
     prepared[prepared_count++] = object;
     if (mutate_on_first_object && object == &assets[0]) {
         groups[1].count = 0;
     }
+    return 0;
 }
 
 static uint32_t next_random(void) {

@@ -13,7 +13,7 @@ from tools.fetch_tools import GCC_COMPILERS, MASPSX_HASH, fetch_matching_tools
 from tools.verify_original import ROOT
 
 MASPSX_OPTIONAL_FLAGS = {"--expand-div"}
-MASPSX_ASPSX_VERSIONS = {"2.21", "2.30"}
+MASPSX_ASPSX_VERSIONS = {"2.21", "2.30", "2.50"}
 
 
 def aspsx_version(source_spec):

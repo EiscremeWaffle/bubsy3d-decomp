@@ -10,7 +10,7 @@ from tools.verify_original import ROOT, inspect_executable, verify_executable
 HAS_UNICORN = importlib.util.find_spec("unicorn") is not None
 ORIGINAL = ROOT / "original" / "usa" / "L0" / "L0.EXE"
 if HAS_UNICORN:
-    from unicorn import Uc, UC_ARCH_MIPS, UC_HOOK_CODE, UC_MODE_LITTLE_ENDIAN, UC_MODE_MIPS32
+    from unicorn import Uc, UC_ARCH_MIPS, UC_HOOK_CODE, UC_HOOK_MEM_WRITE, UC_MODE_LITTLE_ENDIAN, UC_MODE_MIPS32
     from unicorn.mips_const import (
         UC_MIPS_REG_0,
         UC_MIPS_REG_A0,
@@ -21,7 +21,9 @@ if HAS_UNICORN:
         UC_MIPS_REG_PC,
         UC_MIPS_REG_RA,
         UC_MIPS_REG_S0,
+        UC_MIPS_REG_S1,
         UC_MIPS_REG_S3,
+        UC_MIPS_REG_S7,
         UC_MIPS_REG_SP,
         UC_MIPS_REG_V0,
     )
@@ -42,9 +44,12 @@ NOOP_BACKENDS = (
     0x8001B0A0, 0x80029164, 0x80032C8C, 0x80039AB4,
 )
 ROTATION_GENERATOR = 0x80077C50
+ROTATION_TRIG_TABLE = 0x800A6558
+SQRT_LOOKUP_DOMAIN = 0x800A5CA8
 ROTATION_MULTIPLIER = 0x8007699C
 ROTATION_CONVERTER = 0x800542A4
 ROTATION_CROSS = 0x80010128
+CYCLIC_ENTRIES = 0x8009E64C
 TRACE = {
     0x8001B1E4: "queue processor",
     QUEUE_UPDATE_GATE: "queue-update gate",
@@ -79,11 +84,66 @@ def signed_halfword(value):
     return value - 0x10000 if value & 0x8000 else value
 
 
+def rotation_generator_reference(angles, table):
+    def trig(angle):
+        angle = signed_halfword(angle)
+        sine, cosine = struct.unpack_from("<hh", table, (abs(angle) & 0xFFF) * 4)
+        return (-sine if angle < 0 else sine), cosine
+
+    def product(left, right, negate=False):
+        value = left * right
+        if negate:
+            value = -value
+        value = ((value + 0x80000000) & 0xFFFFFFFF) - 0x80000000
+        return value >> 12
+
+    sx, cx = trig(angles[0])
+    sy, cy = trig(angles[1])
+    sz, cz = trig(angles[2])
+    x_part = product(cz, -sy)
+    z_part = product(sz, -sy)
+    return tuple(value & 0xFFFF for value in (
+        product(cz, cy),
+        product(sz, cy, negate=True),
+        sy,
+        product(sz, cx) - product(x_part, sx),
+        product(cz, cx) + product(z_part, sx),
+        product(cy, sx, negate=True),
+        product(sz, sx) + product(x_part, cx),
+        product(cz, sx) - product(z_part, cx),
+        product(cy, cx),
+    ))
+
+
 def leading_sign_bits(value):
     value &= 0xFFFFFFFF
     if value & 0x80000000:
         value = (~value) & 0xFFFFFFFF
     return 32 - value.bit_length()
+
+
+def sqrt_backend_reference(value, domain, q12):
+    value &= 0xFFFFFFFF
+    leading = leading_sign_bits(value)
+    if leading == 32:
+        return 0
+    even = leading & ~1
+    signed_value = value if value < 0x80000000 else value - 0x100000000
+    adjustment = even - 24
+    if adjustment >= 0:
+        normalized = (signed_value << adjustment) & 0xFFFFFFFF
+        if normalized & 0x80000000:
+            normalized -= 0x100000000
+    else:
+        normalized = signed_value >> -adjustment
+    index = normalized + 256
+    if not 0 <= index < 512:
+        raise AssertionError(f"normalized square-root lookup escaped its domain: {index}")
+    sample = struct.unpack_from("<h", domain, index * 2)[0] & 0xFFFFFFFF
+    if q12:
+        shift = 9 - even // 2
+        return (sample << shift) & 0xFFFFFFFF if shift >= 0 else sample >> -shift
+    return ((sample << (15 - even // 2)) & 0xFFFFFFFF) >> 12
 
 
 def gte_rotate_vector(matrix, vector):
@@ -98,17 +158,56 @@ def gte_rotate_vector(matrix, vector):
     return tuple(output)
 
 
+def gte_basis_transform(matrix, vector):
+    if len(matrix) != 9 or len(vector) != 3:
+        raise ValueError("GTE basis transform requires a 3x3 matrix and a three-component vector")
+    if any(value < -32768 or value > 32767 for value in matrix):
+        raise ValueError("GTE basis matrix elements must be signed halfwords")
+    if any(value < -0x80000000 or value > 0x7FFFFFFF for value in vector):
+        raise ValueError("GTE basis vector elements must be signed words")
+
+    high_parts = []
+    low_parts = []
+    for value in vector:
+        if value < 0:
+            magnitude = (-value) & 0xFFFFFFFF
+            high_parts.append(signed_halfword(-(magnitude >> 15)))
+            low_parts.append(signed_halfword(-(magnitude & 0x7FFF)))
+        else:
+            high_parts.append(signed_halfword(value >> 15))
+            low_parts.append(signed_halfword(value & 0x7FFF))
+
+    output = []
+    for row in range(3):
+        high_mac = sum(
+            matrix[row * 3 + column] * high_parts[column]
+            for column in range(3)
+        ) & 0xFFFFFFFF
+        low_mac = sum(
+            matrix[row * 3 + column] * low_parts[column]
+            for column in range(3)
+        ) >> 12
+        result = ((high_mac << 3) + low_mac) & 0xFFFFFFFF
+        output.append(result - 0x100000000 if result & 0x80000000 else result)
+    return tuple(output)
+
+
 class RotationGteModel:
-    """Model MVMVA(sf=1, mx=0, v=0, cv=3, lm=0) and leading-sign transfers."""
+    """Model the observed MVMVA operations and leading-sign transfers."""
 
     def __init__(self):
         self.control = {}
         self.data = {}
         self.rotations = 0
+        self.basis_transform_passes = 0
         self.leading_counts = 0
 
     def hook(self, cpu, address, size, data):
-        if not (0x8007699C <= address < 0x80076AA8 or address in (0x80076554, 0x80076560)):
+        if not (
+            0x80076890 <= address < 0x80076AA8
+            or 0x80077298 <= address < 0x800773F8
+            or address in (0x800764D0, 0x800764DC, 0x80076554, 0x80076560)
+        ):
             return
         word = struct.unpack("<I", cpu.mem_read(physical(address), 4))[0]
         opcode = word >> 26
@@ -128,15 +227,27 @@ class RotationGteModel:
             for index, value in enumerate(gte_rotate_vector(matrix, vector)):
                 self.data[9 + index] = value & 0xFFFFFFFF
             self.rotations += 1
+        elif word in (0x4A41E012, 0x4A49E012):
+            packed = b"".join(struct.pack("<I", self.control[index]) for index in range(5))
+            matrix = struct.unpack("<10h", packed)[:9]
+            vector = tuple(signed_halfword(self.data[index]) for index in (9, 10, 11))
+            shift = 12 if word == 0x4A49E012 else 0
+            for row in range(3):
+                value = sum(
+                    matrix[row * 3 + column] * vector[column]
+                    for column in range(3)
+                ) >> shift
+                self.data[25 + row] = value & 0xFFFFFFFF
+            self.basis_transform_passes += 1
         elif opcode == 0x12 and rs == 6 and rd in range(5):
             self.control[rd] = cpu.reg_read(UC_MIPS_REG_0 + rt) & 0xFFFFFFFF
-        elif opcode == 0x12 and rs == 4 and rd in (0, 1, 30):
+        elif opcode == 0x12 and rs == 4 and rd in (0, 1, 9, 10, 11, 30):
             value = cpu.reg_read(UC_MIPS_REG_0 + rt) & 0xFFFFFFFF
             self.data[rd] = value
             if rd == 30:
                 self.data[31] = leading_sign_bits(value)
                 self.leading_counts += 1
-        elif opcode == 0x12 and rs == 0 and rd in (9, 10, 11, 31):
+        elif opcode == 0x12 and rs == 0 and rd in (9, 10, 11, 25, 26, 27, 31):
             cpu.reg_write(UC_MIPS_REG_0 + rt, self.data[rd])
         elif opcode == 0x3A and rt == 11:
             target = cpu.reg_read(UC_MIPS_REG_0 + rs) + signed_halfword(word)
@@ -251,6 +362,611 @@ class OriginalControllerRouteTests(unittest.TestCase):
                         self.assertEqual(event, (event_id, 4, 0xFFFE, 0))
                         self.assertEqual(read_word(cpu, BITMAP_STATE), (1 << bit) if active else 0)
 
+    def test_controller_bitmap_dispatch_loop(self):
+        cpu = self.fresh_cpu()
+        rng = random.Random(0x23E94)
+        press_address, release_address = 0x8009EEF0, 0x8009EFF0
+        stack = STACK - 0x120
+        events = []
+        mutation_enabled = False
+
+        def intercept(uc, address, size, data):
+            if address != 0x8001B558:
+                return
+            arguments = tuple(
+                uc.reg_read(register)
+                for register in (UC_MIPS_REG_A0, UC_MIPS_REG_A1, UC_MIPS_REG_A2, UC_MIPS_REG_A3)
+            )
+            arguments += struct.unpack("<4I", uc.mem_read(physical(uc.reg_read(UC_MIPS_REG_SP) + 0x10), 16))
+            events.append((arguments, read_word(uc, BITMAP_STATE)))
+            if mutation_enabled and len(events) == 1:
+                write_word(uc, BITMAP_STATE, read_word(uc, BITMAP_STATE) | (1 << 5))
+                uc.mem_write(physical(ROW_SELECTOR), struct.pack("<h", 1))
+                write_word(uc, MAPPING_ROW + 4, 2)
+                write_word(uc, press_address + (2 * 16 + 4) * 4, 0x1F1)
+                write_word(uc, release_address + (2 * 16 + 5) * 4, 0x222)
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        for sample in range(513):
+            if sample == 0:
+                buttons, bitmap, selector, rows = 0x11, 0x5A5A0000, 0, [0, 0, 0, 0]
+                pressed = [[0] * 16 for _ in range(4)]
+                released = [[0] * 16 for _ in range(4)]
+                pressed[0][0] = 0x100
+                mutation_enabled = True
+            else:
+                buttons = rng.getrandbits(32)
+                bitmap = rng.getrandbits(32)
+                selector = rng.randrange(2)
+                rows = [rng.randrange(4) for _ in range(4)]
+                pressed = [[rng.choice((0, 0, 0x100, rng.getrandbits(32))) for _ in range(16)]
+                           for _ in range(4)]
+                released = [[rng.choice((0, 0, 0x100, rng.getrandbits(32))) for _ in range(16)]
+                            for _ in range(4)]
+                mutation_enabled = bool(sample & 1)
+
+            expected_bitmap, expected_selector = bitmap, selector
+            expected_rows = rows.copy()
+            expected_pressed = [row.copy() for row in pressed]
+            expected_released = [row.copy() for row in released]
+            expected_events = []
+            for bit in range(16):
+                mask = 1 << bit
+                if buttons & mask:
+                    expected_bitmap |= mask
+                    table = expected_pressed
+                elif expected_bitmap & mask:
+                    expected_bitmap &= ~mask
+                    table = expected_released
+                else:
+                    continue
+                event = table[expected_rows[expected_selector]][bit]
+                if event == 0:
+                    continue
+                expected_events.append(((event & 0xFF, 4, 0xFFFE, 0, 0, 0, 0, 0), expected_bitmap))
+                if mutation_enabled and len(expected_events) == 1:
+                    expected_bitmap |= 1 << 5
+                    expected_selector = 1
+                    expected_rows[1] = 2
+                    expected_pressed[2][4] = 0x1F1
+                    expected_released[2][5] = 0x222
+
+            cpu.mem_write(physical(stack), b"\0" * 0x120)
+            write_word(cpu, stack + 0x118, RETURN)
+            cpu.reg_write(UC_MIPS_REG_SP, stack)
+            cpu.reg_write(UC_MIPS_REG_S3, buttons)
+            cpu.reg_write(UC_MIPS_REG_S7, 0)
+            write_word(cpu, BITMAP_STATE, bitmap)
+            cpu.mem_write(physical(ROW_SELECTOR), struct.pack("<h", selector))
+            cpu.mem_write(physical(MAPPING_ROW), struct.pack("<4i", *rows))
+            cpu.mem_write(physical(press_address), struct.pack("<64I", *(value for row in pressed for value in row)))
+            cpu.mem_write(physical(release_address), struct.pack("<64I", *(value for row in released for value in row)))
+            events.clear()
+            with self.subTest(sample=sample, mutation=mutation_enabled):
+                self.call(cpu, 0x80024A70)
+                self.assertEqual(events, expected_events)
+                self.assertEqual(read_word(cpu, BITMAP_STATE), expected_bitmap)
+                self.assertEqual(struct.unpack("<h", cpu.mem_read(physical(ROW_SELECTOR), 2))[0],
+                                 expected_selector)
+                self.assertEqual(struct.unpack("<4i", cpu.mem_read(physical(MAPPING_ROW), 16)),
+                                 tuple(expected_rows))
+                self.assertEqual(struct.unpack("<64I", cpu.mem_read(physical(press_address), 256)),
+                                 tuple(value for row in expected_pressed for value in row))
+                self.assertEqual(struct.unpack("<64I", cpu.mem_read(physical(release_address), 256)),
+                                 tuple(value for row in expected_released for value in row))
+
+    def test_grounded_component_and_bit_helpers(self):
+        cpu = self.fresh_cpu()
+        component, output = 0x801E5000, 0x801E5100
+        sentinel = bytes(range(48))
+        for value in range(256):
+            cpu.mem_write(physical(component), sentinel)
+            cpu.mem_write(physical(component + 4), bytes((value,)))
+            write_word(cpu, output, 0xDEADBEEF)
+            cpu.reg_write(UC_MIPS_REG_A0, component)
+            cpu.reg_write(UC_MIPS_REG_A1, output)
+            self.call(cpu, 0x80052AD4)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+            self.assertEqual(read_word(cpu, output), value & 3)
+            self.assertEqual(cpu.mem_read(physical(component + 4), 1)[0], value)
+
+        cpu.mem_write(physical(component), sentinel)
+        cpu.reg_write(UC_MIPS_REG_A0, component)
+        cpu.reg_write(UC_MIPS_REG_A1, component + 4)
+        self.call(cpu, 0x80052AD4)
+        self.assertEqual(read_word(cpu, component + 4), sentinel[4] & 3)
+
+        rng = random.Random(0x532CC)
+        values = (0, 1, 0x7F, 0x80, 0xFF, 0x100, 0x7FFF, 0x8000,
+                  0xFFFF, 0x10000, 0x7FFFFFFF, 0x80000000, 0xFFFFFFFF)
+        cases = [(a, b, c, f) for a in values for b in values for c in values
+                 for f in (0, 0x80000000, 0xFFFFFFFF)]
+        cases.extend(tuple(rng.getrandbits(32) for _ in range(4)) for _ in range(5000))
+        for first, second, third, flags in cases:
+            cpu.mem_write(physical(component), sentinel)
+            cpu.reg_write(UC_MIPS_REG_A0, component)
+            cpu.reg_write(UC_MIPS_REG_A1, first)
+            cpu.reg_write(UC_MIPS_REG_A2, second)
+            cpu.reg_write(UC_MIPS_REG_A3, third)
+            write_word(cpu, STACK + 0x10, flags)
+            expected = (flags | (second << 16) | (signed_halfword(first) << 8) |
+                        signed_halfword(third)) & 0xFFFFFFFF
+            self.call(cpu, 0x800532CC)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), expected)
+            self.assertEqual(read_word(cpu, component + 0x24), expected)
+            self.assertEqual(cpu.mem_read(physical(component), 0x24), sentinel[:0x24])
+            self.assertEqual(cpu.mem_read(physical(component + 0x28), 8), sentinel[0x28:])
+
+        for selector in (*range(256), 0x100, 0x1FF, 0x10000, 0xFFFFFFFF):
+            for state in (0, 0xFFFFFFFF, 0x55555555, 0xAAAAAAAA):
+                write_word(cpu, component + 4, state)
+                write_word(cpu, component + 0x10, state ^ 0xFFFFFFFF)
+                for address, word in ((0x80022674, state), (0x80022604, state ^ 0xFFFFFFFF)):
+                    cpu.reg_write(UC_MIPS_REG_A0, component)
+                    cpu.reg_write(UC_MIPS_REG_A1, selector)
+                    self.call(cpu, address)
+                    self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), (word >> (selector & 31)) & 1)
+                self.assertEqual(read_word(cpu, component + 4), state)
+                self.assertEqual(read_word(cpu, component + 0x10), state ^ 0xFFFFFFFF)
+
+    def test_grounded_auxiliary_and_global_helpers(self):
+        cpu = self.fresh_cpu()
+        record_count = 0x801D8994
+        auxiliary_base = 0x801D0E8C
+        values = (0, 1, 7, 0x7FFFFFFF, 0x80000000, 0xFFFFFFFD, 0xFFFFFFFF)
+        for count in values:
+            write_word(cpu, record_count, count)
+            self.call(cpu, 0x80028D48)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), count)
+            for index in values:
+                cpu.reg_write(UC_MIPS_REG_A0, index)
+                self.call(cpu, 0x80040FC0)
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0),
+                                 (auxiliary_base + ((index - count) & 0xFFFFFFFF) * 0x34) & 0xFFFFFFFF)
+
+        case_object = 0x800BE104
+        pointers = (0, 0x801E1000, 0x801E2000)
+        for current in pointers:
+            for expected in pointers:
+                for replacement in pointers:
+                    write_word(cpu, case_object, current)
+                    cpu.reg_write(UC_MIPS_REG_A0, expected)
+                    cpu.reg_write(UC_MIPS_REG_A1, replacement)
+                    self.call(cpu, 0x80037B14)
+                    self.assertEqual(read_word(cpu, case_object),
+                                     replacement if current == expected else current)
+
+        for pointer in pointers:
+            cpu.reg_write(UC_MIPS_REG_A0, pointer)
+            self.call(cpu, 0x80053270)
+            self.assertEqual(read_word(cpu, 0x800BE33C), pointer)
+            self.call(cpu, 0x8005327C)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), pointer)
+
+        rng = random.Random(0x691AC)
+        for value in (*values, *(rng.getrandbits(32) for _ in range(1024))):
+            write_word(cpu, GP + 0x6C0, 0xA5A51234)
+            cpu.reg_write(UC_MIPS_REG_A0, value)
+            self.call(cpu, 0x800691AC)
+            self.assertEqual(read_word(cpu, GP + 0x6C0), ((value & 0xFFFF) << 16) | 0x1234)
+
+    def test_level_record_position_lookup(self):
+        cpu = self.fresh_cpu()
+        records, positions, output = 0x801E6000, 0x801E6100, 0x801E6200
+        samples = (
+            (0, 0, 0, 0),
+            (-1, 1, -0x80000000, 0x7FFFFFFF),
+            (123, -456, 789, -111),
+            (0x12345678, -99, 55, -0x1234567),
+        )
+        write_word(cpu, 0x801D89A4, records)
+        for index, position in enumerate(samples):
+            write_word(cpu, records + index * 0x24 + 0x0C, positions + index * 16)
+            cpu.mem_write(physical(positions + index * 16), struct.pack("<4i", *position))
+
+        for count in (-1, 0, 1, 4):
+            write_word(cpu, 0x801D8994, count & 0xFFFFFFFF)
+            for index in (-0x80000000, -1, 0, 1, 3, 4, 0x7FFFFFFF):
+                cpu.mem_write(physical(output), b"\xA5" * 20)
+                cpu.reg_write(UC_MIPS_REG_A0, index & 0xFFFFFFFF)
+                cpu.reg_write(UC_MIPS_REG_A1, output)
+                self.call(cpu, 0x80028B5C)
+                valid = 0 <= index < count
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), int(valid))
+                expected = struct.pack("<4i", *samples[index]) if valid else b"\xA5" * 16
+                self.assertEqual(cpu.mem_read(physical(output), 20), expected + b"\xA5" * 4)
+
+        write_word(cpu, 0x801D8994, len(samples))
+        for index, position in enumerate(samples):
+            cpu.reg_write(UC_MIPS_REG_A0, index)
+            cpu.reg_write(UC_MIPS_REG_A1, positions + index * 16)
+            self.call(cpu, 0x80028B5C)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 1)
+            self.assertEqual(cpu.mem_read(physical(positions + index * 16), 16),
+                             struct.pack("<4i", *position))
+
+    def test_level_record_rotation_lookup(self):
+        cpu = self.fresh_cpu()
+        records, other_records = 0x801E6000, 0x801E6300
+        positions, rotations, output = 0x801E6400, 0x801E6500, 0x801E6600
+        position_values = (
+            (0, 1, -1, 123),
+            (-0x80000000, -7, 0x7FFFFFFF, 456),
+            (123, -456, 789, -111),
+            (0x12345678, -99, 55, -0x1234567),
+        )
+        rotation_values = tuple(
+            tuple((record * 0x1111 + element * 0x1234) & 0xFFFF for element in range(9))
+            for record in range(4)
+        )
+        default = bytes(cpu.mem_read(physical(0x8009F120), 20))
+        write_word(cpu, 0x801D89A4, records)
+        for index, position in enumerate(position_values):
+            entry = records + index * 0x24
+            write_word(cpu, entry + 8, 0 if index == 1 else rotations + index * 0x20)
+            write_word(cpu, entry + 0x0C, positions + index * 16)
+            cpu.mem_write(physical(rotations + index * 0x20),
+                          struct.pack("<9H", *rotation_values[index]))
+            cpu.mem_write(physical(positions + index * 16), struct.pack("<4i", *position))
+
+        for count in (-1, 0, 1, 4):
+            write_word(cpu, 0x801D8994, count & 0xFFFFFFFF)
+            for index in (-0x80000000, -1, 0, 1, 2, 3, 4, 0x7FFFFFFF):
+                cpu.mem_write(physical(output), b"\xA5" * 36)
+                cpu.reg_write(UC_MIPS_REG_A0, index & 0xFFFFFFFF)
+                cpu.reg_write(UC_MIPS_REG_A1, output)
+                self.call(cpu, 0x800289E8)
+                valid = 0 <= index < count
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), int(valid))
+                if valid:
+                    matrix = (default if index == 1 else
+                              struct.pack("<9H", *rotation_values[index]) + b"\xA5" * 2)
+                    expected = matrix + struct.pack("<3i", *position_values[index][:3])
+                else:
+                    expected = b"\xA5" * 32
+                self.assertEqual(cpu.mem_read(physical(output), 36), expected + b"\xA5" * 4)
+
+        cpu = self.fresh_cpu()
+        alternate_rotation = tuple(0xF000 + element for element in range(9))
+        alternate_position = (101, 202, 303, 404)
+        write_word(cpu, 0x801D8994, 4)
+        write_word(cpu, records + 8, rotations)
+        write_word(cpu, records + 0x0C, positions)
+        cpu.mem_write(physical(rotations), struct.pack("<9H", *rotation_values[0]))
+        cpu.mem_write(physical(positions), struct.pack("<4i", *position_values[0]))
+        write_word(cpu, other_records + 8, rotations + 0x80)
+        write_word(cpu, other_records + 0x0C, positions + 0x80)
+        cpu.mem_write(physical(rotations + 0x80), struct.pack("<9H", *alternate_rotation))
+        cpu.mem_write(physical(positions + 0x80), struct.pack("<4i", *alternate_position))
+        reads = []
+
+        def switch_table(uc, address, size, data):
+            if address == 0x80028A9C:
+                write_word(uc, 0x801D89A4, other_records if len(reads) & 1 else records)
+                reads.append(address)
+
+        write_word(cpu, 0x801D89A4, records)
+        hook = cpu.hook_add(UC_HOOK_CODE, switch_table)
+        cpu.mem_write(physical(output), b"\xA5" * 36)
+        cpu.reg_write(UC_MIPS_REG_A0, 0)
+        cpu.reg_write(UC_MIPS_REG_A1, output)
+        self.call(cpu, 0x800289E8)
+        cpu.hook_del(hook)
+        self.assertEqual(len(reads), 9)
+        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 1)
+        expected_rotation = tuple(
+            alternate_rotation[index] if index & 1 else rotation_values[0][index]
+            for index in range(9)
+        )
+        expected = (struct.pack("<9H", *expected_rotation) + b"\xA5" * 2
+                    + struct.pack("<3i", *position_values[0][:3]) + b"\xA5" * 4)
+        self.assertEqual(cpu.mem_read(physical(output), 36), expected)
+
+    def test_move_request_object_reset(self):
+        cpu = self.fresh_cpu()
+        object_address = 0x801E5000
+        first, second, replacement = 0x801E5100, 0x801E5200, 0x801E5300
+        calls = []
+        mutation = 0
+
+        def intercept(uc, address, size, data):
+            if address != 0x80028600:
+                return
+            calls.append((uc.reg_read(UC_MIPS_REG_A0), uc.reg_read(UC_MIPS_REG_A1)))
+            self.assertEqual(uc.mem_read(physical(object_address + 0x2C), 1), b"\0")
+            for offset in (4, 8, 0x10, 0x14):
+                self.assertEqual(read_word(uc, object_address + offset), 0)
+            if mutation and len(calls) == 1:
+                write_word(uc, object_address + 0x24, replacement if mutation == 1 else 0)
+                write_word(uc, object_address + 0x18, 0x87654321)
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        for first_value in (0, first):
+            for second_value in (0, second):
+                for mutation in (0, 1, 2):
+                    cpu.mem_write(physical(object_address), b"\xA5" * 0x34)
+                    write_word(cpu, object_address + 0x18, 0x12345678)
+                    write_word(cpu, object_address + 0x20, first_value)
+                    write_word(cpu, object_address + 0x24, second_value)
+                    cpu.reg_write(UC_MIPS_REG_A0, object_address)
+                    calls.clear()
+                    self.call(cpu, 0x80028698)
+                    expected_second = (replacement if mutation == 1 else 0) if mutation else second_value
+                    expected_calls = [(object_address, first_value)]
+                    if expected_second:
+                        expected_calls.append((object_address, expected_second))
+                    self.assertEqual(calls, expected_calls)
+                    self.assertEqual(read_word(cpu, object_address + 0x1C), first_value)
+                    self.assertEqual(read_word(cpu, object_address + 0x24), expected_second)
+                    self.assertEqual(read_word(cpu, object_address + 0x18),
+                                     0x87654321 if mutation else 0x12345678)
+                    self.assertEqual(read_word(cpu, object_address + 0x28), 0xA5A5A5A5)
+                    self.assertEqual(read_word(cpu, object_address + 0x30), 0xA5A5A5A5)
+
+    def test_move_request_component_reset_backend(self):
+        cpu = self.fresh_cpu()
+        object_address, component = 0x801E5000, 0x801E5100
+        original_transform, replacement_transform = 0x801E5200, 0x801E5300
+        position = (-0x80000000, -7, 0x7FFFFFFF, 123)
+        rotation = struct.pack("<9HH3i", 0, 1, 0x7FFF, 0x8000, 0xFFFF, 5, 6, 7, 8,
+                               0x1234, -0x80000000, 0, 0x7FFFFFFF)
+        callbacks = []
+        targets = (0x80028B5C, 0x80054C7C, 0x800289E8, 0x800549E8, 0x800288D8)
+        initial_index = 0
+        mutation = False
+
+        def intercept(uc, address, size, data):
+            if address not in targets:
+                return
+            callbacks.append(address)
+            a0 = uc.reg_read(UC_MIPS_REG_A0)
+            a1 = uc.reg_read(UC_MIPS_REG_A1)
+            if address == 0x80028B5C:
+                self.assertEqual(a0, initial_index)
+                uc.mem_write(physical(a1), struct.pack("<4i", *position))
+                if mutation:
+                    write_word(uc, component + 0x14, replacement_transform)
+                    write_word(uc, object_address + 0x0C, 0xFFFFFFFE)
+            elif address == 0x80054C7C:
+                self.assertEqual(a0, replacement_transform if mutation else original_transform)
+                self.assertEqual(a1, 0)
+                a2 = uc.reg_read(UC_MIPS_REG_A2)
+                self.assertEqual(struct.unpack("<3i", uc.mem_read(physical(a2), 12)), position[:3])
+                if mutation:
+                    write_word(uc, object_address + 0x0C, 0xFFFFFFFD)
+            elif address == 0x800289E8:
+                self.assertEqual(a0, 0xFFFFFFFD if mutation else initial_index)
+                uc.mem_write(physical(a1), rotation)
+                if mutation:
+                    write_word(uc, component + 0x14, original_transform)
+                    write_word(uc, object_address + 0x0C, 0xFFFFFFFC)
+            elif address == 0x800549E8:
+                self.assertEqual(a0, replacement_transform if mutation else original_transform)
+                self.assertEqual(uc.mem_read(physical(a1), len(rotation)), rotation)
+                if mutation:
+                    write_word(uc, object_address + 0x0C, 0xFFFFFFFB)
+            else:
+                self.assertEqual(a0, 0xFFFFFFFB if mutation else initial_index)
+                if mutation:
+                    flags = uc.mem_read(physical(component + 4), 1)[0]
+                    uc.mem_write(physical(component + 4), bytes((flags ^ 0x5A,)))
+                    write_word(uc, component + 0x10, 0xDEADBEEF)
+            uc.reg_write(UC_MIPS_REG_V0, 0)
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        for initial_index in (0, 7, 0xFFFFFFFF, 0x80000000, 0x7FFFFFFF):
+            for mutation in (False, True):
+                for flags in range(256):
+                    cpu.mem_write(physical(object_address), b"\xA5" * 0x34)
+                    cpu.mem_write(physical(component), b"\xA5" * 0x18)
+                    write_word(cpu, object_address + 0x0C, initial_index)
+                    cpu.mem_write(physical(component + 4), bytes((flags,)))
+                    write_word(cpu, component + 0x10, 0x12345678)
+                    write_word(cpu, component + 0x14, original_transform)
+                    cpu.reg_write(UC_MIPS_REG_A0, object_address)
+                    cpu.reg_write(UC_MIPS_REG_A1, component)
+                    callbacks.clear()
+                    self.call(cpu, 0x80028600)
+                    self.assertEqual(callbacks, list(targets))
+                    self.assertEqual(read_word(cpu, component + 0x10), 0)
+                    self.assertEqual(cpu.mem_read(physical(component + 4), 1)[0],
+                                     (flags ^ (0x5A if mutation else 0)) & 0xDF)
+                    self.assertEqual(read_word(cpu, component + 0x14), original_transform)
+                    self.assertEqual(read_word(cpu, object_address + 0x0C),
+                                     0xFFFFFFFB if mutation else initial_index)
+                    self.assertEqual(cpu.mem_read(physical(component), 4), b"\xA5" * 4)
+                    self.assertEqual(cpu.mem_read(physical(component + 5), 11), b"\xA5" * 11)
+
+    def test_move_request_record_reset(self):
+        cpu = self.fresh_cpu()
+        context, records = 0x801E5000, 0x801E6000
+        object_address, component, transform = 0x801E6200, 0x801E6300, 0x801E6400
+        fallback_object, fallback_component = 0x801E6500, 0x801E6600
+        fallback_transform = 0x801E6700
+        count_address, records_address = 0x801D8994, 0x801D89A4
+        translation = (0x80000000, 0x12345678, 0xFFFFFFFF)
+        callbacks = []
+        index = 0
+        count_on_context = None
+        shrink_count = False
+        backend_status = 0
+
+        def intercept(uc, address, size, data):
+            if address == 0x8002893C and shrink_count:
+                write_word(uc, count_address, 0)
+            if address not in (0x80026648, 0x80040FC0, 0x80054B20, 0x8001B558):
+                return
+            callbacks.append(address)
+            a0 = uc.reg_read(UC_MIPS_REG_A0)
+            a1 = uc.reg_read(UC_MIPS_REG_A1)
+            a2 = uc.reg_read(UC_MIPS_REG_A2)
+            if address == 0x80026648:
+                self.assertEqual(a0, index & 0xFFFFFFFF)
+                if count_on_context is not None:
+                    write_word(uc, count_address, count_on_context)
+                result = context
+            elif address == 0x80040FC0:
+                self.assertEqual(a0, index & 0xFFFFFFFF)
+                result = fallback_object
+            elif address == 0x80054B20:
+                self.assertEqual(a0, fallback_transform if shrink_count else transform)
+                self.assertEqual(a1, 0)
+                uc.mem_write(physical(a2), struct.pack("<3I", *translation))
+                result = backend_status
+            else:
+                self.assertEqual((a0, a1, a2, uc.reg_read(UC_MIPS_REG_A3)),
+                                 (0x1A, 4, 0xFFFE, 0xFFFE))
+                stack = uc.reg_read(UC_MIPS_REG_SP)
+                arguments = [read_word(uc, stack + offset) for offset in (0x10, 0x14, 0x18, 0x1C)]
+                self.assertEqual(read_word(uc, arguments[0]), 11)
+                self.assertEqual(arguments[2], arguments[1] + 4)
+                self.assertEqual(arguments[3], arguments[1] + 8)
+                self.assertEqual(tuple(read_word(uc, pointer) for pointer in arguments[1:]), translation)
+                result = 0
+            uc.reg_write(UC_MIPS_REG_V0, result)
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        cases = (
+            (-1, 3, None, 1, False, 0),
+            (-0x80000000, 3, None, 1, False, 0),
+            (3, 3, None, 1, False, 0),
+            (0x7FFFFFFF, 3, None, 1, False, 0),
+            (0, 3, None, 0, False, 0),
+            (1, 3, None, 1, False, 0),
+            (2, 3, None, 1, True, 0),
+            (1, 0, 3, 1, False, 0x18),
+        )
+        for index, initial_count, count_on_context, enabled, shrink_count, backend_status in cases:
+            with self.subTest(index=index, count=initial_count, enabled=enabled,
+                              shrink=shrink_count, status=backend_status):
+                cpu.mem_write(physical(records), b"\xA5" * (3 * 0x24))
+                write_word(cpu, count_address, initial_count)
+                write_word(cpu, records_address, records)
+                cpu.mem_write(physical(context + 0x0C), bytes((enabled,)))
+                write_word(cpu, object_address + 0x1C, component)
+                write_word(cpu, component + 0x14, transform)
+                write_word(cpu, fallback_object + 0x1C, fallback_component)
+                write_word(cpu, fallback_component + 0x14, fallback_transform)
+                for record_index in range(3):
+                    write_word(cpu, records + record_index * 0x24 + 0x1C, object_address)
+                before = bytes(cpu.mem_read(physical(records), 3 * 0x24))
+                callbacks.clear()
+                cpu.reg_write(UC_MIPS_REG_A0, index & 0xFFFFFFFF)
+                self.call(cpu, 0x800288D8)
+                effective_count = initial_count if count_on_context is None else count_on_context
+                valid = 0 <= index < effective_count
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), int(valid))
+                expected = bytearray(before)
+                if valid:
+                    expected[index * 0x24 + 0x20] = 0
+                self.assertEqual(cpu.mem_read(physical(records), len(expected)), expected)
+                expected_callbacks = [0x80026648]
+                if valid and shrink_count:
+                    expected_callbacks.append(0x80040FC0)
+                if valid and enabled:
+                    expected_callbacks.extend((0x80054B20, 0x8001B558))
+                self.assertEqual(callbacks, expected_callbacks)
+
+    def test_heading_callback_event_and_context_gates(self):
+        cpu = self.fresh_cpu()
+        event_byte, environment, context_gate = 0x800BE020, 0x801D36F0, 0x800BDFC7
+        for value in range(256):
+            cpu.mem_write(physical(event_byte), bytes((value,)))
+            self.call(cpu, 0x8002E824)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), value)
+        for setter, expected in ((0x8002E7D8, 0), (0x8002E7FC, 1)):
+            self.call(cpu, setter)
+            self.call(cpu, 0x8002E824)
+            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), expected)
+
+        calls = []
+
+        def intercept(uc, address, size, data):
+            if address != 0x800556D0:
+                return
+            calls.append(tuple(uc.reg_read(register) for register in (
+                UC_MIPS_REG_A0, UC_MIPS_REG_A1, UC_MIPS_REG_A2, UC_MIPS_REG_A3,
+            )))
+            uc.mem_write(physical(context_gate), b"\xD3")
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        for kind in (-32768, -1, 0, 18, 19, 20, 32767):
+            for value in (0, 1, 255):
+                with self.subTest(kind=kind, value=value):
+                    cpu.mem_write(physical(environment), struct.pack("<h", kind))
+                    cpu.mem_write(physical(context_gate), bytes((value,)))
+                    calls.clear()
+                    self.call(cpu, 0x8002B620)
+                    self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), value if kind == 19 else 0xD3)
+                    expected = [] if kind == 19 else [(0, 0x80012640, 0x8001239C, 0x8D7)]
+                    self.assertEqual(calls, expected)
+
+    def test_heading_entry_gates_and_live_callback_mutations(self):
+        cases = (
+            (18, 1, 0, 1, 0, 8, 2, 1, False, 0, 1, True, 0, 1),
+            (19, 1, 0, 0, 0, 8, 2, 2, False, 0, 0, True, 1, 0),
+            (19, 1, 0, 1, 0, 8, 2, 1, True, 46, 1, True, 3, 0),
+            (20, 1, 1, 1, 1, 46, 4, 4, False, 8, 0, False, 2, 0),
+            (19, 1, 0, 0, 1, 8, 0, 0, False, 0, 0, True, 0, 0),
+            (19, 2, 0, 0, 0, 8, 0, 0, False, 0, 0, True, 0, 0),
+            (19, 1, 1, 0, 0, 8, 0, 0, False, 0, 0, False, 0, 0),
+            (19, 1, 0, 0, 0x80000000, 46, 0, 0, True, 0, 0, True, 1, 0),
+        )
+        event, environment, context_gate = 0x801E5000, 0x801D36F0, 0x800BDFC7
+        stop, active, condition = 0x8018647B, 0x80186463, 0x8009F58C
+        counter, previous, handles = 0x800BDE98, 0x800BE0EC, 0x800BE68C
+
+        for case in cases:
+            (kind, gate, stopped, active_value, word, event_id, current, old, activate,
+             replacement_event, changed, proceed, expected_count, expected_active) = case
+            with self.subTest(case=case):
+                cpu = self.fresh_cpu()
+                cpu.mem_write(physical(event), struct.pack("<H", event_id))
+                cpu.mem_write(physical(environment), struct.pack("<h", kind))
+                cpu.mem_write(physical(context_gate), bytes((gate,)))
+                cpu.mem_write(physical(stop), bytes((stopped,)))
+                cpu.mem_write(physical(active), bytes((active_value,)))
+                for address, value in ((condition, word), (counter, current), (previous, old),
+                                       (handles, 0x11111111), (handles + 4, 0x22222222)):
+                    write_word(cpu, address, value)
+                calls, reached = [], []
+
+                def intercept(uc, address, size, data):
+                    if address == 0x8004733C:
+                        calls.append((address, uc.reg_read(UC_MIPS_REG_A0)))
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 1)
+                        if activate:
+                            uc.mem_write(physical(stop), b"\1")
+                        uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+                    elif address == 0x80052BDC:
+                        handle = uc.reg_read(UC_MIPS_REG_A0)
+                        calls.append((address, handle))
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A1), 1)
+                        if handle == 0x11111111:
+                            write_word(uc, handles + 4, 0x33333333)
+                            uc.mem_write(physical(event), struct.pack("<H", replacement_event))
+                        else:
+                            self.assertEqual(handle, 0x33333333)
+                        uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+                    elif address in (0x8003611C, 0x80036950):
+                        reached.append(address == 0x8003611C)
+                        uc.emu_stop()
+
+                cpu.hook_add(UC_HOOK_CODE, intercept)
+                cpu.reg_write(UC_MIPS_REG_A0, event)
+                cpu.reg_write(UC_MIPS_REG_RA, RETURN)
+                cpu.emu_start(0x80036018, RETURN, count=10000)
+                self.assertEqual(reached, [proceed])
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_S1), changed)
+                self.assertEqual(read_word(cpu, previous), current)
+                self.assertEqual(cpu.mem_read(physical(active), 1), bytes((expected_active,)))
+                self.assertEqual(len(calls), expected_count)
+
     def test_default_grounded_routing_gates(self):
         cpu = self.poll(0)
         actor, state = 0x801E1000, 0x801E5000
@@ -326,6 +1042,433 @@ class OriginalControllerRouteTests(unittest.TestCase):
                 cpu.emu_start(0x80023E94, RETURN, count=500000)
                 self.assertEqual(comparisons, [expected])
 
+    def test_cyclic_entry_lookup_and_overlap(self):
+        cpu = self.fresh_cpu()
+        cursor, output = 0x801E5000, 0x801E6000
+        rows = [[0x12340000 + row * 16 + word for word in range(4)] for row in range(7)]
+        writes = []
+
+        def trace_write(uc, access, address, size, value, data):
+            address = physical(address)
+            if address == physical(cursor) or physical(output) <= address < physical(output + 16):
+                writes.append((address, size))
+
+        cpu.hook_add(UC_HOOK_MEM_WRITE, trace_write)
+        cpu.mem_write(physical(CYCLIC_ENTRIES), struct.pack("<28I", *(word for row in rows for word in row)))
+        for index in (-0x80000000, -1, 0, 1, 2, 3, 4, 5, 6, 7, 0x7FFFFFFF):
+            with self.subTest(index=index):
+                initial = bytes([0xA5] * 16)
+                write_word(cpu, cursor, index & 0xFFFFFFFF)
+                cpu.mem_write(physical(output), initial)
+                writes.clear()
+                cpu.reg_write(UC_MIPS_REG_A0, cursor)
+                cpu.reg_write(UC_MIPS_REG_A1, output)
+                self.call(cpu, 0x8001A280)
+                valid = 0 <= index < 7
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), int(valid))
+                self.assertEqual(read_word(cpu, cursor), (index + 1) % 7 if valid else index & 0xFFFFFFFF)
+                expected = struct.pack("<4I", *rows[index]) if valid else initial
+                self.assertEqual(bytes(cpu.mem_read(physical(output), 16)), expected)
+                expected_writes = [(physical(output + offset), 4) for offset in range(0, 16, 4)]
+                expected_writes.append((physical(cursor), 4))
+                self.assertEqual(writes, expected_writes if valid else [])
+
+        for slot in range(4):
+            for value in (0, 5, 6, 7, 0xFFFFFFFF, 0x80000000, 0x7FFFFFFF):
+                with self.subTest(overlap_slot=slot, replacement=hex(value)):
+                    source = rows[2].copy()
+                    source[slot] = value
+                    cpu.mem_write(physical(CYCLIC_ENTRIES + 2 * 16), struct.pack("<4I", *source))
+                    cpu.mem_write(physical(output), bytes(16))
+                    cursor = output + slot * 4
+                    write_word(cpu, cursor, 2)
+                    writes.clear()
+                    cpu.reg_write(UC_MIPS_REG_A0, cursor)
+                    cpu.reg_write(UC_MIPS_REG_A1, output)
+                    self.call(cpu, 0x8001A280)
+                    next_value = (value + 1) & 0xFFFFFFFF
+                    source[slot] = 0 if 7 <= next_value < 0x80000000 else next_value
+                    self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 1)
+                    self.assertEqual(bytes(cpu.mem_read(physical(output), 16)), struct.pack("<4I", *source))
+                    expected_writes = [(physical(output + offset), 4) for offset in range(0, 16, 4)]
+                    expected_writes.append((physical(cursor), 4))
+                    self.assertEqual(writes, expected_writes)
+
+    def test_cyclic_entry_lookup_rereads_cursor(self):
+        cursor, output = 0x801E5000, 0x801E6000
+        rows = [[0x12340000 + row * 16 + word for word in range(4)] for row in range(7)]
+        cases = (
+            (0x8001A2B8, 0xFFFFFFFF, 0, 0xFFFFFFFF, None),
+            (0x8001A2E8, 6, 1, 0, 6),
+            (0x8001A36C, 0x7FFFFFFF, 1, 0x80000000, 0),
+        )
+        for at, replacement, result, final_cursor, row in cases:
+            with self.subTest(reload=hex(at)):
+                cpu = self.fresh_cpu()
+                cpu.mem_write(physical(CYCLIC_ENTRIES), struct.pack(
+                    "<28I", *(word for entry in rows for word in entry)
+                ))
+                cpu.mem_write(physical(output), bytes([0xA5] * 16))
+                write_word(cpu, cursor, 0)
+                visits = []
+
+                def mutate(uc, address, size, data):
+                    if address == at:
+                        visits.append(address)
+                        write_word(uc, cursor, replacement)
+
+                cpu.hook_add(UC_HOOK_CODE, mutate)
+                cpu.reg_write(UC_MIPS_REG_A0, cursor)
+                cpu.reg_write(UC_MIPS_REG_A1, output)
+                self.call(cpu, 0x8001A280)
+                self.assertEqual(visits, [at])
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), result)
+                self.assertEqual(read_word(cpu, cursor), final_cursor)
+                expected = bytes([0xA5] * 16) if row is None else struct.pack("<4I", *rows[row])
+                self.assertEqual(bytes(cpu.mem_read(physical(output), 16)), expected)
+
+    def test_texture_color_payload_overlap_and_real_dispatch(self):
+        cpu = self.fresh_cpu()
+        payload, color = 0x801E5000, 0x801E6000
+        cpu.reg_write(UC_MIPS_REG_A0, 0)
+        cpu.reg_write(UC_MIPS_REG_A1, 0)
+        self.call(cpu, 0x80055EA8)
+        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0x16)
+        for offset in range(38):
+            with self.subTest(offset=offset):
+                initial = bytes((index * 37 + offset) & 0xFF for index in range(40))
+                expected = bytearray(initial)
+                expected[0x14] = expected[offset]
+                expected[0x15] = expected[offset + 1]
+                expected[0x16] = expected[offset + 2]
+                cpu.mem_write(physical(payload), initial)
+                cpu.reg_write(UC_MIPS_REG_A0, payload)
+                cpu.reg_write(UC_MIPS_REG_A1, payload + offset)
+                self.call(cpu, 0x80055EA8)
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+                self.assertEqual(bytes(cpu.mem_read(physical(payload), 40)), expected)
+
+        loaded, slots = 0x80189C71, 0x80189C90
+        initial = bytearray([0xA5] * (50 * 44))
+        for index in range(50):
+            initial[index * 44] = 0xFF
+        initial[0] = initial[49 * 44] = 3
+        initial[4 + 0x13:4 + 0x16] = b"\x22\x33\x44"
+        cpu.mem_write(physical(slots), bytes(initial))
+        cpu.mem_write(physical(loaded), b"\1")
+        cpu.reg_write(UC_MIPS_REG_A0, 3)
+        cpu.reg_write(UC_MIPS_REG_A1, slots + 4 + 0x13)
+        self.call(cpu, 0x800482D0)
+        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 1)
+        self.assertEqual(bytes(cpu.mem_read(physical(slots + 4 + 0x14), 3)), b"\x22" * 3)
+        self.assertEqual(bytes(cpu.mem_read(physical(slots + 49 * 44 + 4 + 0x14), 3)), b"\x22" * 3)
+        self.assertEqual(bytes(cpu.mem_read(physical(slots + 44 + 4 + 0x14), 3)), b"\xA5" * 3)
+
+    def test_texture_color_dispatch_callback_mutations(self):
+        loaded, slots, color = 0x80189C71, 0x80189C90, 0x801E6000
+        cases = ((0, 1, True), (2, 0, False), (1, None, True))
+        for initial_flag, replacement, should_scan in cases:
+            with self.subTest(initial_flag=initial_flag, replacement=replacement):
+                cpu = self.fresh_cpu()
+                initial = bytearray([0xA5] * (50 * 44))
+                for index in range(50):
+                    initial[index * 44] = 0xFF
+                initial[0] = 3
+                cpu.mem_write(physical(slots), bytes(initial))
+                cpu.mem_write(physical(loaded), bytes([initial_flag]))
+                cpu.mem_write(physical(color), b"\1\2\3")
+                calls = []
+
+                def intercept(uc, address, size, data):
+                    if address == 0x800556D0:
+                        line = uc.reg_read(UC_MIPS_REG_A3)
+                        calls.append(("assert", line))
+                        if line == 0x19C and replacement is not None:
+                            uc.mem_write(physical(loaded), bytes([replacement]))
+                    elif address == 0x80055EA8:
+                        pointer = uc.reg_read(UC_MIPS_REG_A0)
+                        calls.append(("visit", pointer))
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A1), color)
+                        if pointer == slots + 4:
+                            uc.mem_write(physical(loaded), b"\0")
+                            uc.mem_write(physical(slots + 49 * 44), b"\3")
+                        uc.reg_write(UC_MIPS_REG_V0, 1)
+                    else:
+                        return
+                    uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+                cpu.hook_add(UC_HOOK_CODE, intercept)
+                cpu.reg_write(UC_MIPS_REG_A0, 0x103)
+                cpu.reg_write(UC_MIPS_REG_A1, color)
+                self.call(cpu, 0x800482D0)
+                expected = [] if initial_flag == 1 else [("assert", 0x19C)]
+                if should_scan:
+                    expected.extend([
+                        ("visit", slots + 4), ("assert", 0x1A8),
+                        ("visit", slots + 49 * 44 + 4), ("assert", 0x1A8),
+                    ])
+                self.assertEqual(calls, expected)
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), int(should_scan))
+
+    def test_controller_result_selection_and_reload(self):
+        context, previous = 0x801E5000, GP + 0x280
+        duration = 0x89ABCDEF
+        for selected in (-32768, -1, 0, 1, 32767):
+            for changed in (False, True):
+                with self.subTest(selected=selected, changed=changed):
+                    cpu = self.fresh_cpu()
+                    cpu.mem_write(physical(context + 0x0C), b"\1")
+                    cpu.mem_write(physical(context + 0x14), struct.pack("<h", selected))
+                    prior = selected ^ 1 if changed else selected
+                    replacement = selected ^ 2
+                    cpu.mem_write(physical(previous), struct.pack("<h", prior))
+                    calls = []
+
+                    def intercept(uc, address, size, data):
+                        if address == 0x80026648:
+                            calls.append(address)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 0x1234)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A1), 0x5678)
+                            uc.reg_write(UC_MIPS_REG_V0, context)
+                        elif address == 0x8002DF24:
+                            calls.append(address)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 0x8001273C if selected == 0 else 0x80012730)
+                            uc.mem_write(physical(context + 0x14), struct.pack("<h", replacement))
+                        elif address == 0x8002C604:
+                            calls.append((address, uc.reg_read(UC_MIPS_REG_A0)))
+                        elif address == 0x8002BD0C:
+                            calls.append(address)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 17)
+                            uc.reg_write(UC_MIPS_REG_V0, duration)
+                        elif address == 0x8002CA88:
+                            calls.append(address)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 17)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A1), duration)
+                        elif address in (0x8002E1E0, 0x8002E348):
+                            calls.append(address)
+                            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 0)
+                        else:
+                            return
+                        uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+                    cpu.hook_add(UC_HOOK_CODE, intercept)
+                    cpu.reg_write(UC_MIPS_REG_A0, 0x1234)
+                    cpu.reg_write(UC_MIPS_REG_A1, 0x5678)
+                    self.call(cpu, 0x8002C370)
+                    expected = [0x80026648]
+                    if changed:
+                        expected.append(0x8002DF24)
+                    expected.extend([
+                        (0x8002C604, 6), (0x8002C604, 7), 0x8002BD0C,
+                        0x8002CA88, 0x8002E1E0, 0x8002E348,
+                    ])
+                    self.assertEqual(calls, expected)
+                    self.assertEqual(
+                        struct.unpack("<h", cpu.mem_read(physical(previous), 2))[0],
+                        replacement if changed else selected,
+                    )
+
+    def test_controller_result_other_modes(self):
+        context, enabled = 0x801E5000, 0x8009F58C
+        for mode in (0, 2, 255):
+            for runtime in (0, 1, 2, 255):
+                for active in (False, True):
+                    with self.subTest(mode=mode, runtime=runtime, active=active):
+                        cpu = self.fresh_cpu()
+                        cpu.mem_write(physical(context + 0x0C), bytes([mode]))
+                        write_word(cpu, enabled, 0 if active else 1)
+                        calls = []
+
+                        def intercept(uc, address, size, data):
+                            if address == 0x80026648:
+                                calls.append(address)
+                                uc.reg_write(UC_MIPS_REG_V0, context)
+                            elif address in (0x8002BC7C, 0x8002C010, 0x8002C1F0, 0x8002BC9C):
+                                calls.append(address)
+                                if address == 0x8002C1F0:
+                                    write_word(uc, enabled, 0x80000000 if active else 0)
+                            elif address == 0x800283E0:
+                                calls.append(address)
+                                uc.reg_write(UC_MIPS_REG_V0, runtime)
+                            elif address == 0x8002CA88:
+                                value = uc.reg_read(UC_MIPS_REG_A0)
+                                calls.append((address, value))
+                                self.assertEqual(uc.reg_read(UC_MIPS_REG_A1), 0xFFFFFFFF)
+                            else:
+                                return
+                            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+                        cpu.hook_add(UC_HOOK_CODE, intercept)
+                        self.call(cpu, 0x8002C370)
+                        expected = [0x80026648, 0x8002BC7C, 0x8002C010, 0x8002C1F0]
+                        if active:
+                            expected.append((0x8002CA88, 5))
+                        expected.append(0x800283E0)
+                        if runtime == 1:
+                            expected.extend((0x8002BC9C, (0x8002CA88, 15)))
+                        self.assertEqual(calls, expected)
+
+    def test_tick_history_counters_and_callbacks(self):
+        reference, snapshot, count, total, index = (GP + offset for offset in (0x5A0, 0x5A4, 0x5A8, 0x5AC, 0x5B0))
+        sample_address, history = GP + 0x858, 0x8018CA58
+        cases = (
+            (0, 0, 0, 100, 159, 0),
+            (98, 3, 5, 100, 160, 1),
+            (99, 7, 9, 100, 161, 0x1234ABCD),
+            (100, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFE1, 29, 0x100),
+            (0xFFFFFFFF, 5, 12, 0, 0xFFFFFFFF, 0xFF),
+            (12, 0, 0xFFFFFFFF, 0x80000000, 0x7FFFFFFF, 0x10001),
+        )
+        for initial_index, initial_count, initial_total, initial_reference, sample, result in cases:
+            with self.subTest(index=initial_index, sample=hex(sample)):
+                cpu = self.fresh_cpu()
+                cpu.mem_write(physical(history), bytes([0xA5] * 128 * 4))
+                for address, value in (
+                    (reference, initial_reference), (snapshot, 0x98765432),
+                    (count, initial_count), (total, initial_total),
+                    (index, initial_index), (sample_address, sample),
+                ):
+                    write_word(cpu, address, value)
+                expected_index = (initial_index + 1) & 0xFFFFFFFF
+                if expected_index == 100:
+                    expected_index = 0
+                incremented = (initial_count + 1) & 0xFFFFFFFF
+                update = ((sample - initial_reference) & 0xFFFFFFFF) >= 60
+                expected_reference = sample if update else initial_reference
+                expected_snapshot = incremented if update else 0x98765432
+                expected_count = 0 if update else incremented
+                calls = []
+
+                def intercept(uc, address, size, data):
+                    if address == 0x8006C8C0:
+                        calls.append(address)
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 1)
+                        self.assertEqual(read_word(uc, reference), expected_reference)
+                        self.assertEqual(read_word(uc, snapshot), expected_snapshot)
+                        self.assertEqual(read_word(uc, count), expected_count)
+                        self.assertEqual(read_word(uc, total), (initial_total + 1) & 0xFFFFFFFF)
+                        self.assertEqual(read_word(uc, index), expected_index)
+                        self.assertEqual(read_word(uc, history + expected_index * 4), sample)
+                        write_word(uc, count, 0xABCDEF01)
+                    elif address == 0x800720FC:
+                        calls.append(address)
+                        self.assertEqual(read_word(uc, count), 0xABCDEF01)
+                        write_word(uc, snapshot, 0xF1234567)
+                    elif address == 0x80051360:
+                        calls.append(address)
+                        self.assertEqual(read_word(uc, snapshot), 0xF1234567)
+                        uc.reg_write(UC_MIPS_REG_V0, result)
+                    else:
+                        return
+                    uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+                cpu.hook_add(UC_HOOK_CODE, intercept)
+                self.call(cpu, 0x8004F688)
+                self.assertEqual(calls, [0x8006C8C0, 0x800720FC, 0x80051360])
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), result & 0xFF)
+                self.assertEqual(read_word(cpu, count), 0xABCDEF01)
+                self.assertEqual(read_word(cpu, snapshot), 0xF1234567)
+                for slot in range(128):
+                    self.assertEqual(read_word(cpu, history + slot * 4), sample if slot == expected_index else 0xA5A5A5A5)
+
+    def test_tick_history_rereads_sample_after_history_write(self):
+        cpu = self.fresh_cpu()
+        reference, snapshot, count, total, index = (GP + offset for offset in (0x5A0, 0x5A4, 0x5A8, 0x5AC, 0x5B0))
+        sample, history = GP + 0x858, 0x8018CA58
+        for address, value in ((reference, 100), (snapshot, 8), (count, 2), (total, 0), (index, 0), (sample, 150)):
+            write_word(cpu, address, value)
+        calls = []
+
+        def intercept(uc, address, size, data):
+            if address == 0x8004F6DC:
+                self.assertEqual(read_word(uc, history + 4), 150)
+                write_word(uc, sample, 161)
+            elif address in (0x8006C8C0, 0x800720FC, 0x80051360):
+                calls.append(address)
+                if address == 0x80051360:
+                    uc.reg_write(UC_MIPS_REG_V0, 1)
+                uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        self.call(cpu, 0x8004F688)
+        self.assertEqual(calls, [0x8006C8C0, 0x800720FC, 0x80051360])
+        self.assertEqual(read_word(cpu, history + 4), 150)
+        self.assertEqual(read_word(cpu, reference), 161)
+        self.assertEqual(read_word(cpu, snapshot), 3)
+        self.assertEqual(read_word(cpu, count), 0)
+        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 1)
+
+    def test_frame_buffer_selection_and_live_callbacks(self):
+        index_address, sequence_address = 0x801D871C, 0x801D8718
+        values_address, selected_address, entries_address = 0x801D053C, 0x801D36A0, 0x801D2EC0
+        cases = ((0, 0, 0), (1, 1, 9), (1, -3, 0xFFFFFFFF), (0, 2, 0x7FFFFFFF))
+        values = (0x0123, 0x4567, 0x89AB, 0xCDEF)
+
+        for selected_index, after_sync, sequence in cases:
+            with self.subTest(index=selected_index, after_sync=after_sync, sequence=hex(sequence)):
+                cpu = self.fresh_cpu()
+                cpu.mem_write(physical(values_address), struct.pack("<4H", *values))
+                cpu.mem_write(physical(index_address), struct.pack("<h", selected_index))
+                cpu.mem_write(physical(selected_address), b"\0" * 4)
+                cpu.mem_write(physical(entries_address), b"\xA5" * (32 * 40))
+                write_word(cpu, sequence_address, 0x87654321)
+                calls, sequence_writes, entry_writes = [], [], []
+
+                def intercept(uc, address, size, data):
+                    if address == 0x8006D434:
+                        calls.append(address)
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), selected_address)
+                        self.assertEqual(
+                            struct.unpack("<2H", uc.mem_read(physical(selected_address), 4)),
+                            (values[selected_index], values[2 + selected_index]),
+                        )
+                        uc.mem_write(physical(selected_address), struct.pack("<H", 0x1357))
+                        uc.mem_write(physical(index_address), struct.pack("<h", 4))
+                    elif address == 0x8006CCC4:
+                        calls.append(address)
+                        self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), 1)
+                        self.assertEqual(struct.unpack("<h", uc.mem_read(physical(index_address), 2))[0], 4)
+                        uc.mem_write(physical(index_address), struct.pack("<h", after_sync))
+                    elif address == 0x8007201C:
+                        calls.append(address)
+                        self.assertEqual(
+                            struct.unpack("<h", uc.mem_read(physical(index_address), 2))[0],
+                            1 if after_sync == 0 else 0,
+                        )
+                        write_word(uc, sequence_address, 0xAABBCCDD)
+                        uc.mem_write(physical(entries_address + 5 * 40), struct.pack("<H", 0x3456))
+                    elif address == 0x80071F00:
+                        calls.append(address)
+                        self.assertEqual(read_word(uc, sequence_address), 0xAABBCCDD)
+                        self.assertEqual(
+                            struct.unpack("<H", uc.mem_read(physical(entries_address + 5 * 40), 2))[0],
+                            0x3456,
+                        )
+                        write_word(uc, sequence_address, sequence)
+                    else:
+                        return
+                    uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+                def record_write(uc, access, address, size, value, data):
+                    if address == physical(sequence_address):
+                        sequence_writes.append((size, value))
+                    if physical(entries_address) <= address < physical(entries_address + 32 * 40):
+                        entry_writes.append((address - physical(entries_address), size, value))
+
+                cpu.hook_add(UC_HOOK_CODE, intercept)
+                cpu.hook_add(UC_HOOK_MEM_WRITE, record_write)
+                self.call(cpu, 0x800720FC)
+                self.assertEqual(calls, [0x8006D434, 0x8006CCC4, 0x8007201C, 0x80071F00])
+                self.assertEqual(
+                    struct.unpack("<2H", cpu.mem_read(physical(selected_address), 4)),
+                    (0x1357, values[2 + selected_index]),
+                )
+                self.assertEqual(read_word(cpu, sequence_address), (sequence + 1) & 0xFFFFFFFF)
+                self.assertEqual(sequence_writes, [(4, (sequence + 1) & 0xFFFFFFFF)] * 2)
+                self.assertEqual(entry_writes, [(entry * 40, 2, 0) for entry in range(31, -1, -1)])
+                expected_entries = (b"\0\0" + b"\xA5" * 38) * 32
+                self.assertEqual(cpu.mem_read(physical(entries_address), 32 * 40), expected_entries)
+
     def test_queue_snapshot_preserves_priority_and_remaining_records(self):
         cpu = self.poll(0)
         source, destination = 0x801E6000, 0x801E7000
@@ -348,6 +1491,123 @@ class OriginalControllerRouteTests(unittest.TestCase):
             self.assertEqual(actual, expected)
             self.assertEqual(bytes(cpu.mem_read(physical(source + 4 + 28 * slot), 2)), b"\0\0")
         self.assertEqual(struct.unpack("<H", cpu.mem_read(physical(source + 4 + 28 * 9), 2))[0], 15)
+
+    def test_queue_reset_clears_only_ids_and_counts(self):
+        cpu = self.fresh_cpu()
+        source, destination = 0x80182F78, 0x80183A6C
+        queue_size = 4 + 100 * 28
+        rng = random.Random(0x1B9C8)
+        writes = []
+
+        def trace_write(uc, access, address, size, value, data):
+            address = physical(address)
+            if physical(source) <= address < physical(destination) + queue_size:
+                writes.append((address, size, value))
+
+        cpu.hook_add(UC_HOOK_MEM_WRITE, trace_write)
+        expected_writes = []
+        for slot in range(100):
+            expected_writes.extend((
+                (physical(source + 4 + 28 * slot), 2, 0),
+                (physical(destination + 4 + 28 * slot), 2, 0),
+            ))
+        expected_writes.extend(((physical(source), 4, 0), (physical(destination), 4, 0)))
+
+        for iteration in range(8):
+            with self.subTest(iteration=iteration):
+                initial = bytes(rng.getrandbits(8) for _ in range(2 * queue_size))
+                expected = bytearray(initial)
+                for base in (0, queue_size):
+                    expected[base:base + 4] = b"\0" * 4
+                    for slot in range(100):
+                        position = base + 4 + 28 * slot
+                        expected[position:position + 2] = b"\0\0"
+                cpu.mem_write(physical(source), initial)
+                writes.clear()
+                self.call(cpu, 0x8001B9C8)
+                self.assertEqual(bytes(cpu.mem_read(physical(source), len(expected))), expected)
+                self.assertEqual(writes, expected_writes)
+
+    def test_transform_reset_snapshot(self):
+        cpu = self.fresh_cpu()
+        status, snapshot, descriptor = 0x801CBED0, 0x801CBED4, 0x801CBF20
+        region, region_size = snapshot - 32, 128
+        separate_source = 0x801E5000
+        rng = random.Random(0x51678)
+        expected = bytearray()
+        callbacks = []
+        writes = []
+
+        def intercept(uc, address, size, data):
+            if address != 0x800731C0:
+                return
+            callbacks.append(address)
+            self.assertEqual(uc.reg_read(UC_MIPS_REG_A0), descriptor)
+            self.assertEqual(read_word(uc, status), 0)
+            self.assertEqual(bytes(uc.mem_read(physical(region), region_size)), expected)
+            write_word(uc, status, 0x12345678)
+            write_word(uc, snapshot, 0xABCDEF01)
+            uc.reg_write(UC_MIPS_REG_V0, 0xFFFFFFFF)
+            uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        def trace_write(uc, access, address, size, value, data):
+            address = physical(address)
+            if physical(region) <= address < physical(region) + region_size:
+                writes.append((address, size))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        cpu.hook_add(UC_HOOK_MEM_WRITE, trace_write)
+        for offset in (None, -4, -3, -2, -1, 0, 1, 2, 3, 4):
+            with self.subTest(source_offset=offset):
+                initial = bytes(rng.getrandbits(8) for _ in range(region_size))
+                outside = bytes(rng.getrandbits(8) for _ in range(32))
+                source = separate_source if offset is None else snapshot + offset * 4
+                cpu.mem_write(physical(region), initial)
+                cpu.mem_write(physical(separate_source), outside)
+                write_word(cpu, GP + 0x888, source)
+                expected = bytearray(initial)
+                expected[status - region:status - region + 4] = b"\0" * 4
+                for first, count in ((0, 3), (3, 3), (6, 2)):
+                    source_offset = source - region + first * 4
+                    values = (
+                        outside[first * 4:(first + count) * 4]
+                        if offset is None else expected[source_offset:source_offset + count * 4]
+                    )
+                    destination_offset = snapshot - region + first * 4
+                    expected[destination_offset:destination_offset + count * 4] = values
+                callbacks.clear()
+                writes.clear()
+                self.call(cpu, 0x80051678)
+                self.assertEqual(callbacks, [0x800731C0])
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+                self.assertEqual(writes, [(physical(status), 4)] +
+                                 [(physical(snapshot + index * 4), 4) for index in range(8)])
+                expected[status - region:status - region + 4] = struct.pack("<I", 0x12345678)
+                expected[snapshot - region:snapshot - region + 4] = struct.pack("<I", 0xABCDEF01)
+                self.assertEqual(bytes(cpu.mem_read(physical(region), region_size)), expected)
+
+    def test_deferred_event_copy_appends_seven_words(self):
+        cpu = self.fresh_cpu()
+        queue = 0x80182F78
+        source = 0x801E5000
+        record = (0x1234, 0x5678, 0x89ABCDEF, 0xFEDCBA98,
+                  0x10203040, 0x50607080, 0x90A0B0C0)
+        cpu.mem_write(physical(source), struct.pack("<7I", *record))
+        write_word(cpu, queue, 2)
+        cpu.mem_write(physical(queue + 4 + 28 * 0), b"\x11" * 28)
+        cpu.mem_write(physical(queue + 4 + 28 * 1), b"\x22" * 28)
+        cpu.mem_write(physical(queue + 4 + 28 * 2), b"\x33" * 28)
+        cpu.mem_write(physical(queue + 4 + 28 * 3), b"\x44" * 28)
+        cpu.reg_write(UC_MIPS_REG_A0, source)
+        self.call(cpu, 0x8001B044)
+        self.assertEqual(read_word(cpu, queue), 3)
+        self.assertEqual(
+            bytes(cpu.mem_read(physical(queue + 4 + 28 * 2), 28)),
+            struct.pack("<7I", *record),
+        )
+        self.assertEqual(bytes(cpu.mem_read(physical(queue + 4), 28)), b"\x11" * 28)
+        self.assertEqual(bytes(cpu.mem_read(physical(queue + 4 + 28), 28)), b"\x22" * 28)
+        self.assertEqual(bytes(cpu.mem_read(physical(queue + 4 + 28 * 3), 28)), b"\x44" * 28)
 
     def test_queue_update_gate_calls_backends_only_when_enabled(self):
         for flag in (0, 1, 255):
@@ -2315,6 +3575,105 @@ class OriginalControllerRouteTests(unittest.TestCase):
                 self.assertEqual(struct.unpack("<H", cpu.mem_read(physical(counter), 2))[0],
                                  final_counter)
 
+    def test_original_sqrt_backend_wrappers(self):
+        cpu = self.fresh_cpu()
+        output = 0x801E5004
+        state = {}
+        calls = []
+
+        def intercept(uc, address, size, data):
+            if address in (0x80076554, 0x800764D0):
+                calls.append((address, uc.reg_read(UC_MIPS_REG_A0)))
+                write_word(uc, output, 0x12345678)
+                uc.reg_write(UC_MIPS_REG_A1, 0x801E6000)
+                uc.reg_write(UC_MIPS_REG_V0, state["result"])
+                uc.reg_write(UC_MIPS_REG_PC, uc.reg_read(UC_MIPS_REG_RA))
+
+        cpu.hook_add(UC_HOOK_CODE, intercept)
+        values = (0x80000000, 0xFFFFEFFF, 0xFFFFFFFF, 0, 1, 4096, 0x7FFFFFFF)
+        for wrapper, backend in ((0x8005359C, 0x80076554), (0x800535CC, 0x800764D0)):
+            for value in values:
+                for result in values:
+                    with self.subTest(wrapper=hex(wrapper), value=value, result=result):
+                        cpu.mem_write(physical(output - 4), b"\xA5" * 12)
+                        cpu.reg_write(UC_MIPS_REG_A0, value)
+                        cpu.reg_write(UC_MIPS_REG_A1, output)
+                        state["result"] = result
+                        calls.clear()
+                        self.call(cpu, wrapper)
+                        self.assertEqual(calls, [(backend, value)])
+                        self.assertEqual(
+                            struct.unpack("<3I", cpu.mem_read(physical(output - 4), 12)),
+                            (0xA5A5A5A5, result, 0xA5A5A5A5),
+                        )
+                        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+
+    def test_original_integer_sqrt_and_wrapped_vector_length(self):
+        cpu = self.fresh_cpu()
+        gte = RotationGteModel()
+        cpu.hook_add(UC_HOOK_CODE, gte.hook)
+        backend_cases = (
+            (0, 0), (1, 1), (2, 1), (4, 2), (9, 3),
+            (16, 4), (25, 5), (100, 10), (4096, 64),
+        )
+        for value, expected in backend_cases:
+            with self.subTest(backend_input=value):
+                cpu.reg_write(UC_MIPS_REG_A0, value)
+                self.call(cpu, 0x800764D0)
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), expected)
+
+        vector_address, zero_address, output = 0x801E5000, 0x801E5100, 0x801E5204
+        cpu.mem_write(physical(zero_address), b"\0" * 12)
+        vectors = (
+            ((0, 0, 0), 0), ((1, 0, 0), 1), ((3, 4, 0), 5),
+            ((-3, -4, 0), 5), ((6, 8, 0), 10), ((65536, 0, 0), 0),
+        )
+        for vector, expected in vectors:
+            cpu.mem_write(physical(vector_address), struct.pack("<3i", *vector))
+            for address in (0x80053904, 0x80062D4C):
+                with self.subTest(vector=vector, address=hex(address)):
+                    cpu.mem_write(physical(output - 4), b"\xA5" * 12)
+                    cpu.reg_write(UC_MIPS_REG_A0, vector_address)
+                    cpu.reg_write(UC_MIPS_REG_A1, output if address == 0x80053904 else zero_address)
+                    if address == 0x80062D4C:
+                        cpu.reg_write(UC_MIPS_REG_A2, output)
+                    self.call(cpu, address)
+                    self.assertEqual(
+                        struct.unpack("<3I", cpu.mem_read(physical(output - 4), 12)),
+                        (0xA5A5A5A5, expected, 0xA5A5A5A5),
+                    )
+                    self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+        self.assertEqual(gte.leading_counts, len(backend_cases) + 2 * len(vectors))
+
+    def test_original_sqrt_backends_with_signed_and_wrapped_inputs(self):
+        cpu = self.fresh_cpu()
+        gte = RotationGteModel()
+        cpu.hook_add(UC_HOOK_CODE, gte.hook)
+        original_domain = bytes(cpu.mem_read(physical(SQRT_LOOKUP_DOMAIN), 1024))
+        rng = random.Random(0x76554)
+        synthetic_domain = bytes(rng.getrandbits(8) for _ in range(1024))
+        boundaries = {0, 1, 0x7FFFFFFF, 0x80000000, 0xFFFFFFFE, 0xFFFFFFFF}
+        for bit in range(32):
+            for delta in (-1, 0, 1):
+                sample = ((1 << bit) + delta) & 0xFFFFFFFF
+                boundaries.update((sample, (~sample) & 0xFFFFFFFF))
+        cases = sorted(boundaries)
+        cases.extend(rng.getrandbits(32) for _ in range(8192))
+
+        for name, domain in (("original", original_domain), ("synthetic", synthetic_domain)):
+            cpu.mem_write(physical(SQRT_LOOKUP_DOMAIN), domain)
+            for address, q12 in ((0x800764D0, False), (0x80076554, True)):
+                for value in cases:
+                    with self.subTest(domain=name, backend=hex(address), value=value):
+                        cpu.reg_write(UC_MIPS_REG_A0, value)
+                        self.call(cpu, address)
+                        self.assertEqual(
+                            cpu.reg_read(UC_MIPS_REG_V0),
+                            sqrt_backend_reference(value, domain, q12),
+                        )
+            self.assertEqual(bytes(cpu.mem_read(physical(SQRT_LOOKUP_DOMAIN), 1024)), domain)
+        self.assertEqual(gte.leading_counts, len(cases) * 4)
+
     def test_original_fixed_point_scalar_product(self):
         cpu = self.fresh_cpu()
         output = 0x801E5000
@@ -2358,11 +3717,16 @@ class OriginalControllerRouteTests(unittest.TestCase):
             else:
                 values = [rng.getrandbits(32) for _ in range(9)]
             for left, right, output in layouts:
-                for address in (0x800100A0, ROTATION_CROSS):
+                for address in (0x80010038, 0x800100A0, ROTATION_CROSS):
                     with self.subTest(iteration=iteration, layout=(left, right, output),
                                       function=hex(address)):
                         expected = values.copy()
-                        if address == 0x800100A0:
+                        if address == 0x80010038:
+                            for index in range(3):
+                                expected[output + index] = (
+                                    expected[left + index] + expected[right + index]
+                                ) & 0xFFFFFFFF
+                        elif address == 0x800100A0:
                             expected[output] = sum(
                                 product(expected[left + index], expected[right + index])
                                 for index in range(3)
@@ -2382,6 +3746,188 @@ class OriginalControllerRouteTests(unittest.TestCase):
                         self.assertEqual(struct.unpack("<9I", cpu.mem_read(physical(memory), 36)),
                                          tuple(expected))
                         self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+
+    def test_original_vector_add_overlapping_words(self):
+        cpu = self.fresh_cpu()
+        memory = 0x801E5000
+        rng = random.Random(0x10038)
+        boundaries = (0, 1, 0x7FFFFFFF, 0x80000000, 0xFFFFFFFF)
+        for iteration in range(8):
+            values = (
+                [boundaries[(iteration + index) % len(boundaries)] for index in range(9)]
+                if iteration < 4 else [rng.getrandbits(32) for _ in range(9)]
+            )
+            for left in range(7):
+                for right in range(7):
+                    for output in range(7):
+                        with self.subTest(iteration=iteration, left=left, right=right, output=output):
+                            expected = values.copy()
+                            for index in range(3):
+                                expected[output + index] = (
+                                    expected[left + index] + expected[right + index]
+                                ) & 0xFFFFFFFF
+                            cpu.mem_write(physical(memory), struct.pack("<9I", *values))
+                            cpu.reg_write(UC_MIPS_REG_A0, memory + 4 * left)
+                            cpu.reg_write(UC_MIPS_REG_A1, memory + 4 * right)
+                            cpu.reg_write(UC_MIPS_REG_A2, memory + 4 * output)
+                            self.call(cpu, 0x80010038)
+                            self.assertEqual(struct.unpack("<9I", cpu.mem_read(physical(memory), 36)),
+                                             tuple(expected))
+                            self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
+
+    def test_original_basis_transform_matches_fixed_point_model(self):
+        cpu = self.fresh_cpu()
+        basis_address, input_address, output_address = (
+            0x801E5000, 0x801E6000, 0x801E7000
+        )
+        identity = (4096, 0, 0, 0, 4096, 0, 0, 0, 4096)
+        quarter_turn = (0, -4096, 0, 4096, 0, 0, 0, 0, 4096)
+        extreme = (-32768, 32767, -1, 32767, -32768, 1, -1, 32767, -32768)
+        rng = random.Random(0x77298)
+        matrices = (
+            identity,
+            quarter_turn,
+            extreme,
+            tuple(rng.randint(-32768, 32767) for _ in range(9)),
+        )
+        boundaries = (
+            0, 1, -1, 32767, 32768, -32768, -32769,
+            0x7FFFFFFF, -0x80000000,
+        )
+        vectors = [
+            (value, boundaries[(index + 3) % len(boundaries)],
+             boundaries[(index + 6) % len(boundaries)])
+            for index, value in enumerate(boundaries)
+        ]
+        vectors.extend(
+            tuple(rng.randint(-0x80000000, 0x7FFFFFFF) for _ in range(3))
+            for _ in range(24)
+        )
+        sentinel = 0x5A5AA5A5
+        gte = RotationGteModel()
+        cpu.hook_add(UC_HOOK_CODE, gte.hook)
+        call_count = 0
+
+        for matrix_index, matrix in enumerate(matrices):
+            cpu.mem_write(
+                physical(basis_address),
+                struct.pack("<9h H 3i", *matrix, 0xAAAA, 17, -23, 41),
+            )
+            for vector_index, vector in enumerate(vectors):
+                cpu.mem_write(
+                    physical(input_address),
+                    struct.pack("<4i", *vector, sentinel),
+                )
+                cpu.mem_write(
+                    physical(output_address),
+                    struct.pack("<4I", 0xA5A5A5A5, 0xA5A5A5A5,
+                                0xA5A5A5A5, sentinel),
+                )
+                cpu.reg_write(UC_MIPS_REG_A0, basis_address)
+                cpu.reg_write(UC_MIPS_REG_A1, input_address)
+                cpu.reg_write(UC_MIPS_REG_A2, output_address)
+                with self.subTest(matrix=matrix_index, vector=vector_index):
+                    self.call(cpu, 0x80077298)
+                    actual = struct.unpack(
+                        "<4i", cpu.mem_read(physical(output_address), 16)
+                    )
+                    self.assertEqual(actual[:3], gte_basis_transform(matrix, vector))
+                    self.assertEqual(actual[3], sentinel)
+                    self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), output_address)
+                    call_count += 1
+                    self.assertEqual(gte.basis_transform_passes, call_count * 2)
+
+    def test_original_rotation_generator(self):
+        cpu = self.fresh_cpu()
+        rng = random.Random(0x77C50)
+        original_table = bytes(cpu.mem_read(physical(ROTATION_TRIG_TABLE), 4096 * 4))
+        synthetic_table = bytearray(rng.getrandbits(8) for _ in range(4096 * 4))
+        for index, word in (
+                (0, 0x7FFF8000), (1, 0x80007FFF), (1024, 0),
+                (2048, 0x0001FFFF), (3072, 0xF0001000), (4095, 0x7FFF0000)):
+            struct.pack_into("<I", synthetic_table, index * 4, word)
+        boundaries = (-32768, -4096, -3072, -2048, -1024, -1, 0,
+                      1, 1024, 2048, 3072, 4095, 32767)
+        cases = [
+            (x, y, z) for x in boundaries for y in boundaries for z in boundaries
+        ]
+        cases.extend(
+            tuple(rng.randint(-32768, 32767) for _ in range(3))
+            for _ in range(512)
+        )
+        base, output_offset = 0x801E5000, 32
+
+        for table_name, table in (("original", original_table), ("synthetic", bytes(synthetic_table))):
+            cpu.mem_write(physical(ROTATION_TRIG_TABLE), table)
+            for case_index, angles in enumerate(cases):
+                for angle_offset in (0, 32, 34, 44, 48, 50):
+                    initial = bytearray((index * 37 + case_index) & 0xFF for index in range(96))
+                    struct.pack_into("<3h", initial, angle_offset, *angles)
+                    expected = bytearray(initial)
+                    struct.pack_into(
+                        "<9H", expected, output_offset,
+                        *rotation_generator_reference(angles, table),
+                    )
+                    cpu.mem_write(physical(base), bytes(initial))
+                    cpu.reg_write(UC_MIPS_REG_A0, base + angle_offset)
+                    cpu.reg_write(UC_MIPS_REG_A1, base + output_offset)
+                    with self.subTest(table=table_name, case=case_index, angle_offset=angle_offset):
+                        self.call(cpu, ROTATION_GENERATOR)
+                        self.assertEqual(bytes(cpu.mem_read(physical(base), len(expected))), bytes(expected))
+                        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), base + output_offset)
+
+    def test_original_rotation_to_basis_copy_wrapper(self):
+        cpu = self.fresh_cpu()
+        base = 0x801E5800
+        output_offset = 32
+        table = bytes(cpu.mem_read(physical(ROTATION_TRIG_TABLE), 4096 * 4))
+        cases = (
+            (0, 0, 0),
+            (0x1234FFFF, 0x80000001, 0xFEDC8000),
+            (0x7FFFFFFF, 0x12345678, 0xABCDEFFF),
+            (0x00001000, 0xFFFFF800, 0x7FFF0001),
+        )
+
+        cpu.mem_write(physical(base), bytes(range(96)))
+        cpu.reg_write(UC_MIPS_REG_A0, 0)
+        cpu.reg_write(UC_MIPS_REG_A1, 0x90000000)
+        self.call(cpu, 0x80054978)
+        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0x18)
+
+        for rotation_offset, rotations in (
+            (0, cases[0]),
+            (0, cases[1]),
+            (output_offset, cases[2]),
+            (output_offset + 4, cases[3]),
+        ):
+            initial = bytearray((index * 29 + rotation_offset) & 0xFF for index in range(96))
+            struct.pack_into("<3I", initial, rotation_offset, *rotations)
+            raw_angles = tuple(
+                struct.unpack_from("<H", initial, rotation_offset + index * 4)[0]
+                for index in range(3)
+            )
+            angles = (
+                (-raw_angles[0]) & 0xFFFF,
+                raw_angles[1],
+                (-raw_angles[2]) & 0xFFFF,
+            )
+            expected = bytearray(initial)
+            struct.pack_into(
+                "<9H",
+                expected,
+                output_offset,
+                *rotation_generator_reference(angles, table),
+            )
+            cpu.mem_write(physical(base), bytes(initial))
+            cpu.reg_write(UC_MIPS_REG_A0, base + output_offset)
+            cpu.reg_write(UC_MIPS_REG_A1, base + rotation_offset)
+            with self.subTest(rotation_offset=rotation_offset, rotations=rotations):
+                self.call(cpu, 0x80054978)
+                self.assertEqual(
+                    bytes(cpu.mem_read(physical(base), len(expected))),
+                    bytes(expected),
+                )
+                self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), 0)
 
     def test_original_rotation_composition_with_modeled_gte(self):
         z_turn = (0, -4096, 0, 4096, 0, 0, 0, 0, 4096)
@@ -2415,6 +3961,67 @@ class OriginalControllerRouteTests(unittest.TestCase):
                 self.assertEqual(read_word(cpu, second + 16) >> 16, 0xFFFF if expected[8] < 0 else 0)
                 self.assertEqual(bytes(cpu.mem_read(physical(second + 20), 12)), original_translation)
                 self.assertEqual(gte.rotations, 3)
+
+    def test_original_rotation_composition_outputs_and_overlaps(self):
+        identity = (4096, 0, 0, 0, 4096, 0, 0, 0, 4096)
+        turn = (0, -4096, 0, 4096, 0, 0, 0, 0, 4096)
+        cases = [
+            (identity, turn),
+            (turn, identity),
+            ((32767,) * 9, (32767,) * 9),
+            ((-32768,) * 9, (32767,) * 9),
+            ((1, 0, 0, 0, 4096, 0, 0, 0, 4096),
+             (-1, 0, 0, 0, 4096, 0, 0, 0, 4096)),
+        ]
+        rng = random.Random(0x7699C)
+        cases.extend(
+            (
+                tuple(rng.randint(-32768, 32767) for _ in range(9)),
+                tuple(rng.randint(-32768, 32767) for _ in range(9)),
+            )
+            for _ in range(32)
+        )
+        offsets = ((8, 72), (8, 8), (8, 12), (12, 8), (8, 20), (20, 8))
+        base = 0x801E5000
+        cpu = self.fresh_cpu()
+        gte = RotationGteModel()
+        cpu.hook_add(UC_HOOK_CODE, gte.hook)
+
+        for address, output_first in ((0x80076890, True), (0x8007699C, False)):
+            for case_index, (first_matrix, second_matrix) in enumerate(cases):
+                for first_offset, second_offset in offsets:
+                    initial = bytearray((index * 37 + case_index) & 0xFF for index in range(128))
+                    struct.pack_into(
+                        "<9h H 3i", initial, first_offset,
+                        *first_matrix, 0xAAAA, 11, -22, 33,
+                    )
+                    struct.pack_into(
+                        "<9h H 3i", initial, second_offset,
+                        *second_matrix, 0xBBBB, -44, 55, -66,
+                    )
+                    first = struct.unpack_from("<9h", initial, first_offset)
+                    second = struct.unpack_from("<9h", initial, second_offset)
+                    columns = [
+                        gte_rotate_vector(first, (second[column], second[column + 3], second[column + 6]))
+                        for column in range(3)
+                    ]
+                    result = tuple(columns[column][row] for row in range(3) for column in range(3))
+                    output_offset = first_offset if output_first else second_offset
+                    expected = bytearray(initial)
+                    struct.pack_into(
+                        "<9h H", expected, output_offset, *result,
+                        0xFFFF if result[8] < 0 else 0,
+                    )
+                    cpu.mem_write(physical(base), bytes(initial))
+                    cpu.reg_write(UC_MIPS_REG_A0, base + first_offset)
+                    cpu.reg_write(UC_MIPS_REG_A1, base + second_offset)
+                    previous_rotations = gte.rotations
+                    with self.subTest(address=hex(address), case=case_index,
+                                      first=first_offset, second=second_offset):
+                        self.call(cpu, address)
+                        self.assertEqual(bytes(cpu.mem_read(physical(base), len(expected))), bytes(expected))
+                        self.assertEqual(cpu.reg_read(UC_MIPS_REG_V0), base + output_offset)
+                        self.assertEqual(gte.rotations, previous_rotations + 3)
 
     def test_queued_input_reaches_orientation_with_modeled_gte(self):
         records, actor, holder, component, move_info = (

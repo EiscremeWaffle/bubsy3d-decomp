@@ -15,6 +15,8 @@ extern SequenceLimitEntry g_sequence_limit_entries[];
 
 /* A failed scan also inspects the entry at the stopping index. */
 int32_t func_8005D5A8(int32_t requested_key, int32_t value);
+int32_t func_8005E708(int32_t first_value, int32_t second_value);
+int32_t func_8005E760(int32_t first_value, int32_t second_value);
 int32_t func_8005E7B8(int32_t first_value, int32_t second_value);
 
 #endif

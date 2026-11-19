@@ -8,6 +8,7 @@
 #include <string.h>
 
 int32_t func_8001007C(int32_t left, int32_t right, int32_t *output);
+int32_t func_80010038(const int32_t *left, const int32_t *right, int32_t *output);
 int32_t func_800100A0(const int32_t *left, const int32_t *right, int32_t *output);
 int32_t func_80010128(const int32_t *left, const int32_t *right, int32_t *output);
 
@@ -20,6 +21,16 @@ static int32_t signed_bits(uint32_t bits) {
 static uint32_t fixed_product(int32_t left, int32_t right) {
     int64_t product = (int64_t)left * right;
     return (uint32_t)((uint64_t)product >> 12);
+}
+
+static void reference_add(int32_t *memory, unsigned int left, unsigned int right,
+                          unsigned int output) {
+    unsigned int index;
+    for (index = 0; index < 3; ++index) {
+        memory[output + index] = signed_bits(
+            (uint32_t)memory[left + index] + (uint32_t)memory[right + index]
+        );
+    }
 }
 
 static void reference_dot(int32_t *memory, unsigned int left, unsigned int right,
@@ -88,11 +99,14 @@ int main(void) {
             const unsigned int left = layouts[layout][0];
             const unsigned int right = layouts[layout][1];
             const unsigned int output = layouts[layout][2];
-            for (function = 0; function < 2; ++function) {
+            for (function = 0; function < 3; ++function) {
                 int32_t actual[9], expected[9];
                 memcpy(actual, initial, sizeof(actual));
                 memcpy(expected, initial, sizeof(expected));
                 if (function == 0) {
+                    reference_add(expected, left, right, output);
+                    assert(func_80010038(actual + left, actual + right, actual + output) == 0);
+                } else if (function == 1) {
                     reference_dot(expected, left, right, output);
                     assert(func_800100A0(actual + left, actual + right, actual + output) == 0);
                 } else {
@@ -102,7 +116,22 @@ int main(void) {
                 assert(memcmp(actual, expected, sizeof(actual)) == 0);
             }
         }
+        if (iteration < 128) {
+            unsigned int left, right, output;
+            for (left = 0; left < 7; left++) {
+                for (right = 0; right < 7; right++) {
+                    for (output = 0; output < 7; output++) {
+                        int32_t actual[9], expected[9];
+                        memcpy(actual, initial, sizeof(actual));
+                        memcpy(expected, initial, sizeof(expected));
+                        reference_add(expected, left, right, output);
+                        assert(func_80010038(actual + left, actual + right, actual + output) == 0);
+                        assert(memcmp(actual, expected, sizeof(actual)) == 0);
+                    }
+                }
+            }
+        }
     }
-    puts("Fixed-point products: 10049 scalar and 80000 vector cases passed.");
+    puts("Fixed-point products and vector addition: boundary, random and overlap cases passed.");
     return 0;
 }

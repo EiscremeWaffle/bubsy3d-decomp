@@ -151,14 +151,16 @@ int32_t func_800550A4(void *component, const void *value) {
     return 0;
 }
 
-void func_800288D8(void *object) {
-    assert(object == g_grounded_case37_object->event_0C);
+int32_t func_800288D8(int32_t index) {
+    assert(index == g_grounded_case37_object->record_id_0C);
     record_call(8);
+    return 1;
 }
 
-void func_80052BDC(void *component, int32_t mode) {
+int32_t func_80052BDC(void *component, int32_t mode) {
     assert(component == g_grounded_case37_object->component_1C && mode == 0);
     record_call(9);
+    return 0;
 }
 
 void func_8002BB64(int32_t value) {
@@ -169,7 +171,8 @@ void func_8002BB64(int32_t value) {
 
 void func_8001B558(int32_t group, int32_t event, uintptr_t object,
     int32_t a3, void *a4, void *a5, void *a6, void *a7) {
-    assert(group == 23 && event == 5 && object == (uintptr_t)g_grounded_case37_object->event_0C);
+    assert(group == 23 && event == 5 &&
+           object == (uintptr_t)(uint32_t)g_grounded_case37_object->record_id_0C);
     assert(a3 == 0 && a4 == 0 && a5 == 0 && a6 == 0 && a7 == 0);
     record_call(11);
 }
@@ -317,7 +320,7 @@ static void reset_case(void) {
     selected_component.transform_14 = &selected_transform;
     selected_component.flags_04 = 0xFB;
     selected.component_1C = &selected_component;
-    selected.event_0C = &basis;
+    selected.record_id_0C = 42;
     selected.state_2C = 1;
     selected.word_28 = 99;
     replacement = selected;

@@ -15,6 +15,7 @@ _Static_assert(offsetof(BubsyGroundedDescriptor, state_11) == 0x11, "descriptor 
 _Static_assert(offsetof(BubsyGroundedDescriptor, state_14) == 0x14, "descriptor layout");
 _Static_assert(offsetof(BubsyGroundedDescriptor, state_4C) == 0x4C, "descriptor layout");
 _Static_assert(offsetof(BubsyGroundedDescriptor, state_68) == 0x68, "descriptor layout");
+_Static_assert(offsetof(BubsyGroundedShared, state_04) == 0x04, "shared layout");
 _Static_assert(offsetof(BubsyGroundedShared, stride_30) == 0x30, "shared layout");
 _Static_assert(offsetof(BubsyGroundedLookup, fields.index_14) == 0x14, "lookup layout");
 _Static_assert(offsetof(BubsyGroundedLookup, fields.gate_0D) == 0x0D, "lookup layout");

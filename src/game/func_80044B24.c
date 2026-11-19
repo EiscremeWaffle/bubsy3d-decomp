@@ -1,7 +1,7 @@
 #include "reset_entry_helpers.h"
 
 extern void *func_80028764(int32_t index);
-extern void func_80052BDC(void *object, int32_t mode);
+extern int32_t func_80052BDC(void *object, int32_t mode);
 
 int32_t func_80044B24(uint32_t index, uint32_t mode) {
 #ifdef BUBSY3D_MATCH_ORIGINAL_L0

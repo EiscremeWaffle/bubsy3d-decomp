@@ -66,9 +66,10 @@ int32_t func_80044A88(uint32_t index, ResetEntryGroup *group) {
     return check_results[index];
 }
 
-void func_80052BDC(void *object, int32_t mode) {
+int32_t func_80052BDC(void *object, int32_t mode) {
     assert(mode == 1);
     record(PREPARE_OBJECT, 0, object);
+    return 0;
 }
 
 static void initialize(int32_t count) {

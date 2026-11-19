@@ -18,7 +18,7 @@ typedef struct GroundedCase37ObjectView {
     uint8_t padding_02[2];
     uint32_t flags_04;
     uint8_t padding_08[4];
-    void *event_0C;
+    int32_t record_id_0C;
     uint32_t state_10;
     uint8_t padding_14[8];
     GroundedCase37ComponentView *component_1C;
@@ -29,6 +29,9 @@ typedef struct GroundedCase37ObjectView {
     uint16_t state_2E;
 } GroundedCase37ObjectView;
 
+extern GroundedCase37ObjectView *g_grounded_case37_object;
+
+void func_80037B14(GroundedCase37ObjectView *expected, GroundedCase37ObjectView *replacement);
 void func_80037B30(void *initial_object);
 
 #endif

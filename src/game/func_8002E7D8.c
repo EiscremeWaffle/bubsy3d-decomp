@@ -1,6 +1,4 @@
-#include <stdint.h>
-
-extern volatile uint8_t g_grounded_case_event;
+#include "heading_callback_gates.h"
 
 void func_8002E7D8(void) {
     g_grounded_case_event = 0;

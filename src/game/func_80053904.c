@@ -2,12 +2,12 @@
 
 extern int32_t func_800535CC(int32_t squared_length, int32_t *length_out);
 
-int32_t move_vector_has_nonzero_squared_length(
+int32_t move_vector_length_from_wrapped_squares(
     const int32_t input[3],
     int32_t *result_out
 ) __asm__("func_80053904");
 
-int32_t move_vector_has_nonzero_squared_length(
+int32_t move_vector_length_from_wrapped_squares(
     const int32_t input[3],
     int32_t *result_out
 ) {

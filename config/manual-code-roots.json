@@ -4,6 +4,11 @@
   "modules": {
     "L0/L0.EXE": [
       {
+        "address": "0x8002DE34",
+        "symbol": "func_8002DE34",
+        "evidence": "The result-display initializer at 0x8002DF70 loads this address as the callback passed to func_8004FF50. The 240-byte callback starts at 0x8002DE34, returns at 0x8002DF1C with its delay slot at 0x8002DF20, and is followed by the initializer at 0x8002DF24. All bytes match readable C."
+      },
+      {
         "address": "0x80023A0C",
         "symbol": "func_80023A0C",
         "evidence": "The default controller-event mode table at 0x8009EC8C references this 36-byte initializer for event 3 at 0x8009ECB8; the same location aliases a static event-10 table entry. The preceding function returns at 0x80023A04 with its delay slot at 0x80023A08; this entry returns at 0x80023A28 with its delay slot at 0x80023A2C; a new frame begins at 0x80023A30. It copies the controller bitmap and two digital-pad status bytes into event-record offsets 0x0C, 0x10, and 0x11 in that order. All 36 bytes match plain C."
@@ -12,6 +17,19 @@
         "address": "0x80023E94",
         "symbol": "func_80023E94",
         "evidence": "The default controller-event mode table at 0x8009EC8C points to this callback for event 3 at 0x8009ECB4. Its frame begins at 0x80023E94 and returns at 0x80024BFC with the delay slot at 0x80024C00; the next function begins at 0x80024C04. Original-MIPS execution confirmed the callback queues turn events 8/10 or release events 9/11 from physical digital-pad bits 13/15 when its gates permit."
+      },
+      {
+        "address": "0x80036018",
+        "end": "0x8003697C",
+        "symbol": "func_80036018",
+        "evidence": "The default heading table entry at 0x800979C0 points to this 2,404-byte callback. Its frame begins at 0x80036018 and returns at 0x80036974 with the delay slot at 0x80036978; the next function begins at 0x8003697C. The computed state dispatch at 0x80036404 uses 49 entries at 0x80012B00, all inside this callback. The default state path can invoke the grounded handler at 0x8004B35C. Its readable C matches all code bytes and its compiler-generated switch table.",
+        "computed_jump_tables": [
+          {
+            "site": "0x80036404",
+            "table": "0x80012B00",
+            "count": 49
+          }
+        ]
       },
       {
         "address": "0x8004B2A4",
@@ -85,7 +103,7 @@
       {
         "address": "0x80053904",
         "symbol": "func_80053904",
-        "evidence": "88-byte high-level C helper takes the low 32 bits of each component's self-product, sums them with wraparound, and passes the squared length to func_800535CC; the GTE/table helper yields zero for zero input and one for nonzero input, making this a squared-difference nonzero test. Exact C byte match."
+        "evidence": "88-byte high-level C helper sums the low 32 bits of three component squares with wraparound and forwards the result to the table-based integer square-root backend through func_800535CC. Original-MIPS tests include (3,4,0) producing 5 and (65536,0,0) wrapping to zero. Exact C byte match."
       },
       {
         "address": "0x8002E7D8",

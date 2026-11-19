@@ -14,6 +14,9 @@ _Static_assert(sizeof(GameTransitionQueueRecord) == 28, "queue record size");
 _Static_assert(offsetof(GameTransitionQueue, records) == 4, "queue record offset");
 _Static_assert(sizeof(GameTransitionQueue) == 2804, "queue size");
 
+GameTransitionQueue g_transition_queue_input;
+GameTransitionQueue g_transition_queue_snapshot;
+
 static uint32_t random_state = 0x9E3779B9u;
 
 static uint32_t next_random(void) {
@@ -155,6 +158,33 @@ static void test_count_and_capacity_edges(void) {
     assert(memcmp(&output, &expected_output, sizeof(output)) == 0);
 }
 
+static void test_queue_reset(void) {
+    GameTransitionQueue expected_input, expected_snapshot;
+    unsigned int iteration, slot;
+
+    for (iteration = 0; iteration < 256; iteration++) {
+        fill_queue(&g_transition_queue_input);
+        fill_queue(&g_transition_queue_snapshot);
+        expected_input = g_transition_queue_input;
+        expected_snapshot = g_transition_queue_snapshot;
+        for (slot = 0; slot < 100; slot++) {
+            expected_input.records[slot].event.event_id = 0;
+            expected_snapshot.records[slot].event.event_id = 0;
+        }
+        expected_input.count = 0;
+        expected_snapshot.count = 0;
+        func_8001B9C8();
+        assert(memcmp(&g_transition_queue_input, &expected_input, sizeof(expected_input)) == 0);
+        assert(memcmp(&g_transition_queue_snapshot, &expected_snapshot, sizeof(expected_snapshot)) == 0);
+        func_8001B9C8();
+        assert(memcmp(&g_transition_queue_input, &expected_input, sizeof(expected_input)) == 0);
+        assert(memcmp(&g_transition_queue_snapshot, &expected_snapshot, sizeof(expected_snapshot)) == 0);
+        func_8001B8B8(&g_transition_queue_input, &g_transition_queue_snapshot);
+        assert(memcmp(&g_transition_queue_input, &expected_input, sizeof(expected_input)) == 0);
+        assert(memcmp(&g_transition_queue_snapshot, &expected_snapshot, sizeof(expected_snapshot)) == 0);
+    }
+}
+
 int main(void) {
     unsigned int iteration;
     GameTransitionQueue actual_input, expected_input, actual_output, expected_output;
@@ -162,6 +192,7 @@ int main(void) {
 
     test_priority_and_preservation();
     test_count_and_capacity_edges();
+    test_queue_reset();
     for (iteration = 0; iteration < 4096; ++iteration) {
         uint32_t occupied = fill_queue(&actual_input);
         fill_queue(&actual_output);

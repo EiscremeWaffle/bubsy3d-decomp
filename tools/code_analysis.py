@@ -271,20 +271,27 @@ def promote_manual_switch_roots(data, expected, discovery):
             symbol for symbol in discovery["symbols"]
             if int(symbol["start"], 16) < end and start < int(symbol["end"], 16)
         ]
-        if any(
-            symbol["kind"] != "reachable_fragment" or
-            int(symbol["start"], 16) < start or int(symbol["end"], 16) > end
-            for symbol in overlapping
-        ):
+        if any(symbol["kind"] != "reachable_fragment" for symbol in overlapping):
             raise ValueError(f"Manual function {root['symbol']} overlaps another bounded symbol")
+        remaining_fragments = []
+        for symbol in overlapping:
+            fragment_start, fragment_end = int(symbol["start"], 16), int(symbol["end"], 16)
+            for left, right in ((fragment_start, min(start, fragment_end)),
+                                (max(end, fragment_start), fragment_end)):
+                if left < right:
+                    remaining_fragments.append({
+                        "start": f"0x{left:08X}", "end": f"0x{right:08X}",
+                        "size": right - left, "kind": "reachable_fragment",
+                    })
         discovery["symbols"] = [symbol for symbol in discovery["symbols"] if symbol not in overlapping]
+        discovery["symbols"].extend(remaining_fragments)
         discovery["symbols"].append({
             "start": f"0x{start:08X}", "end": f"0x{end:08X}", "size": end - start,
             "kind": "anchored_function", "symbol": root["symbol"], "evidence": root["evidence"],
         })
         discovery["symbols"].sort(key=lambda symbol: int(symbol["start"], 16))
         discovery["anchored_functions"] += 1
-        discovery["reachable_fragments"] -= len(overlapping)
+        discovery["reachable_fragments"] += len(remaining_fragments) - len(overlapping)
 
     return discovery
 
