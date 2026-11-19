@@ -97,7 +97,7 @@ int main(void) {
     ProximityPosition reference_position = {0}, nearby_position = {0};
     ProximityObject reference = {0}, other_reference = {0}, nearby_object = {0};
     ProximityNode nearby_node = {0};
-    ResetTrackedObject tracked_objects[3] = {{0}};
+    ResetTrackedObject tracked_objects[3] = {0};
     void *table[2] = {&assets[0], &assets[1]};
     size_t index;
     int mutation;

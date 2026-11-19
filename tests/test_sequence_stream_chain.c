@@ -56,7 +56,7 @@ static ProbeOutput run_probe(const ProbeInput *input) {
     PlayerActorSequenceData sequence = {0};
     SequencePlaybackSlot slots[3] = {{0}};
     SequencePlaybackNode nodes[3] = {{0}};
-    SequenceStreamOwner owners[3] = {{0}};
+    SequenceStreamOwner owners[3] = {0};
     SequenceStreamDescriptor descriptor = {0};
     uint32_t frames[FRAME_BYTES / 4], lookup[LOOKUP_BYTES / 4];
     uint8_t heights[HEIGHT_BYTES];

@@ -360,7 +360,7 @@ jobs:
           /tmp/test_level_record_reset
       - name: Test transform reset and current-transform getter
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80051678.c src/game/func_800516F8.c tests/test_transform_reset.c -o /tmp/test_transform_reset
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80051678.c src/game/func_800516F8.c tests/test_transform_reset.c -o /tmp/test_transform_reset
           /tmp/test_transform_reset
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800731C0.c src/game/func_80077C00.c tests/test_transform_reset_backend.c -o /tmp/test_transform_reset_backend
           /tmp/test_transform_reset_backend

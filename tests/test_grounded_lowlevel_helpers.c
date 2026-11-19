@@ -132,7 +132,7 @@ static void test_actor_bit_queries(void) {
 }
 
 static void test_auxiliary_lookup(void) {
-    GameLevelRecord records[4] = {{0}};
+    GameLevelRecord records[4] = {0};
     int objects[4];
     int32_t count, index;
 

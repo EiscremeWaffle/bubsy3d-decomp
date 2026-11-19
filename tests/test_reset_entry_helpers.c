@@ -111,7 +111,7 @@ static void test_tracked_tag_and_gates(void) {
 }
 
 static void test_tracked_callback_mutations(void) {
-    ResetTrackedObject objects[4] = {{0}};
+    ResetTrackedObject objects[4] = {0};
     ResetTrackedNode nodes[4] = {{0}};
     size_t index;
 

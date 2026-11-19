@@ -209,8 +209,8 @@ static void test_count_thresholds_and_cached_reference(void) {
 }
 
 static void test_assertion_mutations(void) {
-    ProximityPosition positions[3] = {{0}};
-    ProximityObject objects[3] = {{0}};
+    ProximityPosition positions[3] = {0};
+    ProximityObject objects[3] = {0};
     ProximityNode first = {0}, ignored = {0}, replacement = {0};
     ProximityNode other_current = {0};
     size_t index;

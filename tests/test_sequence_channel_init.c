@@ -106,7 +106,7 @@ static ProbeOutput run_probe(const ProbeInput *input) {
     PlayerActorSequenceData sequence = {0};
     PlayerActorSequenceData alternate = {0};
     PlayerSequenceChannels channels[2] = {{0}};
-    PlayerSequenceResource resources[2] = {{0}};
+    PlayerSequenceResource resources[2] = {0};
     ProbeOutput output = {0};
 
     actor.sequence_18 = &sequence;

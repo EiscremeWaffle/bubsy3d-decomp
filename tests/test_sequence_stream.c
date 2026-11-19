@@ -111,7 +111,7 @@ static ProbeOutput run_probe(const ProbeInput *input) {
     PlayerActorSequenceView actor = {0};
     PlayerActorSequenceData sequence = {0}, alternate = {0};
     SequencePlaybackSlot slots[2][5] = {{{0}}};
-    SequenceStreamOwner owners[5] = {{0}};
+    SequenceStreamOwner owners[5] = {0};
     SequenceStreamDescriptor descriptors[5] = {{0}};
     ProbeOutput output = {0};
     unsigned table, index;
