@@ -34,7 +34,7 @@ extern void func_80055680(const char *message);
 extern void func_80032D7C(void);
 extern void func_8001B8B8(GameTransitionQueue *input, GameTransitionQueue *output);
 extern void func_8001B044(void);
-extern void func_8006BB84(int32_t mode);
+extern uint32_t func_8006BB84(int32_t mode);
 extern void func_800250CC(void);
 extern uint32_t func_800439EC(void);
 extern void func_80044268(void);

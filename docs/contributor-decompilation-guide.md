@@ -12,10 +12,14 @@ Keep three claims separate:
 
 Only the exact allowlist in `config/base-matches.json` contributes exact code credit. `tools/progress.py` rejects missing symbols, wrong sizes, wrong bytes, unexpected data totals, and full fuzzy scores that have not been promoted. Do not edit report measures by hand.
 
-The validated report maps 3,089,916 code bytes and credits 80,304 exact code
-bytes across 372 functions (2.598906%) and 196 exact data bytes. New exact
+The validated report maps 3,089,916 code bytes and credits 89,744 exact code
+bytes across 419 functions (2.904416%) and 196 exact data bytes. New exact
 coverage includes readable-C grounded helpers
-and the 2,404-byte `func_80036018` heading callback with its independently
+and the 532-byte `func_80023A84` resource setup and 508-byte `func_80023C98`
+transform reset and queued-object scans, the 328-byte `func_8006BB84` timing
+helper and its 156-byte `func_8006BCCC` wait backend, the 448-byte
+`func_80047050` controller teardown and eight of its backends, plus
+the 2,404-byte `func_80036018` heading callback with its independently
 verified 196-byte switch table. The callback uses register constraints and
 empty barriers, not transcribed instructions. Its mode-one, heading-effect,
 timed-record, and camera-channel dependencies are also matched; the GTE
@@ -183,7 +187,7 @@ copies, the dot product, scalar multiply, queue processor, sequence
 notification backend, and GTE composition routines.
 Instruction-free matches may require register constraints,
 symbol aliases, or empty compiler barriers, so they are not all unconstrained
-ISO C. The validated exact total is 80,304 bytes across 372 matches. The plain-C
+ISO C. The configured exact total is 89,744 bytes across 419 matches. The plain-C
 grounded rotation helpers `func_800547C8`, `func_80054978`, `func_800549E8`,
 and `func_800542A4`, plus column scaling `func_8005541C`, together with shared
 movement initialization `func_8002611C`, setup `func_80025FFC`, and allocation

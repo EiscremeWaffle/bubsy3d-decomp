@@ -32,8 +32,12 @@ See the [current code map](code-map.md) for module coverage, discovery criteria,
 and remaining limitations. The [disc inventory](disc-map.md) is separate and
 does not supply a code-progress denominator.
 
-The validated snapshot maps 3,089,916 instruction bytes and credits 80,304
-exact code bytes across 372 functions (2.598906%), plus 196 exact data bytes.
+The validated report maps 3,089,916 instruction bytes and credits 89,744 exact
+code bytes across 419 functions (2.904416%), plus 196 exact data bytes.
+This includes the readable-C 532-byte `func_80023A84` resource setup and
+508-byte `func_80023C98` transform reset and queued-object scans, and the
+328-byte `func_8006BB84` timing helper and its 156-byte `func_8006BCCC` backend,
+448-byte `func_80047050` controller teardown, and eight of its backends.
 This includes the readable-C 3,228-byte grounded-state handler,
 the 2,404-byte heading callback and its separately verified 196-byte switch
 table, the heading mode-one and effect implementations, their timed-record

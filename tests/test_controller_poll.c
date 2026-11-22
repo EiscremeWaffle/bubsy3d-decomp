@@ -80,13 +80,14 @@ void func_800486D0(void *context, int32_t first, int32_t second, int8_t *channel
     }
 }
 
-void func_800481D4(int32_t channel, int32_t first, int32_t second) {
+int32_t func_800481D4(int32_t channel, int32_t first, int32_t second) {
     assert(first == 0x1000 && second == 0x1000);
     configured_channel = channel;
     record_call(CALL_EFFECT_CONFIGURE);
     if (mutate_channel) {
         g_input_effect_channel = 7;
     }
+    return 0;
 }
 
 int32_t func_800483C0(int32_t channel) {

@@ -108,7 +108,7 @@ void func_800601D0(void *state) {
 int32_t func_80050650(void *payload) {
     size_t index;
     for (index = 0; index < 3; ++index) {
-        if (payload == g_texture_font_slots[index].payload) {
+        if (payload == g_texture_font_slots[index].data.payload) {
             record((enum CallKind)(SLOT_0 + index));
             return 0;
         }

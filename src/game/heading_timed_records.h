@@ -43,6 +43,7 @@ extern HeadingTimedRecord g_heading_timed_records[18];
 extern const char g_heading_timed_format[];
 
 void func_8002C604(int16_t index);
+int32_t func_8002BD0C(int32_t value);
 void func_8002BAD4(int16_t index);
 void func_8002CA4C(int32_t index, int32_t duration);
 void func_8002CA88(int32_t index, int32_t duration);

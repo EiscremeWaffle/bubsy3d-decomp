@@ -13,7 +13,7 @@ int32_t func_800483C0(int32_t value) {
     tag = (int8_t)value;
     for (index = 0; index < TEXTURE_FONT_SLOT_COUNT; ++index) {
         if (g_texture_font_slots[index].tag == tag) {
-            if (func_80050534(g_texture_font_slots[index].payload) != 0) {
+            if (func_80050534(g_texture_font_slots[index].data.payload) != 0) {
                 func_800556D0(0, g_texture_font_error_condition, g_texture_font_source_path, 0x1C8);
             }
         }

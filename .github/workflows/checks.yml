@@ -56,10 +56,100 @@ jobs:
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_bitmap_gate.c src/game/func_80056678.c tests/test_controller_bitmap_gate.c -o /tmp/test_controller_bitmap_gate
           /tmp/test_controller_bitmap_gate
+      - name: Compile and test controller cycle transition helpers
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80038430.c tests/test_controller_cycle_warp.c -o /tmp/test_controller_cycle_warp
+          /tmp/test_controller_cycle_warp
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_POSITION_UPDATE -DCYCLE_REAL_DISTANCE -Isrc/game src/game/func_80038430.c src/game/func_8002E910.c src/game/func_80022B5C.c tests/test_controller_cycle_warp.c -o /tmp/test_controller_cycle_warp_integrated
+          /tmp/test_controller_cycle_warp_integrated
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_POSITION_UPDATE -DCYCLE_REAL_DISTANCE -DCYCLE_REAL_LEAVES -Isrc/game src/game/func_80038430.c src/game/func_8002E910.c src/game/func_80022B5C.c src/game/func_800226C0.c src/game/controller_cycle_event_parameters.c src/game/func_8005668C.c src/game/func_80056678.c tests/test_controller_cycle_warp.c -o /tmp/test_controller_cycle_warp_leaves
+          /tmp/test_controller_cycle_warp_leaves
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_POSITION_UPDATE -DCYCLE_REAL_DISTANCE -DCYCLE_REAL_LEAVES -DCYCLE_MODEL_MOVEMENT -Isrc/game src/game/func_80038430.c src/game/func_8002E910.c src/game/func_80022B5C.c src/game/func_800226C0.c src/game/controller_cycle_event_parameters.c src/game/func_8005668C.c src/game/func_80056678.c src/game/cycle_movement_setup.c tests/test_controller_cycle_warp.c -o /tmp/test_controller_cycle_warp_movement
+          /tmp/test_controller_cycle_warp_movement
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_POSITION_UPDATE -DCYCLE_REAL_DISTANCE -DCYCLE_REAL_LEAVES -DCYCLE_MODEL_MOVEMENT -DCYCLE_MODEL_MOVEMENT_REAL_TARGET -Isrc/game src/game/func_80038430.c src/game/func_8002E910.c src/game/func_80022B5C.c src/game/func_800226C0.c src/game/controller_cycle_event_parameters.c src/game/func_8005668C.c src/game/func_80056678.c src/game/cycle_movement_setup.c src/game/grounded_transform.c tests/test_controller_cycle_warp.c -o /tmp/test_controller_cycle_warp_target
+          /tmp/test_controller_cycle_warp_target
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80022B5C.c tests/test_controller_cycle_distance.c -o /tmp/test_controller_cycle_distance
+          /tmp/test_controller_cycle_distance
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80038368.c tests/test_controller_cycle_complete.c -o /tmp/test_controller_cycle_complete
+          /tmp/test_controller_cycle_complete
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_RESET -Isrc/game -Isrc/player_model src/game/func_80038368.c src/game/func_80028E80.c src/game/func_80044C34.c tests/test_controller_cycle_complete.c -o /tmp/test_controller_cycle_complete_real
+          /tmp/test_controller_cycle_complete_real
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800226C0.c src/game/func_80028E80.c src/game/controller_cycle_event_parameters.c src/game/func_80044C34.c src/game/func_8005668C.c src/game/func_80056678.c tests/test_controller_cycle_leaves.c -o /tmp/test_controller_cycle_leaves
+          /tmp/test_controller_cycle_leaves
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/cycle_movement_setup.c tests/test_cycle_movement_setup.c -o /tmp/test_cycle_movement_setup
+          /tmp/test_cycle_movement_setup
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DCYCLE_REAL_TARGET -Isrc/game src/game/cycle_movement_setup.c src/game/grounded_transform.c tests/test_cycle_movement_setup.c -o /tmp/test_cycle_movement_setup_real
+          /tmp/test_cycle_movement_setup_real
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80032A2C.c tests/test_cycle_movement_update.c -o /tmp/test_cycle_movement_update
+          /tmp/test_cycle_movement_update
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80032A2C.c src/game/func_800516F8.c src/game/func_80054AF0.c src/game/func_80054B20.c src/game/func_80054C7C.c tests/test_cycle_movement_components.c -o /tmp/test_cycle_movement_components
+          /tmp/test_cycle_movement_components
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/cycle_movement_setup.c src/game/func_80032A2C.c tests/test_cycle_movement_flow.c -o /tmp/test_cycle_movement_flow
+          /tmp/test_cycle_movement_flow
       - name: Compile and test controller mode-one tail model
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_mode_one_tail.c tests/test_controller_mode_one_tail.c -o /tmp/test_controller_mode_one_tail
           /tmp/test_controller_mode_one_tail
+      - name: Compile and test controller timing helper
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8006BB84.c tests/test_controller_timing.c -o /tmp/test_controller_timing
+          /tmp/test_controller_timing
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8006BCCC.c tests/test_controller_timing_wait.c -o /tmp/test_controller_timing_wait
+          /tmp/test_controller_timing_wait
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8006BB84.c src/game/func_8006BCCC.c tests/test_controller_timing_integration.c -o /tmp/test_controller_timing_integration
+          /tmp/test_controller_timing_integration
+      - name: Compile and test controller teardown
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80047050.c tests/test_controller_teardown.c -o /tmp/test_controller_teardown
+          /tmp/test_controller_teardown
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_teardown_backends.c src/game/controller_teardown_legacy.c tests/test_controller_teardown_backends.c -o /tmp/test_controller_teardown_backends
+          /tmp/test_controller_teardown_backends
+      - name: Compile and test secondary controller entry model
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_entry.c tests/test_secondary_controller_entry.c -o /tmp/test_secondary_controller_entry
+          /tmp/test_secondary_controller_entry
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_confirm.c tests/test_secondary_controller_confirm.c -o /tmp/test_secondary_controller_confirm
+          /tmp/test_secondary_controller_confirm
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_confirm_start.c tests/test_secondary_controller_confirm_start.c -o /tmp/test_secondary_controller_confirm_start
+          /tmp/test_secondary_controller_confirm_start
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_active.c tests/test_secondary_controller_active.c -o /tmp/test_secondary_controller_active
+          /tmp/test_secondary_controller_active
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_measure.c tests/test_secondary_controller_measure.c -o /tmp/test_secondary_controller_measure
+          /tmp/test_secondary_controller_measure
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DSECONDARY_MEASURE_REAL_ARITHMETIC -Isrc/game src/game/secondary_controller_measure.c src/game/func_80062D4C.c src/game/func_80053904.c src/game/func_8001007C.c tests/test_secondary_controller_measure.c -o /tmp/test_secondary_controller_measure_real
+          /tmp/test_secondary_controller_measure_real
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_approach.c tests/test_secondary_controller_approach.c -o /tmp/test_secondary_controller_approach
+          /tmp/test_secondary_controller_approach
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -DSECONDARY_APPROACH_STEP_PROBE src/game/secondary_controller_approach.c tests/test_secondary_controller_approach.c -o /tmp/test_secondary_controller_approach_step
+          /tmp/test_secondary_controller_approach_step
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -DSECONDARY_APPROACH_REAL_MULTIPLY src/game/secondary_controller_approach.c src/game/func_8001007C.c tests/test_secondary_controller_approach.c -o /tmp/test_secondary_controller_approach_real
+          /tmp/test_secondary_controller_approach_real
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_rotation.c tests/test_secondary_controller_rotation_buttons.c -o /tmp/test_secondary_controller_rotation_buttons
+          /tmp/test_secondary_controller_rotation_buttons
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/secondary_controller_rotation.c tests/test_secondary_controller_rotation_position.c -o /tmp/test_secondary_controller_rotation_position
+          /tmp/test_secondary_controller_rotation_position
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/grounded_transform.c tests/test_grounded_transform.c -o /tmp/test_grounded_transform
+          /tmp/test_grounded_transform
+          cc -std=c11 -O2 -Wall -Wextra -Werror -fwrapv -DGROUNDED_TRANSFORM_REAL_ARITHMETIC -DBUBSY3D_MATCH_FUNC_8005385C -Isrc/game -Isrc/player_model src/game/grounded_transform.c src/game/func_80053D00.c src/game/func_80053B70.c src/game/func_80053350.c src/game/func_80053A08.c src/game/func_8001007C.c src/game/sqrt_backend_wrappers.c src/player_model/player_vector_transform.c tests/test_grounded_transform.c -o /tmp/test_grounded_transform_real_arithmetic
+          /tmp/test_grounded_transform_real_arithmetic
+          cc -std=c11 -O2 -Wall -Wextra -Werror -fwrapv -DGROUNDED_TRANSFORM_REAL_ARITHMETIC -DGROUNDED_TRANSFORM_REAL_SQRT -DBUBSY3D_MATCH_FUNC_8005385C -Isrc/game -Isrc/player_model src/game/grounded_transform.c src/game/func_80053D00.c src/game/func_80053B70.c src/game/func_80053350.c src/game/func_80053A08.c src/game/func_8001007C.c src/game/sqrt_backend_wrappers.c src/game/gte_sqrt_backends.c src/player_model/player_vector_transform.c tests/test_grounded_transform.c -o /tmp/test_grounded_transform_real_sqrt
+          /tmp/test_grounded_transform_real_sqrt
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80053B70.c src/game/func_80053D00.c tests/test_grounded_vector_scale.c -o /tmp/test_grounded_vector_scale
+          /tmp/test_grounded_vector_scale
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80053350.c src/game/func_80053B70.c tests/test_grounded_divide.c -o /tmp/test_grounded_divide
+          /tmp/test_grounded_divide
+      - name: Compile and test controller camera transition
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80027114.c tests/test_controller_camera_transition.c -o /tmp/test_controller_camera_transition
+          /tmp/test_controller_camera_transition
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DREAL_CAMERA -Isrc/game src/game/func_80027114.c src/game/func_8004ED78.c tests/test_controller_camera_transition.c -o /tmp/test_controller_camera_transition_real
+          /tmp/test_controller_camera_transition_real
+      - name: Compile and test texture font position updates
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800481D4.c tests/test_texture_font_position.c -o /tmp/test_texture_font_position
+          /tmp/test_texture_font_position
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DREAL_POSITION -Isrc/game src/game/func_800481D4.c src/game/func_80055DF4.c src/game/func_80055E38.c tests/test_texture_font_position.c -o /tmp/test_texture_font_position_real
+          /tmp/test_texture_font_position_real
       - name: Compile and test integrated grounded-controller input model
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/controller_input_prepare.c src/game/controller_input_route.c src/game/controller_bitmap_gate.c src/game/controller_bitmap_dispatch.c src/game/controller_mode_one_tail.c src/game/controller_grounded_input_path.c src/game/func_80056678.c src/game/func_8005668C.c tests/test_controller_grounded_input_path.c -o /tmp/test_controller_grounded_input_path
@@ -70,6 +160,10 @@ jobs:
           /tmp/test_secondary_controller_helper
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800493CC.c src/game/func_8004FFEC.c tests/test_secondary_controller_event_flow.c -o /tmp/test_secondary_controller_event_flow
           /tmp/test_secondary_controller_event_flow
+      - name: Compile and test secondary-controller basis swap
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80049158.c tests/test_secondary_controller_basis_swap.c -o /tmp/test_secondary_controller_basis_swap
+          /tmp/test_secondary_controller_basis_swap
       - name: Compile and test secondary-controller cleanup
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800493F8.c tests/test_secondary_controller_cleanup.c -o /tmp/test_secondary_controller_cleanup
@@ -178,6 +272,8 @@ jobs:
           /tmp/test_heading_mode_timed
       - name: Compile and test heading timed records
         run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002BD0C.c tests/test_secondary_result_lookup.c -o /tmp/test_secondary_result_lookup
+          /tmp/test_secondary_result_lookup
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002CA4C.c src/game/func_8002CA88.c src/game/func_8002CB2C.c tests/test_heading_timed_records.c -o /tmp/test_heading_timed_records
           /tmp/test_heading_timed_records
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002BAD4.c tests/test_heading_timed_delete.c -o /tmp/test_heading_timed_delete
@@ -198,6 +294,14 @@ jobs:
           /tmp/test_result_display
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002C370.c src/game/func_8002DE34.c src/game/func_8002DF24.c tests/test_result_display_flow.c -o /tmp/test_result_display_flow
           /tmp/test_result_display_flow
+      - name: Compile and test main-path transform reset
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80023C98.c tests/test_main_path_transform_reset.c -o /tmp/test_main_path_transform_reset
+          /tmp/test_main_path_transform_reset
+      - name: Compile and test main-path resource setup
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80023A84.c tests/test_main_path_resource_setup.c -o /tmp/test_main_path_resource_setup
+          /tmp/test_main_path_resource_setup
       - name: Compile and test texture-font color dispatch
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_800482D0.c tests/test_texture_font_color.c -o /tmp/test_texture_font_color
@@ -432,7 +536,7 @@ jobs:
           /tmp/test_move_step
       - name: Compile and test grounded temporary rotation
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800548A0.c src/game/func_800549E8.c src/game/func_80054A6C.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80054488.c src/game/func_800546F4.c src/game/func_800547C8.c src/game/func_800548A0.c src/game/func_80048FA8.c src/game/func_80049080.c src/game/func_800549E8.c src/game/func_80054A6C.c src/game/func_80054AF0.c src/player_model/shared_actor_state_dispatch.c tests/test_grounded_rotation.c -o /tmp/test_grounded_rotation
           /tmp/test_grounded_rotation
       - name: Compile and test rotation-generator candidate
         run: |
@@ -460,8 +564,68 @@ jobs:
           /tmp/test_gte_sqrt_backends
       - name: Compile and test grounded basis reconstruction
         run: |
-          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054488.c src/game/func_800542A4.c src/game/func_800550A4.c src/game/func_8005541C.c tests/test_grounded_basis.c -o /tmp/test_grounded_basis
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80054488.c src/game/func_800542A4.c src/game/func_80048E30.c src/game/func_800550A4.c src/game/func_8005541C.c tests/test_grounded_basis.c -o /tmp/test_grounded_basis
           /tmp/test_grounded_basis
+      - name: Compile and test secondary rotation path
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80048E30.c src/game/func_80048FA8.c src/game/func_80049080.c src/game/func_80054488.c tests/test_secondary_rotation_path.c -o /tmp/test_secondary_rotation_path
+          /tmp/test_secondary_rotation_path
+      - name: Compile and test secondary result counter
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002E348.c tests/test_secondary_result_counter.c -o /tmp/test_secondary_result_counter
+          /tmp/test_secondary_result_counter
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8002E2DC.c src/game/func_8002E348.c tests/test_secondary_result_expiration.c -o /tmp/test_secondary_result_expiration
+          /tmp/test_secondary_result_expiration
+      - name: Compile and test component target orientation
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_8005536C.c tests/test_component_target_orientation.c -o /tmp/test_component_target_orientation
+          /tmp/test_component_target_orientation
+      - name: Compile and test secondary extent comparison
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_8005C3A4.c tests/test_secondary_extent_comparison.c -o /tmp/test_secondary_extent_comparison
+          /tmp/test_secondary_extent_comparison
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_COMPARISON_REAL_EXTENT -Isrc/game src/game/func_8005C3A4.c src/game/func_80059274.c tests/test_secondary_extent_comparison.c -o /tmp/test_secondary_extent_comparison_real
+          /tmp/test_secondary_extent_comparison_real
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_COMPARISON_REAL_EXTENT -DBUBSY3D_COMPARISON_REAL_DISTANCE -Isrc/game src/game/func_8005C3A4.c src/game/func_800590B4.c src/game/func_80059274.c tests/test_secondary_extent_comparison.c -o /tmp/test_secondary_extent_comparison_path
+          /tmp/test_secondary_extent_comparison_path
+      - name: Compile and test secondary extent reader
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80059274.c tests/test_secondary_extent.c -o /tmp/test_secondary_extent
+          /tmp/test_secondary_extent
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_MATCH_ORIGINAL_L0 -Isrc/game src/game/func_80059274.c tests/test_secondary_extent.c -o /tmp/test_secondary_extent_target
+          /tmp/test_secondary_extent_target
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_EXTENT_REAL_BOUNDS -Isrc/game src/game/func_80059274.c src/game/func_80058C74.c tests/test_secondary_extent.c -o /tmp/test_secondary_extent_bounds
+          /tmp/test_secondary_extent_bounds
+      - name: Compile and test secondary distance
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_800590B4.c tests/test_secondary_distance.c -o /tmp/test_secondary_distance
+          /tmp/test_secondary_distance
+      - name: Compile and test component bounds conversion
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game src/game/func_80058C74.c tests/test_component_bounds.c -o /tmp/test_component_bounds
+          /tmp/test_component_bounds
+      - name: Compile and test secondary position sampler
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_80058E7C.c tests/test_secondary_position.c -o /tmp/test_secondary_position
+          /tmp/test_secondary_position
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_POSITION_REAL_BOUNDS -DBUBSY3D_POSITION_REAL_HALF -Isrc/game -Isrc/player_model src/game/func_80058E7C.c src/game/func_80058C74.c src/game/func_80052094.c src/game/func_80053EA0.c tests/test_secondary_position.c -o /tmp/test_secondary_position_real_bounds
+          /tmp/test_secondary_position_real_bounds
+      - name: Compile and test vector halving
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80053EA0.c tests/test_vector_half.c -o /tmp/test_vector_half
+          /tmp/test_vector_half
+      - name: Compile and test secondary distance path
+        run: |
+          cc -std=c11 -O2 -Wall -Wextra -Werror -Isrc/game -Isrc/player_model src/game/func_800590B4.c src/game/func_80058E7C.c src/game/func_80053EA0.c tests/test_secondary_distance_path.c -o /tmp/test_secondary_distance_path
+          /tmp/test_secondary_distance_path
+          cc -std=c11 -O2 -Wall -Wextra -Werror -DBUBSY3D_DISTANCE_REAL_BOUNDS -DBUBSY3D_DISTANCE_REAL_BASIS -DBUBSY3D_DISTANCE_REAL_SEQUENCE -DBUBSY3D_DISTANCE_REAL_WRAPPER -DBUBSY3D_DISTANCE_REAL_TRANSFORM -DBUBSY3D_DISTANCE_REAL_ROTATION_DISPATCH -Isrc/game -Isrc/player_model src/game/func_800590B4.c src/game/func_80058E7C.c src/game/func_80053EA0.c src/game/func_80058C74.c src/game/func_80052094.c src/game/func_8005476C.c src/game/func_800546F4.c src/game/func_80054488.c src/game/func_80064528.c src/game/func_800540BC.c src/game/func_80010038.c src/game/func_80053FA4.c src/player_model/player_actor_flags.c tests/test_secondary_distance_path.c -o /tmp/test_secondary_distance_path_real
+          /tmp/test_secondary_distance_path_real
+          distance_flags="-DBUBSY3D_DISTANCE_REAL_BOUNDS -DBUBSY3D_DISTANCE_REAL_BASIS -DBUBSY3D_DISTANCE_REAL_SEQUENCE -DBUBSY3D_DISTANCE_REAL_WRAPPER -DBUBSY3D_DISTANCE_REAL_TRANSFORM -DBUBSY3D_DISTANCE_REAL_ROTATION_DISPATCH -DBUBSY3D_DISTANCE_MODELED_GTE -DBUBSY3D_DISTANCE_REAL_LENGTH -DBUBSY3D_DISTANCE_REAL_SQRT -DBUBSY3D_DISTANCE_ORIGINAL_SUBTRACTION"
+          distance_sources="src/game/func_800590B4.c src/game/func_80058E7C.c src/game/func_80053EA0.c src/game/func_80058C74.c src/game/func_80052094.c src/game/func_8005476C.c src/game/func_800546F4.c src/game/func_80054488.c src/game/func_80064528.c src/game/func_800540BC.c src/game/func_80010038.c src/game/func_80053FA4.c src/game/component_transform.c src/game/func_80062D4C.c src/game/func_80053904.c src/game/sqrt_backend_wrappers.c src/game/gte_sqrt_backends.c src/player_model/player_actor_flags.c tests/test_secondary_distance_path.c"
+          cc -std=c11 -O2 -Wall -Wextra -Werror $distance_flags -Isrc/game -Isrc/player_model $distance_sources -o /tmp/test_secondary_distance_path_gte
+          /tmp/test_secondary_distance_path_gte
+          cc -std=c11 -O2 -Wall -Wextra -Werror $distance_flags -DBUBSY3D_DISTANCE_IDENTITY_BASIS -Isrc/game -Isrc/player_model $distance_sources -o /tmp/test_secondary_distance_path_identity
+          /tmp/test_secondary_distance_path_identity
       - name: Compile and test fixed-point products
         run: |
           cc -std=c11 -O2 -Wall -Wextra -Werror src/game/func_80010038.c src/game/func_8001007C.c src/player_model/player_vector_dot.c src/player_model/player_vector_cross.c tests/test_fixed_vectors.c -o /tmp/test_fixed_vectors

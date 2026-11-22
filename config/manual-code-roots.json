@@ -9,6 +9,19 @@
         "evidence": "The result-display initializer at 0x8002DF70 loads this address as the callback passed to func_8004FF50. The 240-byte callback starts at 0x8002DE34, returns at 0x8002DF1C with its delay slot at 0x8002DF20, and is followed by the initializer at 0x8002DF24. All bytes match readable C."
       },
       {
+        "address": "0x8002BD0C",
+        "end": "0x8002BE68",
+        "symbol": "func_8002BD0C",
+        "evidence": "The 348-byte result lookup starts with a 0x18-byte frame at 0x8002BD0C and returns at 0x8002BE60 with its delay slot at 0x8002BE64, immediately before the anchored function at 0x8002BE68. Its computed dispatch at 0x8002BD78 uses an 18-word table at 0x80012798, and every target is inside the function. All body and table bytes match readable C.",
+        "computed_jump_tables": [
+          {
+            "site": "0x8002BD78",
+            "table": "0x80012798",
+            "count": 18
+          }
+        ]
+      },
+      {
         "address": "0x80023A0C",
         "symbol": "func_80023A0C",
         "evidence": "The default controller-event mode table at 0x8009EC8C references this 36-byte initializer for event 3 at 0x8009ECB8; the same location aliases a static event-10 table entry. The preceding function returns at 0x80023A04 with its delay slot at 0x80023A08; this entry returns at 0x80023A28 with its delay slot at 0x80023A2C; a new frame begins at 0x80023A30. It copies the controller bitmap and two digital-pad status bytes into event-record offsets 0x0C, 0x10, and 0x11 in that order. All 36 bytes match plain C."

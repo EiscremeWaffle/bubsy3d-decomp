@@ -49,13 +49,12 @@ static void record_call(uint32_t call) {
     output.calls[output.call_count++] = call;
 }
 
-int32_t func_80047050(int32_t value) {
+void func_80047050(int32_t value) {
     record_call(1);
     assert(value == 1 && g_controller_lifecycle_state == 2);
     if (current.mutations & 1U) {
         g_controller_button_hold = (uint8_t)current.replacement_hold;
     }
-    return 0;
 }
 
 void func_8001B558(

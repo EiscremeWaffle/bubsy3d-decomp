@@ -62,15 +62,16 @@ void func_800486D0(void *context, int32_t first, int32_t second, int8_t *channel
     record(START_EFFECT);
 }
 
-void func_800481D4(int32_t channel, int32_t first, int32_t second) {
+int32_t func_800481D4(int32_t channel, int32_t first, int32_t second) {
     assert(channel == 5 && first == 0x1000 && second == 0x1000);
     record(CONFIGURE_EFFECT);
+    return 0;
 }
 
 static int slot_index(void *payload) {
     int index;
     for (index = 0; index < TEXTURE_FONT_SLOT_COUNT; ++index) {
-        if (payload == g_texture_font_slots[index].payload) {
+        if (payload == g_texture_font_slots[index].data.payload) {
             return index;
         }
     }

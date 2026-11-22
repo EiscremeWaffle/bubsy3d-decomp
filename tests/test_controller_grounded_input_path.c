@@ -21,7 +21,7 @@ typedef struct ProbeInput {
     uint32_t mode, sample, timeout_gate, reference, timeout, blocked_12, blocked_2b;
     uint32_t hold, bitmap, mutations, replacement;
     uint32_t mode_state, pulse_value, pulse_direction, pulse_selection, tag_a, tag_b, prompt;
-    uint32_t interval_30, flash_enabled;
+    uint32_t interval_30, flash_enabled, interval_60, ready;
 } ProbeInput;
 
 typedef struct ProbeOutput {
@@ -33,10 +33,11 @@ typedef struct ProbeOutput {
     uint32_t flash_enabled, interval_callback_count;
     uint32_t flags_flash_value, ui_call_count, ui_calls[16];
     uint32_t display_tags[3];
+    uint32_t gate_interval_calls, ready_calls, action_calls;
 } ProbeOutput;
 
-_Static_assert(sizeof(ProbeInput) == 28 * sizeof(uint32_t), "probe input layout");
-_Static_assert(sizeof(ProbeOutput) == 85 * sizeof(uint32_t), "probe output layout");
+_Static_assert(sizeof(ProbeInput) == 30 * sizeof(uint32_t), "probe input layout");
+_Static_assert(sizeof(ProbeOutput) == 88 * sizeof(uint32_t), "probe output layout");
 
 volatile uint8_t g_controller_second_port_mode;
 volatile int16_t g_controller_port_selection;
@@ -49,7 +50,6 @@ volatile uint8_t g_controller_pulse_enabled;
 volatile uint8_t g_controller_pulse_value;
 volatile uint8_t g_controller_pulse_direction;
 volatile uint8_t g_controller_pulse_selection;
-volatile uint8_t g_controller_flash_enabled;
 int8_t g_controller_prompt_tag;
 int8_t g_controller_pulse_tag_a;
 int8_t g_controller_pulse_tag_b;
@@ -165,9 +165,10 @@ int32_t func_80061A64(int32_t value) {
     return 0;
 }
 
-void func_8006BB84(int32_t value) {
+uint32_t func_8006BB84(int32_t value) {
     (void)value;
     assert(!"state-three setup is outside this integrated fixture");
+    return 0;
 }
 
 void func_8004F688(void) {
@@ -258,7 +259,7 @@ void func_80049454(uint32_t buttons) {
     }
 }
 
-int32_t func_80047050(int32_t value) {
+void func_80047050(int32_t value) {
     assert((value == 1 && (g_controller_lifecycle_state == 1
                            || g_controller_lifecycle_state == 2
                            || g_controller_lifecycle_state == 3))
@@ -267,7 +268,6 @@ int32_t func_80047050(int32_t value) {
     if (current.mutations & 128U) {
         g_controller_button_hold = 255;
     }
-    return 0;
 }
 
 void func_8001B558(
@@ -310,7 +310,8 @@ uint8_t func_80023A30(int32_t interval) {
         return (uint8_t)current.interval_30;
     }
     assert(interval == 60);
-    return 0;
+    output.gate_interval_calls++;
+    return (uint8_t)current.interval_60;
 }
 
 void func_80023C98(void) {
@@ -338,12 +339,19 @@ void func_80038430(GameCyclicEntry *entry) {
 }
 
 int32_t func_800222E0(void) {
-    assert(!"readiness check is outside this fixture's bounded path");
-    return 0;
+    output.ready_calls++;
+    if (current.mutations & 4096U) {
+        g_controller_action_latched ^= 0x55U;
+    }
+    return (int32_t)current.ready;
 }
 
 void func_80023A84(void) {
-    assert(!"action callback is outside this fixture's bounded path");
+    assert(g_controller_action_latched == 1);
+    output.action_calls++;
+    if (current.mutations & 8192U) {
+        g_controller_action_latched ^= 0x80U;
+    }
 }
 
 static void emit_event(
@@ -390,7 +398,7 @@ static ProbeOutput run_probe(const ProbeInput *input) {
     g_controller_pulse_value = (uint8_t)input->pulse_value;
     g_controller_pulse_direction = (uint8_t)input->pulse_direction;
     g_controller_pulse_selection = (uint8_t)input->pulse_selection;
-    g_controller_flash_enabled = (uint8_t)input->flash_enabled;
+    g_controller_action_latched = (uint8_t)input->flash_enabled;
     g_controller_pulse_tag_a = (int8_t)(uint8_t)input->tag_a;
     g_controller_pulse_tag_b = (int8_t)(uint8_t)input->tag_b;
     g_controller_prompt_tag = (int8_t)(uint8_t)input->prompt;
@@ -444,7 +452,7 @@ static ProbeOutput run_probe(const ProbeInput *input) {
     output.pulse_direction = g_controller_pulse_direction;
     output.pulse_selection = g_controller_pulse_selection;
     output.prompt = (uint8_t)g_controller_prompt_tag;
-    output.flash_enabled = g_controller_flash_enabled;
+    output.flash_enabled = g_controller_action_latched;
     output.flags_flash_value = runtime_flags.flash_byte_0052;
     output.display_tags[0] = (uint8_t)g_controller_prompt_tag;
     output.display_tags[1] = (uint8_t)g_controller_pulse_tag_a;
@@ -513,6 +521,18 @@ static void self_test(void) {
     assert(result.mode_state == 0 && result.lifecycle == 2 && result.timeout == 20);
     assert(result.event_count == 2 && result.events[0] == 5 && result.events[1] == 1);
     assert(result.pulse_enabled == 0 && result.ui_call_count == 10);
+
+    memset(&input, 0, sizeof(input));
+    input.buttons = 1U << 11;
+    input.status_1 = 1;
+    input.mode = 2;
+    input.interval_60 = 1;
+    input.ready = 1;
+    input.mutations = 4096U | 8192U;
+    result = run_probe(&input);
+    assert(result.outcome == CONTROLLER_GROUNDED_INPUT_GATED);
+    assert(result.gate_interval_calls == 1 && result.ready_calls == 1 && result.action_calls == 1);
+    assert(result.flash_enabled == 0x81);
 }
 
 int main(int argc, char **argv) {

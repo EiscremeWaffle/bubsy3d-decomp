@@ -38,7 +38,7 @@ static void record(int kind, int index, uint32_t line) {
 int32_t func_80055EA8(uint8_t *payload, const uint8_t input[3]) {
     int index;
     for (index = 0; index < TEXTURE_FONT_SLOT_COUNT; index++) {
-        if (payload == g_texture_font_slots[index].payload) {
+        if (payload == g_texture_font_slots[index].data.payload) {
             break;
         }
     }

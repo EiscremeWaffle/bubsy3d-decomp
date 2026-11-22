@@ -30,14 +30,14 @@ static void test_real_slot_integration(void) {
     g_texture_font_loaded = 1;
     g_texture_font_slots[0].tag = 3;
     g_texture_font_slots[49].tag = 3;
-    g_texture_font_slots[0].payload[0x13] = 0x22;
-    g_texture_font_slots[0].payload[0x14] = 0x33;
-    g_texture_font_slots[0].payload[0x15] = 0x44;
-    assert(func_800482D0(3, &g_texture_font_slots[0].payload[0x13]) == 1);
+    g_texture_font_slots[0].data.payload[0x13] = 0x22;
+    g_texture_font_slots[0].data.payload[0x14] = 0x33;
+    g_texture_font_slots[0].data.payload[0x15] = 0x44;
+    assert(func_800482D0(3, &g_texture_font_slots[0].data.payload[0x13]) == 1);
     for (index = 0; index < 3; index++) {
-        assert(g_texture_font_slots[0].payload[0x14 + index] == 0x22);
-        assert(g_texture_font_slots[49].payload[0x14 + index] == 0x22);
-        assert(g_texture_font_slots[1].payload[0x14 + index] == 0xA5);
+        assert(g_texture_font_slots[0].data.payload[0x14 + index] == 0x22);
+        assert(g_texture_font_slots[49].data.payload[0x14 + index] == 0x22);
+        assert(g_texture_font_slots[1].data.payload[0x14 + index] == 0xA5);
     }
 }
 

@@ -21,7 +21,6 @@ extern uint8_t g_controller_prompt_text[];
 extern const char g_controller_button_prompt_text[];
 extern const char g_controller_display_text_b[];
 extern const char g_controller_display_text_c[];
-extern volatile uint8_t g_controller_flash_enabled;
 
 ControllerModeOneTailResult controller_mode_one_tail(ControllerGameContext *context, uint8_t mode);
 ControllerModeOneTailResult controller_mode_one_button_color(uint32_t buttons);

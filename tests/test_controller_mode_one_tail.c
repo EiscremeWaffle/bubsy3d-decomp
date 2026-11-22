@@ -32,7 +32,7 @@ volatile uint8_t g_controller_pulse_enabled;
 volatile uint8_t g_controller_pulse_value;
 volatile uint8_t g_controller_pulse_direction;
 volatile uint8_t g_controller_pulse_selection;
-volatile uint8_t g_controller_flash_enabled;
+volatile uint8_t g_controller_action_latched;
 volatile uint32_t g_controller_lifecycle_state;
 volatile uint8_t g_controller_timeout_ticks;
 int8_t g_controller_prompt_tag;
@@ -103,8 +103,8 @@ uint8_t func_80023A30(int32_t interval) {
     return (uint8_t)current.mutations;
 }
 
-int32_t func_80047050(int32_t value) {
-    return value;
+void func_80047050(int32_t value) {
+    (void)value;
 }
 
 int32_t func_80062890(void) {
@@ -155,9 +155,10 @@ void func_8001B558(
     assert(argument_5 == 0 && argument_6 == 0 && argument_7 == 0);
 }
 
-void func_8006BB84(int32_t value) {
+uint32_t func_8006BB84(int32_t value) {
     record_call(9);
     assert(value == 0);
+    return 0;
 }
 
 void func_8004F688(void) {
@@ -254,10 +255,10 @@ static void self_test(void) {
 
     current.mutations = 1;
     g_controller_pulse_enabled = 0;
-    g_controller_flash_enabled = 1;
+    g_controller_action_latched = 1;
     interval_callback_count = 0;
     assert(controller_mode_one_disabled_pulse_button(1U << 11) == CONTROLLER_MODE_ONE_EXIT);
-    assert(g_controller_flash_enabled == 0 && interval_callback_count == 1);
+    assert(g_controller_action_latched == 0 && interval_callback_count == 1);
 }
 
 int main(int argc, char **argv) {

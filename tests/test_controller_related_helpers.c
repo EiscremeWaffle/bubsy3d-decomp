@@ -12,7 +12,7 @@
 #include <string.h>
 
 _Static_assert(sizeof(TextureFontSlot) == 44, "texture-font slot size");
-_Static_assert(offsetof(TextureFontSlot, payload) == 4, "texture-font payload offset");
+_Static_assert(offsetof(TextureFontSlot, data) == 4, "texture-font payload offset");
 
 uint8_t g_event_runtime_byte;
 int32_t g_unknown_800BE400;
@@ -57,7 +57,7 @@ static void record(enum EventKind kind, int32_t index, uint32_t line) {
 static int32_t visit(void *payload, enum EventKind kind) {
     int32_t index;
     for (index = 0; index < TEXTURE_FONT_SLOT_COUNT; ++index) {
-        if (payload == g_texture_font_slots[index].payload) {
+        if (payload == g_texture_font_slots[index].data.payload) {
             break;
         }
     }

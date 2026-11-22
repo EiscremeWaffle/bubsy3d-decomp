@@ -1021,6 +1021,12 @@
           "kind": "anchored_function"
         },
         {
+          "start": "0x8002BD0C",
+          "end": "0x8002BE68",
+          "symbol": "func_8002BD0C",
+          "kind": "anchored_function"
+        },
+        {
           "start": "0x8002BE68",
           "end": "0x8002C010",
           "symbol": "func_8002BE68",
@@ -6035,12 +6041,6 @@
           "start": "0x8002B668",
           "end": "0x8002B790",
           "symbol": "fragment_8002B668",
-          "kind": "reachable_fragment"
-        },
-        {
-          "start": "0x8002BD0C",
-          "end": "0x8002BE68",
-          "symbol": "fragment_8002BD0C",
           "kind": "reachable_fragment"
         },
         {

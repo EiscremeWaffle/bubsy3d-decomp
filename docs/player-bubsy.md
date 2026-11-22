@@ -41,8 +41,8 @@ experimental MIPS-II scheduling profile to place the store in the `jr` delay
 slot; the emitted instructions are MIPS-I. This profile is specific to these
 two small getters and does not identify the original Bubsy compiler.
 
-The validated report credits 80,304 exact code bytes across 372 functions,
-or `2.598906%` of mapped code. The total includes two Clang-built
+The validated report credits 89,744 exact code bytes across 419 functions,
+or `2.904416%` of mapped code. The total includes two Clang-built
 getters, the assembly-backed death handler,
 the readable-C grounded-state handler, the readable-C shared transition
 `func_800347EC`, the movement consumer
@@ -479,6 +479,105 @@ reports backend failure through the assertion callback, and returns the byte
 after that callback. Their native tests cover return values, signed narrowing,
 callback mutation, and lookup boundaries.
 
+The neighboring no-argument routine
+[`func_80023C98`](../src/game/func_80023C98.c) now matches all 508 bytes from
+readable C. It updates a reference component from the active actor's direction
+and translation, runs the observed resource and effect cleanup sequence, then
+scans the returned object-index list. Entries whose resolved object has bit
+`0x40` set at byte `+0x2D` queue event `0x32`, mode `5`, using the pointer stored
+at object offset `+0x0C`. Its native test covers transform arguments, the
+optional update gate, both level-record and auxiliary-object resolution, event
+payloads, and nonpositive list counts. The meanings of the three transform
+globals and the relationship of this routine to the still-unmatched callback
+`func_80023E94` remain uncertain.
+
+Its transform dependencies [`func_8002E858`, `func_8002E954`, and
+`func_8002EA80`](../src/game/grounded_transform.c) match 184, 136, and 96
+bytes. They combine a scaled direction with translation, temporarily adjust
+the translation for an update, and conditionally reorient a component.
+The [vector scaling wrappers](../src/game/func_80053D00.c), including
+[`func_80053B70`](../src/game/func_80053B70.c), each match 104 bytes. The
+fixed-point division backend [`func_80053350`](../src/game/func_80053350.c)
+matches all 456 bytes, including zero-divisor and saturation behavior.
+Original-MIPS tests cover wrapping, aliasing, callback mutation, and ignored
+backend statuses. An integrated test executes the real scaling and division
+wrappers while stubbing the magnitude and multiplication backends. A second
+[integrated comparison](../tests/test_original_grounded_transform.py)
+executes the real magnitude wrapper and fixed-point multiplication as well
+across 2,400 cases, with the square-root backend and component getter stubbed.
+A further 2,400 cases execute the readable, still-unmatched square-root
+backend using original and synthetic lookup tables and a GTE leading-sign
+model. These native arithmetic builds use `-fwrapv` for the magnitude sum.
+
+The controller's [`func_8006BB84`](../src/game/func_8006BB84.c) timing helper
+matches all 328 bytes. It snapshots a 16-bit wrapping counter delta, handles
+negative and single-tick requests separately, and otherwise invokes its wait
+backend and optionally polls a status bit. The
+[`func_8006BCCC`](../src/game/func_8006BCCC.c) wait backend also matches all
+156 bytes from plain C. Original-MIPS tests cover both helpers, callback
+mutations, timeouts, status polling, and their integration.
+
+The main controller also calls [`func_80047050`](../src/game/func_80047050.c),
+whose 448 bytes now match. When enabled it clears its gate, performs teardown,
+optionally waits for completion, sends event 4, and performs two timing/update
+cycles. Its native test covers the gate, low-byte argument, loop, call order,
+and initialized event fields.
+
+The cycle-selection path calls [`func_80038430`](../src/game/func_80038430.c),
+whose 1,044 bytes have been independently matched. It gates on actor flags and
+the heading lock, captures a selected position, or sets up a movement
+transition using the current level and distance. Its
+[original-MIPS tests](../tests/test_original_controller_cycle_warp.py) compare
+2,413 cases, including callback mutations, and also run the readable position
+and distance helpers together. The
+[completion callback](../src/game/func_80038368.c) and
+[position forwarder](../src/game/func_8002E910.c) independently match all
+200 and 68 bytes, respectively. The
+[distance helper](../src/game/func_80022B5C.c) independently matches all
+132 bytes and has 6,696 original-MIPS comparisons, including wrapping
+extremes and small-coordinate boundaries. The transition tests also execute
+the real [flag setter](../src/game/func_800226C0.c) and
+[parameter accessors](../src/game/controller_cycle_event_parameters.c);
+the completion test executes the real
+[parameter reset](../src/game/func_80028E80.c). Those helpers independently
+match all 124 bytes combined. These six downstream matches and the distance
+helper are included in the validated report.
+
+The transition invokes `func_8002EB70` with arguments `a4`, `a6`, and `a7`
+set to zero. The bounded
+[cycle movement setup model](../src/game/cycle_movement_setup.c) covers that
+path and the non-rotating variant with a temporary target position used by
+the caller at `0x8003C068`. It covers gates, wrapped coordinate deltas,
+minimum nonzero steps, target restoration, and the completion callback. Its
+[original-MIPS test](../tests/test_original_cycle_movement_setup.py) compares
+3,080 cases each with a stubbed target helper and with the matched
+`func_8002E858` target calculation, including mutations of the saved
+position and temporary target during a callback. This is not a byte match or
+a replacement for the rest of `func_8002EB70`. A further 2,413 original-MIPS comparisons per
+variant run the cycle transition through this modeled setup, both with a
+stubbed target helper and with the matched target calculation.
+
+The movement state is advanced by
+[`func_80032A2C`](../src/game/func_80032A2C.c), whose 608 bytes independently
+match. It updates both component positions, counts completed steps, and
+invokes the completion callback on the next update. Its
+[original-MIPS test](../tests/test_original_cycle_movement_update.py) covers
+4,656 cases with stubbed component helpers and callback mutations. A separate
+[integration test](../tests/test_original_cycle_movement_components.py)
+compares 1,559 cases using the matched component getter and position accessors;
+the orientation synchronization remains stubbed. The update match is included
+in the validated report. The
+[flow test](../tests/test_original_cycle_movement_flow.py) compares 4,880
+setup-to-completion scenarios, including multiple update calls with and
+without a temporary target.
+
+Eight teardown backends also match in plain C: the state setters
+`func_8001AE28` and `func_80061A0C`, callback sequences `func_80045398` and
+`func_80028E50`, camera reset `func_8004EFD4`, and byte-vector helpers
+`func_8004F428`, `func_8004F454`, and `func_80050824`. Their tests cover
+callback order and mutation, the byte gate, return values, signed shifts,
+and input/output aliasing.
+
 The following controller-to-turn-event path is established for the default
 tables and the indicated runtime gates:
 
@@ -578,7 +677,7 @@ tables and the indicated runtime gates:
    connects preparation, routing, the pre-bitmap gates, event mapping, and the
    recovered mode-one prompt/pulse tail. Its
    [original-MIPS comparison](../tests/test_original_controller_grounded_input_path.py)
-   runs 6,713 cases from the original callback entry, comparing model state,
+   runs 6,767 cases from the original callback entry, comparing model state,
    emitted event IDs and bitmap snapshots, and callback mutations. State-three
    setup is exercised by the separate tail comparison. Mode-one button coverage
    includes pulse-enabled color keys 14/12, interval keys 6/11, and no-op exits
@@ -589,9 +688,12 @@ tables and the indicated runtime gates:
    MIPS comparisons cover both paths from state two. With the pulse disabled,
    button 11 is interval-gated; on success it clears the flash flag and calls
    the observed follow-up helper. Button 8's no-flash and closed-interval exits
-   and interval-gated UI setup are modeled. The test sets special-action flags
-   to zero, stubs interval/resource and other external callbacks, and records
-   emitted events instead of executing the queue. These are behavioral host
+   and interval-gated UI setup are modeled. The pre-bitmap action latch and
+   mode-one flash flag share the byte at `0x800BDF00`; the integrated test
+   checks readiness, interval gating, and callback mutations of that byte.
+   The test sets special-action flags to zero, stubs interval/resource and
+   other external callbacks, and records emitted events instead of executing
+   the queue. These are behavioral host
    models, not byte-matched callback C or a complete grounded-movement path.
    The second-port mode byte at `0x801D5F7C` also aliases the low byte of the
    third mapping-row word; the integration fixture preserves that alias.
@@ -609,8 +711,31 @@ tables and the indicated runtime gates:
    models its event setup, display callbacks, context transition, and pulse handoff.
    Original-MIPS comparisons cover 9,688 tail cases, including state-three setup,
    and these button branches in
-   the 6,713-case integrated test. These are bounded behavioral models, not
+   the 6,767-case integrated test. These are bounded behavioral models, not
    exact matches.
+
+   Its camera-transition dependency
+   [func_80027114](../src/game/func_80027114.c) is a 300-byte readable-C
+   match. It tests the low bytes of both arguments. On entry, it reads camera
+   zero's rotation, subtracts one eighth from each byte, applies the result to
+   cameras zero and one, and passes a zero rotation to the final helper. On
+   exit, it obtains a restored rotation and applies it to both cameras.
+   The [original-MIPS comparison](../tests/test_original_controller_camera_transition.py)
+   covers 1,216 cases each with a stubbed setter and with the real matched
+   camera setter, including boundary values and callback mutations. The
+   setter's backend and the other downstream helpers are stubbed.
+
+   The 252-byte [font-position helper](../src/game/func_800481D4.c) also
+   matches in readable C. After the loaded-state assertion and reload, it
+   scans all 50 slots for the signed low-byte tag and calls both position
+   setters with signed low-halfword coordinates. Setter statuses are ignored,
+   and mutations can affect later slot comparisons. The
+   [original-MIPS test](../tests/test_original_texture_font_position.py)
+   compares 1,620 cases with stubbed setters and another 1,620 with the real
+   matched setters. The assertion remains stubbed. The two
+   [position setters](../src/game/func_80055DF4.c) and
+   [counterpart](../src/game/func_80055E38.c) each match all 28 bytes; they
+   store a 16-bit field or return 22 for a null payload.
 
    A separate callback branch also calls
    [func_8001A280](../src/game/func_8001A280.c) with the cursor at
@@ -1156,11 +1281,198 @@ and [component-record reader](../src/game/func_80052094.c) and
 [record-copy](../tests/test_original_component_records.py) comparisons cover
 1,136 and 700 cases. The latter include overlapping record buffers and
 preserve the two four-word snapshots and the intervening table-pointer reload;
-they do not exercise an output that overwrites the table pointer itself. The
-secondary controller `func_80049454` remains unmatched.
+they do not exercise an output that overwrites the table pointer itself.
+The [basis-swap handler](../src/game/func_80049158.c) also matches all 472
+bytes from readable C. It increments the secondary tick, saves the referenced
+matrix, installs the current secondary basis, conditionally updates the tick
+result, rechecks the volatile controller flag around callbacks, and restores
+the saved matrix. Its [original-MIPS test](../tests/test_original_secondary_controller_basis_swap.py)
+compares 480 combinations of tick parity, result state, flag values, callback
+mutations, and matrix contents; the called engine helpers are stubbed. The
+secondary controller `func_80049454` itself remains unmatched.
 
-Two further secondary-controller support routines have been individually
-byte-matched and are configured for the next report rebuild. The 44-byte
+Its [entry model](../src/game/secondary_controller_entry.c) covers the initial
+record setup, timer increment and expiration event, timed-result exit, and
+the mode/button gates through `0x800495F4`. It is not a byte match or a model
+of the remaining controller. The
+[original-MIPS comparison](../tests/test_original_secondary_controller_entry.py)
+covers 1,104 boundary and randomized cases, with called helpers stubbed,
+including timer, record-owner, and flag mutations between calls.
+
+The [secondary rotation-button model](../src/game/secondary_controller_rotation.c)
+covers the four rotation-button checks and their wrapped direction-dependent
+angle calculations at `0x80049664..0x800497A4`. It is also not byte-matched.
+Its [original-MIPS test](../tests/test_original_secondary_controller_rotation_buttons.py)
+compares 2,224 button and arithmetic cases with the rotation helpers stubbed;
+it does not validate GTE execution. A second bounded function models the
+subsequent wrapped position addition and conditional vertical clamp, with
+2,072 additional original-MIPS boundary and randomized comparisons.
+
+The [confirmation-gate model](../src/game/secondary_controller_confirm.c)
+covers `0x8004989C..0x80049920` and the inactive exit check. It distinguishes
+an active confirmation, a rejected press, and a valid new confirmation; it
+preserves the counter slot selected before the context getter runs. This is
+also a bounded behavioral model, not a byte match. Its
+[original-MIPS test](../tests/test_original_secondary_controller_confirm.py)
+compares button results, counter and mode boundaries, and callback mutations
+across 8,644 combinations with called helpers stubbed. The separate
+[confirmation-start model](../src/game/secondary_controller_confirm_start.c)
+continues through `0x80049A24`: it decrements the result, saves the reference
+basis, schedules an event, updates timed records, and plays a sound. The
+[original-MIPS comparison](../tests/test_original_secondary_controller_confirm_start.py)
+exercises 768 selection and callback-mutation combinations with helpers
+stubbed and nonoverlapping basis storage. The subsequent
+[active-gate model](../src/game/secondary_controller_active.c) covers
+`0x80049A24..0x80049B08`, including record selection, component capture, and
+the secondary flag checks. Its
+[original-MIPS test](../tests/test_original_secondary_controller_active.py)
+compares 1,728 combinations with helper callbacks stubbed and mutating state.
+The [measurement model](../src/game/secondary_controller_measure.c) continues
+through `0x80049CB8`: it samples positions and direction, computes distances
+around a wrapped directional adjustment, evaluates the context gate, and
+selects the subsequent distance branch. Its
+[original-MIPS test](../tests/test_original_secondary_controller_measure.py)
+compares 3,569 cases, including signed distance boundaries, with helper results
+and callback mutations controlled by stubs. Another 908 cases execute the
+matched distance, wrapped-square, and fixed-point multiplication routines,
+using a native subtraction model with inputs restricted to avoid the
+original's signed-overflow traps and a stubbed square-root wrapper. The branch
+continues with the [approach-setup model](../src/game/secondary_controller_approach.c)
+through `0x80049DD0`: it also samples the updated component, initializes the
+movement record, and checks its height. Its
+[original-MIPS test](../tests/test_original_secondary_controller_approach.py)
+compares 3,280 cases with helpers stubbed. These bounded models are not byte
+matches and do not cover the rest of the secondary controller. The same test
+also compares 2,045 cases using the real fixed-point multiply. The separate
+approach-step model covers `0x80049DD0..0x80049E78`, including the signed
+iteration threshold, wrapping movement, height clamp, and callback mutations;
+its original-MIPS test compares 4,636 cases with transforms stubbed.
+
+Its [result-counter helper](../src/game/func_8002E348.c) matches all 196 bytes
+in readable C. It selects a counter from the current selection, adds the
+incoming delta through 16-bit wrapping, clamps negative results to zero, and
+may schedule a 600-tick callback when the result reaches zero. It rereads
+the selection after scheduling before notifying the display helper. Its
+[original-MIPS test](../tests/test_original_secondary_result_counter.py)
+covers 1,176 cases including signed boundaries, existing events, ignored
+callback statuses, and callback mutations of the selection.
+The [expiration callback](../src/game/func_8002E2DC.c) also matches all 108
+bytes. It increments the selected counter only if the stored value is zero
+and the selection still matches, then removes the event and clears its
+pointer. An [integrated original-MIPS comparison](../tests/test_original_secondary_result_expiration.py)
+executes both matched routines across 3,600 cases, with context and event
+backends stubbed; it covers callback mutations and event-pointer clearing.
+
+The [timed-record result lookup](../src/game/func_8002BD0C.c) now matches all
+348 function bytes plus its 72-byte switch table. It dispatches on the signed
+halfword of its input, returns the selected result or timed-record field, caps
+durations of 1000 or more at 999, and delegates cases 12 and 16 to their
+respective helpers.
+For the valid binary context selections, its
+[original-MIPS test](../tests/test_original_secondary_result_lookup.py)
+compares 82 cases across every switch entry, both context slots, argument
+halfword boundaries, and duration clamp values; context and callback helpers
+are stubbed.
+
+Its two rotation wrappers,
+[func_80048FA8](../src/game/func_80048FA8.c) and
+[func_80049080](../src/game/func_80049080.c), each match all 216 bytes in
+plain C. They snapshot the component, narrow the input angles to halfwords
+with wrapping X/Z negation, and compose in opposite orders before rebuilding
+the basis. Their shared [reconstruction helper](../src/game/func_80048E30.c)
+matches all 376 bytes in plain C; it clears the first column's Y component,
+conditions the first and third columns, and reconstructs the remaining
+columns through cross products. The
+[original-MIPS comparison](../tests/test_original_secondary_rotation_path.py)
+covers 960 wrapper and reconstruction cases, including null components, input
+and output aliasing, callback mutations, helper order, and ignored statuses.
+It stubs the rotation generator, matrix composition, and vector backends;
+these cases do not establish physical GTE behavior.
+
+The secondary controller's [target-orientation helper](../src/game/func_8005536C.c)
+also matches all 176 bytes in plain C. It copies the identity basis, rejects a
+null component or target translation, then sets the temporary basis translation
+and rebuilds the component orientation, ignoring both callback statuses. Its
+[original-MIPS test](../tests/test_original_component_target_orientation.py)
+compares 128 cases, including null inputs, optional bases, callback mutations,
+and nonzero callback statuses; those callbacks are stubbed.
+
+The [secondary extent comparison](../src/game/func_8005C3A4.c) matches all
+176 bytes in plain C at `-O0`. It calls the distance helper and both extent
+helpers, then compares twice the distance with the sum of the extents as
+signed words after 32-bit wrapping. It writes the resulting byte and ignores
+the helpers' statuses. Its
+[original-MIPS test](../tests/test_original_secondary_extent_comparison.py)
+covers 599 boundary and randomized cases with stubbed helpers, including
+aliased objects and output, callback mutations, and wrapped comparisons.
+The same cases also run both the comparison and the real extent reader
+together, with the bounds and subtraction helpers stubbed.
+Another variant runs the real distance and extent helpers together under the
+comparison, with position sampling, distance calculation, bounds, and vector
+subtraction stubbed.
+The gameplay meaning of this test remains unresolved.
+Its [distance helper](../src/game/func_800590B4.c) also matches all 136 bytes
+in plain C at `-O0`: it passes the optional basis to each object sampler in
+order, then passes the two local vectors to the matched distance routine. Its
+[original-MIPS test](../tests/test_original_secondary_distance.py) covers 128
+cases with stubbed helpers, including aliased objects and output and mutations
+of the second object and the first local vector between calls.
+An [integrated original-MIPS test](../tests/test_original_secondary_distance_path.py)
+also runs the actual distance sampler and halving routine together for 1,536
+cases, including variants with the actual bounds conversion, record reader,
+sequence-index reader, basis normalization chain, point-transform wrapper, and
+point-transform translation and rotation dispatch. One variant runs the
+original GTE rotation and square-root backends with a software GTE model and
+compares them with native behavioral models using a synthetic lookup table.
+Another runs the original vector subtractor, with inputs constrained to avoid
+its signed-overflow traps; native subtraction remains a model. These tests do
+not prove hardware behavior or byte-match the native models. Cases cover aliased
+objects, both sequence-index branches, identity and rotated bases, and mutation
+between samples. On native builds, the sampler initializes an unused fourth
+center word because the identity transform copies it; the target build preserves
+the original uninitialized stack word.
+
+The [position sampler](../src/game/func_80058E7C.c) matches all 228 bytes in
+plain C at `-O0`. It ignores its incoming basis, derives a center from the
+component bounds, snapshots the component's basis, and transforms the center.
+It ignores all six helper statuses. Its
+[original-MIPS test](../tests/test_original_secondary_position.py) compares
+128 cases with stubbed helpers, including a callback that replaces the component
+pointer before it is read. A native test also exercises the matched bounds and
+record readers and vector-halving helper together. The transform helpers it
+calls are not all matched.
+
+The [point-transform wrapper](../src/game/func_80064528.c) matches all 32
+bytes in plain C and forwards the input, basis, output, and return value to
+`func_800540BC`. The integrated test above exercises the real wrapper with a
+stubbed backend, including nonzero backend statuses.
+
+The [vector-halving helper](../src/game/func_80053EA0.c) matches all 128 bytes
+in plain C. It processes each component in order, preserving overlapping
+input/output behavior. Negative values are negated with wrapping, shifted, then
+negated again; in particular `0x80000000` becomes `0x40000000`. Its
+[original-MIPS test](../tests/test_original_vector_half.py) covers 792 cases,
+including overlaps and signed boundaries.
+
+The [component bounds conversion](../src/game/func_80058C74.c), called by
+the secondary distance and extent paths, matches all 232 bytes in plain C at
+`-O0`. It propagates either helper failure; on success it swaps and negates
+the two Y words with 32-bit wrapping. Its
+[original-MIPS test](../tests/test_original_component_bounds.py) compares 437
+cases with stubbed helpers, including failures, callback mutations, and
+negation of `0x80000000`.
+
+The [extent reader](../src/game/func_80059274.c) matches all 164 bytes at
+`-O0`. It calls the bounds reader and vector subtractor, ignores their statuses,
+and stores the largest signed difference component. The matching build uses a
+GNU statement expression; the native form uses standard C. Its
+[original-MIPS test](../tests/test_original_secondary_extent.py) compares both
+forms over 378 cases with stubbed helpers, including signed boundaries,
+nonzero statuses, and output aliasing. Another 128 cases run the real bounds
+conversion and original vector subtractor, with a native subtraction model.
+Inputs are restricted to avoid the original subtractor's signed-overflow traps.
+
+Two further secondary-controller support routines are byte-matched. The 44-byte
 [event callback](../src/game/func_800493CC.c), registered by
 `func_80049454` through `func_8004FF50` at `0x800499A8`, captures the event
 pointer, sets the secondary flag, and invokes the matched list remover even

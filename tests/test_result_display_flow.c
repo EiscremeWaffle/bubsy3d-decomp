@@ -35,10 +35,11 @@ void func_800486D0(void *text, int32_t first, int32_t second, int8_t *tag) {
     ++font_creations;
 }
 
-void func_800481D4(int32_t tag, int32_t first, int32_t second) {
+int32_t func_800481D4(int32_t tag, int32_t first, int32_t second) {
     assert(tag == -2);
     assert(first <= 0x1000 && second <= 0x2C00);
     ++scale_updates;
+    return 0;
 }
 
 int32_t func_800483C0(int32_t tag) {

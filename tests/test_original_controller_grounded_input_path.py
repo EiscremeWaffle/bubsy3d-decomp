@@ -17,8 +17,8 @@ if HAS_UNICORN:
     )
 
 
-INPUT = struct.Struct("<28I")
-OUTPUT = struct.Struct("<85I")
+INPUT = struct.Struct("<30I")
+OUTPUT = struct.Struct("<88I")
 EVENT = 0x801E5000
 CONTEXT = 0x801E4000
 FLAGS = 0x801E0000
@@ -155,6 +155,24 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
             )
             for pulse_enabled, bit in itertools.product((0, 1), range(32))
         )
+        cases = [(*case, 0, 0) for case in cases]
+        cases.extend(
+            (
+                1 << 11, 1, 1, 1, 1, 0, 0, 0, mode, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 128, 1, 0, 0x80, 0xFF, 0, 0, flash,
+                interval, ready,
+            )
+            for mode, flash, interval, ready in itertools.product(
+                (0, 2), (0, 1, 255), (0, 1), (0, 1, 256, 257),
+            )
+        )
+        cases.extend(
+            (
+                1 << 11, 1, 1, 1, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
+                0, mutations, 0, 0, 128, 1, 0, 0x80, 0xFF, 0, 0, 255, 1, ready,
+            )
+            for mutations, ready in itertools.product((4096, 8192, 12288), (0, 1))
+        )
         native_outputs = run_native_probe(
             self, [
                 "src/game/controller_input_prepare.c", "src/game/controller_input_route.c",
@@ -207,7 +225,7 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
                 0x80048504: 15, 0x80048C48: 16, 0x8001BC08: 17,
                 0x8002C9D4: 18, 0x800481D4: 19, 0x8001BC28: 20,
                 0x8002C370: 21, 0x80027114: 22,
-                0x80062890: 23,
+                0x80062890: 23, 0x800222E0: 24, 0x80023A84: 25,
             }.get(address)
             if call is None:
                 return
@@ -299,7 +317,8 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
                     uc.reg_write(UC_MIPS_REG_V0, current["interval_30"])
                 else:
                     self.assertEqual(a0, 60)
-                    uc.reg_write(UC_MIPS_REG_V0, 0)
+                    current["gate_interval_calls"] += 1
+                    uc.reg_write(UC_MIPS_REG_V0, current["interval_60"])
             elif call == 11:
                 if current["ui_setup"]:
                     current["ui_calls"].append(5)
@@ -357,6 +376,16 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
             elif call == 23:
                 current["resource_clear_calls"] += 1
                 uc.reg_write(UC_MIPS_REG_V0, 0)
+            elif call == 24:
+                current["ready_calls"] += 1
+                if mutations & 4096:
+                    write_byte(uc, GP + 0x1A4, read_byte(uc, GP + 0x1A4) ^ 0x55)
+                uc.reg_write(UC_MIPS_REG_V0, current["ready"])
+            elif call == 25:
+                self.assertEqual(read_byte(uc, GP + 0x1A4), 1)
+                current["action_calls"] += 1
+                if mutations & 8192:
+                    write_byte(uc, GP + 0x1A4, read_byte(uc, GP + 0x1A4) ^ 0x80)
             elif call == 15 or call == 16:
                 expected_tags = (
                     (current["prompt"], current["tag_a"], current["tag_b"])
@@ -386,7 +415,7 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
              mode, sample, timeout_gate, reference, timeout, blocked_12, blocked_2b,
              hold, bitmap, mutations, replacement, mode_state, pulse_value,
              pulse_direction, pulse_selection, tag_a, tag_b, prompt, interval_30,
-             flash_enabled) = entry
+             flash_enabled, interval_60, ready) = entry
             current.update(
                 mutations=mutations, live_mode=mode, sample=sample, timeout_gate=timeout_gate,
                 mode_state=mode_state,
@@ -396,6 +425,8 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
                 color_call_tag=EMPTY_VALUE, color_value=EMPTY_VALUE,
                 mode_one_button_branch=False,
                 interval_30=interval_30, interval_30_calls=0, interval_callback_count=0,
+                interval_60=interval_60, ready=ready, gate_interval_calls=0,
+                ready_calls=0, action_calls=0,
                 ui_calls=[], ui_prompt_index=0,
                 ui_color_index=0, tag_a=tag_a, tag_b=tag_b,
                 ui_tag_index=0, resource_clear_calls=0,
@@ -492,7 +523,8 @@ class OriginalControllerGroundedInputPathTests(unittest.TestCase):
                 read_byte(cpu, GP + 0x1A4), current["interval_callback_count"],
                 read_byte(cpu, FLAGS + 0x52), len(current["ui_calls"]), *ui_calls,
                 read_byte(cpu, DISPLAY_TAG_A), read_byte(cpu, DISPLAY_TAG_B),
-                read_byte(cpu, DISPLAY_TAG_C),
+                read_byte(cpu, DISPLAY_TAG_C), current["gate_interval_calls"],
+                current["ready_calls"], current["action_calls"],
             )
             self.assertEqual(original, native, f"case {index}: {entry}")
             self.assertEqual(

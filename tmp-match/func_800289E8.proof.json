@@ -1,0 +1,32 @@
+{
+  "symbol": "func_800289E8",
+  "address": "0x800289E8",
+  "size": 372,
+  "source": "src/game/func_800289E8.c",
+  "source_sha256": "c900ba68ba40c1a574cd65545f6377fa9fcfd2745f1f878c709438e4bb6b4641",
+  "compiler": "gcc-2.6.3-psx",
+  "flags": [
+    "-O2",
+    "-G8",
+    "-msoft-float",
+    "-fno-pic",
+    "-fomit-frame-pointer",
+    "-S",
+    "-DBUBSY3D_MATCH_ORIGINAL_L0"
+  ],
+  "globals": {
+    "g_level_record_count": "0x801D8994",
+    "g_level_records": "0x801D89A4",
+    "g_level_default_rotation": "0x8009F120"
+  },
+  "gcc_archive_sha256": "01e6e8c4933414ea3f8d8e3bc766a1f5fafd4fc0110e0b75d1f691bd791989b1",
+  "maspsx_archive_sha256": "9f8ea9827b785ae41437befa8ebdceb8c00f3b1e8f3a90c506948e2df1079bde",
+  "linker": "Ubuntu LLD 21.1.8 (compatible with GNU linkers)",
+  "compiled_sha256": "c4510daa8db21a804fd090778521e30463c83678f0de82b87ee795c06212a3fb",
+  "headers": {
+    "src/game/component_rotation.h": "681fab3bbcf2f68dc4ff07bb07fb7226ceb4c8f1b238793b5e4c6a4ae6bffa0b",
+    "src/game/level_records.h": "0b51fd939f07111af76f64b1e8c03f64a33d3a32f2962ac191f571b3f186c5d2",
+    "src/game/move_preparation.h": "f7ce3e93db465134b49abb44f7a9faf0be6d88b139e31a346599b7ab2abc2cd9",
+    "tools/gcc_include/stdint.h": "faa42177c8104639fa3d8813823605ee491c7d38e2a208613e8a82dfed1ec727"
+  }
+}

@@ -1,5 +1,6 @@
 /* Bounded host models of mode-one callback branches, not byte matches. */
 #include "controller_mode_one_tail.h"
+#include "mode_camera_helpers.h"
 #include "texture_font_slots.h"
 
 extern void func_800486D0(void *text, int32_t x, int32_t y, int8_t *tag);
@@ -11,17 +12,15 @@ extern void func_8001BC08(void);
 extern void func_8001BC28(void);
 extern void func_8002C9D4(int32_t value);
 extern void func_8002C370(void);
-extern int32_t func_800481D4(int32_t tag, int32_t first, int32_t second);
 extern void func_80027F40(void);
 extern int32_t func_80061A64(int32_t value);
 extern void func_8001B558(
     int32_t event_id, int32_t mode, uintptr_t flags, int32_t heading,
     void *argument_4, void *argument_5, void *argument_6, void *argument_7
 );
-extern void func_8006BB84(int32_t value);
+extern uint32_t func_8006BB84(int32_t value);
 extern void func_8004F688(void);
-extern void func_80027114(int32_t first, int32_t second);
-extern int32_t func_80047050(int32_t value);
+extern void func_80047050(int32_t value);
 extern int32_t func_80062890(void);
 extern volatile uint8_t g_controller_timeout_ticks;
 extern int32_t g_unknown_800BDF10;
@@ -182,7 +181,7 @@ ControllerModeOneTailResult controller_mode_one_enabled_pulse_button(
 
     g_controller_timeout_ticks = 20;
     func_80023C98();
-    g_controller_flash_enabled = 0;
+    g_controller_action_latched = 0;
     g_controller_pulse_enabled = 0;
     func_8001BC28();
     func_8002C9D4(0);
@@ -204,13 +203,13 @@ ControllerModeOneTailResult controller_mode_one_disabled_pulse_button(uint32_t b
 
     if ((buttons & (1U << 11)) != 0) {
         if (func_80023A30(30) != 0) {
-            g_controller_flash_enabled = 0;
+            g_controller_action_latched = 0;
             func_80023C98();
         }
         return CONTROLLER_MODE_ONE_EXIT;
     }
 
-    if ((buttons & (1U << 8)) == 0 || g_controller_flash_enabled == 0) {
+    if ((buttons & (1U << 8)) == 0 || g_controller_action_latched == 0) {
         return CONTROLLER_MODE_ONE_EXIT;
     }
 

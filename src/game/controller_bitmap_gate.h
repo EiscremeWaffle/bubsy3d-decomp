@@ -35,7 +35,7 @@ _Static_assert(offsetof(ControllerRuntimeFlags, buttons_2a2a) == 0x2A2A, "contro
 
 extern ControllerRuntimeFlags *volatile g_controller_runtime_flags;
 extern volatile uint8_t g_controller_button_hold;
-extern volatile uint8_t g_controller_action_latched;
+extern volatile uint8_t g_controller_action_latched; /* Also the mode-one flash flag. */
 extern volatile uint32_t g_controller_lifecycle_state;
 extern volatile int32_t g_controller_cycle_cursor;
 extern const char g_controller_cycle_condition[];

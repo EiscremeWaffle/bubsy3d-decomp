@@ -18,11 +18,15 @@ ComponentRotationMatrix *func_8007699C(
     const ComponentRotationMatrix *first, ComponentRotationMatrix *second);
 int32_t func_80054624(void **output);
 int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMatrix *output);
+int32_t func_80048E30(const ComponentRotationMatrix *input, ComponentRotationMatrix *output);
+int32_t func_80048FA8(ComponentRotationMatrix *component, const int32_t rotation[3]);
+int32_t func_80049080(ComponentRotationMatrix *component, const int32_t rotation[3]);
 int32_t func_800547C8(ComponentRotationMatrix *component, const int32_t rotation[3]);
 int32_t func_800548A0(ComponentRotationMatrix *component, const int32_t rotation[3]);
 int32_t func_800549E8(ComponentRotationMatrix *component, const ComponentRotationMatrix *basis);
 int32_t func_80054A6C(ComponentRotationMatrix *component, const ComponentRotationMatrix *basis);
 int32_t func_800550A4(ComponentRotationMatrix *component, const ComponentRotationMatrix *basis);
+int32_t func_8005536C(ComponentRotationMatrix *component, const ComponentRotationMatrix *basis, const int32_t translation[3]);
 int32_t func_8005541C(ComponentRotationMatrix *component, const int32_t scale[3]);
 
 #endif

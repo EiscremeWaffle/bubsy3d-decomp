@@ -1,8 +1,11 @@
 ## Statuss
 
 This is a research scaffold, not a working whole-game source rebuild or a port.
-The validated report contains 80,304 exact code bytes across 372 functions
-(`2.598906%` of mapped code).
+The validated report credits 89,744 exact code bytes across 419 functions
+(`2.904416%` of mapped code). These include the readable-C 532-byte
+`func_80023A84` resource setup, 508-byte `func_80023C98` transform reset,
+328-byte `func_8006BB84` timing helper, its 156-byte wait backend, and the
+448-byte `func_80047050` controller teardown and eight of its backends.
 These totals include repeated module
 copies and both C-based and assembly-backed matches. The actor-event
 dispatcher `bubsy_process_actor_event` now matches from readable C without
@@ -40,9 +43,11 @@ integration test. The mode-one and effect routines themselves separately
 match readable C, as do the timed-record start/stop and display setup/cleanup
 functions. The camera-channel shift helper matches plain C; its GTE
 background-color backend matches with three explicit CTC2 instruction words.
-Six direct secondary-controller helpers now match plain C as well: timed-record
-setting and deletion, a selection getter, a screen-position setter, and
-two component-record copies. The secondary controller itself remains unmatched.
+Eight direct secondary-controller helpers now match plain C as well: timed-record
+setting and deletion, a selection getter, a screen-position setter, two
+component-record copies, the 472-byte basis-swap handler, and the timed-record
+result lookup with its switch table. The secondary controller function itself
+remains unmatched.
 The readable-C pass has additionally converted nine old assembly-backed
 functions (1,852 bytes), and removed instruction snippets from seven existing
 C matches without changing any matched bytes.

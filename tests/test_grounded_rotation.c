@@ -77,8 +77,8 @@ ComponentRotationMatrix *func_8007699C(
     return rotation;
 }
 
-int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMatrix *output) {
-    record(0x800542A4);
+static int32_t convert_basis(const ComponentRotationMatrix *input, ComponentRotationMatrix *output, unsigned id) {
+    record(id);
     assert(input->elements[0] == 0x5678);
     *output = *input;
     if (mutate_rotation) {
@@ -87,6 +87,14 @@ int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMat
         g_stride_mode = 7;
     }
     return -77;
+}
+
+int32_t func_800542A4(const ComponentRotationMatrix *input, ComponentRotationMatrix *output) {
+    return convert_basis(input, output, 0x800542A4);
+}
+
+int32_t func_80048E30(const ComponentRotationMatrix *input, ComponentRotationMatrix *output) {
+    return convert_basis(input, output, 0x80048E30);
 }
 
 void func_80022944(void *value) {
@@ -197,7 +205,7 @@ static void test_basis_copy(void) {
 static void test_rotation_wrapper(void) {
     static const int32_t angles[] = {INT32_MIN, -65537, -1, 0, 1, 65537, INT32_MAX};
     static int32_t (*const rotate[])(ComponentRotationMatrix *, const int32_t *) = {
-        func_800547C8, func_800548A0
+        func_800547C8, func_800548A0, func_80048FA8, func_80049080
     };
     unsigned variant, x, y, z;
     for (variant = 0; variant < sizeof(rotate) / sizeof(rotate[0]); ++variant) {
@@ -212,8 +220,8 @@ static void test_rotation_wrapper(void) {
                     assert(rotate[variant](&context, input) == 0);
                     assert(call_count == 3);
                     assert(calls[0] == 0x80077C50);
-                    assert(calls[1] == (variant == 0 ? 0x80076890 : 0x8007699C));
-                    assert(calls[2] == 0x800542A4);
+                    assert(calls[1] == ((variant & 1u) == 0 ? 0x80076890 : 0x8007699C));
+                    assert(calls[2] == (variant < 2 ? 0x800542A4 : 0x80048E30));
                     rotation_matrix.elements[0] = 0x5678;
                     assert(memcmp(context.elements, rotation_matrix.elements, sizeof(context.elements)) == 0);
                     assert(context.padding == saved_context.padding);
@@ -240,6 +248,8 @@ static void test_rotation_wrapper(void) {
     reset();
     assert(func_800547C8(NULL, NULL) == 0x18);
     assert(func_800548A0(NULL, NULL) == 0x18);
+    assert(func_80048FA8(NULL, NULL) == 0x18);
+    assert(func_80049080(NULL, NULL) == 0x18);
     assert(call_count == 0);
 }
 

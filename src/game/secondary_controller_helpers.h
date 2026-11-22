@@ -11,5 +11,6 @@ extern uint8_t g_secondary_controller_display[];
 
 void func_800493CC(void);
 void func_800493F8(void *argument0, void *argument1);
+void func_80049158(void *argument);
 
 #endif

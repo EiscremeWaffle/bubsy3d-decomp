@@ -3858,7 +3858,9 @@
           "start": "0x8002BD0C",
           "end": "0x8002BE68",
           "size": 348,
-          "kind": "reachable_fragment"
+          "kind": "anchored_function",
+          "symbol": "func_8002BD0C",
+          "evidence": "The 348-byte result lookup starts with a 0x18-byte frame at 0x8002BD0C and returns at 0x8002BE60 with its delay slot at 0x8002BE64, immediately before the anchored function at 0x8002BE68. Its computed dispatch at 0x8002BD78 uses an 18-word table at 0x80012798, and every target is inside the function. All body and table bytes match readable C."
         },
         {
           "start": "0x8002BE68",
@@ -9185,8 +9187,8 @@
           "kind": "anchored_function"
         }
       ],
-      "anchored_functions": 992,
-      "reachable_fragments": 67,
+      "anchored_functions": 993,
+      "reachable_fragments": 66,
       "indirect_references": [
         {
           "site": "0x80015ABC",
@@ -17437,6 +17439,19 @@
           "address": "0x8002DE34",
           "symbol": "func_8002DE34",
           "evidence": "The result-display initializer at 0x8002DF70 loads this address as the callback passed to func_8004FF50. The 240-byte callback starts at 0x8002DE34, returns at 0x8002DF1C with its delay slot at 0x8002DF20, and is followed by the initializer at 0x8002DF24. All bytes match readable C."
+        },
+        {
+          "address": "0x8002BD0C",
+          "end": "0x8002BE68",
+          "symbol": "func_8002BD0C",
+          "evidence": "The 348-byte result lookup starts with a 0x18-byte frame at 0x8002BD0C and returns at 0x8002BE60 with its delay slot at 0x8002BE64, immediately before the anchored function at 0x8002BE68. Its computed dispatch at 0x8002BD78 uses an 18-word table at 0x80012798, and every target is inside the function. All body and table bytes match readable C.",
+          "computed_jump_tables": [
+            {
+              "site": "0x8002BD78",
+              "table": "0x80012798",
+              "count": 18
+            }
+          ]
         },
         {
           "address": "0x80023A0C",
@@ -224323,6 +224338,6 @@
   ],
   "status": "Evidence-based reachable-code map; remaining dynamic targets and unclassified payload prevent whole-game completeness",
   "code_bytes": 3089916,
-  "bounded_function_count": 10566,
-  "fragment_count": 1170
+  "bounded_function_count": 10567,
+  "fragment_count": 1169
 }

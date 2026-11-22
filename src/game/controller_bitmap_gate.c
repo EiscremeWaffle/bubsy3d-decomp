@@ -1,12 +1,12 @@
 /* Host model of the pre-bitmap gates of func_80023E94, not a byte match. */
 #include "controller_bitmap_gate.h"
+#include "controller_cycle_warp.h"
 #include "controller_input_route.h"
 #include "input_events.h"
 
 extern uint32_t func_80056678(uint32_t value, uint32_t selector);
-extern int32_t func_80047050(int32_t value);
+extern void func_80047050(int32_t value);
 extern void func_800556D0(int32_t failed, const char *condition, const char *source, uint32_t line);
-extern void func_80038430(GameCyclicEntry *entry);
 extern int32_t func_800222E0(void);
 extern void func_80023A84(void);
 extern int32_t func_8003AA1C(void **output);

@@ -1,8 +1,6 @@
 #include "result_display.h"
 #include "texture_font_slots.h"
 
-extern void func_800481D4(int32_t tag, int32_t first, int32_t second);
-
 void func_8002DE34(void) {
     uint32_t phase = g_result_display_phase;
     int32_t scale, updated_scale;

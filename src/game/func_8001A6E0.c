@@ -5,7 +5,6 @@
 
 extern void func_8004E8E0(void);
 extern void func_800486D0(void *context, int32_t first, int32_t second, int8_t *channel);
-extern void func_800481D4(int32_t channel, int32_t first, int32_t second);
 
 void func_8001A6E0(void) {
     uint32_t buttons;

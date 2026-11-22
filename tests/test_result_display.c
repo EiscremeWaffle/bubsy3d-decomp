@@ -59,13 +59,14 @@ void func_800486D0(void *context, int32_t first, int32_t second, int8_t *tag) {
     }
 }
 
-void func_800481D4(int32_t tag, int32_t first, int32_t second) {
+int32_t func_800481D4(int32_t tag, int32_t first, int32_t second) {
     record_call(2, (uint32_t)tag, (uint32_t)first, (uint32_t)second);
     if (current.mutations & MUTATE_SCALE) {
         g_result_display_tag = (int8_t)current.replacement_tag;
         g_result_display_phase = (uint8_t)current.replacement_phase;
         g_result_display_scale = (int32_t)current.replacement_scale;
     }
+    return 0;
 }
 
 int32_t func_800483C0(int32_t tag) {

@@ -191,6 +191,48 @@ static void test_reconstruction(void) {
     }
 }
 
+static void test_secondary_reconstruction(void) {
+    unsigned value, inplace, i;
+    for (value = 0; value <= UINT16_MAX; value += 257) {
+        for (inplace = 0; inplace < 2; ++inplace) {
+            ComponentRotationMatrix input;
+            ComponentRotationMatrix output;
+            ComponentRotationMatrix expected;
+            int32_t first[3], second[3], third[3];
+            for (i = 0; i < 9; ++i) {
+                input.elements[i] = (uint16_t)(value ^ (i * 0x1111u));
+            }
+            input.padding = 0xCAFE;
+            input.translation[0] = INT32_MAX;
+            input.translation[1] = 123;
+            input.translation[2] = INT32_MIN;
+            output = input;
+            for (i = 0; i < 3; ++i) {
+                first[i] = signed_halfword(input.elements[i * 3]);
+                second[i] = signed_halfword(input.elements[i * 3 + 1]);
+                third[i] = signed_halfword(input.elements[i * 3 + 2]);
+            }
+            first[1] = 0;
+            reset();
+            expect(CONDITION, first, NULL, axis_a, -1);
+            expect(CONDITION, third, NULL, axis_b, -2);
+            expect(CROSS, axis_a, second, cross_a, -3);
+            expect(CONDITION, cross_a, NULL, cross_b, -4);
+            expect(CROSS, cross_b, axis_a, cross_a, -5);
+            expect(NORMALIZE, axis_a, NULL, forward, -6);
+            expect(NORMALIZE, cross_a, NULL, axis_b, -7);
+            expect(NORMALIZE, cross_b, NULL, axis_a, -8);
+            mutated = inplace ? &input : &output;
+            expected = output;
+            expected.translation[1] = INT32_MIN;
+            set_columns(&expected, forward, axis_b, axis_a);
+            assert(func_80048E30(&input, mutated) == 0);
+            assert(next == count);
+            assert(memcmp(mutated, &expected, sizeof(expected)) == 0);
+        }
+    }
+}
+
 static void test_orientation(void) {
     static const int32_t directions[][3] = {
         {0, 0, 0}, {0, 4096, 0}, {0, -4096, 0},
@@ -310,8 +352,9 @@ static void test_column_scaling(void) {
 
 int main(void) {
     test_reconstruction();
+    test_secondary_reconstruction();
     test_orientation();
     test_column_scaling();
-    puts("Grounded basis: 131072 reconstruction, 120 orientation/failure, 589824 scaling and 24 clamp/mutation cases passed.");
+    puts("Grounded basis: 131072 reconstruction, 512 secondary reconstruction, 120 orientation/failure, 589824 scaling and 24 clamp/mutation cases passed.");
     return 0;
 }

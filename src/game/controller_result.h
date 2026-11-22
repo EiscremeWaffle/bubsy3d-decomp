@@ -10,6 +10,18 @@ typedef struct ControllerResultContext {
     int16_t selection_14;
 } ControllerResultContext;
 
+typedef struct ResultCounterSlot {
+    uint8_t unknown[0x10];
+    int32_t value;
+} ResultCounterSlot;
+
+typedef struct ResultCounterContext {
+    uint8_t unknown[0x14];
+    int16_t selection;
+    uint8_t padding[2];
+    ResultCounterSlot slots[2];
+} ResultCounterContext;
+
 extern int16_t g_result_previous_selection;
 extern const char g_result_player_one_text[];
 extern const char g_result_player_two_text[];

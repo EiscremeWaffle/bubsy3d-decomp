@@ -2,7 +2,6 @@
 #include "texture_font_slots.h"
 
 extern void func_800486D0(void *context, int32_t first, int32_t second, int8_t *tag);
-extern void func_800481D4(int32_t tag, int32_t first, int32_t second);
 
 void func_8002DF24(const char *text) {
     if (g_result_display_phase != 0) {

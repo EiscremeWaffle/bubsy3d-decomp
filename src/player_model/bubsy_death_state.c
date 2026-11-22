@@ -147,8 +147,6 @@ extern void func_8005EF9C(int32_t mode, int32_t duration, void *callback);
 extern void func_800516F8(void *output);
 extern void func_80054AF0(void *context, void *output);
 extern int32_t func_80052BDC(void *context, int32_t mode);
-extern void func_8002E954(void *state, void *value);
-extern void func_8002E858(void *input, int32_t size, void *source, void *output);
 extern void func_800550A4(void *object, void *context);
 extern void func_80045094(void);
 extern void func_80044268(void);

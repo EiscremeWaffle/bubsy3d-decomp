@@ -111,8 +111,9 @@ void func_8001B044(void) {
     ++fallback_dispatches;
 }
 
-void func_8006BB84(int32_t mode) {
+uint32_t func_8006BB84(int32_t mode) {
     assert(mode == 1);
+    return 0;
 }
 
 void func_800250CC(void) {
